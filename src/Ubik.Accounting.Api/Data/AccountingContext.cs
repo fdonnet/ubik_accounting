@@ -22,6 +22,17 @@ namespace Ubik.Accounting.Api.Data
            .HasForeignKey(e => e.ParentAccountGroupId)
            .IsRequired(false);
 
+            modelBuilder.Entity<Entry>()
+            .HasOne(s => s.DebitAccount)
+            .WithMany()
+            .HasForeignKey(e => e.DebitAccountId)
+            .IsRequired(true);
+
+            modelBuilder.Entity<Entry>()
+            .HasOne(s => s.CreditAccount)
+            .WithMany()
+            .HasForeignKey(e => e.CreditAccountId)
+            .IsRequired(true);
         }
     }
 }
