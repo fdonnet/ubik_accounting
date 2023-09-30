@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Ubik.Accounting.Api.Models
 {
     [Table("AccountGroups")]
-    public class AccountGroup
+    public class AccountGroup : ITenant
     {
         public int Id { get; set; }
         [StringLength(100)]
@@ -16,5 +16,8 @@ namespace Ubik.Accounting.Api.Models
         public AccountGroup? ParentAccountGroup { get; set; }
         public ICollection<AccountGroup>? ChildrenAccountGroups { get; set; }
         public ICollection<Account>? Accounts { get; set; }
-    }
+        [ConcurrencyCheck]
+        public Guid Version { get; set; }
+        public int TenantId { get; set; }
+}
 }

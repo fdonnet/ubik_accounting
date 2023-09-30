@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Ubik.Accounting.Api.Models
 {
     [Index(nameof(Code), IsUnique = true)]
-    public class Account
+    public class Account : ITenant
     {
         public int Id { get; set; }
         [StringLength(20)]
@@ -16,6 +16,9 @@ namespace Ubik.Accounting.Api.Models
         public  string? Description { get; set; }
         public int? AccountGroupId { get; set; }
         public AccountGroup? Group { get; set; }
+        [ConcurrencyCheck]
+        public Guid Version { get; set; }
+        public int TenantId { get; set; }
 
     }
 }
