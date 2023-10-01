@@ -23,7 +23,7 @@ namespace Ubik.Accounting.Api.Models
         public Guid? OriginalCurrencyId { get; set; }
         public Currency? OriginalCurrency { get; set; }
         [Precision(18, 8)]
-        public decimal ExchangeRate { get; set; }
+        public decimal? ExchangeRate { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
     }
