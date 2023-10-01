@@ -2,21 +2,23 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Ubik.DB.Common;
 
 namespace Ubik.Accounting.Api.Models
 {
-    [Table("Entries")]
-    public class Entry : ITenant
+    public enum DebitCredit
     {
-        public int Id { get; set; }
-        public required int DebitAccountId { get; set; }
-        public Account DebitAccount { get; set; } = default!;
-        public required int CreditAccountId { get; set; }
-        public Account CreditAccount { get; set; } = default!;
+        Debit,
+        Credit
+    }
+
+    public class Entry : ITenantEntity, IConcurrencyCheckEntity
+    {
+        public Guid Id { get; set; }
+        public required DebitCredit Sign { get; set;}
         [Precision(18, 2)]
-        public decimal Amount { get; set; }
-        [ConcurrencyCheck]
+        public required decimal Amount { get; set; }
         public Guid Version { get; set; }
-        public int TenantId { get; set; }
+        public Guid TenantId { get; set; }
     }
 }
