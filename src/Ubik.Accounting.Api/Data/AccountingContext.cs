@@ -27,6 +27,24 @@ namespace Ubik.Accounting.Api.Data
            .WithOne(m => m.MainEntry)
            .HasForeignKey(e => e.MainEntryId)
            .IsRequired(true);
+
+            modelBuilder.Entity<MainEntry>()
+            .HasOne(s => s.Currency)
+            .WithMany()
+            .HasForeignKey(e => e.CurrencyId)
+            .IsRequired(true);
+
+            modelBuilder.Entity<MainEntry>()
+            .HasOne(s => s.OriginalCurrency)
+            .WithMany()
+            .HasForeignKey(e => e.OriginalCurrencyId)
+            .IsRequired(false);
+
+            modelBuilder.Entity<CounterpartyEntry>()
+            .HasOne(s => s.OriginalCurrency)
+            .WithMany()
+            .HasForeignKey(e => e.OriginalCurrencyId)
+            .IsRequired(false);
         }
     }
 }
