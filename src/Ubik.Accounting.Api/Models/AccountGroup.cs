@@ -5,6 +5,7 @@ using Ubik.DB.Common;
 
 namespace Ubik.Accounting.Api.Models
 {
+    [Index(nameof(TenantId), IsUnique = false)]
     [Table("AccountGroups")]
     public class AccountGroup : ITenantEntity, IConcurrencyCheckEntity
     {

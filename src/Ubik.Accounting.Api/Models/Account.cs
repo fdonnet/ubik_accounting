@@ -6,6 +6,7 @@ using Ubik.DB.Common;
 namespace Ubik.Accounting.Api.Models
 {
     [Index(nameof(Code), IsUnique = true)]
+    [Index(nameof(TenantId), IsUnique = false)]
     public class Account : ITenantEntity, IConcurrencyCheckEntity
     {
         public Guid Id { get; set; }
