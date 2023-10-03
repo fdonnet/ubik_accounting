@@ -26,6 +26,10 @@ namespace Ubik.Accounting.Api.Models
         public required EntryType Type { get; set; }
         public required DebitCredit Sign { get; set;}
         public required DateTime ValueDate { get; set; }
+        [StringLength(300)]
+        public string? Description { get; set; }
+        [StringLength(500)]
+        public string? Comment { get; set; }
         [Precision(18, 2)]
         public required decimal Amount { get; set; }
         [Precision(18, 2)]
