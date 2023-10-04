@@ -7,7 +7,7 @@ namespace Ubik.Accounting.Api.Models
 {
     [Index(nameof(Code), IsUnique = true)]
     [Index(nameof(TenantId), IsUnique = false)]
-    public class Account : ITenantEntity, IConcurrencyCheckEntity
+    public class Account : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
     {
         public Guid Id { get; set; }
         [StringLength(20)]
@@ -21,5 +21,11 @@ namespace Ubik.Accounting.Api.Models
         [ConcurrencyCheck]
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
+        public required DateTime CreatedOn { get; set; }
+        public required Guid CreatedBy { get; set; }
+        public User CreatedByUser { get; set; } = default!;
+        public DateTime? ModifiedOn { get; set; }
+        public Guid? ModifiedBy { get; set; }
+        public User? ModifiedByUser { get; set; }
     }
 }

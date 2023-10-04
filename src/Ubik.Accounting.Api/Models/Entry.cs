@@ -20,7 +20,7 @@ namespace Ubik.Accounting.Api.Models
 
     [Index(nameof(TenantId), IsUnique = false)]
     [Table("Entries")]
-    public class Entry : ITenantEntity, IConcurrencyCheckEntity
+    public class Entry : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
     {
         public Guid Id { get; set; }
         public required EntryType Type { get; set; }
@@ -30,6 +30,8 @@ namespace Ubik.Accounting.Api.Models
         public string? Description { get; set; }
         [StringLength(500)]
         public string? Comment { get; set; }
+        public Guid? TaxRateId { get; set; }
+        public TaxRate? TaxRate { get; set; }
         [Precision(18, 2)]
         public required decimal Amount { get; set; }
         [Precision(18, 2)]
@@ -43,5 +45,11 @@ namespace Ubik.Accounting.Api.Models
         public ICollection<Entry>? CounterpartyEntries { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
+        public required DateTime CreatedOn { get; set; }
+        public required Guid CreatedBy { get; set; }
+        public User CreatedByUser { get; set; } = default!;
+        public DateTime? ModifiedOn { get; set; }
+        public Guid? ModifiedBy { get; set; }
+        public User? ModifiedByUser { get; set; }
     }
 }
