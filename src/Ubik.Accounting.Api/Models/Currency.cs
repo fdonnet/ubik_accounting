@@ -14,10 +14,10 @@ namespace Ubik.Accounting.Api.Models
         public required string IsoCode { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
-        public required DateTime CreatedOn { get; set; }
+        public required DateTime CreatedAt { get; set; }
         public required Guid CreatedBy { get; set; }
         public User CreatedByUser { get; set; } = default!;
-        public DateTime? ModifiedOn { get; set; }
+        public DateTime? ModifiedAt { get; set; }
         public Guid? ModifiedBy { get; set; }
         public User? ModifiedByUser { get; set; }
     }

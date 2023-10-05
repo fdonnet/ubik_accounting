@@ -16,6 +16,7 @@ namespace Ubik.Accounting.Api.Data
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<Entry> Entries { get; set; }
         public DbSet<TaxRate> TaxRates { get; set; }
+        public DbSet<User> Users { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

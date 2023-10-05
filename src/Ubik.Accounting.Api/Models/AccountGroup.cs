@@ -10,6 +10,8 @@ namespace Ubik.Accounting.Api.Models
     public class AccountGroup : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
     {
         public Guid Id { get; set; }
+        [StringLength(20)]
+        public required string Code { get; set; }
         [StringLength(100)]
         public required string Label { get; set; }
         [StringLength(700)]
@@ -21,10 +23,10 @@ namespace Ubik.Accounting.Api.Models
         [ConcurrencyCheck]
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
-        public required DateTime CreatedOn { get; set; }
+        public required DateTime CreatedAt { get; set; }
         public required Guid CreatedBy { get; set; }
         public User CreatedByUser { get; set; } = default!;
-        public DateTime? ModifiedOn { get; set; }
+        public DateTime? ModifiedAt { get; set; }
         public Guid? ModifiedBy { get; set; }
         public User? ModifiedByUser { get; set; }
     }

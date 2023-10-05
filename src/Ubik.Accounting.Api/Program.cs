@@ -1,6 +1,8 @@
 
 using Ubik.Accounting.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Ubik.Accounting.Api.Service;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace Ubik.Accounting.Api
 {
@@ -19,8 +21,7 @@ namespace Ubik.Accounting.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-
+            builder.Services.AddTransient<IChartOfAccountsService, ChartOfAccountsService>();
 
             var app = builder.Build();
 
@@ -39,7 +40,7 @@ namespace Ubik.Accounting.Api
 
                 var context = services.GetRequiredService<AccountingContext>();
                 context.Database.EnsureCreated();
-                // DbInitializer.Initialize(context);
+                DbInitializer.Initialize(context);
             }
 
 
