@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Api.Services;
+﻿using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Data
 {

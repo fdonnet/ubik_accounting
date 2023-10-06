@@ -36,13 +36,13 @@ namespace Ubik.Accounting.Api.Controllers
 
         [HttpPost]
         [ProducesResponseType(201)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 409)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 409)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AccountDto>> Add(AccountDtoForAdd accountToAdd)
         {
             var accountResult = await _chartOfAccountsService.AddAccountAsync(accountToAdd);
-            return accountResult.ToCreated(a => a.ToAccountDto(),nameof(Get));
+            return accountResult.ToCreated(a => a.ToAccountDto(),nameof(Get), HttpContext);
         }
     }
 }

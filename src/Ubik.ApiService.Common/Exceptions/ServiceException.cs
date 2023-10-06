@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Ubik.ApiService.Common.Exceptions
 {
@@ -27,9 +23,16 @@ namespace Ubik.ApiService.Common.Exceptions
 
     public static class ServiceExceptionProblemDetails
     {
-        public static ProblemDetails ToProblemDetails(this ServiceException ex)
+        public static CustomProblemDetails ToValidationProblemDetails(this ServiceException ex, HttpContext httpContext)
         {
-            var error = new ProblemDetails();
+            var error = new CustomProblemDetails(new List<ProblemDetailErrors>()
+                                                    {
+                                                        new ProblemDetailErrors()
+                                                        {
+                                                            Code =ex.ErrorCode,
+                                                            FriendlyMsg = ex.ErrorFriendlyMessage,
+                                                            ValueInError = ex.ErrorValueDetails
+                                                        }});
 
             if (ex.ExceptionType == ServiceExceptionType.AlreadyExists)
             {
@@ -37,16 +40,14 @@ namespace Ubik.ApiService.Common.Exceptions
                 error.Status = 409;
                 error.Title = "Ressource already exists";
                 error.Detail = "See errors fields for identification and details.";
-            }
+                error.Instance ??= httpContext.Request.Path;
 
-            error.Extensions.Add("Errors", new ProblemDetailErrors[]
-                                            {
-                                                new ProblemDetailErrors()
-                                                {
-                                                    Code =ex.ErrorCode,
-                                                    FriendlyMsg = ex.ErrorFriendlyMessage,
-                                                    ValueInError = ex.ErrorValueDetails
-                                                }});
+                var traceId = Activity.Current?.Id ?? httpContext?.TraceIdentifier;
+                if (traceId != null)
+                {
+                    error.Extensions["traceId"] = traceId;
+                }
+            }
 
             return error;
         }

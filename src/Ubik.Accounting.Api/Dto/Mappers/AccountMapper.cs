@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Api.Models;
+﻿using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Dto.Mappers
 {

@@ -1,29 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Ubik.ApiService.Common.Exceptions
 {
-    public class CustomValidationProblemDetails : ValidationProblemDetails
+    public class CustomProblemDetails : ValidationProblemDetails
     {
-        public CustomValidationProblemDetails(IEnumerable<ProblemDetailErrors> errors)
+        public CustomProblemDetails(IEnumerable<ProblemDetailErrors> errors)
         {
             Errors = errors;
         }
 
         [JsonPropertyName("errors")]
         public new IEnumerable<ProblemDetailErrors> Errors { get; } = new List<ProblemDetailErrors>();
-        public CustomValidationProblemDetails(ModelStateDictionary modelState)
+        public CustomProblemDetails(ModelStateDictionary modelState)
         {
             Errors = ConvertModelStateErrorsToErrors(modelState);
         }
 
-        private List<ProblemDetailErrors> ConvertModelStateErrorsToErrors(ModelStateDictionary modelStateDictionary)
+        private static List<ProblemDetailErrors> ConvertModelStateErrorsToErrors(ModelStateDictionary modelStateDictionary)
         {
             List<ProblemDetailErrors> validationErrors = new();
             foreach (var keyModelStatePair in modelStateDictionary)
@@ -37,8 +33,8 @@ namespace Ubik.ApiService.Common.Exceptions
                         validationErrors.Add(new ProblemDetailErrors()
                         {
                             Code = "VALIDATION_ERROR",
-                            FriendlyMsg = "Validation error occured with the data you submited, pls correct your payload.",
-                            ValueInError = error.ErrorMessage
+                            FriendlyMsg = error.ErrorMessage,
+                            ValueInError = keyModelStatePair.Key
                         });
                     }
                 }

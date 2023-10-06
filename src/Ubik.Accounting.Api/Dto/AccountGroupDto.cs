@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Api.Models;
-
-namespace Ubik.Accounting.Api.Dto
+﻿namespace Ubik.Accounting.Api.Dto
 {
     public class AccountGroupDto
     {

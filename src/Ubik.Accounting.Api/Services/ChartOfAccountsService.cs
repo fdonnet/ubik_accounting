@@ -1,7 +1,5 @@
-﻿using LanguageExt.ClassInstances.Const;
-using LanguageExt.Common;
+﻿using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Dto;
 using Ubik.Accounting.Api.Dto.Mappers;
@@ -52,8 +50,8 @@ namespace Ubik.Accounting.Api.Services
                 {
                     ErrorCode = "ACCOUNT_ALREADY_EXISTS",
                     ExceptionType = ServiceExceptionType.AlreadyExists,
-                    ErrorFriendlyMessage = "The account already exists.",
-                    ErrorValueDetails = "Account Code field needs to be unique",
+                    ErrorFriendlyMessage = "The account already exists. Code field needs to be unique.",
+                    ErrorValueDetails = "Code",
                 };
                 return new Result<Account>(alreadyExists);
             }

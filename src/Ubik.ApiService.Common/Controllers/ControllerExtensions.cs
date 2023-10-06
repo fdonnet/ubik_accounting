@@ -1,11 +1,6 @@
-﻿using LanguageExt;
-using LanguageExt.Common;
+﻿using LanguageExt.Common;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.ApiService.Common.Dto;
 using Ubik.ApiService.Common.Exceptions;
 
@@ -13,7 +8,7 @@ namespace Ubik.ApiService.Common.Controllers
 {
     public static class ControllerExtensions
     {
-        public static ActionResult ToOK<TResult,TContract>(this Result<TResult> result, Func<TResult,TContract> mapper)
+        public static ActionResult ToOK<TResult,TContract>(this Result<TResult> result, Func<TResult,TContract> mapper, HttpContext httpContext)
         {
             return result.Match<ActionResult>(success =>
             {
@@ -23,14 +18,14 @@ namespace Ubik.ApiService.Common.Controllers
             {
                 if (exception is ServiceException serviceException && exception != null)
                 {
-                    var serviceProblem = serviceException.ToProblemDetails();
+                    var serviceProblem = serviceException.ToValidationProblemDetails(httpContext);
                     return new ConflictObjectResult(serviceProblem);
                 }
                 return new StatusCodeResult(500);
             });
         }
 
-        public static ActionResult ToCreated<TResult, TContract>(this Result<TResult> result, Func<TResult, TContract> mapper, string actionName)
+        public static ActionResult ToCreated<TResult, TContract>(this Result<TResult> result, Func<TResult, TContract> mapper, string actionName, HttpContext httpContext)
         {
             return result.Match<ActionResult>(success =>
             {
@@ -44,7 +39,7 @@ namespace Ubik.ApiService.Common.Controllers
             {
                 if (exception is ServiceException serviceException && exception != null)
                 {
-                    var serviceProblem = serviceException.ToProblemDetails();
+                    var serviceProblem = serviceException.ToValidationProblemDetails(httpContext);
                     return new ConflictObjectResult(serviceProblem);
                 }
                 return new StatusCodeResult(500);
