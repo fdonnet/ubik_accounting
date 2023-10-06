@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Api.Service;
+using Ubik.Accounting.Api.Services;
 
 namespace Ubik.Accounting.Api.Data
 {
@@ -25,8 +25,8 @@ namespace Ubik.Accounting.Api.Data
                 new User
                 {
                     Id = userId1,
-                    Name = "fdonnet",
-                    Email = "donnetf@gmail.com",
+                    Name = "testuser",
+                    Email = "test@gmail.com",
                     TenantId = tenantId
                 },
                 new User
@@ -83,7 +83,7 @@ namespace Ubik.Accounting.Api.Data
                         Code = "1020",
                         CreatedBy= userId1,
                         CreatedAt = now,
-                        Label = "UBS xxx Cash (CHF)",
+                        Label = "Banque 1",
                         Description = "Compte bancaire cash",
                         ModifiedBy= userId1,
                         ModifiedAt = now,

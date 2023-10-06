@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.Api.Dto;
 using Ubik.Accounting.Api.Dto.Mappers;
-using Ubik.Accounting.Api.Service;
+using Ubik.Accounting.Api.Services;
 
 namespace Ubik.Accounting.Api.Controllers
 {

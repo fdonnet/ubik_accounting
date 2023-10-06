@@ -1,14 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Services;
+using Ubik.DB.Common.Extensions;
 
 namespace Ubik.Accounting.Api.Data
 {
     public class AccountingContext : DbContext
     {
-        public AccountingContext(DbContextOptions<AccountingContext> options)
+        private ICurrentUserService _currentUserService;
+        public AccountingContext(DbContextOptions<AccountingContext> options, ICurrentUserService userService)
             : base(options)
         {
+            _currentUserService = userService;
         }
 
         public DbSet<Account> Accounts { get; set; }
@@ -18,6 +22,11 @@ namespace Ubik.Accounting.Api.Data
         public DbSet<TaxRate> TaxRates { get; set; }
         public DbSet<User> Users { get; set; }
 
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ChangeTracker.SetSpecialFields(_currentUserService);
+            return await base.SaveChangesAsync(cancellationToken);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

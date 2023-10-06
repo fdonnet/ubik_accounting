@@ -6,7 +6,7 @@ using Ubik.Accounting.Api.Dto;
 using Ubik.Accounting.Api.Dto.Mappers;
 using Ubik.Accounting.Api.Models;
 
-namespace Ubik.Accounting.Api.Service
+namespace Ubik.Accounting.Api.Services
 {
     public interface IChartOfAccountsService
     {
@@ -42,9 +42,7 @@ namespace Ubik.Accounting.Api.Service
         public async Task<Account> AddAccountAsync(AccountDtoForAdd accountDto)
         {
             var account = AccountMapper.ToAccount(accountDto);
-
-            account.CreatedBy = Guid.Parse("be2b2b95-0cd0-4189-b18a-0be63f1c417a");
-            account.CreatedAt = DateTime.UtcNow;
+            account.Version = Guid.NewGuid();
 
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
