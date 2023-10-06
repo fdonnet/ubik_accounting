@@ -8,7 +8,7 @@ namespace Ubik.Accounting.Api.Data
 {
     public class AccountingContext : DbContext
     {
-        private ICurrentUserService _currentUserService;
+        private readonly ICurrentUserService _currentUserService;
         public AccountingContext(DbContextOptions<AccountingContext> options, ICurrentUserService userService)
             : base(options)
         {
@@ -22,7 +22,7 @@ namespace Ubik.Accounting.Api.Data
         public DbSet<TaxRate> TaxRates { get; set; }
         public DbSet<User> Users { get; set; }
 
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             ChangeTracker.SetSpecialFields(_currentUserService);
             return await base.SaveChangesAsync(cancellationToken);

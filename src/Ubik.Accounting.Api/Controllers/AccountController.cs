@@ -2,6 +2,8 @@
 using Ubik.Accounting.Api.Dto;
 using Ubik.Accounting.Api.Dto.Mappers;
 using Ubik.Accounting.Api.Services;
+using Ubik.ApiService.Common.Controllers;
+using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Controllers
 {
@@ -35,10 +37,12 @@ namespace Ubik.Accounting.Api.Controllers
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 409)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<ActionResult<AccountDto>> Add(AccountDtoForAdd accountToAdd)
         {
             var accountResult = await _chartOfAccountsService.AddAccountAsync(accountToAdd);
-            return CreatedAtAction(nameof(Get), new { id = accountResult.Id }, AccountMapper.ToAccountDto(accountResult));
+            return accountResult.ToCreated(a => a.ToAccountDto(),nameof(Get));
         }
     }
 }

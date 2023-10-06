@@ -14,7 +14,6 @@ namespace Ubik.Accounting.Api.Data
             var userId2 = Guid.NewGuid();
 
             var accountGroupId1 = Guid.NewGuid();
-            var accountGroupId2 = Guid.NewGuid();
 
             var now = DateTime.UtcNow;
 

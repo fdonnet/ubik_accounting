@@ -15,9 +15,9 @@ namespace Ubik.ApiService.Common.Services
         {
             return new CurrentUser() { 
                 Email = "test@gmail.com", 
-                Id = Guid.Parse("2b470b86-ead8-4f52-b609-c67595665c50"), 
+                Id = Guid.Parse("7f16c899-536e-4792-87c0-0af35ebdadac"), 
                 Name = "testuser", 
-                TenantId= Guid.Parse("7a16e50a-04fc-4af9-be08-d8295519400c") };
+                TenantId= Guid.Parse("c1546e5c-3e30-46be-a24c-e6852c907868") };
         }
     }
 }

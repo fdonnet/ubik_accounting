@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Dto;
 
 namespace Ubik.Accounting.Api.Dto
 {
-    public class AccountDto
+   public class AccountDto : IDtoWithId
     {
         public Guid Id { get; set; }
         [StringLength(20)]
