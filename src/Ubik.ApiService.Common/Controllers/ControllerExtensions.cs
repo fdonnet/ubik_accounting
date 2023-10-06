@@ -8,7 +8,8 @@ namespace Ubik.ApiService.Common.Controllers
 {
     public static class ControllerExtensions
     {
-        public static ActionResult ToOK<TResult,TContract>(this Result<TResult> result, Func<TResult,TContract> mapper, HttpContext httpContext)
+        public static ActionResult ToOK<TResult,TContract>(this Result<TResult> result, Func<TResult,TContract> mapper
+            , IHttpContextAccessor httpContextAccessor)
         {
             return result.Match<ActionResult>(success =>
             {
@@ -18,14 +19,15 @@ namespace Ubik.ApiService.Common.Controllers
             {
                 if (exception is ServiceException serviceException && exception != null)
                 {
-                    var serviceProblem = serviceException.ToValidationProblemDetails(httpContext);
+                    var serviceProblem = serviceException.ToValidationProblemDetails(httpContextAccessor);
                     return new ConflictObjectResult(serviceProblem);
                 }
                 return new StatusCodeResult(500);
             });
         }
 
-        public static ActionResult ToCreated<TResult, TContract>(this Result<TResult> result, Func<TResult, TContract> mapper, string actionName, HttpContext httpContext)
+        public static ActionResult ToCreated<TResult, TContract>(this Result<TResult> result, Func<TResult, TContract> mapper
+            , string actionName, IHttpContextAccessor httpContextAccessor)
         {
             return result.Match<ActionResult>(success =>
             {
@@ -39,7 +41,7 @@ namespace Ubik.ApiService.Common.Controllers
             {
                 if (exception is ServiceException serviceException && exception != null)
                 {
-                    var serviceProblem = serviceException.ToValidationProblemDetails(httpContext);
+                    var serviceProblem = serviceException.ToValidationProblemDetails(httpContextAccessor);
                     return new ConflictObjectResult(serviceProblem);
                 }
                 return new StatusCodeResult(500);

@@ -12,10 +12,12 @@ namespace Ubik.Accounting.Api.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IChartOfAccountsService _chartOfAccountsService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountController(IChartOfAccountsService chartOfAccountsService)
+        public AccountController(IChartOfAccountsService chartOfAccountsService, IHttpContextAccessor httpContextAccessor)
         {
             _chartOfAccountsService = chartOfAccountsService;
+            _httpContextAccessor = httpContextAccessor; 
         }
 
         [HttpGet]
@@ -42,7 +44,7 @@ namespace Ubik.Accounting.Api.Controllers
         public async Task<ActionResult<AccountDto>> Add(AccountDtoForAdd accountToAdd)
         {
             var accountResult = await _chartOfAccountsService.AddAccountAsync(accountToAdd);
-            return accountResult.ToCreated(a => a.ToAccountDto(),nameof(Get), HttpContext);
+            return accountResult.ToCreated(a => a.ToAccountDto(),nameof(Get), _httpContextAccessor);
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Exceptions;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Ubik.ApiService.Common.Controllers;
 
 namespace Ubik.Accounting.Api
 {
@@ -22,8 +23,9 @@ namespace Ubik.Accounting.Api
                 options.UseMySql(builder.Configuration.GetConnectionString("AccountingContext"),serverVersion));
             
             builder.Services.AddControllers();
+            builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
-        
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
