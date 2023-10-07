@@ -22,7 +22,7 @@ namespace Ubik.Accounting.Api.Controllers
 
         [HttpGet]
         [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<AccountDto>>> Get() 
         { 
             var accounts = await _chartOfAccountsService.GetAccountsAsync();
@@ -31,7 +31,7 @@ namespace Ubik.Accounting.Api.Controllers
 
         [HttpGet("withAccountGroup")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<AccountWithAccountGroupDto>>> GetWithAccountGroup()
         {
             var accounts = await _chartOfAccountsService.GetAccountsWithAccountGroupAsync();
@@ -42,7 +42,7 @@ namespace Ubik.Accounting.Api.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AccountDto>> Add(AccountDtoForAdd accountToAdd)
         {
             var accountResult = await _chartOfAccountsService.AddAccountAsync(accountToAdd);
