@@ -12,7 +12,8 @@ namespace Ubik.Accounting.Api.Dto.Mappers
                 Code = account.Code,
                 Label = account.Label,
                 Description = account.Description,
-                AccountGroupId = account.AccountGroupId
+                AccountGroupId = account.AccountGroupId,
+                Version = account.Version
             };
         }
 
@@ -36,6 +37,7 @@ namespace Ubik.Accounting.Api.Dto.Mappers
                 account.Label = accountDto.Label;
                 account.Description = accountDto.Description;
                 account.AccountGroupId = accountDto.AccountGroupId;
+                account.Version = accountDto.Version;
                 return account;
             }
         }

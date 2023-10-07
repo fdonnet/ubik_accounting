@@ -8,9 +8,9 @@
         {
             return new CurrentUser() { 
                 Email = "test@gmail.com", 
-                Id = Guid.Parse("7f16c899-536e-4792-87c0-0af35ebdadac"), 
+                Id = Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e"), 
                 Name = "testuser", 
-                TenantId= Guid.Parse("c1546e5c-3e30-46be-a24c-e6852c907868") };
+                TenantId= Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d") };
         }
     }
 }

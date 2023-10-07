@@ -13,5 +13,6 @@ namespace Ubik.Accounting.Api.Dto
         [StringLength(700)]
         public string? Description { get; set; }
         public Guid AccountGroupId { get; set; }
+        public Guid Version { get; set; }
     }
 }

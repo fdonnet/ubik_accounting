@@ -124,8 +124,8 @@ namespace Ubik.Accounting.Api.Services
                 {
                     ErrorCode = "ACCOUNT_MODIFIED",
                     ExceptionType = ServiceExceptionType.Conflict,
-                    ErrorFriendlyMessage = "The account has been modified by another user, refresh your data befor updating.",
-                    ErrorValueDetails = "",
+                    ErrorFriendlyMessage = "You don't have the last version or this account has been removed, refresh your data before updating.",
+                    ErrorValueDetails = "Version",
                 };
                 return new Result<bool>(conflict);
             }
