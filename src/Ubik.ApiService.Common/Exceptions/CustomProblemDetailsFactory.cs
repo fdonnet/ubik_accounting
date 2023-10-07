@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Diagnostics;
+using System.Net.Http;
 
 namespace Ubik.ApiService.Common.Exceptions
 {
@@ -41,23 +42,11 @@ namespace Ubik.ApiService.Common.Exceptions
                 Detail = detail
             };
 
-            if (title != null)
-            {
-                // For validation problem details, don't overwrite the default title with null.
-                problemDetails.Title = title;
-            }
-
-            var traceId = Activity.Current?.Id ?? httpContext?.TraceIdentifier;
-            if (traceId != null)
-            {
-                problemDetails.Extensions["traceId"] = traceId;
-            }
-
-            return problemDetails;
+            return FillProblemDetails(httpContext, problemDetails, title);
         }
 
         public CustomProblemDetails CreateUnmanagedProblemDetails(HttpContext httpContext,
-            ProblemDetailErrors[] errors, int? statusCode = null, string? title = null, string? type = null,
+            ProblemDetailError[] errors, int? statusCode = null, string? title = null, string? type = null,
             string? detail = null, string? instance = null)
         {
             statusCode ??= 500;
@@ -73,6 +62,11 @@ namespace Ubik.ApiService.Common.Exceptions
                 Detail = detail
             };
 
+            return FillProblemDetails(httpContext, problemDetails,title);
+        }
+
+        private CustomProblemDetails FillProblemDetails(HttpContext httpContext,CustomProblemDetails problemDetails, string? title)
+        {
             if (title != null)
             {
                 // For validation problem details, don't overwrite the default title with null.

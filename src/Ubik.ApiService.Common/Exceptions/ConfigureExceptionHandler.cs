@@ -42,12 +42,12 @@ namespace Ubik.ApiService.Common.Exceptions
 
                         if(problemDetailsFactory is CustomProblemDetailsFactory customProblemDetailsFactory)
                         {
-                            var error = new ProblemDetailErrors() { Code = "UNMANAGED_ERROR", 
+                            var error = new ProblemDetailError() { Code = "UNMANAGED_ERROR", 
                                                                     FriendlyMsg = "Unmanaged exception occurs, see detail field when available.",
                                                                     ValueInError = "" };
 
                             var problemDetail = customProblemDetailsFactory.CreateUnmanagedProblemDetails(context,
-                                                                                        new ProblemDetailErrors[] {error},
+                                                                                        new ProblemDetailError[] {error},
                                                                                         500,
                                                                                         "Unmanaged error",
                                                                                         "https://tools.ietf.org/html/rfc7231#section-6.6.1",

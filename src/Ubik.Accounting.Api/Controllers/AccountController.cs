@@ -58,7 +58,7 @@ namespace Ubik.Accounting.Api.Controllers
         public async Task<ActionResult> AUpdatedd(Guid id, AccountDto account)
         {
             var accountResult = await _chartOfAccountsService.UpdateAccountAsync(id, account);
-            return NoContent();
+            return accountResult.ToNoContent(_httpContextAccessor);
         }
     }
 }

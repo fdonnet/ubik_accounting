@@ -7,21 +7,21 @@ namespace Ubik.ApiService.Common.Exceptions
 {
     public class CustomProblemDetails : ValidationProblemDetails
     {
-        public CustomProblemDetails(IEnumerable<ProblemDetailErrors> errors)
+        public CustomProblemDetails(IEnumerable<ProblemDetailError> errors)
         {
             Errors = errors;
         }
 
         [JsonPropertyName("errors")]
-        public new IEnumerable<ProblemDetailErrors> Errors { get; } = new List<ProblemDetailErrors>();
+        public new IEnumerable<ProblemDetailError> Errors { get; } = new List<ProblemDetailError>();
         public CustomProblemDetails(ModelStateDictionary modelState)
         {
             Errors = ConvertModelStateErrorsToErrors(modelState);
         }
 
-        private static List<ProblemDetailErrors> ConvertModelStateErrorsToErrors(ModelStateDictionary modelStateDictionary)
+        private static List<ProblemDetailError> ConvertModelStateErrorsToErrors(ModelStateDictionary modelStateDictionary)
         {
-            List<ProblemDetailErrors> validationErrors = new();
+            List<ProblemDetailError> validationErrors = new();
             foreach (var keyModelStatePair in modelStateDictionary)
             {
                 var errors = keyModelStatePair.Value.Errors;
@@ -30,7 +30,7 @@ namespace Ubik.ApiService.Common.Exceptions
                 {
                     foreach (var error in errors)
                     {
-                        validationErrors.Add(new ProblemDetailErrors()
+                        validationErrors.Add(new ProblemDetailError()
                         {
                             Code = "VALIDATION_ERROR",
                             FriendlyMsg = error.ErrorMessage,
