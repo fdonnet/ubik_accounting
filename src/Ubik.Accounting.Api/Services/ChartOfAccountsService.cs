@@ -73,12 +73,11 @@ namespace Ubik.Accounting.Api.Services
                 {
                     ErrorCode = "ACCOUNT_ID_NOTMATCH",
                     ExceptionType = ServiceExceptionType.BadParams,
-                    ErrorFriendlyMessage = "The account Id provided doesn't match the account information sent for update.",
+                    ErrorFriendlyMessage = "The account Id provided doesn't match the account Id information as payload sent for update.",
                     ErrorValueDetails = "Id"
                 };
                 return new Result<bool>(notSameId);
             }
-
 
             //Check if the record exists
             var accountToUpdate = await _context.Accounts
@@ -97,8 +96,8 @@ namespace Ubik.Accounting.Api.Services
                 return new Result<bool>(notExistsForUpdate);
             }
 
-            //Check if the account code already exists
-            bool exists = await _context.Accounts.AnyAsync(a => a.Code == accountDto.Code);
+            //Check if the account code already exists in other records
+            bool exists = await _context.Accounts.AnyAsync(a => a.Code == accountDto.Code && a.Id != currentId);
             if (exists)
             {
                 var alreadyExists = new ServiceException()
