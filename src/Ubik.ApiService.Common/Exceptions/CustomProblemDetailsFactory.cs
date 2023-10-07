@@ -63,7 +63,7 @@ namespace Ubik.ApiService.Common.Exceptions
             statusCode ??= 500;
             type ??= "https://tools.ietf.org/html/rfc7231#section-6.6.1";
             instance ??= httpContext.Request.Path;
-            detail ??= "";
+            detail ??= "Contact the app support !";
 
             var problemDetails = new CustomProblemDetails(errors)
             {
