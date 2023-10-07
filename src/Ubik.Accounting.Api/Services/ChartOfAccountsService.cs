@@ -36,6 +36,7 @@ namespace Ubik.Accounting.Api.Services
         {
             var accounts = await _context.Accounts
                                 .Include(a => a.Group)
+                                .AsNoTracking()
                                 .ToListAsync();
 
             return accounts.Select(a => AccountMapper.ToAccountWithAccountGroup(a));
@@ -46,6 +47,7 @@ namespace Ubik.Accounting.Api.Services
             var account = AccountMapper.ToAccount(accountDto);
 
             bool exists = await _context.Accounts.AnyAsync(a => a.Code == accountDto.Code);
+
             if (exists)
             {
                 var alreadyExists = new ServiceException()
@@ -58,7 +60,7 @@ namespace Ubik.Accounting.Api.Services
                 return new Result<Account>(alreadyExists);
             }
 
-            _context.Accounts.Add(account);
+            await _context.Accounts.AddAsync(account);
             await _context.SaveChangesAsync();
 
             return account;
@@ -79,23 +81,6 @@ namespace Ubik.Accounting.Api.Services
                 return new Result<bool>(notSameId);
             }
 
-            //Check if the record exists
-            var accountToUpdate = await _context.Accounts
-                                        .AsNoTracking()
-                                        .SingleOrDefaultAsync(x => x.Id == currentId);
-
-            if(accountToUpdate == null)
-            {
-                var notExistsForUpdate = new ServiceException()
-                {
-                    ErrorCode = "ACCOUNT_NOT_FOUND",
-                    ExceptionType = ServiceExceptionType.NotFound,
-                    ErrorFriendlyMessage = "The account doesn't exist. Id not found.",
-                    ErrorValueDetails = "Id",
-                };
-                return new Result<bool>(notExistsForUpdate);
-            }
-
             //Check if the account code already exists in other records
             bool exists = await _context.Accounts.AnyAsync(a => a.Code == accountDto.Code && a.Id != currentId);
             if (exists)
@@ -108,6 +93,23 @@ namespace Ubik.Accounting.Api.Services
                     ErrorValueDetails = "Code",
                 };
                 return new Result<bool>(alreadyExists);
+            }
+
+            //Check if the record exists
+            var accountToUpdate = await _context.Accounts
+                                        .AsNoTracking()
+                                        .SingleOrDefaultAsync(x => x.Id == currentId);
+
+            if (accountToUpdate == null)
+            {
+                var notExistsForUpdate = new ServiceException()
+                {
+                    ErrorCode = "ACCOUNT_NOT_FOUND",
+                    ExceptionType = ServiceExceptionType.NotFound,
+                    ErrorFriendlyMessage = "The account doesn't exist. Id not found.",
+                    ErrorValueDetails = "Id",
+                };
+                return new Result<bool>(notExistsForUpdate);
             }
 
             accountToUpdate = accountDto.ToAccount(accountToUpdate);
