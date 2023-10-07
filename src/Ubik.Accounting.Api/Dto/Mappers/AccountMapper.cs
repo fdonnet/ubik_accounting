@@ -16,16 +16,28 @@ namespace Ubik.Accounting.Api.Dto.Mappers
             };
         }
 
-        public static Account ToAccount(this AccountDto accountDto)
+        public static Account ToAccount(this AccountDto accountDto,  Account? account = null )
         {
-            return new Account()
+            if(account == null )
             {
-                Id = accountDto.Id,
-                Code = accountDto.Code,
-                Label = accountDto.Label,
-                Description = accountDto.Description,
-                AccountGroupId = accountDto.AccountGroupId
-            };
+                return new Account()
+                {
+                    Id = accountDto.Id,
+                    Code = accountDto.Code,
+                    Label = accountDto.Label,
+                    Description = accountDto.Description,
+                    AccountGroupId = accountDto.AccountGroupId
+                };
+            }
+            else
+            {
+                account.Id = accountDto.Id;
+                account.Code = accountDto.Code;
+                account.Label = accountDto.Label;
+                account.Description = accountDto.Description;
+                account.AccountGroupId = accountDto.AccountGroupId;
+                return account;
+            }
         }
 
         public static Account ToAccount(this AccountDtoForAdd accountDtoForAdd)

@@ -48,5 +48,17 @@ namespace Ubik.Accounting.Api.Controllers
             var accountResult = await _chartOfAccountsService.AddAccountAsync(accountToAdd);
             return accountResult.ToCreated(a => a.ToAccountDto(),nameof(Get), _httpContextAccessor);
         }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 409)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult> AUpdatedd(Guid id, AccountDto account)
+        {
+            var accountResult = await _chartOfAccountsService.UpdateAccountAsync(id, account);
+            return NoContent();
+        }
     }
 }

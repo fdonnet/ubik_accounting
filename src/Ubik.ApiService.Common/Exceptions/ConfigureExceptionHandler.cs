@@ -34,8 +34,8 @@ namespace Ubik.ApiService.Common.Exceptions
                         //Unmanaged exception log as error
                         log.LogError("Something went wrong: {contextFeature.Error}", contextFeature.Error);
 
-                        string? detail = env.IsDevelopment() ? null
-                            : $"{contextFeature.Error.Message}";
+                        string? detail = env.IsDevelopment() ? $"{contextFeature.Error}"
+                            : null;
 
                         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 

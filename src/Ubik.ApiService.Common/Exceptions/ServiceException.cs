@@ -11,7 +11,7 @@ namespace Ubik.ApiService.Common.Exceptions
         BadParams = 3,
         AlreadyExists = 4,
         NotAuthorized = 5,
-        NotAuthentified = 6,
+        NotAuthentified = 6
     }
     public class ServiceException : Exception
     {
