@@ -23,7 +23,7 @@ namespace Ubik.ApiService.Common.Exceptions
 
             switch (ex.ExceptionType)
             {
-                case ServiceExceptionType.AlreadyExists:
+                case ServiceExceptionType.Conflict:
                     error.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.8";
                     error.Status = 409;
                     error.Title = "Resource conflict (already exists)";

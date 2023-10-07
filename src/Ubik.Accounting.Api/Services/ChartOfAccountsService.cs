@@ -51,7 +51,7 @@ namespace Ubik.Accounting.Api.Services
                 var alreadyExists = new ServiceException()
                 {
                     ErrorCode = "ACCOUNT_ALREADY_EXISTS",
-                    ExceptionType = ServiceExceptionType.AlreadyExists,
+                    ExceptionType = ServiceExceptionType.Conflict,
                     ErrorFriendlyMessage = "The account already exists. Code field needs to be unique.",
                     ErrorValueDetails = "Code"
                 };
@@ -103,7 +103,7 @@ namespace Ubik.Accounting.Api.Services
                 var alreadyExists = new ServiceException()
                 {
                     ErrorCode = "ACCOUNT_ALREADY_EXISTS",
-                    ExceptionType = ServiceExceptionType.AlreadyExists,
+                    ExceptionType = ServiceExceptionType.Conflict,
                     ErrorFriendlyMessage = "The account already exists. Code field needs to be unique.",
                     ErrorValueDetails = "Code",
                 };
@@ -113,9 +113,22 @@ namespace Ubik.Accounting.Api.Services
             accountToUpdate = accountDto.ToAccount(accountToUpdate);
 
             _context.Entry(accountToUpdate).State = EntityState.Modified;
-            
-            //TODO: conccurrency check
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                var conflict = new ServiceException()
+                {
+                    ErrorCode = "ACCOUNT_MODIFIED",
+                    ExceptionType = ServiceExceptionType.Conflict,
+                    ErrorFriendlyMessage = "The account has been modified by another user, refresh your data befor updating.",
+                    ErrorValueDetails = "",
+                };
+                return new Result<bool>(conflict);
+            }
             
             return true;
         }

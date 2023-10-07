@@ -66,7 +66,7 @@ namespace Ubik.ApiService.Common.Controllers
                     case 409:
                         return new ConflictObjectResult(serviceProblem);
                     case 401:
-                        return new ObjectResult(serviceProblem) { StatusCode = 401 };
+                        return new UnauthorizedObjectResult(serviceProblem);
                     case 403:
                         return new ObjectResult(serviceProblem) { StatusCode = 403 };
                 }

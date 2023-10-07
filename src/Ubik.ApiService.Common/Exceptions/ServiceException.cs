@@ -9,7 +9,7 @@ namespace Ubik.ApiService.Common.Exceptions
         OK = 1,
         NotFound = 2,
         BadParams = 3,
-        AlreadyExists = 4,
+        Conflict = 4,
         NotAuthorized = 5,
         NotAuthentified = 6
     }
