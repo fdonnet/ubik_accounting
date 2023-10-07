@@ -8,6 +8,7 @@ using Ubik.ApiService.Common.Exceptions;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Ubik.ApiService.Common.Controllers;
+using Microsoft.AspNetCore.Builder;
 
 namespace Ubik.Accounting.Api
 {
@@ -33,6 +34,8 @@ namespace Ubik.Accounting.Api
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             var app = builder.Build();
+
+            app.UseExceptionHandler(app.Logger, app.Environment, app.Services.GetRequiredService<ProblemDetailsFactory>());
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
