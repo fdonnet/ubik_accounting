@@ -6,9 +6,9 @@ namespace Ubik.Accounting.Api.Data
     {
         public static void Initialize(AccountingContext context)
         {
-            var tenantId = Guid.NewGuid();
+            var tenantId = Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d");
 
-            var userId1 = Guid.NewGuid();
+            var userId1 = Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e");
             var userId2 = Guid.NewGuid();
 
             var accountGroupId1 = Guid.NewGuid();
