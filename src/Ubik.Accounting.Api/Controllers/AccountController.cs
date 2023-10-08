@@ -29,15 +29,6 @@ namespace Ubik.Accounting.Api.Controllers
             return Ok(accounts);
         }
 
-        [HttpGet("withAccountGroup")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<AccountWithAccountGroupDto>>> GetWithAccountGroup()
-        {
-            var accounts = await _chartOfAccountsService.GetAccountsWithAccountGroupAsync();
-            return Ok(accounts);
-        }
-
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]

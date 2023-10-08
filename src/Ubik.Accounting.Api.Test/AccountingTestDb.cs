@@ -35,8 +35,8 @@ namespace Ubik.Accounting.Api.Test
             }
         }
 
-        public AccountingContext CreateContext()
-            => new AccountingContext(
+        public static AccountingContext CreateContext()
+            => new(
                 new DbContextOptionsBuilder<AccountingContext>()
                     .UseMySql(ConnectionString, new MariaDbServerVersion(new Version(11, 1, 2)))
                     .Options,new CurrentUserService());

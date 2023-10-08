@@ -12,7 +12,6 @@ namespace Ubik.Accounting.Api.Services
     public interface IChartOfAccountsService
     {
         public Task<IEnumerable<AccountDto>> GetAccountsAsync();
-        public Task<IEnumerable<AccountWithAccountGroupDto>> GetAccountsWithAccountGroupAsync();
         public Task<Result<Account>> AddAccountAsync(AccountDtoForAdd account);
         public Task<Result<bool>> UpdateAccountAsync(Guid currentId, AccountDto account);
     }
@@ -30,16 +29,6 @@ namespace Ubik.Accounting.Api.Services
             var accounts = await _context.Accounts.ToListAsync();
 
             return accounts.Select(a => AccountMapper.ToAccountDto(a));
-        }
-
-        public async Task<IEnumerable<AccountWithAccountGroupDto>> GetAccountsWithAccountGroupAsync()
-        {
-            var accounts = await _context.Accounts
-                                .Include(a => a.Group)
-                                .AsNoTracking()
-                                .ToListAsync();
-
-            return accounts.Select(a => AccountMapper.ToAccountWithAccountGroup(a));
         }
 
         public async Task<Result<Account>> AddAccountAsync(AccountDtoForAdd accountDto)

@@ -17,7 +17,7 @@ namespace Ubik.Accounting.Api.Test.Services
         [Fact]
         public async Task GetAccounts_Test()
         {
-            using var context = Fixture.CreateContext();
+            using var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             var accounts = await service.GetAccountsAsync();
