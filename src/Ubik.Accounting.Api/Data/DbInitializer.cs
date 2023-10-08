@@ -11,7 +11,7 @@ namespace Ubik.Accounting.Api.Data
             var userId1 = Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e");
             var userId2 = Guid.NewGuid();
 
-            var accountGroupId1 = Guid.NewGuid();
+            var accountGroupId1 = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a");
 
             var now = DateTime.UtcNow;
 
