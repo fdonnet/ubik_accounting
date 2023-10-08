@@ -57,7 +57,10 @@ namespace Ubik.Accounting.Api.Data
             .HasOne(a => a.CreatedByUser)
             .WithMany()
             .HasForeignKey(b => b.CreatedBy)
-            .IsRequired(true);
+            .IsRequired(true); 
+
+            modelBuilder.Entity<Account>()
+                .HasQueryFilter(a => a.TenantId == Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d"));
 
             modelBuilder.Entity<Account>()
             .HasOne(a => a.ModifiedByUser)

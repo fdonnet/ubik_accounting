@@ -20,8 +20,8 @@ namespace Ubik.Accounting.Api
 
             // Add services to the container.
             var serverVersion = new MariaDbServerVersion(new Version(11, 1, 2));
-            builder.Services.AddDbContext<AccountingContext>(options =>
-                options.UseMySql(builder.Configuration.GetConnectionString("AccountingContext"),serverVersion));
+            builder.Services.AddDbContextFactory<AccountingContext>(
+                    options => options.UseMySql(builder.Configuration.GetConnectionString("AccountingContext"), serverVersion),ServiceLifetime.Scoped);
             
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
