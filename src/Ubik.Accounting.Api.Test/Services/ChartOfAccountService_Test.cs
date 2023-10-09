@@ -60,10 +60,10 @@ namespace Ubik.Accounting.Api.Test.Services
 
             //Assert
             ok.Should()
-                .BeOfType<ServiceException>()
-                .And.Match<ServiceException>(a =>
+                .BeOfType<ServiceAndFeatureException>()
+                .And.Match<ServiceAndFeatureException>(a =>
                                     a.ErrorCode == "ACCOUNT_NOT_FOUND" &&
-                                    a.ExceptionType == ServiceExceptionType.NotFound);
+                                    a.ExceptionType == ServiceAndFeatureExceptionType.NotFound);
         }
 
         [Fact]
@@ -259,10 +259,10 @@ namespace Ubik.Accounting.Api.Test.Services
 
             //Assert
             ok.Should()
-                .BeOfType<ServiceException>()
-                .And.Match<ServiceException>(a =>
+                .BeOfType<ServiceAndFeatureException>()
+                .And.Match<ServiceAndFeatureException>(a =>
                                     a.ErrorCode == "ACCOUNT_ALREADY_EXISTS" &&
-                                    a.ExceptionType == ServiceExceptionType.Conflict);
+                                    a.ExceptionType == ServiceAndFeatureExceptionType.Conflict);
         }
 
         [Fact]

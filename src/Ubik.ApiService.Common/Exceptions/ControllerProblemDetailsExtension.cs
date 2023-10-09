@@ -10,7 +10,7 @@ namespace Ubik.ApiService.Common.Exceptions
 {
     public static class ControllerProblemDetailsExtension
     {
-        public static CustomProblemDetails ToValidationProblemDetails(this ServiceException ex, IHttpContextAccessor httpContextAccessor)
+        public static CustomProblemDetails ToValidationProblemDetails(this ServiceAndFeatureException ex, IHttpContextAccessor httpContextAccessor)
         {
             var error = new CustomProblemDetails(new List<ProblemDetailError>()
                                                     {
@@ -23,22 +23,22 @@ namespace Ubik.ApiService.Common.Exceptions
 
             switch (ex.ExceptionType)
             {
-                case ServiceExceptionType.Conflict:
+                case ServiceAndFeatureExceptionType.Conflict:
                     error.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.8";
                     error.Status = 409;
                     error.Title = "Resource conflict (already exists)";
                     break;
-                case ServiceExceptionType.NotFound:
+                case ServiceAndFeatureExceptionType.NotFound:
                     error.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4";
                     error.Status = 404;
                     error.Title = "Resource not found";
                     break;
-                case ServiceExceptionType.NotAuthorized:
+                case ServiceAndFeatureExceptionType.NotAuthorized:
                     error.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3";
                     error.Status = 403;
                     error.Title = "Resource not authorized";
                     break;
-                case ServiceExceptionType.NotAuthentified:
+                case ServiceAndFeatureExceptionType.NotAuthentified:
                     error.Type = "https://tools.ietf.org/html/rfc7235#section-3.1";
                     error.Status = 401;
                     error.Title = "No valid authentication detected";

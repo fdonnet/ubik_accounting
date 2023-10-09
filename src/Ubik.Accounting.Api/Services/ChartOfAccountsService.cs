@@ -38,10 +38,10 @@ namespace Ubik.Accounting.Api.Services
 
             if (account == null)
             {
-                var notExistsForUpdate = new ServiceException()
+                var notExistsForUpdate = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_NOT_FOUND",
-                    ExceptionType = ServiceExceptionType.NotFound,
+                    ExceptionType = ServiceAndFeatureExceptionType.NotFound,
                     ErrorFriendlyMessage = "The account doesn't exist. Id not found.",
                     ErrorValueDetails = "Id",
                 };
@@ -58,10 +58,10 @@ namespace Ubik.Accounting.Api.Services
 
             if (exists)
             {
-                var alreadyExists = new ServiceException()
+                var alreadyExists = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_ALREADY_EXISTS",
-                    ExceptionType = ServiceExceptionType.Conflict,
+                    ExceptionType = ServiceAndFeatureExceptionType.Conflict,
                     ErrorFriendlyMessage = "The account already exists. Code field needs to be unique.",
                     ErrorValueDetails = "Code"
                 };
@@ -79,10 +79,10 @@ namespace Ubik.Accounting.Api.Services
             //Not correct ID
             if (currentId != accountDto.Id)
             {
-                var notSameId = new ServiceException()
+                var notSameId = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_ID_NOTMATCH",
-                    ExceptionType = ServiceExceptionType.BadParams,
+                    ExceptionType = ServiceAndFeatureExceptionType.BadParams,
                     ErrorFriendlyMessage = "The account Id provided doesn't match the account Id information as payload sent for update.",
                     ErrorValueDetails = "Id"
                 };
@@ -93,10 +93,10 @@ namespace Ubik.Accounting.Api.Services
             bool exists = await _context.Accounts.AnyAsync(a => a.Code == accountDto.Code && a.Id != currentId);
             if (exists)
             {
-                var alreadyExists = new ServiceException()
+                var alreadyExists = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_ALREADY_EXISTS",
-                    ExceptionType = ServiceExceptionType.Conflict,
+                    ExceptionType = ServiceAndFeatureExceptionType.Conflict,
                     ErrorFriendlyMessage = "The account already exists. Code field needs to be unique.",
                     ErrorValueDetails = "Code",
                 };
@@ -108,10 +108,10 @@ namespace Ubik.Accounting.Api.Services
 
             if (accountToUpdate == null)
             {
-                var notExistsForUpdate = new ServiceException()
+                var notExistsForUpdate = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_NOT_FOUND",
-                    ExceptionType = ServiceExceptionType.NotFound,
+                    ExceptionType = ServiceAndFeatureExceptionType.NotFound,
                     ErrorFriendlyMessage = "The account doesn't exist. Id not found.",
                     ErrorValueDetails = "Id",
                 };
@@ -128,10 +128,10 @@ namespace Ubik.Accounting.Api.Services
             }
             catch (DbUpdateConcurrencyException)
             {
-                var conflict = new ServiceException()
+                var conflict = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_MODIFIED",
-                    ExceptionType = ServiceExceptionType.Conflict,
+                    ExceptionType = ServiceAndFeatureExceptionType.Conflict,
                     ErrorFriendlyMessage = "You don't have the last version or this account has been removed, refresh your data before updating.",
                     ErrorValueDetails = "Version",
                 };

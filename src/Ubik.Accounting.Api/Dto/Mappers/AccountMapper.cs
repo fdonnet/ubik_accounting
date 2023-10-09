@@ -53,18 +53,5 @@ namespace Ubik.Accounting.Api.Dto.Mappers
                 AccountGroupId = accountDtoForAdd.AccountGroupId
             };
         }
-
-        public static AccountWithAccountGroupDto ToAccountWithAccountGroup(this Account account)
-        {
-            return new AccountWithAccountGroupDto
-            {
-                Id = account.Id,
-                Code = account.Code,
-                Label = account.Label,
-                Description = account.Description,
-                AccountGroupId = account.AccountGroupId,
-                Group = account.Group != null ? AccountGroupMapper.ToAccountGroupDto(account.Group) : null
-        };
-        }
     }
 }

@@ -53,7 +53,7 @@ namespace Ubik.ApiService.Common.Controllers
 
         private static ActionResult GetObjectResult(Exception exception, IHttpContextAccessor httpContextAccessor)
         {
-            if (exception is ServiceException serviceException && exception != null)
+            if (exception is ServiceAndFeatureException serviceException && exception != null)
             {
                 var serviceProblem = serviceException.ToValidationProblemDetails(httpContextAccessor);
 
