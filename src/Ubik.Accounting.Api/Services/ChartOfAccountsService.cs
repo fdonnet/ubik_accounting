@@ -12,6 +12,7 @@ namespace Ubik.Accounting.Api.Services
     public interface IChartOfAccountsService
     {
         public Task<IEnumerable<AccountDto>> GetAccountsAsync();
+        public Task<Result<AccountDto>> GetAccountAsync(Guid Id);
         public Task<Result<Account>> AddAccountAsync(AccountDtoForAdd account);
         public Task<Result<bool>> UpdateAccountAsync(Guid currentId, AccountDto account);
     }
@@ -26,9 +27,27 @@ namespace Ubik.Accounting.Api.Services
 
         public async Task<IEnumerable<AccountDto>> GetAccountsAsync()
         {
-            var accounts = await _context.Accounts.ToListAsync();
+            var accounts = await _context.Accounts.AsNoTracking().ToListAsync();
 
             return accounts.Select(a => AccountMapper.ToAccountDto(a));
+        }
+
+        public async Task<Result<AccountDto>> GetAccountAsync(Guid Id)
+        {
+            var account = await _context.Accounts.AsNoTracking().SingleOrDefaultAsync(a=>a.Id == Id);
+
+            if (account == null)
+            {
+                var notExistsForUpdate = new ServiceException()
+                {
+                    ErrorCode = "ACCOUNT_NOT_FOUND",
+                    ExceptionType = ServiceExceptionType.NotFound,
+                    ErrorFriendlyMessage = "The account doesn't exist. Id not found.",
+                    ErrorValueDetails = "Id",
+                };
+                return new Result<AccountDto>(notExistsForUpdate);
+            }
+            return account.ToAccountDto();
         }
 
         public async Task<Result<Account>> AddAccountAsync(AccountDtoForAdd accountDto)
