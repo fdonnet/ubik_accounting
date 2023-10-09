@@ -28,7 +28,8 @@ namespace Ubik.Accounting.Api.Test
                     {
                         context.Database.EnsureDeleted();
                         context.Database.EnsureCreated();
-                        DbInitializer.Initialize(context);
+                        var initDb = new DbInitializer();
+                        initDb.Initialize(context);
                     }
                     _databaseInitialized = true;
                 }

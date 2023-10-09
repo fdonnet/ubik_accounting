@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Dto;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Services;
@@ -16,36 +17,42 @@ namespace Ubik.Accounting.Api.Test.Services
 {
     public class ChartOfAccountService_Test : IClassFixture<AccountingTestDbFixture>
     {
-        public ChartOfAccountService_Test(AccountingTestDbFixture fixture)
-                => Fixture = fixture;
         public AccountingTestDbFixture Fixture { get; }
+
+        private readonly DbInitializer _testDBValues;
+
+        public ChartOfAccountService_Test(AccountingTestDbFixture fixture)
+        {
+            Fixture = fixture;
+            _testDBValues = new DbInitializer();
+        }
 
         [Fact]
         public async Task GetAccountAsync_Success()
         {
             //Arrange
-            using var context = AccountingTestDbFixture.CreateContext();
+            var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             //Act
-            var account = await service.GetAccountAsync(Guid.Parse("7777f11f-20dd-4888-88f8-428e59bbc537"));
+            var account = await service.GetAccountAsync(_testDBValues.AccountId1);
 
             //Assert
             account.Should()
                     .NotBeNull()
                     .And.BeOfType<Result<AccountDto>>()
-                    .And.Match<Result<AccountDto>>(a=>a.IsSuccess == true);
+                    .And.Match<Result<AccountDto>>(a => a.IsSuccess == true);
         }
 
         [Fact]
         public async Task GetAccountAsync_Failed_NotFound()
         {
             //Arrange
-            using var context = AccountingTestDbFixture.CreateContext();
+            var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             //Act
-            var account = await service.GetAccountAsync(Guid.Parse("1111f11f-20dd-4888-88f8-428e59bbc531"));
+            var account = await service.GetAccountAsync(_testDBValues.UserId1);
             var ok = account.Match(
                 Succ: a => new Exception(),
                 Fail: a => a
@@ -63,7 +70,7 @@ namespace Ubik.Accounting.Api.Test.Services
         public async Task GetAccountsAsync_Success()
         {
             //Arrange
-            using var context = AccountingTestDbFixture.CreateContext();
+            var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             //Act
@@ -72,14 +79,14 @@ namespace Ubik.Accounting.Api.Test.Services
             //Assert
             accounts.Should()
                     .NotBeNull()
-                    .And.Contain(x=>x.Code =="1020");
+                    .And.Contain(x => x.Code == "1020");
         }
 
         [Fact]
         public async Task AddAccountAsync_Success()
         {
             //Arrange
-            using var context = AccountingTestDbFixture.CreateContext();
+            var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             //Act
@@ -88,7 +95,7 @@ namespace Ubik.Accounting.Api.Test.Services
                 Code = "1030",
                 Label = "Compte de liquidité test",
                 Description = "Test account",
-                AccountGroupId = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a")
+                AccountGroupId = _testDBValues.AccountGroupId1
             };
 
             var account = await service.AddAccountAsync(accountDto);
@@ -103,7 +110,7 @@ namespace Ubik.Accounting.Api.Test.Services
         public async Task AddAccountAsync_Success_CheckFields()
         {
             //Arrange
-            using var context = AccountingTestDbFixture.CreateContext();
+            var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             //Act
@@ -112,24 +119,24 @@ namespace Ubik.Accounting.Api.Test.Services
                 Code = "1031",
                 Label = "Compte de liquidité test",
                 Description = "Test account1",
-                AccountGroupId = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a")
+                AccountGroupId = _testDBValues.AccountGroupId1
             };
 
             var account = await service.AddAccountAsync(accountDto);
 
             Account ok = account.Match(
                 Succ: a => a,
-                Fail: a => new Account() { Code="-1",Label="Fail"}
+                Fail: a => new Account() { Code = "-1", Label = "Fail" }
             );
 
             //Assert
             ok.Should()
                 .BeOfType<Account>()
-                .And.Match<Account>(a => 
+                .And.Match<Account>(a =>
                                     a.Code == "1031" &&
                                     a.Label == "Compte de liquidité test" &&
-                                    a.Description == "Test account1" && 
-                                    a.AccountGroupId == Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a"));
+                                    a.Description == "Test account1" &&
+                                    a.AccountGroupId == _testDBValues.AccountGroupId1);
         }
 
         /// <summary>
@@ -140,7 +147,7 @@ namespace Ubik.Accounting.Api.Test.Services
         public async Task AddAccountAsync_Success_CheckAuditFields()
         {
             //Arrange
-            using var context = AccountingTestDbFixture.CreateContext();
+            var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             //Act
@@ -149,7 +156,7 @@ namespace Ubik.Accounting.Api.Test.Services
                 Code = "1032",
                 Label = "Compte de liquidité test2",
                 Description = "Test account2",
-                AccountGroupId = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a")
+                AccountGroupId = _testDBValues.AccountGroupId1
             };
 
             var account = await service.AddAccountAsync(accountDto);
@@ -165,8 +172,8 @@ namespace Ubik.Accounting.Api.Test.Services
                 .And.Match<Account>(a =>
                                     a.CreatedAt > DateTime.UtcNow.AddMinutes(-1) &&
                                     a.ModifiedAt > DateTime.UtcNow.AddMinutes(-1) &&
-                                    a.CreatedBy == Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e") &&
-                                    a.ModifiedBy == Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e"));
+                                    a.CreatedBy == _testDBValues.UserId1 &&
+                                    a.ModifiedBy == _testDBValues.UserId1);
         }
 
         /// <summary>
@@ -177,7 +184,7 @@ namespace Ubik.Accounting.Api.Test.Services
         public async Task AddAccountAsync_Success_CheckTenantId()
         {
             //Arrange
-            using var context = AccountingTestDbFixture.CreateContext();
+            var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             //Act
@@ -186,7 +193,7 @@ namespace Ubik.Accounting.Api.Test.Services
                 Code = "1033",
                 Label = "Compte de liquidité test2",
                 Description = "Test account3",
-                AccountGroupId = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a")
+                AccountGroupId = _testDBValues.AccountGroupId1
             };
 
             var account = await service.AddAccountAsync(accountDto);
@@ -200,14 +207,14 @@ namespace Ubik.Accounting.Api.Test.Services
             ok.Should()
                 .BeOfType<Account>()
                 .And.Match<Account>(a =>
-                                    a.TenantId == Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d"));
+                                    a.TenantId == _testDBValues.TenantId);
         }
 
         [Fact]
         public async Task AddAccountAsync_Failed()
         {
             //Arrange
-            using var context = AccountingTestDbFixture.CreateContext();
+            var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             //Act
@@ -216,7 +223,7 @@ namespace Ubik.Accounting.Api.Test.Services
                 Code = "1020",
                 Label = "Compte de liquidité test4",
                 Description = "Test account4",
-                AccountGroupId = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a")
+                AccountGroupId = _testDBValues.AccountGroupId1
             };
 
             var account = await service.AddAccountAsync(accountDto);
@@ -231,7 +238,7 @@ namespace Ubik.Accounting.Api.Test.Services
         public async Task AddAccountAsync_Failed_AlreadyExists()
         {
             //Arrange
-            using var context = AccountingTestDbFixture.CreateContext();
+            var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             //Act
@@ -240,7 +247,7 @@ namespace Ubik.Accounting.Api.Test.Services
                 Code = "1020",
                 Label = "Compte de liquidité test",
                 Description = "Test account5",
-                AccountGroupId = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a")
+                AccountGroupId = _testDBValues.AccountGroupId1
             };
 
             var account = await service.AddAccountAsync(accountDto);
@@ -262,16 +269,16 @@ namespace Ubik.Accounting.Api.Test.Services
         public async Task UpdateAccountAsync_Success()
         {
             //Arrange
-            using var context = AccountingTestDbFixture.CreateContext();
+            var context = AccountingTestDbFixture.CreateContext();
             var service = new ChartOfAccountsService(context);
 
             //Act
             //Need to get the account from DB to have the correct version field (concurrency)
-            var accountToUpdate = await service.GetAccountAsync(Guid.Parse("7777f11f-20dd-4888-88f8-428e59bbc537"));
+            var accountToUpdate = await service.GetAccountAsync(_testDBValues.AccountId1);
             var ok1 = accountToUpdate.Match<AccountDto>(Succ: a => a, Fail: a => new AccountDto() { Code = "-1", Label = "-1" });
             ok1.Label = "TEST UPDATE";
 
-            var result = await service.UpdateAccountAsync(Guid.Parse("7777f11f-20dd-4888-88f8-428e59bbc537"), ok1);
+            var result = await service.UpdateAccountAsync(_testDBValues.AccountId1, ok1);
             var ok2 = result.Match<bool>(Succ: a => a, Fail: a => false);
 
             //Assert

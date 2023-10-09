@@ -51,7 +51,9 @@ namespace Ubik.Accounting.Api
 
                 var context = services.GetRequiredService<AccountingContext>();
                 context.Database.EnsureCreated();
-                DbInitializer.Initialize(context);
+
+                var initDb = new DbInitializer();
+                initDb.Initialize(context);
             }
 
             app.UseHttpsRedirection();

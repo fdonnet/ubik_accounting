@@ -2,19 +2,16 @@
 
 namespace Ubik.Accounting.Api.Data
 {
-    public static class DbInitializer
+    public class DbInitializer
     {
-        public static void Initialize(AccountingContext context)
+        public Guid TenantId { get; } = Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d");
+        public Guid AccountId1 { get; } = Guid.Parse("7777f11f-20dd-4888-88f8-428e59bbc537");
+        public Guid UserId1 { get; } = Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e");
+        public Guid AccountGroupId1 { get; } = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a");
+
+        public void Initialize(AccountingContext context)
         {
-            var tenantId = Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d");
-
-            var userId1 = Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e");
             var userId2 = Guid.NewGuid();
-
-            var accountId1 = Guid.Parse("7777f11f-20dd-4888-88f8-428e59bbc537");
-
-            var accountGroupId1 = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a");
-
             var now = DateTime.UtcNow;
 
             if (!context.Users.Any())
@@ -23,17 +20,17 @@ namespace Ubik.Accounting.Api.Data
                             {
                 new User
                 {
-                    Id = userId1,
+                    Id = UserId1,
                     Name = "testuser",
                     Email = "test@gmail.com",
-                    TenantId = tenantId
+                    TenantId = TenantId
                 },
                 new User
                 {
                     Id = userId2,
                     Name = "test01",
                     Email = "test01@gmail.com",
-                    TenantId = tenantId
+                    TenantId = TenantId
                 },
                             };
 
@@ -50,17 +47,17 @@ namespace Ubik.Accounting.Api.Data
                             {
                 new AccountGroup
                 {
-                    Id = accountGroupId1,
-                    CreatedBy = userId1,
+                    Id = AccountGroupId1,
+                    CreatedBy = UserId1,
                     CreatedAt = now,
                     Code = "102",
                     Description = "Liquidités bancaires",
                     Label = "Banques",
-                    ModifiedBy = userId1,
+                    ModifiedBy = UserId1,
                     ModifiedAt = now,
                     ParentAccountGroupId = null,
                     Version = Guid.NewGuid(),
-                    TenantId = tenantId
+                    TenantId = TenantId
                 }
                             };
 
@@ -77,16 +74,16 @@ namespace Ubik.Accounting.Api.Data
                 {
                     new Account
                     {
-                        Id= accountId1,
-                        AccountGroupId = accountGroupId1,
+                        Id= AccountId1,
+                        AccountGroupId = AccountGroupId1,
                         Code = "1020",
-                        CreatedBy= userId1,
+                        CreatedBy= UserId1,
                         CreatedAt = now,
                         Label = "Banque 1",
                         Description = "Compte bancaire cash",
-                        ModifiedBy= userId1,
+                        ModifiedBy= UserId1,
                         ModifiedAt = now,
-                        TenantId= tenantId,
+                        TenantId= TenantId,
                         Version = Guid.NewGuid()
                     }
                 };

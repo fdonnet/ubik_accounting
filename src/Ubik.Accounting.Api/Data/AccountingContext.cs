@@ -21,6 +21,12 @@ namespace Ubik.Accounting.Api.Data
         public DbSet<TaxRate> TaxRates { get; set; }
         public DbSet<User> Users { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+        }
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             ChangeTracker.SetSpecialFields(_currentUserService);
@@ -59,6 +65,7 @@ namespace Ubik.Accounting.Api.Data
             .HasForeignKey(b => b.CreatedBy)
             .IsRequired(true); 
 
+            //TODO: Change that quick with userservice
             modelBuilder.Entity<Account>()
                 .HasQueryFilter(a => a.TenantId == Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d"));
 

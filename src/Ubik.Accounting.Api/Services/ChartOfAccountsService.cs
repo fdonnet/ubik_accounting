@@ -27,14 +27,14 @@ namespace Ubik.Accounting.Api.Services
 
         public async Task<IEnumerable<AccountDto>> GetAccountsAsync()
         {
-            var accounts = await _context.Accounts.AsNoTracking().ToListAsync();
+            var accounts = await _context.Accounts.ToListAsync();
 
             return accounts.Select(a => AccountMapper.ToAccountDto(a));
         }
 
         public async Task<Result<AccountDto>> GetAccountAsync(Guid Id)
         {
-            var account = await _context.Accounts.AsNoTracking().SingleOrDefaultAsync(a=>a.Id == Id);
+            var account = await _context.Accounts.SingleOrDefaultAsync(a => a.Id == Id);
 
             if (account == null)
             {
@@ -104,9 +104,7 @@ namespace Ubik.Accounting.Api.Services
             }
 
             //Check if the record exists
-            var accountToUpdate = await _context.Accounts
-                                        .AsNoTracking()
-                                        .SingleOrDefaultAsync(x => x.Id == currentId);
+            var accountToUpdate = await _context.Accounts.SingleOrDefaultAsync(x => x.Id == currentId);
 
             if (accountToUpdate == null)
             {
@@ -139,7 +137,7 @@ namespace Ubik.Accounting.Api.Services
                 };
                 return new Result<bool>(conflict);
             }
-            
+
             return true;
         }
     }
