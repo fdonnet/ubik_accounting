@@ -7,8 +7,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -31,48 +33,56 @@ namespace Ubik.ApiService.Common.Exceptions
                     {
                         context.Response.ContentType = "application/json";
 
-                        //Unmanaged exception log as error
-                        log.LogError("Something went wrong: {contextFeature.Error}", contextFeature.Error);
-
-                        string? detail = env.IsDevelopment() ? $"{contextFeature.Error}"
-                            : null;
-
-                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-
-                        if(problemDetailsFactory is CustomProblemDetailsFactory customProblemDetailsFactory)
+                        if (contextFeature.Error is IServiceAndFeatureException managedException)
                         {
-                            var error = new ProblemDetailError() { Code = "UNMANAGED_ERROR", 
-                                                                    FriendlyMsg = "Unmanaged exception occurs, see detail field when available.",
-                                                                    ValueInError = "" };
+                            //Managed excpetion
+                            context.Response.StatusCode = (int)managedException.ErrorType;
 
-                            var problemDetail = customProblemDetailsFactory.CreateUnmanagedProblemDetails(context,
-                                                                                        new ProblemDetailError[] {error},
-                                                                                        500,
-                                                                                        "Unmanaged error",
-                                                                                        "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-                                                                                        detail,
-                                                                                        context.Request.Path);
+                            log.LogInformation("Managed exception: type: {type} / Code: {code} / Msg: {msg} / Value: {value} ",
+                                managedException.ErrorType, managedException.ErrorCode, managedException.ErrorFriendlyMessage, managedException.ErrorValueDetails);
 
-                            await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetail,
-                                new JsonSerializerOptions() { PropertyNameCaseInsensitive = true}));
+                            var problemDetails = managedException.ToValidationProblemDetails(context);
+
+                            await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails,
+                                    new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }));
                         }
                         else
                         {
-                            var problemDetail = problemDetailsFactory.CreateProblemDetails(context,
-                                                                                        500,
-                                                                                        "Unmanaged error",
-                                                                                        "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-                                                                                        detail,
-                                                                                        context.Request.Path);
+                            //Unmanaged exception log as error
+                            log.LogError("Something went wrong: {contextFeature.Error}", contextFeature.Error);
+
+                            string? detail = env.IsDevelopment() ? $"{contextFeature.Error}"
+                                : "Contact app support !";
+
+                            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                            var problemDetail = new CustomProblemDetails(new ProblemDetailError[] {new ProblemDetailError()
+                                                        {
+                                                            Code = "UNMANAGED_ERROR",
+                                                            FriendlyMsg = "Unmanaged exception occurs, see detail field when available.",
+                                                            ValueInError = ""
+                                                        }})
+                            {
+                                Status = 500,
+                                Title = "Unmanaged error",
+                                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+                                Detail = detail,
+                                Instance = context.Request.Path
+                            };
+
+                            var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
+                            if (traceId != null)
+                            {
+                                problemDetail.Extensions["traceId"] = traceId;
+                            }
 
                             await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetail,
-                                new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }));
+                                    new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }));
+
                         }
                     }
                 });
             });
         }
-
     }
 }

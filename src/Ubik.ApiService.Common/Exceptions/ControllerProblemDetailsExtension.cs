@@ -10,7 +10,7 @@ namespace Ubik.ApiService.Common.Exceptions
 {
     public static class ControllerProblemDetailsExtension
     {
-        public static CustomProblemDetails ToValidationProblemDetails(this ServiceAndFeatureException ex, IHttpContextAccessor httpContextAccessor)
+        public static CustomProblemDetails ToValidationProblemDetails(this IServiceAndFeatureException ex, HttpContext httpContext)
         {
             var error = new CustomProblemDetails(new List<ProblemDetailError>()
                                                     {
@@ -21,7 +21,7 @@ namespace Ubik.ApiService.Common.Exceptions
                                                             ValueInError = ex.ErrorValueDetails
                                                         }});
 
-            switch (ex.ExceptionType)
+            switch (ex.ErrorType)
             {
                 case ServiceAndFeatureExceptionType.Conflict:
                     error.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.8";
@@ -51,8 +51,8 @@ namespace Ubik.ApiService.Common.Exceptions
             }
 
             error.Detail = "See errors fields for identification and details.";
-            error.Instance ??= httpContextAccessor.HttpContext?.Request.Path;
-            var traceId = Activity.Current?.Id ?? httpContextAccessor.HttpContext?.TraceIdentifier;
+            error.Instance ??= httpContext.Request.Path;
+            var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
             if (traceId != null)
             {
                 error.Extensions["traceId"] = traceId;

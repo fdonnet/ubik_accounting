@@ -55,7 +55,7 @@ namespace Ubik.ApiService.Common.Controllers
         {
             if (exception is ServiceAndFeatureException serviceException && exception != null)
             {
-                var serviceProblem = serviceException.ToValidationProblemDetails(httpContextAccessor);
+                var serviceProblem = serviceException.ToValidationProblemDetails(httpContextAccessor.HttpContext!);
 
                 switch (serviceProblem.Status)
                 {

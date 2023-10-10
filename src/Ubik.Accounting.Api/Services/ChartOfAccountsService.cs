@@ -41,7 +41,7 @@ namespace Ubik.Accounting.Api.Services
                 var notExistsForUpdate = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_NOT_FOUND",
-                    ExceptionType = ServiceAndFeatureExceptionType.NotFound,
+                    ErrorType = ServiceAndFeatureExceptionType.NotFound,
                     ErrorFriendlyMessage = "The account doesn't exist. Id not found.",
                     ErrorValueDetails = "Id",
                 };
@@ -61,7 +61,7 @@ namespace Ubik.Accounting.Api.Services
                 var alreadyExists = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_ALREADY_EXISTS",
-                    ExceptionType = ServiceAndFeatureExceptionType.Conflict,
+                    ErrorType = ServiceAndFeatureExceptionType.Conflict,
                     ErrorFriendlyMessage = "The account already exists. Code field needs to be unique.",
                     ErrorValueDetails = "Code"
                 };
@@ -82,7 +82,7 @@ namespace Ubik.Accounting.Api.Services
                 var notSameId = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_ID_NOTMATCH",
-                    ExceptionType = ServiceAndFeatureExceptionType.BadParams,
+                    ErrorType = ServiceAndFeatureExceptionType.BadParams,
                     ErrorFriendlyMessage = "The account Id provided doesn't match the account Id information as payload sent for update.",
                     ErrorValueDetails = "Id"
                 };
@@ -96,7 +96,7 @@ namespace Ubik.Accounting.Api.Services
                 var alreadyExists = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_ALREADY_EXISTS",
-                    ExceptionType = ServiceAndFeatureExceptionType.Conflict,
+                    ErrorType = ServiceAndFeatureExceptionType.Conflict,
                     ErrorFriendlyMessage = "The account already exists. Code field needs to be unique.",
                     ErrorValueDetails = "Code",
                 };
@@ -111,7 +111,7 @@ namespace Ubik.Accounting.Api.Services
                 var notExistsForUpdate = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_NOT_FOUND",
-                    ExceptionType = ServiceAndFeatureExceptionType.NotFound,
+                    ErrorType = ServiceAndFeatureExceptionType.NotFound,
                     ErrorFriendlyMessage = "The account doesn't exist. Id not found.",
                     ErrorValueDetails = "Id",
                 };
@@ -131,7 +131,7 @@ namespace Ubik.Accounting.Api.Services
                 var conflict = new ServiceAndFeatureException()
                 {
                     ErrorCode = "ACCOUNT_MODIFIED",
-                    ExceptionType = ServiceAndFeatureExceptionType.Conflict,
+                    ErrorType = ServiceAndFeatureExceptionType.Conflict,
                     ErrorFriendlyMessage = "You don't have the last version or this account has been removed, refresh your data before updating.",
                     ErrorValueDetails = "Version",
                 };

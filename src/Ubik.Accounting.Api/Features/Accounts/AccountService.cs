@@ -63,7 +63,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                var conflict = new AccountUpdateDbConcurrencyException("DbUpdateConcurrencyException", ex)
+                var conflict = new AccountUpdateDbConcurrencyException(account.Version, ex)
                 {
                     ErrorCode = "ACCOUNT_CONFLICT",
                     ErrorFriendlyMessage = "You don't have the last version or this account has been removed, refresh your data before updating.",
