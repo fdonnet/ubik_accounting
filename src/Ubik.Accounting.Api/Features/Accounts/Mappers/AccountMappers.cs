@@ -2,6 +2,7 @@
 using Ubik.Accounting.Api.Models;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
+using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Mappers
 {
@@ -33,30 +34,18 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
-        //public static Account ToAccount(this AccountDto accountDto, Account? account = null)
-        //{
-        //    if (account == null)
-        //    {
-        //        return new Account()
-        //        {
-        //            Id = accountDto.Id,
-        //            Code = accountDto.Code,
-        //            Label = accountDto.Label,
-        //            Description = accountDto.Description,
-        //            AccountGroupId = accountDto.AccountGroupId
-        //        };
-        //    }
-        //    else
-        //    {
-        //        account.Id = accountDto.Id;
-        //        account.Code = accountDto.Code;
-        //        account.Label = accountDto.Label;
-        //        account.Description = accountDto.Description;
-        //        account.AccountGroupId = accountDto.AccountGroupId;
-        //        account.Version = accountDto.Version;
-        //        return account;
-        //    }
-        //}
+        public static IEnumerable<GetAllAccountResult> ToGetAllAccountResult(this IEnumerable<Account> accounts)
+        {
+            return accounts.Select(x => new GetAllAccountResult() 
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Label = x.Label,
+                Description = x.Description,
+                AccountGroupId = x.AccountGroupId,
+                Version = x.Version
+            });
+        }
 
         public static Account ToAccount(this AddAccountCommand addAccountCommand)
         {

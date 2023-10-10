@@ -20,15 +20,6 @@ namespace Ubik.Accounting.Api.Controllers
             _httpContextAccessor = httpContextAccessor; 
         }
 
-        [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<AccountDto>>> Get() 
-        { 
-            var accounts = await _chartOfAccountsService.GetAccountsAsync();
-            return Ok(accounts);
-        }
-
         [HttpPut("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]

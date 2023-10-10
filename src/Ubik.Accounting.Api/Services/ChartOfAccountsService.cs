@@ -25,54 +25,6 @@ namespace Ubik.Accounting.Api.Services
             _context = ctx;
         }
 
-        public async Task<IEnumerable<AccountDto>> GetAccountsAsync()
-        {
-            var accounts = await _context.Accounts.ToListAsync();
-
-            return accounts.Select(a => AccountMapper.ToAccountDto(a));
-        }
-
-        public async Task<Result<AccountDto>> GetAccountAsync(Guid Id)
-        {
-            var account = await _context.Accounts.SingleOrDefaultAsync(a => a.Id == Id);
-
-            if (account == null)
-            {
-                var notExistsForUpdate = new ServiceAndFeatureException()
-                {
-                    ErrorCode = "ACCOUNT_NOT_FOUND",
-                    ErrorType = ServiceAndFeatureExceptionType.NotFound,
-                    ErrorFriendlyMessage = "The account doesn't exist. Id not found.",
-                    ErrorValueDetails = "Id",
-                };
-                return new Result<AccountDto>(notExistsForUpdate);
-            }
-            return account.ToAccountDto();
-        }
-
-        public async Task<Result<Account>> AddAccountAsync(AccountDtoForAdd accountDto)
-        {
-            var account = AccountMapper.ToAccount(accountDto);
-
-            bool exists = await _context.Accounts.AnyAsync(a => a.Code == accountDto.Code);
-
-            if (exists)
-            {
-                var alreadyExists = new ServiceAndFeatureException()
-                {
-                    ErrorCode = "ACCOUNT_ALREADY_EXISTS",
-                    ErrorType = ServiceAndFeatureExceptionType.Conflict,
-                    ErrorFriendlyMessage = "The account already exists. Code field needs to be unique.",
-                    ErrorValueDetails = "Code"
-                };
-                return new Result<Account>(alreadyExists);
-            }
-
-            await _context.Accounts.AddAsync(account);
-            await _context.SaveChangesAsync();
-
-            return account;
-        }
 
         public async Task<Result<bool>> UpdateAccountAsync(Guid currentId, AccountDto accountDto)
         {

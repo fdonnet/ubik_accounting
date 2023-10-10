@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.Api.Dto;
 using Ubik.Accounting.Api.Features.Accounts.Commands;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
+using Ubik.Accounting.Api.Features.Accounts.Queries;
 using Ubik.Accounting.Api.Services;
 using Ubik.ApiService.Common.Exceptions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
+using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 
 namespace Ubik.Accounting.Api.Features.Accounts
 {
@@ -21,6 +23,15 @@ namespace Ubik.Accounting.Api.Features.Accounts
         public AccountController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAllAccounts()
+        {
+            var results = await _mediator.Send(new GetAllAccountQuery());
+            return Ok(results);
         }
 
         [HttpGet("{id}")]
