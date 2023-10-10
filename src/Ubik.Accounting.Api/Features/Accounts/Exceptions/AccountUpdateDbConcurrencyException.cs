@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Data;
 using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Exceptions

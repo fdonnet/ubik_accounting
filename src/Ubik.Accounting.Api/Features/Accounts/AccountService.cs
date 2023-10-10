@@ -1,11 +1,7 @@
-﻿using LanguageExt.Common;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
-using Ubik.Accounting.Api.Dto;
-using Ubik.Accounting.Api.Dto.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
-using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Accounts
 {
@@ -35,9 +31,9 @@ namespace Ubik.Accounting.Api.Features.Accounts
             return await _context.Accounts.AnyAsync(a => a.Code == accountCode);
         }
 
-        public async Task<bool> IfExistsWithDifferentId(string accountCode, Guid id)
+        public async Task<bool> IfExistsWithDifferentId(string accountCode, Guid currentId)
         {
-            return await _context.Accounts.AnyAsync(a => a.Code == accountCode && a.Id != id);
+            return await _context.Accounts.AnyAsync(a => a.Code == accountCode && a.Id != currentId);
         }
 
         public async Task<Account> AddAccountAsync(Account account)
@@ -53,13 +49,14 @@ namespace Ubik.Accounting.Api.Features.Accounts
         /// </summary>
         /// <param name="account"></param>
         /// <returns>a bool or throw AccountUpdateDbConcurrencyException if a DbUpdateConcurrencyException occurs</returns>
-        public async Task<bool> UpdateAccountAsync(Account account)
+        public async Task<Account> UpdateAccountAsync(Account account)
         {
             _context.Entry(account).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
+                return account;
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -71,8 +68,6 @@ namespace Ubik.Accounting.Api.Features.Accounts
                 };
                 throw conflict;
             }
-
-            return true;
         }
 
     }

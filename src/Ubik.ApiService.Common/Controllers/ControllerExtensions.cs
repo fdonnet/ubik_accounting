@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Dto;
 using Ubik.ApiService.Common.Exceptions;
-using static System.Net.WebRequestMethods;
 
 namespace Ubik.ApiService.Common.Controllers
 {

@@ -1,14 +1,9 @@
 
 using Ubik.Accounting.Api.Data;
 using Microsoft.EntityFrameworkCore;
-using Ubik.Accounting.Api.Services;
 using Ubik.ApiService.Common.Services;
-using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Exceptions;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Ubik.ApiService.Common.Controllers;
-using Microsoft.AspNetCore.Builder;
 using Ubik.Accounting.Api.Features;
 using System.Reflection;
 
@@ -35,7 +30,6 @@ namespace Ubik.Accounting.Api
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             //TODO: remove when migrated to service manager
-            builder.Services.AddTransient<IChartOfAccountsService, ChartOfAccountsService>();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             var app = builder.Build();

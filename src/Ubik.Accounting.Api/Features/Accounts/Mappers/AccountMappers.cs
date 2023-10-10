@@ -1,6 +1,6 @@
-﻿using Ubik.Accounting.Api.Dto;
-using Ubik.Accounting.Api.Models;
+﻿using Ubik.Accounting.Api.Models;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
+using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 
@@ -11,6 +11,19 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
         public static AddAccountResult ToAddAccountResult(this Account account)
         {
             return new AddAccountResult()
+            {
+                Id = account.Id,
+                Code = account.Code,
+                Label = account.Label,
+                Description = account.Description,
+                AccountGroupId = account.AccountGroupId,
+                Version = account.Version
+            };
+        }
+
+        public static UpdateAccountResult ToUpdateAccountResult(this Account account)
+        {
+            return new UpdateAccountResult()
             {
                 Id = account.Id,
                 Code = account.Code,
@@ -57,6 +70,17 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Description = addAccountCommand.Description,
                 AccountGroupId = addAccountCommand.AccountGroupId
             };
+        }
+
+        public static Account ToAccount(this UpdateAccountCommand updateAccountCommand, Account account)
+        {
+            account.Id = updateAccountCommand.Id;
+            account.Code = updateAccountCommand.Code;
+            account.Label = updateAccountCommand.Label;
+            account.Description = updateAccountCommand.Description;
+            account.AccountGroupId = updateAccountCommand.AccountGroupId;
+            account.Version = updateAccountCommand.Version;
+            return account;
         }
     }
 }

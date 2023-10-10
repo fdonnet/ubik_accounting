@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Api.Features.Accounts;
+﻿using Ubik.Accounting.Api.Features.Accounts;
 
 namespace Ubik.Accounting.Api.Features
 {

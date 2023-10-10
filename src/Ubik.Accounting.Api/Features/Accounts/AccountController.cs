@@ -1,14 +1,8 @@
-﻿using LanguageExt;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Ubik.Accounting.Api.Dto;
-using Ubik.Accounting.Api.Features.Accounts.Commands;
-using Ubik.Accounting.Api.Features.Accounts.Mappers;
-using Ubik.Accounting.Api.Features.Accounts.Queries;
-using Ubik.Accounting.Api.Services;
 using Ubik.ApiService.Common.Exceptions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
+using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 
@@ -28,7 +22,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAllAccounts()
+        public async Task<ActionResult<IEnumerable<GetAllAccountResult>>> GetAllAccounts()
         {
             var results = await _mediator.Send(new GetAllAccountQuery());
             return Ok(results);
@@ -42,6 +36,19 @@ namespace Ubik.Accounting.Api.Features.Accounts
         {
             var result = await _mediator.Send(new GetAccountQuery() { Id = id });
             return Ok(result);
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 409)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<UpdateAccountResult>> UpdateAccount(Guid id, UpdateAccountCommand updateAccountCommand)
+        {
+            updateAccountCommand.Id = id;
+            var accountResult = await _mediator.Send(updateAccountCommand);
+            return Ok(accountResult);
         }
 
         [HttpPost]
