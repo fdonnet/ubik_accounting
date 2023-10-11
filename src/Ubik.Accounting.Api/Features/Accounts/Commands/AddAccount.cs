@@ -9,8 +9,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
         //Input
         public record AddAccountCommand : IRequest<AddAccountResult>
         {
-            public required string Code { get; set; }
-            public required string Label { get; set; }
+            public string Code { get; set; } = default!;
+            public string Label { get; set; } = default!;
             public string? Description { get; set; }
             public Guid AccountGroupId { get; set; }
         }

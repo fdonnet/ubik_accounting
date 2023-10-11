@@ -7,14 +7,14 @@ namespace Ubik.ApiService.Common.Exceptions
     {
         public static CustomProblemDetails ToValidationProblemDetails(this IServiceAndFeatureException ex, HttpContext httpContext)
         {
-            var error = new CustomProblemDetails(new List<ProblemDetailError>()
-                                                    {
-                                                        new ProblemDetailError()
-                                                        {
-                                                            Code =ex.ErrorCode,
-                                                            FriendlyMsg = ex.ErrorFriendlyMessage,
-                                                            ValueInError = ex.ErrorValueDetails
-                                                        }});
+            var problemDetailErrors = ex.CustomErrors.Select(e => new ProblemDetailError()
+            {
+                ValueInError = e.ErrorValueDetails,
+                Code = e.ErrorCode,
+                FriendlyMsg = e.ErrorFriendlyMessage
+            });
+
+            var error = new CustomProblemDetails(problemDetailErrors);
 
             switch (ex.ErrorType)
             {

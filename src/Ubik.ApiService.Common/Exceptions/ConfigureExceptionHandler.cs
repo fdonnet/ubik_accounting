@@ -31,8 +31,11 @@ namespace Ubik.ApiService.Common.Exceptions
                             //Managed excpetion
                             context.Response.StatusCode = (int)managedException.ErrorType;
 
-                            log.LogInformation("Managed exception: type: {type} / Code: {code} / Msg: {msg} / Value: {value} ",
-                                managedException.ErrorType, managedException.ErrorCode, managedException.ErrorFriendlyMessage, managedException.ErrorValueDetails);
+                            foreach(var err in managedException.CustomErrors)
+                            {
+                                log.LogInformation("Managed exception: type: {type} / Code: {code} / Msg: {msg} / Value: {value} ",
+                                managedException.ErrorType, err.ErrorCode, err.ErrorFriendlyMessage, err.ErrorValueDetails);
+                            }
 
                             var problemDetails = managedException.ToValidationProblemDetails(context);
 

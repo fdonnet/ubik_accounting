@@ -6,6 +6,9 @@ using Ubik.ApiService.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Ubik.Accounting.Api.Features;
 using System.Reflection;
+using MediatR;
+using Ubik.ApiService.Common.Validators;
+using FluentValidation;
 
 namespace Ubik.Accounting.Api
 {
@@ -20,7 +23,9 @@ namespace Ubik.Accounting.Api
             builder.Services.AddDbContextFactory<AccountingContext>(
                     options => options.UseMySql(builder.Configuration.GetConnectionString("AccountingContext"), serverVersion),ServiceLifetime.Scoped);
 
+            builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();

@@ -9,20 +9,16 @@
         NotAuthentified = 401
     }
 
-    //TODO: TO BE REMOVED, only keep the interface
-    public class ServiceAndFeatureException : Exception, IServiceAndFeatureException
+    public struct CustomError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; } //Allow to identify what we need to do
-        public string ErrorFriendlyMessage { get; init; } = default!; //English message for internal purposes
-        public string ErrorCode { get; init; } = default!; //Error code that need to be included to precily idendify the error an maybe manage translation etc
-        public string ErrorValueDetails { get; init; } = default!; //The value that raises the error
+        public string ErrorFriendlyMessage;
+        public string ErrorCode;
+        public string ErrorValueDetails;
     }
 
     public interface IServiceAndFeatureException
     {
         public ServiceAndFeatureExceptionType ErrorType { get; init; } //Allow to identify what we need to do
-        public string ErrorFriendlyMessage { get; init; } //English message for internal purposes
-        public string ErrorCode { get; init; } //Error code that need to be included to precily idendify the error an maybe manage translation etc
-        public string ErrorValueDetails { get; init; } //The value that raises the error
+        public List<CustomError> CustomErrors { get; init; }
     }
 }

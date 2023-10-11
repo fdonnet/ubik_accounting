@@ -10,8 +10,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
         public record UpdateAccountCommand : IRequest<UpdateAccountResult>
         {
             public Guid Id { get; set; }
-            public required string Code { get; set; }
-            public required string Label { get; set; }
+            public string Code { get; set; } = default!;
+            public string Label { get; set; } = default!;
             public string? Description { get; set; }
             public Guid AccountGroupId { get; set; }
             public Guid Version { get; set; }

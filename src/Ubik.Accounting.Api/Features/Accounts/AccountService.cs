@@ -2,6 +2,7 @@
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
+using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Accounts
 {
@@ -60,12 +61,17 @@ namespace Ubik.Accounting.Api.Features.Accounts
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                var conflict = new AccountUpdateDbConcurrencyException(account.Version, ex)
+                var err = new CustomError()
                 {
                     ErrorCode = "ACCOUNT_CONFLICT",
                     ErrorFriendlyMessage = "You don't have the last version or this account has been removed, refresh your data before updating.",
                     ErrorValueDetails = "Version",
                 };
+                var conflict = new AccountUpdateDbConcurrencyException(account.Version, ex)
+                {
+                    CustomErrors = new List<CustomError> { err }
+                };
+
                 throw conflict;
             }
         }
