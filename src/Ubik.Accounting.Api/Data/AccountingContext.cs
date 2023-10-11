@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Services;
 using Ubik.DB.Common.Extensions;
@@ -35,6 +36,8 @@ namespace Ubik.Accounting.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
+
             modelBuilder.Entity<AccountGroup>()
            .HasOne(s => s.ParentAccountGroup)
            .WithMany(m => m.ChildrenAccountGroups)
@@ -59,22 +62,6 @@ namespace Ubik.Accounting.Api.Data
             .HasForeignKey(e => e.TaxRateId)
             .IsRequired(false);
 
-            modelBuilder.Entity<Account>()
-            .HasOne(a => a.CreatedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.CreatedBy)
-            .IsRequired(true); 
-
-            //TODO: Change that quick with userservice
-            modelBuilder.Entity<Account>()
-                .HasQueryFilter(a => a.TenantId == Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d"));
-
-            modelBuilder.Entity<Account>()
-            .HasOne(a => a.ModifiedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.ModifiedBy)
-            .IsRequired(false);
-
             modelBuilder.Entity<AccountGroup>()
             .HasOne(a => a.CreatedByUser)
             .WithMany()
@@ -122,7 +109,60 @@ namespace Ubik.Accounting.Api.Data
             .WithMany()
             .HasForeignKey(b => b.ModifiedBy)
             .IsRequired(false);
+        }
 
+        public class AccountConfiguration : IEntityTypeConfiguration<Account>
+        {
+            public void Configure(EntityTypeBuilder<Account> builder)
+            {
+                builder.Property(a => a.Code)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                builder.Property(a => a.Label)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                builder.Property(a => a.Description)
+                    .HasMaxLength(700);
+
+                builder.Property(a => a.Version)
+                    .IsConcurrencyToken();
+
+                builder.Property(a => a.CreatedAt)
+                    .IsRequired();
+
+                builder.Property(a => a.CreatedBy)
+                    .IsRequired();
+
+                builder.HasIndex(a => a.Code)
+                    .IsUnique();
+
+                builder.HasIndex(a => a.TenantId);
+
+                //TODO: Change that quick with userservice
+                builder
+                    .HasQueryFilter(a => a.TenantId == Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d"));
+
+                //Relations
+                builder
+                    .HasOne(a => a.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(b => b.CreatedBy)
+                    .IsRequired(true);
+
+                builder
+                    .HasOne(a => a.ModifiedByUser)
+                    .WithMany()
+                    .HasForeignKey(b => b.ModifiedBy)
+                    .IsRequired(false);
+
+                builder
+                    .HasOne(g=>g.AccountGroup)
+                    .WithMany(g=> g.Accounts)
+                    .HasForeignKey(x=>x.AccountGroupId)
+                    .IsRequired(true);
+            }
         }
     }
 }

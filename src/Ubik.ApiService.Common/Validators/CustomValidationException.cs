@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.ApiService.Common.Exceptions;
+﻿using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.ApiService.Common.Validators
 {

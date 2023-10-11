@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
