@@ -47,9 +47,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
-        public static IEnumerable<GetAllAccountResult> ToGetAllAccountResult(this IEnumerable<Account> accounts)
+        public static IEnumerable<GetAllAccountsResult> ToGetAllAccountResult(this IEnumerable<Account> accounts)
         {
-            return accounts.Select(x => new GetAllAccountResult() 
+            return accounts.Select(x => new GetAllAccountsResult() 
             {
                 Id = x.Id,
                 Code = x.Code,

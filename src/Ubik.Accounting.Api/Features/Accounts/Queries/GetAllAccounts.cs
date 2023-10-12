@@ -5,9 +5,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
 {
     public class GetAllAccounts
     {
-        public record GetAllAccountQuery : IRequest<IEnumerable<GetAllAccountResult>> { }
+        public record GetAllAccountsQuery : IRequest<IEnumerable<GetAllAccountsResult>> { }
 
-        public record GetAllAccountResult
+        public record GetAllAccountsResult
         {
             public Guid Id { get; set; }
             public required string Code { get; set; }
@@ -17,16 +17,16 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
             public Guid Version { get; set; }
         }
 
-        public class Handler : IRequestHandler<GetAllAccountQuery, IEnumerable<GetAllAccountResult>>
+        public class GetAllAccountsHandler : IRequestHandler<GetAllAccountsQuery, IEnumerable<GetAllAccountsResult>>
         {
             private readonly IServiceManager _serviceManager;
 
-            public Handler(IServiceManager serviceManager)
+            public GetAllAccountsHandler(IServiceManager serviceManager)
             {
                 _serviceManager = serviceManager;
             }
 
-            public async Task<IEnumerable<GetAllAccountResult>> Handle(GetAllAccountQuery request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<GetAllAccountsResult>> Handle(GetAllAccountsQuery request, CancellationToken cancellationToken)
             {
                 var accounts = await _serviceManager.AccountService.GetAccountsAsync();
                 return accounts.ToGetAllAccountResult();
