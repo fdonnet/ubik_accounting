@@ -24,11 +24,11 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
         }
 
         //Handler
-        public class Handler : IRequestHandler<GetAccountQuery, GetAccountResult>
+        public class GetAccountHandler : IRequestHandler<GetAccountQuery, GetAccountResult>
         {
             private readonly IServiceManager _serviceManager;
 
-            public Handler(IServiceManager serviceManager)
+            public GetAccountHandler(IServiceManager serviceManager)
             {
                 _serviceManager = serviceManager;
             }

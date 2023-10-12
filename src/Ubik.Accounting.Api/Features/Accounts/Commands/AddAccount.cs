@@ -26,6 +26,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public Guid Version { get; set; }
         }
 
+        //TODO: not forget to add group ID exists check
         public class AddAccountHandler : IRequestHandler<AddAccountCommand, AddAccountResult>
         {
             private readonly IServiceManager _serviceManager;
@@ -36,7 +37,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public async Task<AddAccountResult> Handle(AddAccountCommand request, CancellationToken cancellationToken)
             {
                 var account = request.ToAccount();
-                var accountExists = await _serviceManager.AccountService.IfExists(account.Code);
+                var accountExists = await _serviceManager.AccountService.IfExistsAsync(account.Code);
                 
                 if (accountExists)
                     throw new AccountAlreadyExistsException(request.Code);

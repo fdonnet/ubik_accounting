@@ -54,7 +54,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var account = await _serviceManager.AccountService.IfExists(accountCode);
+            var account = await _serviceManager.AccountService.IfExistsAsync(accountCode);
 
             //Assert
             account.Should().Be(result);
@@ -68,7 +68,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var account = await _serviceManager.AccountService.IfExistsWithDifferentId(accountCode,Guid.Parse(currentGuid));
+            var account = await _serviceManager.AccountService.IfExistsWithDifferentIdAsync(accountCode,Guid.Parse(currentGuid));
 
             //Assert
             account.Should().Be(result);

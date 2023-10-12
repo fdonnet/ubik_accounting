@@ -16,7 +16,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
     {
         private readonly IServiceManager _serviceManager;
         private readonly AddAccountHandler _handler;
-        private readonly AddAccountCommand _addAccountCommand;
+        private readonly AddAccountCommand command;
         private Account _account;
         private readonly ValidationPipelineBehavior<AddAccountCommand, AddAccountResult> _validationBehavior;
 
@@ -25,7 +25,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _serviceManager = Substitute.For<IServiceManager>();
             _handler = new AddAccountHandler(_serviceManager);
 
-            _addAccountCommand = new AddAccountCommand()
+            command = new AddAccountCommand()
             {
                 Code = "78888",
                 Label = "Test",
@@ -33,7 +33,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                 AccountGroupId = Guid.NewGuid()
             };
 
-            _account = _addAccountCommand.ToAccount();
+            _account = command.ToAccount();
             _validationBehavior = new ValidationPipelineBehavior<AddAccountCommand, AddAccountResult>(new AddAccountValidator());
             _serviceManager.AccountService.AddAccountAsync(_account).Returns(_account);
         }
@@ -42,10 +42,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public async Task Add_Account_Ok()
         {
             //Arrange
-            _serviceManager.AccountService.IfExists(_account.Code).Returns(false);
+            _serviceManager.AccountService.IfExistsAsync(_account.Code).Returns(false);
 
             //Act
-            var result = await _handler.Handle(_addAccountCommand, CancellationToken.None);
+            var result = await _handler.Handle(command, CancellationToken.None);
 
             //Assert
             result.Should()
@@ -57,49 +57,51 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public async Task Add_AccountAlreadyExistsException_AccountCodeAlreadyExists()
         {
             //Arrange
-            _serviceManager.AccountService.IfExists(_account.Code).Returns(true);
+            _serviceManager.AccountService.IfExistsAsync(_account.Code).Returns(true);
 
             //Act
-            Func<Task> act = async () => await _handler.Handle(_addAccountCommand, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             //Assert
-            await act.Should().ThrowAsync<AccountAlreadyExistsException>();
+            await act.Should().ThrowAsync<AccountAlreadyExistsException>()
+                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
 
         [Fact]
         public async Task Add_CustomValidationException_EmptyValuesInFields()
         {
             //Arrange
-            _serviceManager.AccountService.IfExists(_account.Code).Returns(false);
-            _addAccountCommand.Code = "";
-            _addAccountCommand.Label = "";
+            _serviceManager.AccountService.IfExistsAsync(_account.Code).Returns(false);
+            command.AccountGroupId = default!;
+            command.Code = "";
+            command.Label = "";
 
             //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_addAccountCommand, () =>
+            Func<Task> act = async () => await _validationBehavior.Handle(command, () =>
             {
-                return _handler.Handle(_addAccountCommand, CancellationToken.None);
+                return _handler.Handle(command, CancellationToken.None);
             }, CancellationToken.None);
 
             //Assert
             await act.Should().ThrowAsync<CustomValidationException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 2);
+                    && e.CustomErrors.Count() == 3);
         }
 
         [Fact]
         public async Task Add_CustomValidationException_TooLongValuesInFields()
         {
             //Arrange
-            _serviceManager.AccountService.IfExists(_account.Code).Returns(false);
+            _serviceManager.AccountService.IfExistsAsync(_account.Code).Returns(false);
 
-            _addAccountCommand.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
-            _addAccountCommand.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
-            _addAccountCommand.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
+            command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
+            command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
+            command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
 
             //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_addAccountCommand, () =>
+            Func<Task> act = async () => await _validationBehavior.Handle(command, () =>
             {
-                return _handler.Handle(_addAccountCommand, CancellationToken.None);
+                return _handler.Handle(command, CancellationToken.None);
             }, CancellationToken.None);
 
             //Assert

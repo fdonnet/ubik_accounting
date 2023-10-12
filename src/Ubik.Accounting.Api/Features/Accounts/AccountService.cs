@@ -27,12 +27,12 @@ namespace Ubik.Accounting.Api.Features.Accounts
             return account;
         }
 
-        public async Task<bool> IfExists(string accountCode)
+        public async Task<bool> IfExistsAsync(string accountCode)
         {
             return await _context.Accounts.AnyAsync(a => a.Code == accountCode);
         }
 
-        public async Task<bool> IfExistsWithDifferentId(string accountCode, Guid currentId)
+        public async Task<bool> IfExistsWithDifferentIdAsync(string accountCode, Guid currentId)
         {
             return await _context.Accounts.AnyAsync(a => a.Code == accountCode && a.Id != currentId);
         }

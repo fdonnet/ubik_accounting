@@ -29,6 +29,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
         }
 
 
+        //TODO: not forget to add group ID exists check
         public class UpdateAccountHandler : IRequestHandler<UpdateAccountCommand, UpdateAccountResult>
         {
             private readonly IServiceManager _serviceManager;
@@ -41,7 +42,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public async Task<UpdateAccountResult> Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
             {
                 //Check if the account code already exists in other records
-                bool exists = await _serviceManager.AccountService.IfExistsWithDifferentId(request.Code, request.Id);
+                bool exists = await _serviceManager.AccountService.IfExistsWithDifferentIdAsync(request.Code, request.Id);
                 if (exists)
                     throw new AccountAlreadyExistsException(request.Code);
 
