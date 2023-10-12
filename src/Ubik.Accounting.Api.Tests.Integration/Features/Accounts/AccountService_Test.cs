@@ -129,6 +129,20 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             await act.Should().ThrowAsync<Exception>();
         }
 
+        [Theory]
+        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22b" })]
+        public async Task Add_CrashDb_Exception(Account account)
+        {
+            //Arrange
+            account.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
+
+            //Act
+            Func<Task> act = async () => await _serviceManager.AccountService.AddAccountAsync(account);
+
+            //Assert
+            await act.Should().ThrowAsync<Exception>();
+        }
+
         [Fact]
         public async Task Update_Success_UpdatedAccount()
         {

@@ -39,7 +39,7 @@ namespace Ubik.Accounting.Api
 
             var app = builder.Build();
 
-            app.UseExceptionHandler(app.Logger, app.Environment, app.Services.GetRequiredService<ProblemDetailsFactory>());
+            app.UseExceptionHandler(app.Logger, app.Environment);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

@@ -1,6 +1,8 @@
 ﻿using Bogus;
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
@@ -23,8 +25,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
     {
         private readonly IServiceManager _serviceManager;
         private readonly AddAccountHandler _handler;
-        private AddAccountCommand _addAccountCommand;
+        private readonly AddAccountCommand _addAccountCommand;
         private Account _account;
+        private readonly ValidationPipelineBehavior<AddAccountCommand, AddAccountResult> _validationBehavior;
 
         public AddAccount_Test()
         {
@@ -40,12 +43,12 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             };
 
             _account = _addAccountCommand.ToAccount();
-
+            _validationBehavior = new ValidationPipelineBehavior<AddAccountCommand, AddAccountResult>(new AddAccountValidator());
             _serviceManager.AccountService.AddAccountAsync(_account).Returns(_account);
         }
 
         [Fact]
-        public async Task AddAccount_Sucess_AccountResult()
+        public async Task OkAdded_AccountResult()
         {
             //Arrange
             _serviceManager.AccountService.IfExists(_account.Code).Returns(false);
@@ -60,7 +63,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
-        public async Task AddAccount_AccountAlreadyExists_AccountAlreadyExistsException()
+        public async Task AccountAlreadyExists_AccountAlreadyExistsException()
         {
             //Arrange
             _serviceManager.AccountService.IfExists(_account.Code).Returns(true);
@@ -73,16 +76,15 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
-        public async Task AddAccount_EmptyValuesInFields_CustomValidationException()
+        public async Task EmptyValuesInFields_CustomValidationException()
         {
             //Arrange
             _serviceManager.AccountService.IfExists(_account.Code).Returns(false);
-            var validationBehavior = new ValidationPipelineBehavior<AddAccountCommand, AddAccountResult>(new AddAccountValidator());
             _addAccountCommand.Code = "";
             _addAccountCommand.Label = "";
 
             //Act
-            Func<Task> act = async () => await validationBehavior.Handle(_addAccountCommand, () =>
+            Func<Task> act = async () => await _validationBehavior.Handle(_addAccountCommand, () =>
             {
                 return _handler.Handle(_addAccountCommand, CancellationToken.None);
             }, CancellationToken.None);
@@ -94,18 +96,17 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
-        public async Task AddAccount_TooLongValuesInFields_CustomValidationException()
+        public async Task TooLongValuesInFields_CustomValidationException()
         {
             //Arrange
             _serviceManager.AccountService.IfExists(_account.Code).Returns(false);
-            var validationBehavior = new ValidationPipelineBehavior<AddAccountCommand, AddAccountResult>(new AddAccountValidator());
 
             _addAccountCommand.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
             _addAccountCommand.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
             _addAccountCommand.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
 
             //Act
-            Func<Task> act = async () => await validationBehavior.Handle(_addAccountCommand, () =>
+            Func<Task> act = async () => await _validationBehavior.Handle(_addAccountCommand, () =>
             {
                 return _handler.Handle(_addAccountCommand, CancellationToken.None);
             }, CancellationToken.None);

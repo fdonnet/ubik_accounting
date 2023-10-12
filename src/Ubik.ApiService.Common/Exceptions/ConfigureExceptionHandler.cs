@@ -15,7 +15,7 @@ namespace Ubik.ApiService.Common.Exceptions
         //This exception handler is only used for unmanaged exceptions or exceptions that has been thrown.
         //Other exception (managed) are not thrown, we use a TResult patern to trap them (better perf)
         //This will only return 500 status code (unmanaged here)
-        public static void UseExceptionHandler(this IApplicationBuilder app, ILogger log, IHostEnvironment env, ProblemDetailsFactory problemDetailsFactory)
+        public static void UseExceptionHandler(this IApplicationBuilder app, ILogger log, IHostEnvironment env)
         {
             app.UseExceptionHandler(appError =>
             {

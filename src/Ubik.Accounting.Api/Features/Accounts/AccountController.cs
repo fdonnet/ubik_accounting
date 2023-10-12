@@ -22,7 +22,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<GetAllAccountResult>>> GetAllAccounts()
+        public async Task<ActionResult<IEnumerable<GetAllAccountResult>>> GetAccounts()
         {
             var results = await _mediator.Send(new GetAllAccountQuery());
             return Ok(results);
