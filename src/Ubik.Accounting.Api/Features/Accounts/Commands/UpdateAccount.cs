@@ -29,11 +29,11 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
         }
 
 
-        public class Handler : IRequestHandler<UpdateAccountCommand, UpdateAccountResult>
+        public class UpdateAccountHandler : IRequestHandler<UpdateAccountCommand, UpdateAccountResult>
         {
             private readonly IServiceManager _serviceManager;
 
-            public Handler(IServiceManager serviceManager)
+            public UpdateAccountHandler(IServiceManager serviceManager)
             {
                 _serviceManager = serviceManager;
             }

@@ -1,12 +1,8 @@
 ﻿using Bogus;
-using Bogus.Extensions;
 using FluentAssertions;
-using MediatR.NotificationPublishers;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
@@ -24,7 +20,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
-        public async Task Get_Success_Account()
+        public async Task Get_Account_Ok()
         {
             //Arrange
 
@@ -38,7 +34,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory, MemberData(nameof(GeneratedGuids))]
-        public async Task Get_IdNotExists_Null(Guid id)
+        public async Task Get_Null_IdNotExists(Guid id)
         {
             //Arrange
 
@@ -50,32 +46,36 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                     .BeNull();
         }
 
-        [Fact]
-        public async Task IfExist_Success_True()
+        [Theory]
+        [InlineData("1020",true)]
+        [InlineData("ZZZZZZZXX", false)]
+        public async Task IfExist_TrueOrFalse_AccountExists(string accountCode, bool result)
         {
             //Arrange
 
             //Act
-            var account = await _serviceManager.AccountService.IfExists(_testDBValues.AccountCode1);
+            var account = await _serviceManager.AccountService.IfExists(accountCode);
 
             //Assert
-            account.Should().BeTrue();
+            account.Should().Be(result);
         }
 
-        [Fact]
-        public async Task IfExist_Success_False()
+        [Theory]
+        [InlineData("1020", "7777f11f-20dd-4888-88f8-428e59bbc535", true)]
+        [InlineData("1030", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
+        public async Task IfExistWithDifferentId_TrueorFalse_AccountExists(string accountCode, string currentGuid, bool result)
         {
             //Arrange
 
             //Act
-            var account = await _serviceManager.AccountService.IfExists("ZZZZZZZXX");
+            var account = await _serviceManager.AccountService.IfExistsWithDifferentId(accountCode,Guid.Parse(currentGuid));
 
             //Assert
-            account.Should().BeFalse();
+            account.Should().Be(result);
         }
 
         [Fact]
-        public async Task GetAll_Success_Accounts()
+        public async Task GetAll_Accounts_Ok()
         {
             //Arrange
 
@@ -90,7 +90,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
         [Theory]
         [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22a"})]
-        public async Task Add_Success_AddedAccount(Account account)
+        public async Task Add_AddedAccount_Ok(Account account)
         {
             //Arrange
 
@@ -105,7 +105,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
         [Theory]
         [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22a" })]
-        public async Task Add_Success_AuditModifiedFieldsDefined(Account account)
+        public async Task Add_AuditFieldsModified_Ok(Account account)
         {
             //Arrange
 
@@ -118,7 +118,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
         [Theory]
         [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22b" })]
-        public async Task Add_AccountGroupIdNotExists_Exception(Account account)
+        public async Task Add_Exception_AccountGroupIdNotExists(Account account)
         {
             //Arrange
 
@@ -131,7 +131,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
         [Theory]
         [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22b" })]
-        public async Task Add_CrashDb_Exception(Account account)
+        public async Task Add_Exception_CrashDb(Account account)
         {
             //Arrange
             account.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
@@ -144,7 +144,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
-        public async Task Update_Success_UpdatedAccount()
+        public async Task Update_UpdatedAccount_Ok()
         {
             //Arrange
             var account = await _serviceManager.AccountService.GetAccountAsync(_testDBValues.AccountId1);
@@ -162,7 +162,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
-        public async Task Update_Success_ModifiedAtFieldUpdated()
+        public async Task Update_ModifiedAtFieldUpdated_Ok()
         {
             //Arrange
             var account = await _serviceManager.AccountService.GetAccountAsync(_testDBValues.AccountId1);

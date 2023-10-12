@@ -3,7 +3,6 @@ using Ubik.Accounting.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Services;
 using Ubik.ApiService.Common.Exceptions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Ubik.Accounting.Api.Features;
 using System.Reflection;
 using MediatR;

@@ -1,11 +1,5 @@
 ﻿using Bogus;
 using Bogus.Extensions;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts

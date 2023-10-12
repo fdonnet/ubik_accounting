@@ -1,15 +1,6 @@
 ﻿using Bogus;
 using FluentAssertions;
-using MediatR;
-using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Accounts.Commands;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
@@ -48,7 +39,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
-        public async Task OkAdded_AccountResult()
+        public async Task Add_Account_Ok()
         {
             //Arrange
             _serviceManager.AccountService.IfExists(_account.Code).Returns(false);
@@ -63,7 +54,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
-        public async Task AccountAlreadyExists_AccountAlreadyExistsException()
+        public async Task Add_AccountAlreadyExistsException_AccountCodeAlreadyExists()
         {
             //Arrange
             _serviceManager.AccountService.IfExists(_account.Code).Returns(true);
@@ -76,7 +67,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
-        public async Task EmptyValuesInFields_CustomValidationException()
+        public async Task Add_CustomValidationException_EmptyValuesInFields()
         {
             //Arrange
             _serviceManager.AccountService.IfExists(_account.Code).Returns(false);
@@ -96,7 +87,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
-        public async Task TooLongValuesInFields_CustomValidationException()
+        public async Task Add_CustomValidationException_TooLongValuesInFields()
         {
             //Arrange
             _serviceManager.AccountService.IfExists(_account.Code).Returns(false);
