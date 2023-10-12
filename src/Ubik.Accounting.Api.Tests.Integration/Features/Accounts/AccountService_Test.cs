@@ -90,7 +90,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
         [Theory]
         [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22a"})]
-        public async Task Add_AddedAccount_Ok(Account account)
+        public async Task Add_Account_Ok(Account account)
         {
             //Arrange
 
@@ -98,7 +98,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var accountResult = await _serviceManager.AccountService.AddAccountAsync(account);
 
             //Assert
-            account.Should()
+            accountResult.Should()
                     .NotBeNull()
                     .And.BeOfType<Account>();
         }
@@ -156,7 +156,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var accountResult = await _serviceManager.AccountService.UpdateAccountAsync(account);
 
             //Assert
-            account.Should()
+            accountResult.Should()
                     .NotBeNull()
                     .And.BeOfType<Account>();
         }
@@ -194,8 +194,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public static IEnumerable<object[]> GetAccounts(int numTests, string accountGroupId)
         {
             var accounts = FakeGenerator.GenerateAccounts(numTests, Guid.Parse(accountGroupId));
-
-            var data = new List<Object[]>();
 
             foreach (var account in accounts)
             {

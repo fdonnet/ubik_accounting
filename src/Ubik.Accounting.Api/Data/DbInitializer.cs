@@ -98,7 +98,6 @@ namespace Ubik.Accounting.Api.Data
                 }
                 context.SaveChanges();
             }
-
         }
     }
 }

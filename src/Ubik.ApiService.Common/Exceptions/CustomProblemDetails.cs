@@ -6,6 +6,7 @@ namespace Ubik.ApiService.Common.Exceptions
 {
     public class CustomProblemDetails : ValidationProblemDetails
     {
+        [JsonConstructor()]
         public CustomProblemDetails(IEnumerable<ProblemDetailError> errors)
         {
             Errors = errors;
