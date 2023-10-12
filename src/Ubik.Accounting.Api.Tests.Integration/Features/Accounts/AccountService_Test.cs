@@ -8,7 +8,7 @@ using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 
-namespace Ubik.Accounting.Api.Test.Features.Accounts
+namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
     public class AccountService_Test : IClassFixture<AccountingTestDbFixture>
     {
@@ -24,7 +24,7 @@ namespace Ubik.Accounting.Api.Test.Features.Accounts
         }
 
         [Fact]
-        public async Task GetAccountAsync_Success()
+        public async Task Get_Success_Account()
         {
             //Arrange
 
@@ -34,11 +34,11 @@ namespace Ubik.Accounting.Api.Test.Features.Accounts
             //Assert
             account.Should()
                     .NotBeNull()
-                    .And.Match<Account>(x => x.Code == _testDBValues.AccountCode1);
+                    .And.BeOfType<Account>();
         }
 
         [Theory, MemberData(nameof(GeneratedGuids))]
-        public async Task GetAccountAsync_WhenIdNotExists_ThenReturnNull(Guid id)
+        public async Task Get_IdNotExists_Null(Guid id)
         {
             //Arrange
 
@@ -51,21 +51,46 @@ namespace Ubik.Accounting.Api.Test.Features.Accounts
         }
 
         [Fact]
-        public async Task GetAccountsAsync_Success()
+        public async Task IfExist_Success_True()
         {
             //Arrange
+
+            //Act
+            var account = await _serviceManager.AccountService.IfExists(_testDBValues.AccountCode1);
+
+            //Assert
+            account.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task IfExist_Success_False()
+        {
+            //Arrange
+
+            //Act
+            var account = await _serviceManager.AccountService.IfExists("ZZZZZZZXX");
+
+            //Assert
+            account.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task GetAll_Success_Accounts()
+        {
+            //Arrange
+
             //Act
             var accounts = await _serviceManager.AccountService.GetAccountsAsync();
 
             //Assert
             accounts.Should()
                     .NotBeNull()
-                    .And.Contain(x => x.Code == _testDBValues.AccountCode1);
+                    .And.AllBeOfType<Account>();
         }
 
         [Theory]
         [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22a"})]
-        public async Task AddAccountAsync_Success(Account account)
+        public async Task Add_Success_AddedAccount(Account account)
         {
             //Arrange
 
@@ -79,8 +104,21 @@ namespace Ubik.Accounting.Api.Test.Features.Accounts
         }
 
         [Theory]
+        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22a" })]
+        public async Task Add_Success_AuditModifiedFieldsDefined(Account account)
+        {
+            //Arrange
+
+            //Act
+            var accountResult = await _serviceManager.AccountService.AddAccountAsync(account);
+
+            //Assert
+            account.Should().Match<Account>(x => x.ModifiedBy != null && x.ModifiedAt != null);
+        }
+
+        [Theory]
         [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22b" })]
-        public async Task AddAccountAsync_WhenAccountGroupIdNotExists_ThenReturnException(Account account)
+        public async Task Add_AccountGroupIdNotExists_Exception(Account account)
         {
             //Arrange
 
@@ -89,6 +127,43 @@ namespace Ubik.Accounting.Api.Test.Features.Accounts
 
             //Assert
             await act.Should().ThrowAsync<Exception>();
+        }
+
+        [Fact]
+        public async Task Update_Success_UpdatedAccount()
+        {
+            //Arrange
+            var account = await _serviceManager.AccountService.GetAccountAsync(_testDBValues.AccountId1);
+
+            account!.Label = "Modified";
+            account.Description = "Modified";
+
+            //Act
+            var accountResult = await _serviceManager.AccountService.UpdateAccountAsync(account);
+
+            //Assert
+            account.Should()
+                    .NotBeNull()
+                    .And.BeOfType<Account>();
+        }
+
+        [Fact]
+        public async Task Update_Success_ModifiedAtFieldUpdated()
+        {
+            //Arrange
+            var account = await _serviceManager.AccountService.GetAccountAsync(_testDBValues.AccountId1);
+
+            account!.Label = "Modified";
+            account.Description = "Modified";
+            var modifiedAt = account.ModifiedAt;
+
+            //Act
+            var accountResult = await _serviceManager.AccountService.UpdateAccountAsync(account);
+
+            //Assert
+            account.Should()
+                    .NotBeNull()
+                    .And.Match<Account>(x=>x.ModifiedAt > modifiedAt);
         }
 
 

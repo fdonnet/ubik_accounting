@@ -2,12 +2,12 @@
 using Ubik.Accounting.Api.Data;
 using Ubik.ApiService.Common.Services;
 
-namespace Ubik.Accounting.Api.Test
+namespace Ubik.Accounting.Api.Tests.Integration
 {
     //TODO: need to be more portable
     public class AccountingTestDbFixture
     {
-        private const string ConnectionString = @"server=localhost;port=3306;database=ubik_accounting_test;uid=root;password=godjade";
+        private const string ConnectionString = @"server=localhost;port=3306;database=ubik_accounting_test;uid=admin;password=godjade";
 
         private static readonly object _lock = new();
         private static bool _databaseInitialized;

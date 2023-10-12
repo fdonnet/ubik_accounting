@@ -26,10 +26,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public Guid Version { get; set; }
         }
 
-        public class Handler : IRequestHandler<AddAccountCommand, AddAccountResult>
+        public class AddAccountHandler : IRequestHandler<AddAccountCommand, AddAccountResult>
         {
             private readonly IServiceManager _serviceManager;
-            public Handler(IServiceManager serviceManager)
+            public AddAccountHandler(IServiceManager serviceManager)
             {
                 _serviceManager = serviceManager;
             }

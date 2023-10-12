@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ubik.Accounting.Api.Models;
 
-namespace Ubik.Accounting.Api.Test.Features.Accounts
+namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
     public static class FakeGenerator
     {
