@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,11 +30,8 @@ namespace Ubik.Accounting.Api.Tests.Integration
         {
             builder.ConfigureTestServices(services =>
             {
-                var descriptorType =
-                    typeof(DbContextOptions<AccountingContext>);
-
                 var descriptor = services
-                    .SingleOrDefault(s => s.ServiceType == descriptorType);
+                    .SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<AccountingContext>));
 
                 if (descriptor is not null)
                 {
@@ -42,6 +40,11 @@ namespace Ubik.Accounting.Api.Tests.Integration
 
                 services.AddDbContext<AccountingContext>(options =>
                     options.UseMySql(_dbContainer.GetConnectionString(), ServerVersion.AutoDetect(_dbContainer.GetConnectionString())));
+
+                builder.ConfigureLogging(o => {
+                    //o.SetMinimumLevel(LogLevel.Warning);
+                    o.AddFilter(logLevel => logLevel >= LogLevel.Warning);
+                });
 
             });
         }

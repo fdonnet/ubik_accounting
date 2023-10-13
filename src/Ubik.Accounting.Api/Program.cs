@@ -8,6 +8,7 @@ using System.Reflection;
 using MediatR;
 using Ubik.ApiService.Common.Validators;
 using FluentValidation;
+using Serilog;
 
 namespace Ubik.Accounting.Api
 {
@@ -16,11 +17,12 @@ namespace Ubik.Accounting.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
             // Add services to the container.
             var serverVersion = new MariaDbServerVersion(new Version(11, 1, 2));
-            builder.Services.AddDbContext<AccountingContext>(
-                    options => options.UseMySql(builder.Configuration.GetConnectionString("AccountingContext"), serverVersion));
+            builder.Services.AddDbContextFactory<AccountingContext>(
+                    options => options.UseMySql(builder.Configuration.GetConnectionString("AccountingContext"), serverVersion),ServiceLifetime.Scoped);
 
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
@@ -38,6 +40,7 @@ namespace Ubik.Accounting.Api
 
             var app = builder.Build();
 
+            app.UseSerilogRequestLogging();
             app.UseExceptionHandler(app.Logger, app.Environment);
 
             // Configure the HTTP request pipeline.
