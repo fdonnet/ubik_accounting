@@ -29,6 +29,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Org.BouncyCastle.Tls;
 using Microsoft.EntityFrameworkCore.Internal;
 using MediatR;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
+using Ubik.Accounting.Api.Features.Accounts.Mappers;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
@@ -102,8 +105,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var httpClient = Factory.CreateDefaultClient();
 
             //Act
-            var fake = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1);
-            var postAccountJson = JsonSerializer.Serialize(fake.First());
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
+            var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
             var response = await httpClient.PostAsync($"/Account", content);
@@ -114,7 +118,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<AddAccountResult>()
-                .And.Match<AddAccountResult>(x => x.Code == fake.First().Code);
+                .And.Match<AddAccountResult>(x =>
+                    x.Code == fake.Code
+                    && x.Label == fake.Label
+                    && x.Description == fake.Description
+                    && x.Version != default!);
         }
 
         [Fact]
@@ -124,7 +132,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var httpClient = Factory.CreateDefaultClient();
 
             //Act
-            var fake = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
             fake.Code = _testDBValues.AccountCode1;
 
             var postAccountJson = JsonSerializer.Serialize(fake);
@@ -148,7 +157,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var httpClient = Factory.CreateDefaultClient();
 
             //Act
-            var fake = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
 
             fake.Code = "";
             fake.Label = "";
@@ -166,6 +176,164 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 3);
+        }
+
+        [Fact]
+        public async Task Post_ProblemDetails_TooLongFields()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            //Act
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
+
+            fake.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
+            fake.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
+            fake.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync($"/Account", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 3);
+        }
+
+        [Fact]
+        public async Task Put_Account_Ok()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            //Act
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
+
+            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
+
+            fake.Version = resultGet!.Version;
+            fake.Id = resultGet!.Id;
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
+            var result = await response.Content.ReadFromJsonAsync<UpdateAccountResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<UpdateAccountResult>()
+                .And.Match<UpdateAccountResult>(x => 
+                    x.Code == fake.Code
+                    && x.Label == fake.Label
+                    && x.Description == fake.Description
+                    && x.Version != fake.Version);
+        }
+
+        [Fact]
+        public async Task Put_ProblemDetails_AccountEmptyFields()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            //Act
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
+
+            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
+
+            fake.Id = default!;
+            fake.Version = default!;
+            fake.Code = string.Empty;
+            fake.Label = string.Empty;
+            fake.AccountGroupId = default!;
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 4);
+        }
+
+        [Fact]
+        public async Task Put_ProblemDetails_AccountTooLongFields()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            //Act
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
+
+            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
+
+            fake.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
+            fake.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
+            fake.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
+            fake.Version = resultGet!.Version;
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 3);
+        }
+
+        [Fact]
+        public async Task Put_ProblemDetails_AccountCodeExistsWithDifferentId()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            //Act
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
+
+            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId2}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
+
+            fake.Id = resultGet!.Id;
+            fake.Code = "1020";
+            fake.Version = resultGet!.Version;
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId2}", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_ALREADY_EXISTS");
         }
     }
 }

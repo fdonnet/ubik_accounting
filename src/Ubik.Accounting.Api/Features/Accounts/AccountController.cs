@@ -38,6 +38,17 @@ namespace Ubik.Accounting.Api.Features.Accounts
             return Ok(result);
         }
 
+        [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 409)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<AddAccountResult>> AddAccount(AddAccountCommand addAccountCommand)
+        {
+            var result = await _mediator.Send(addAccountCommand);
+            return CreatedAtAction(nameof(GetAccount), new { id = result.Id }, result);
+        }
+
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -49,17 +60,6 @@ namespace Ubik.Accounting.Api.Features.Accounts
             updateAccountCommand.Id = id;
             var accountResult = await _mediator.Send(updateAccountCommand);
             return Ok(accountResult);
-        }
-
-        [HttpPost]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
-        [ProducesResponseType(typeof(CustomProblemDetails), 409)]
-        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AddAccountResult>> AddAccount(AddAccountCommand addAccountCommand)
-        {
-            var result = await _mediator.Send(addAccountCommand);
-            return CreatedAtAction(nameof(GetAccount), new {id =  result.Id}, result);
         }
     }
 }
