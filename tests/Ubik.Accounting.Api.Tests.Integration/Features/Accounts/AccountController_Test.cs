@@ -221,6 +221,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             fake.Version = resultGet!.Version;
             fake.Id = resultGet!.Id;
+            fake.Code = _testDBValues.AccountCode1;
 
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
