@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,11 +42,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
                 services.AddDbContext<AccountingContext>(options =>
                     options.UseMySql(_dbContainer.GetConnectionString(), ServerVersion.AutoDetect(_dbContainer.GetConnectionString())));
 
-                builder.ConfigureLogging(o => {
-                    //o.SetMinimumLevel(LogLevel.Warning);
-                    o.AddFilter(logLevel => logLevel >= LogLevel.Warning);
-                });
-
+                services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
             });
         }
 

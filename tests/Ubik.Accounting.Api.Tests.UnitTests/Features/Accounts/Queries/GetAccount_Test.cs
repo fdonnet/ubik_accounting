@@ -1,5 +1,7 @@
 ﻿using Bogus;
 using FluentAssertions;
+using MediatR;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Accounts.Commands;
@@ -16,15 +18,17 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
     public class GetAccount_Test
     {
         private readonly IServiceManager _serviceManager;
+        private readonly ILogger<IRequestHandler<GetAccountQuery, GetAccountResult>> _logger;
         private readonly GetAccountHandler _handler;
         private readonly GetAccountQuery _query;
-        private Account _account;
+        private readonly Account _account;
         private readonly ValidationPipelineBehavior<GetAccountQuery, GetAccountResult> _validationBehavior;
 
         public GetAccount_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
-            _handler = new GetAccountHandler(_serviceManager);
+            _logger = Substitute.For<ILogger<IRequestHandler<GetAccountQuery, GetAccountResult>>>();
+            _handler = new GetAccountHandler(_serviceManager,_logger);
 
             _query = new GetAccountQuery()
             {
