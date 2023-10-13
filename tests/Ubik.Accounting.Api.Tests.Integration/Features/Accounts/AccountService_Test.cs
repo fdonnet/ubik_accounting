@@ -1,29 +1,29 @@
 ﻿using Bogus;
 using FluentAssertions;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
-    public class AccountService_Test : IClassFixture<AccountingTestDbFixture>
+    public class AccountService_Test : BaseIntegrationTest
     {
-        public AccountingTestDbFixture Fixture { get; }
-        private readonly IServiceManager _serviceManager;
         private readonly DbInitializer _testDBValues;
+        private readonly IServiceManager _serviceManager;
 
-        public AccountService_Test(AccountingTestDbFixture fixture)
+        public AccountService_Test(IntegrationTestWebAppFactory factory) : base(factory) 
         {
-            Fixture = fixture;
             _testDBValues = new DbInitializer();
-            _serviceManager = new ServiceManager(AccountingTestDbFixture.CreateContext());
+            _serviceManager =new ServiceManager(DbContext);
         }
 
         [Fact]
         public async Task Get_Account_Ok()
         {
             //Arrange
-
+                
             //Act
             var account = await _serviceManager.AccountService.GetAccountAsync(_testDBValues.AccountId1);
 
@@ -47,7 +47,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory]
-        [InlineData("1020",true)]
+        [InlineData("1020", true)]
         [InlineData("ZZZZZZZXX", false)]
         public async Task IfExist_TrueOrFalse_AccountExists(string accountCode, bool result)
         {
@@ -68,7 +68,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var account = await _serviceManager.AccountService.IfExistsWithDifferentIdAsync(accountCode,Guid.Parse(currentGuid));
+            var account = await _serviceManager.AccountService.IfExistsWithDifferentIdAsync(accountCode, Guid.Parse(currentGuid));
 
             //Assert
             account.Should().Be(result);
@@ -89,7 +89,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory]
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22a"})]
+        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22a" })]
         public async Task Add_Account_Ok(Account account)
         {
             //Arrange
@@ -177,7 +177,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             account.Should()
                     .NotBeNull()
-                    .And.Match<Account>(x=>x.ModifiedAt > modifiedAt);
+                    .And.Match<Account>(x => x.ModifiedAt > modifiedAt);
         }
 
 
@@ -202,3 +202,4 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
     }
 }
+

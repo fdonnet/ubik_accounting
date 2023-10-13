@@ -17,14 +17,27 @@ using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using Bogus;
 using System.Text.Json.Nodes;
 using System.Text.Json;
+using Xunit.Abstractions;
+using DotNet.Testcontainers.Containers;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Org.BouncyCastle.Tls;
+using Microsoft.EntityFrameworkCore.Internal;
+using MediatR;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
-    public class AccountController_Test 
+    public class AccountController_Test : BaseIntegrationTest
     {
         private readonly DbInitializer _testDBValues;
 
-        public AccountController_Test()
+
+        public AccountController_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testDBValues = new DbInitializer();
         }
@@ -33,8 +46,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Get_Accounts_Ok()
         {
             //Arrange
-            var webAppFactory = new WebApplicationFactory<Program>();
-            var httpClient = webAppFactory.CreateDefaultClient();
+            var httpClient = Factory.CreateDefaultClient();
 
             //Act
             var response = await httpClient.GetAsync("/Account");
@@ -51,8 +63,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Get_Account_Ok()
         {
             //Arrange
-            var webAppFactory = new WebApplicationFactory<Program>();
-            var httpClient = webAppFactory.CreateDefaultClient();
+            var httpClient = Factory.CreateDefaultClient();
 
             //Act
             var response = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
@@ -63,15 +74,14 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<GetAccountResult>()
-                .And.Match<GetAccountResult>(x=>x.Code=="1020");
+                .And.Match<GetAccountResult>(x => x.Code == "1020");
         }
 
         [Fact]
         public async Task Get_ProblemDetails_AccountIdNotFound()
         {
             //Arrange
-            var webAppFactory = new WebApplicationFactory<Program>();
-            var httpClient = webAppFactory.CreateDefaultClient();
+            var httpClient = Factory.CreateDefaultClient();
 
             //Act
             var response = await httpClient.GetAsync($"/Account/{Guid.NewGuid()}");
@@ -89,15 +99,14 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Post_Account_Ok()
         {
             //Arrange
-            var webAppFactory = new WebApplicationFactory<Program>();
-            var httpClient = webAppFactory.CreateDefaultClient();
+            var httpClient = Factory.CreateDefaultClient();
 
             //Act
             var fake = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1);
             var postAccountJson = JsonSerializer.Serialize(fake.First());
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"/Account",content);
+            var response = await httpClient.PostAsync($"/Account", content);
             var result = await response.Content.ReadFromJsonAsync<AddAccountResult>();
 
             //Assert
@@ -112,8 +121,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Post_ProblemDetails_AccountCodeExist()
         {
             //Arrange
-            var webAppFactory = new WebApplicationFactory<Program>();
-            var httpClient = webAppFactory.CreateDefaultClient();
+            var httpClient = Factory.CreateDefaultClient();
 
             //Act
             var fake = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
@@ -137,12 +145,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Post_ProblemDetails_AccountEmptyFields()
         {
             //Arrange
-            var webAppFactory = new WebApplicationFactory<Program>();
-            var httpClient = webAppFactory.CreateDefaultClient();
+            var httpClient = Factory.CreateDefaultClient();
 
             //Act
             var fake = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
-            
+
             fake.Code = "";
             fake.Label = "";
             fake.AccountGroupId = default!;
@@ -158,9 +165,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() ==3);
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 3);
         }
-
-
     }
 }
