@@ -7,6 +7,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
     {
         public UpdateAccountValidator()
         {
+            RuleFor(command => command.Id)
+                .NotEmpty().WithMessage("Id is required");
+
             RuleFor(command => command.Code)
                 .NotEmpty().WithMessage("Code is required")
                 .MaximumLength(20).WithMessage("Code must be 20 characters max.");

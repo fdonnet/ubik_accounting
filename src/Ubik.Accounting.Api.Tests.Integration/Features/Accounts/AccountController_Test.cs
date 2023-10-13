@@ -116,10 +116,10 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var httpClient = webAppFactory.CreateDefaultClient();
 
             //Act
-            var fake = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1);
-            fake.First().Code = _testDBValues.AccountCode1;
+            var fake = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            fake.Code = _testDBValues.AccountCode1;
 
-            var postAccountJson = JsonSerializer.Serialize(fake.First());
+            var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
             var response = await httpClient.PostAsync($"/Account", content);
@@ -132,5 +132,35 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_ALREADY_EXISTS");
         }
+
+        [Fact]
+        public async Task Post_ProblemDetails_AccountEmptyFields()
+        {
+            //Arrange
+            var webAppFactory = new WebApplicationFactory<Program>();
+            var httpClient = webAppFactory.CreateDefaultClient();
+
+            //Act
+            var fake = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            
+            fake.Code = "";
+            fake.Label = "";
+            fake.AccountGroupId = default!;
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync($"/Account", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() ==3);
+        }
+
+
     }
 }
