@@ -62,7 +62,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
         [Theory]
         [InlineData("1020", "7777f11f-20dd-4888-88f8-428e59bbc535", true)]
-        [InlineData("zzzz999", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
+        [InlineData("zzzz9899", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
         public async Task IfExistWithDifferentId_TrueorFalse_AccountExists(string accountCode, string currentGuid, bool result)
         {
             //Arrange
