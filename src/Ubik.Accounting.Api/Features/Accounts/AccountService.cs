@@ -76,5 +76,11 @@ namespace Ubik.Accounting.Api.Features.Accounts
             }
         }
 
+        public async Task<bool> DeleteAccountAsync(Guid id)
+        {
+            _context.Accounts.Where(x => x.Id == id).ExecuteDelete();
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

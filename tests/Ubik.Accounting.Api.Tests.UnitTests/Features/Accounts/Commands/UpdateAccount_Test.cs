@@ -18,7 +18,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         private readonly IServiceManager _serviceManager;
         private readonly UpdateAccountHandler _handler;
         private readonly UpdateAccountCommand _command;
-        private Account _account;
+        private readonly Account _account;
         private readonly ValidationPipelineBehavior<UpdateAccountCommand, UpdateAccountResult> _validationBehavior;
 
         public UpdateAccount_Test()

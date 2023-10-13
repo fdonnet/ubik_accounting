@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Exceptions;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
+using static Ubik.Accounting.Api.Features.Accounts.Commands.DeleteAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
@@ -60,6 +61,18 @@ namespace Ubik.Accounting.Api.Features.Accounts
             updateAccountCommand.Id = id;
             var accountResult = await _mediator.Send(updateAccountCommand);
             return Ok(accountResult);
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<UpdateAccountResult>> UpdateAccount(Guid id)
+        {
+            await _mediator.Send(new DeleteAccountCommand() { Id = id});
+
+            return NoContent();
         }
     }
 }

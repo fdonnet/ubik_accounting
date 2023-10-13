@@ -8,6 +8,7 @@ namespace Ubik.Accounting.Api.Data
         
         public Guid AccountId1 { get; } = Guid.Parse("7777f11f-20dd-4888-88f8-428e59bbc537");
         public Guid AccountId2 { get; } = Guid.Parse("9524f11f-20dd-4888-88f8-428e59bbc229");
+        public Guid AccountIdForDel { get; } = Guid.Parse("9524f11f-20dd-4888-88f8-428e59bbc300");
         public string AccountCode1 { get; } = "1020";
         
         public Guid UserId1 { get; } = Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e");
@@ -102,6 +103,21 @@ namespace Ubik.Accounting.Api.Data
                         CreatedAt = now,
                         Label = "Banque 2",
                         Description = "Compte bancaire cash",
+                        ModifiedBy= UserId1,
+                        ModifiedAt = now,
+                        TenantId= TenantId,
+                        Version = Guid.NewGuid()
+                    },
+
+                    new Account
+                    {
+                        Id= AccountIdForDel,
+                        AccountGroupId = AccountGroupId1,
+                        Code = "2030",
+                        CreatedBy= UserId1,
+                        CreatedAt = now,
+                        Label = "Banque for removal",
+                        Description = "Compte bancaire cash old",
                         ModifiedBy= UserId1,
                         ModifiedAt = now,
                         TenantId= TenantId,

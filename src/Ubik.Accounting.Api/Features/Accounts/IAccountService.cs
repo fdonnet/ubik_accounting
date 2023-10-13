@@ -10,5 +10,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
         public Task<bool> IfExistsWithDifferentIdAsync(string accountCode, Guid currentId);
         public Task<Account> AddAccountAsync(Account account);
         public Task<Account> UpdateAccountAsync(Account account);
+        public Task<bool> DeleteAccountAsync(Guid id);
+
     }
 }

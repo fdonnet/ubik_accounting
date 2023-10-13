@@ -32,6 +32,7 @@ using MediatR;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
+using static Ubik.Accounting.Api.Features.Accounts.Commands.DeleteAccount;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
@@ -234,7 +235,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<UpdateAccountResult>()
-                .And.Match<UpdateAccountResult>(x => 
+                .And.Match<UpdateAccountResult>(x =>
                     x.Code == fake.Code
                     && x.Label == fake.Label
                     && x.Description == fake.Description
@@ -335,6 +336,118 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_ALREADY_EXISTS");
+        }
+
+        [Fact]
+        public async Task Put_ProblemDetails_AccountIdNotFound()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            //Act
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
+
+            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId2}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
+
+            fake.Id = Guid.NewGuid();
+            fake.Version = resultGet!.Version;
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"/Account/{fake.Id}", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Put_ProblemDetails_AccountModifiedByAnotherProcess()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            //Act
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
+
+            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
+
+            fake.Version = resultGet!.Version;
+            fake.Id = resultGet!.Id;
+            fake.Code = _testDBValues.AccountCode1;
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
+            var response2 = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
+            var result = await response2.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response2.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_CONFLICT");
+        }
+
+        [Fact]
+        public async Task Del_NoContent_Ok()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            //Act
+            var response = await httpClient.DeleteAsync($"/Account/{_testDBValues.AccountIdForDel}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        }
+
+        [Fact]
+        public async Task Del_ProblemDetails_AccountIdNotFound()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            //Act
+            var response = await httpClient.DeleteAsync($"/Account/{Guid.NewGuid()}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Del_ProblemDetails_AccountIdEmpty()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+            Guid empty = default!;
+
+            //Act
+            var response = await httpClient.DeleteAsync($"/Account/{empty}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR");
         }
     }
 }

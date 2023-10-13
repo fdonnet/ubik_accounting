@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Principal;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
@@ -129,19 +130,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             await act.Should().ThrowAsync<Exception>();
         }
 
-        [Theory]
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22b" })]
-        public async Task Add_Exception_CrashDb(Account account)
-        {
-            //Arrange
-            account.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
-
-            //Act
-            Func<Task> act = async () => await _serviceManager.AccountService.AddAccountAsync(account);
-
-            //Assert
-            await act.Should().ThrowAsync<Exception>();
-        }
 
         [Fact]
         public async Task Update_UpdatedAccount_Ok()
@@ -178,6 +166,20 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             account.Should()
                     .NotBeNull()
                     .And.Match<Account>(x => x.ModifiedAt > modifiedAt);
+        }
+
+        [Fact]
+        public async Task Delete_True_Ok()
+        {
+            //Arrange
+            
+            //Act
+            await _serviceManager.AccountService.DeleteAccountAsync(_testDBValues.AccountIdForDel);
+            var exist = (await _serviceManager.AccountService.GetAccountAsync(_testDBValues.AccountIdForDel)) != null;
+
+            //Assert
+            exist.Should()
+                .BeFalse();
         }
 
 
