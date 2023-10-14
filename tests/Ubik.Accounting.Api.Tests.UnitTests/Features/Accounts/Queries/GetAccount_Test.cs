@@ -18,7 +18,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
     public class GetAccount_Test
     {
         private readonly IServiceManager _serviceManager;
-        private readonly ILogger<IRequestHandler<GetAccountQuery, GetAccountResult>> _logger;
         private readonly GetAccountHandler _handler;
         private readonly GetAccountQuery _query;
         private readonly Account _account;
@@ -27,8 +26,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         public GetAccount_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
-            _logger = Substitute.For<ILogger<IRequestHandler<GetAccountQuery, GetAccountResult>>>();
-            _handler = new GetAccountHandler(_serviceManager,_logger);
+            _handler = new GetAccountHandler(_serviceManager);
 
             _query = new GetAccountQuery()
             {

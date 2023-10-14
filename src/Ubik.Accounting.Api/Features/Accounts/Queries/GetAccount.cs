@@ -27,12 +27,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
         public class GetAccountHandler : IRequestHandler<GetAccountQuery, GetAccountResult>
         {
             private readonly IServiceManager _serviceManager;
-            private readonly ILogger<IRequestHandler<GetAccountQuery, GetAccountResult>> _logger;
 
-            public GetAccountHandler(IServiceManager serviceManager, ILogger<IRequestHandler<GetAccountQuery, GetAccountResult>> logger)
+            public GetAccountHandler(IServiceManager serviceManager)
             {
                 _serviceManager = serviceManager;
-                _logger = logger;
             }
 
             public async Task<GetAccountResult> Handle(GetAccountQuery request, CancellationToken cancellationToken)
@@ -40,10 +38,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
                 var account = await _serviceManager.AccountService.GetAccountAsync(request.Id);
 
                 if (account == null)
-                {
-                    _logger.LogInformation("This account Id {id} doesn't exist.", request.Id);
                     throw new AccountNotFoundException(request.Id);
-                }
                 else
                     return account.ToGetAccountResult();
             }

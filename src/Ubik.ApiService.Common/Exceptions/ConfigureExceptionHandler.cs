@@ -32,7 +32,7 @@ namespace Ubik.ApiService.Common.Exceptions
 
                             foreach(var err in managedException.CustomErrors)
                             {
-                                log.LogInformation("Managed exception: type: {type} / Code: {code} / Msg: {msg} / Value: {value} ",
+                                log.LogWarning("Managed exception: type: {type} / Code: {code} / Msg: {msg} / Value: {value} ",
                                 managedException.ErrorType, err.ErrorCode, err.ErrorFriendlyMessage, err.ErrorValueDetails);
                             }
 
