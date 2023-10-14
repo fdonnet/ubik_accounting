@@ -9,6 +9,7 @@ using MediatR;
 using Ubik.ApiService.Common.Validators;
 using FluentValidation;
 using Serilog;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Ubik.Accounting.Api
 {
@@ -18,6 +19,17 @@ namespace Ubik.Accounting.Api
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+
+            //TODO change https in PROD
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, o =>
+            {
+                o.MetadataAddress = "http://localhost:8080/realms/Ubik/.well-known/openid-configuration";
+                o.Authority = "http://localhost:8080/realms/Ubik";
+                o.Audience = "account";
+                o.RequireHttpsMetadata = false;
+            });
+
 
             // Add services to the container.
             var serverVersion = new MariaDbServerVersion(new Version(11, 1, 2));
@@ -64,6 +76,7 @@ namespace Ubik.Accounting.Api
             }
 
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

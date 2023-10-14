@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Exceptions;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
@@ -20,6 +21,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
             _mediator = mediator;
         }
 
+        //[Authorize]
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
