@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Testcontainers.Keycloak;
 using Ubik.Accounting.Api.Data;
 
 namespace Ubik.Accounting.Api.Tests.Integration
@@ -20,6 +21,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
 
         protected BaseIntegrationTest(IntegrationTestWebAppFactory factory)
         {
+
             Factory = factory;
             _scope = factory.Services.CreateScope();
 

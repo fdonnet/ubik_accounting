@@ -21,6 +21,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.12" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
 		<PackageReference Include="Testcontainers" Version="3.5.0" />
+		<PackageReference Include="Testcontainers.Keycloak" Version="3.5.0" />
 		<PackageReference Include="Testcontainers.MariaDb" Version="3.5.0" />
 		<PackageReference Include="xunit" Version="2.5.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.3">
@@ -35,6 +36,15 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Ubik.Accounting.Api\Ubik.Accounting.Api.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="export_keycloak_conf.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="imports\ubik-realm.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

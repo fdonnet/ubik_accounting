@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Testcontainers.Keycloak;
 using Ubik.ApiService.Common.Exceptions;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.DeleteAccount;
@@ -21,7 +22,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
             _mediator = mediator;
         }
 
-        //[Authorize]
+        //[Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]

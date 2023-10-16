@@ -10,11 +10,14 @@ using Ubik.ApiService.Common.Validators;
 using FluentValidation;
 using Serilog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
+using Testcontainers.Keycloak;
 
 namespace Ubik.Accounting.Api
 {
     public class Program
     {
+        public string KeycloackPort = "8080";
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -24,8 +27,8 @@ namespace Ubik.Accounting.Api
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, o =>
             {
-                o.MetadataAddress = "http://localhost:8080/realms/Ubik/.well-known/openid-configuration";
-                o.Authority = "http://localhost:8080/realms/Ubik";
+                o.MetadataAddress = "http://localhost:8080/realms/ubik/.well-known/openid-configuration";
+                o.Authority = "http://localhost:8080/realms/ubik";
                 o.Audience = "account";
                 o.RequireHttpsMetadata = false;
             });
@@ -34,7 +37,7 @@ namespace Ubik.Accounting.Api
             // Add services to the container.
             var serverVersion = new MariaDbServerVersion(new Version(11, 1, 2));
             builder.Services.AddDbContextFactory<AccountingContext>(
-                    options => options.UseMySql(builder.Configuration.GetConnectionString("AccountingContext"), serverVersion),ServiceLifetime.Scoped);
+                    options => options.UseMySql(builder.Configuration.GetConnectionString("AccountingContext"), serverVersion), ServiceLifetime.Scoped);
 
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
@@ -45,7 +48,51 @@ namespace Ubik.Accounting.Api
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+
+            builder.Services.AddCors(policies =>
+            {
+                policies.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                });
+            });
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition(
+                                "oauth2",
+                                new OpenApiSecurityScheme
+                                {
+                                    Type = SecuritySchemeType.OAuth2,
+                                    Flows = new OpenApiOAuthFlows
+                                    {
+                                        AuthorizationCode = new OpenApiOAuthFlow
+                                        {
+                                            AuthorizationUrl = new Uri("http://localhost:8080/realms/ubik/protocol/openid-connect/auth"),
+                                            TokenUrl = new Uri("http://localhost:8080/realms/ubik/protocol/openid-connect/token"),
+                                            Scopes = new Dictionary<string, string> { }
+                                        }
+                                    }
+                                });
+
+
+                c.AddSecurityRequirement(
+                    new OpenApiSecurityRequirement
+                    {
+                    {
+                        new OpenApiSecurityScheme{
+                            Reference = new OpenApiReference{
+                                Id = "oauth2", //The name of the previously defined security scheme.
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        },
+                        new List<string>()
+                    }
+                    });
+
+
+            });
+
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             //TODO: remove when migrated to service manager
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
