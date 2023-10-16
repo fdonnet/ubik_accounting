@@ -26,10 +26,10 @@ namespace Ubik.Accounting.Api
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, o =>
             {
-                o.MetadataAddress = "http://localhost:8080/realms/ubik/.well-known/openid-configuration";
-                o.Authority = "http://localhost:8080/realms/ubik";
-                o.Audience = "account";
-                o.RequireHttpsMetadata = false;
+                o.MetadataAddress = builder.Configuration["Keycloack:MetadataAddress"]!;
+                o.Authority = builder.Configuration["Keycloack:Authority"];
+                o.Audience = builder.Configuration["Keycloack:Audience"];
+                o.RequireHttpsMetadata = bool.Parse(builder.Configuration["Keycloack:RequireHttpsMetadata"]!);
             });
 
 
@@ -67,8 +67,8 @@ namespace Ubik.Accounting.Api
                                     {
                                         AuthorizationCode = new OpenApiOAuthFlow
                                         {
-                                            AuthorizationUrl = new Uri("http://localhost:8080/realms/ubik/protocol/openid-connect/auth"),
-                                            TokenUrl = new Uri("http://localhost:8080/realms/ubik/protocol/openid-connect/token"),
+                                            AuthorizationUrl = new Uri(builder.Configuration["Keycloack:AuthorizationUrl"]!),
+                                            TokenUrl = new Uri(builder.Configuration["Keycloack:TokenUrl"]!),
                                             Scopes = new Dictionary<string, string> { }
                                         }
                                     }

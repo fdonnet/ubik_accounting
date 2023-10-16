@@ -38,23 +38,16 @@ namespace Ubik.Accounting.Api.Tests.Integration
                 .WithPassword("TEST_PASSWORD")
                 .Build();
 
-            var path = Path.GetFullPath("./import");
-            var pathwsl = "/" + path.Replace('\\', '/').Replace(":","");
-
-            //"/f/Dev/ubik/tests/Ubik.Accounting.Api.Tests.Integration/import"
-            //F/Dev/ubik/tests/Ubik.Accounting.Api.Tests.Integration/bin/Debug/net7.0/import
-
-
             _keycloackContainer = new KeycloakBuilder()
                                 .WithImage("keycloak/keycloak:latest")
-                                .WithBindMount(pathwsl, "/opt/keycloak/data/import", AccessMode.ReadWrite)
+                                .WithBindMount(GetWslAbsolutePath("./import"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
                                 .WithCommand(new string[] { "--import-realm" })
                                 .Build();
-
-        }
+       }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            SetTestEnvVariables();
             builder.ConfigureTestServices(services =>
             {
                 var descriptor = services
@@ -67,16 +60,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
 
                 services.AddDbContext<AccountingContext>(options =>
                     options.UseMySql(_dbContainer.GetConnectionString(), ServerVersion.AutoDetect(_dbContainer.GetConnectionString())));
-
-                //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                //    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, o =>
-                //    {
-                //        o.MetadataAddress = $"http://localhost:{_keycloackContainer.GetMappedPublicPort(8080)}/realms/ubik/.well-known/openid-configuration";
-                //        o.Authority = $"http://localhost:{_keycloackContainer.GetMappedPublicPort(8080)}/realms/ubik";
-                //        o.Audience = "account";
-                //        o.RequireHttpsMetadata = false;
-                //    });
-
+                
                 services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
             });
         }
@@ -91,6 +75,22 @@ namespace Ubik.Accounting.Api.Tests.Integration
         {
             await _keycloackContainer.DisposeAsync();
             await _dbContainer.DisposeAsync();
+        }
+
+        private static string GetWslAbsolutePath(string windowRealtivePath)
+        {
+            var path = Path.GetFullPath(windowRealtivePath);
+            return "/" + path.Replace('\\', '/').Replace(":", "");
+        }
+
+        private void SetTestEnvVariables()
+        {
+            var port = _keycloackContainer.GetMappedPublicPort(8080);
+            var host = _keycloackContainer.Hostname;
+            Environment.SetEnvironmentVariable("MetadataAddress", $"http://{host}:{port}/realms/ubik/.well-known/openid-configuration");
+            Environment.SetEnvironmentVariable("Authority", $"http://{host}:{port}/realms/ubik");
+            Environment.SetEnvironmentVariable("AuthorizationUrl", $"http://{host}:{port}/realms/ubik/protocol/openid-connect/auth");
+            Environment.SetEnvironmentVariable("TokenUrl", $"http://{host}:{port}/realms/ubik/protocol/openid-connect/token");
         }
     }
 }

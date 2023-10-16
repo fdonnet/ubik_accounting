@@ -449,5 +449,25 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR");
         }
+
+        private async Task<string> GetAccessToken()
+        {
+            var tokenUrl = Environment.GetEnvironmentVariable("TokenUrl");
+            var httpClient = Factory.CreateDefaultClient();
+            httpClient.DefaultRequestHeaders.Add("Content-Type", "application/x-www-form-urlencoded");
+
+            var keyValuesList = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type", "password"),
+                new KeyValuePair<string, string>("username", "admin"),
+                new KeyValuePair<string, string>("password", "admin")
+            };
+            var content = new FormUrlEncodedContent(keyValuesList);
+
+            var response = await httpClient.PutAsync(tokenUrl, content);
+
+            return await response.Content.ReadAsStringAsync();
+
+        }
     }
 }

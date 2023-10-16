@@ -1,12 +1,14 @@
 docker exec -it ff16734ff6c9a29bdfc5f6281c3aa651062a86290bfcf8d4436b4e7e816dc059 bash
-
 /opt/keycloak/bin/kc.sh export --dir /opt/keycloak/data/import --realm ubik --users realm_file
-
 docker cp ff16734ff6c9a29bdfc5f6281c3aa651062a86290bfcf8d4436b4e7e816dc059:/opt/keycloak/data/import/howtodoinjava-realm.json ./ubik-realm.json
 
+testcontainers version :
 
+            _keycloackContainer = new KeycloakBuilder()
+                                .WithImage("keycloak/keycloak:latest")
+                                .WithBindMount(GetWslAbsolutePath("./import"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
+                                .WithCommand(new string[] { "--import-realm" })
+                                .Build();
 
-docker exec -it 6f6980af9baf411dbaa736015a5621f0e6dc2309ea54b211bce41e36d732f18e bash
-mkdir /opt/keycloak/data/import
-docker cp ./ubik-realm.json 6f6980af9baf411dbaa736015a5621f0e6dc2309ea54b211bce41e36d732f18e:/opt/keycloak/data/import/ubik-realm.json
-/opt/keycloak/bin/kc.sh import --dir /opt/keycloak/data/import
+                                !Dont forget to remove the type "js" from the export file because it cause an import failure.
+

@@ -10,8 +10,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Remove="import\h2\**" />
 		<Compile Remove="Services\**" />
+		<EmbeddedResource Remove="import\h2\**" />
 		<EmbeddedResource Remove="Services\**" />
+		<None Remove="import\h2\**" />
 		<None Remove="Services\**" />
 	</ItemGroup>
 
