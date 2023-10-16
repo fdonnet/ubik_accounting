@@ -11,7 +11,6 @@ using FluentValidation;
 using Serilog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
-using Testcontainers.Keycloak;
 
 namespace Ubik.Accounting.Api
 {

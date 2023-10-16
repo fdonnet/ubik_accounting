@@ -38,9 +38,16 @@ namespace Ubik.Accounting.Api.Tests.Integration
                 .WithPassword("TEST_PASSWORD")
                 .Build();
 
+            var path = Path.GetFullPath("./import");
+            var pathwsl = "/" + path.Replace('\\', '/').Replace(":","");
+
+            //"/f/Dev/ubik/tests/Ubik.Accounting.Api.Tests.Integration/import"
+            //F/Dev/ubik/tests/Ubik.Accounting.Api.Tests.Integration/bin/Debug/net7.0/import
+
+
             _keycloackContainer = new KeycloakBuilder()
                                 .WithImage("keycloak/keycloak:latest")
-                                .WithBindMount("/f/Dev/ubik/tests/Ubik.Accounting.Api.Tests.Integration/import", "/opt/keycloak/data/import", AccessMode.ReadWrite)
+                                .WithBindMount(pathwsl, "/opt/keycloak/data/import", AccessMode.ReadWrite)
                                 .WithCommand(new string[] { "--import-realm" })
                                 .Build();
 
