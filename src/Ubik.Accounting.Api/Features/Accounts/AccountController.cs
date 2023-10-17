@@ -10,6 +10,7 @@ using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 
 namespace Ubik.Accounting.Api.Features.Accounts
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class AccountController : ControllerBase
@@ -42,6 +43,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
             return Ok(result);
         }
 
+        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -53,6 +55,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
             return CreatedAtAction(nameof(GetAccount), new { id = result.Id }, result);
         }
 
+        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -66,6 +69,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
             return Ok(accountResult);
         }
 
+        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpDelete("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
