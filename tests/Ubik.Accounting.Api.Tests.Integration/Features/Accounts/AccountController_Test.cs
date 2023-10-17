@@ -47,7 +47,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
-        public async Task CheckRoleForAccount_403_NoRole()
+        public async Task CheckHasRoleForAccount_403_NoRole()
         {
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
@@ -65,6 +65,26 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseGet.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responsePost.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responsePut.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responseDel.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task CheckHasWriteRoleForAccount_403_NoWriteRole()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var responsePost = await httpClient.PostAsync("/Account", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responsePut = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responseDel = await httpClient.DeleteAsync($"/Account/{_testDBValues.AccountId1}");
+
+            //Assert
             responsePost.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responsePut.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseDel.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -160,27 +180,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                     && x.Label == fake.Label
                     && x.Description == fake.Description
                     && x.Version != default!);
-        }
-
-        [Fact]
-        public async Task Post_403_NoWriteRole()
-        {
-            //Arrange
-            var httpClient = Factory.CreateDefaultClient();
-
-            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            //Act
-            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
-            var fake = fakeAc.ToAddAccountResult();
-            var postAccountJson = JsonSerializer.Serialize(fake);
-            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
-
-            var response = await httpClient.PostAsync($"/Account", content);
-
-            //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
@@ -309,35 +308,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                     && x.Label == fake.Label
                     && x.Description == fake.Description
                     && x.Version != fake.Version);
-        }
-
-        [Fact]
-        public async Task Put_403_NoWriteRole()
-        {
-            //Arrange
-            var httpClient = Factory.CreateDefaultClient();
-
-            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            //Act
-            var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
-            var fake = fakeAc.ToAddAccountResult();
-
-            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
-            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
-
-            fake.Version = resultGet!.Version;
-            fake.Id = resultGet!.Id;
-            fake.Code = _testDBValues.AccountCode1;
-
-            var postAccountJson = JsonSerializer.Serialize(fake);
-            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
-
-            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
-
-            //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
@@ -527,22 +497,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        }
-
-        [Fact]
-        public async Task Del_403_NotWriteRole()
-        {
-            //Arrange
-            var httpClient = Factory.CreateDefaultClient();
-
-            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            //Act
-            var response = await httpClient.DeleteAsync($"/Account/{_testDBValues.AccountIdForDel}");
-
-            //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
