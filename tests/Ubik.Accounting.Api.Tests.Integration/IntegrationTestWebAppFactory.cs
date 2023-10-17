@@ -22,6 +22,7 @@ using Testcontainers.MariaDb;
 using Ubik.Accounting.Api.Data;
 using IContainer = DotNet.Testcontainers.Containers.IContainer;
 
+//TODO: manage to create container in parallel and see why it's create a container per test group...
 namespace Ubik.Accounting.Api.Tests.Integration
 {
     public class IntegrationTestWebAppFactory
@@ -67,8 +68,10 @@ namespace Ubik.Accounting.Api.Tests.Integration
 
         public async Task InitializeAsync()
         {
-            await _keycloackContainer.StartAsync();
-            await _dbContainer.StartAsync();
+            var keycloackTask = _keycloackContainer.StartAsync();
+            var dbTask = _dbContainer.StartAsync();
+
+            await Task.WhenAll(keycloackTask, dbTask);
         }
 
         public new async Task DisposeAsync()
@@ -92,5 +95,11 @@ namespace Ubik.Accounting.Api.Tests.Integration
             Environment.SetEnvironmentVariable("AuthorizationUrl", $"http://{host}:{port}/realms/ubik/protocol/openid-connect/auth");
             Environment.SetEnvironmentVariable("TokenUrl", $"http://{host}:{port}/realms/ubik/protocol/openid-connect/token");
         }
+    }
+
+    [CollectionDefinition("Keycloack and DB")]
+    public class KeycloackAndDb : ICollectionFixture<IntegrationTestWebAppFactory>
+    {
+
     }
 }

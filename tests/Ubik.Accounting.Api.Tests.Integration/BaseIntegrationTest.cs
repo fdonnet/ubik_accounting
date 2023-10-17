@@ -10,9 +10,9 @@ using Ubik.Accounting.Api.Data;
 
 namespace Ubik.Accounting.Api.Tests.Integration
 {
+    [Collection("Keycloack and DB")]
     public abstract class BaseIntegrationTest
-        : IClassFixture<IntegrationTestWebAppFactory>,
-          IDisposable
+        : IDisposable
     {
         private readonly IServiceScope _scope;
         protected readonly ISender Sender;
@@ -21,7 +21,6 @@ namespace Ubik.Accounting.Api.Tests.Integration
 
         protected BaseIntegrationTest(IntegrationTestWebAppFactory factory)
         {
-
             Factory = factory;
             _scope = factory.Services.CreateScope();
 
