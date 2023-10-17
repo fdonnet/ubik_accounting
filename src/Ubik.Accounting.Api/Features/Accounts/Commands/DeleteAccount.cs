@@ -24,10 +24,10 @@ public class DeleteAccount
         public async Task<bool> Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
         {
             //Check if the account is found
-            var account = await _serviceManager.AccountService.GetAccountAsync(request.Id)
+            var account = await _serviceManager.AccountService.GetAsync(request.Id)
                             ?? throw new AccountNotFoundException(request.Id);
 
-            await _serviceManager.AccountService.DeleteAccountAsync(account.Id);
+            await _serviceManager.AccountService.DeleteAsync(account.Id);
 
             return true;
         }

@@ -42,7 +42,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         public async Task Get_Account_Ok()
         {
             //Arrange
-            _serviceManager.AccountService.GetAccountAsync(_query.Id).Returns(_account);
+            _serviceManager.AccountService.GetAsync(_query.Id).Returns(_account);
 
             //Act
             var result = await _handler.Handle(_query, CancellationToken.None);
@@ -57,7 +57,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         public async Task GetAccount_AccountNotFoundException_AccountIdNotFound()
         {
             //Arrange
-            _serviceManager.AccountService.GetAccountAsync(_query.Id).Returns(Task.FromResult<Account?>(null));
+            _serviceManager.AccountService.GetAsync(_query.Id).Returns(Task.FromResult<Account?>(null));
 
             //Act
             Func<Task> act = async () => await _handler.Handle(_query, CancellationToken.None);

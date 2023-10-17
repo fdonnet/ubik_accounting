@@ -1,4 +1,5 @@
 ﻿using Ubik.Accounting.Api.Data;
+using Ubik.Accounting.Api.Features.AccountGroups;
 using Ubik.Accounting.Api.Features.Accounts;
 
 namespace Ubik.Accounting.Api.Features
@@ -7,6 +8,7 @@ namespace Ubik.Accounting.Api.Features
     {
         private readonly AccountingContext _context;
         private IAccountService? _accountService;
+        private IAccountGroupService? _accountGroupService;
 
         public ServiceManager(AccountingContext context)
         {
@@ -20,6 +22,16 @@ namespace Ubik.Accounting.Api.Features
                 if (_accountService == null)
                     _accountService = new AccountService(_context);
                 return _accountService;
+            }
+        }
+
+        public IAccountGroupService AccountGroupService
+        {
+            get
+            {
+                if (_accountGroupService == null)
+                    _accountGroupService = new AccountGroupService(_context);
+                return _accountGroupService;
             }
         }
 

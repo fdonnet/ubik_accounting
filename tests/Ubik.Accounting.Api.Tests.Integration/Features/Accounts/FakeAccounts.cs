@@ -17,5 +17,16 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                      AccountGroupId = accountGroupId
                  }).Generate(numTests);
         }
+
+        public static IEnumerable<AccountGroup> GenerateAccountGroups(int numTests)
+        {
+            return new Faker<AccountGroup>("fr_CH")
+                 .CustomInstantiator(a => new AccountGroup()
+                 {
+                     Code = a.Finance.Account().ToString(),
+                     Label = a.Finance.AccountName().ClampLength(1, 100),
+                     Description = a.Lorem.Paragraphs().ClampLength(1, 700),
+                 }).Generate(numTests);
+        }
     }
 }

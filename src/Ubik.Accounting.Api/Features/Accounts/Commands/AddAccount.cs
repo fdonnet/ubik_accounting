@@ -42,7 +42,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 if (accountExists)
                     throw new AccountAlreadyExistsException(request.Code);
 
-                await _serviceManager.AccountService.AddAccountAsync(account);
+                await _serviceManager.AccountService.AddAsync(account);
                 await _serviceManager.SaveAsync();
 
                 return account.ToAddAccountResult();

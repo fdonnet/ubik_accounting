@@ -35,7 +35,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
 
             public async Task<GetAccountResult> Handle(GetAccountQuery request, CancellationToken cancellationToken)
             {
-                var account = await _serviceManager.AccountService.GetAccountAsync(request.Id);
+                var account = await _serviceManager.AccountService.GetAsync(request.Id);
 
                 if (account == null)
                     throw new AccountNotFoundException(request.Id);

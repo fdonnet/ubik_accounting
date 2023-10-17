@@ -39,7 +39,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _account = new Account() { Code = "1800", Label = "1000" };
             _account = _command.ToAccount(_account);
             _validationBehavior = new ValidationPipelineBehavior<UpdateAccountCommand, UpdateAccountResult>(new UpdateAccountValidator());
-            _serviceManager.AccountService.UpdateAccountAsync(_account).Returns(_account);
+            _serviceManager.AccountService.UpdateAsync(_account).Returns(_account);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         {
             //Arrange
             _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_account.Code, _account.Id).Returns(false);
-            _serviceManager.AccountService.GetAccountAsync(_account.Id).Returns(_account);
+            _serviceManager.AccountService.GetAsync(_account.Id).Returns(_account);
 
             //Act
             var result = await _handler.Handle(_command, CancellationToken.None);
@@ -63,7 +63,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         {
             //Arrange
             _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_account.Code, _account.Id).Returns(true);
-            _serviceManager.AccountService.GetAccountAsync(_account.Id).Returns(_account);
+            _serviceManager.AccountService.GetAsync(_account.Id).Returns(_account);
 
             //Act
             Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
@@ -78,7 +78,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         {
             //Arrange
             _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_account.Code, _account.Id).Returns(false);
-            _serviceManager.AccountService.GetAccountAsync(_account.Id).Returns(Task.FromResult<Account?>(null));
+            _serviceManager.AccountService.GetAsync(_account.Id).Returns(Task.FromResult<Account?>(null));
 
             //Act
             Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
@@ -93,7 +93,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         {
             //Arrange
             _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_account.Code, _account.Id).Returns(false);
-            _serviceManager.AccountService.GetAccountAsync(_account.Id).Returns(_account);
+            _serviceManager.AccountService.GetAsync(_account.Id).Returns(_account);
             _command.Code = "";
             _command.Label = "";
             _command.AccountGroupId = default!;
@@ -115,7 +115,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         {
             //Arrange
             _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_account.Code, _account.Id).Returns(false);
-            _serviceManager.AccountService.GetAccountAsync(_account.Id).Returns(_account);
+            _serviceManager.AccountService.GetAsync(_account.Id).Returns(_account);
 
             _command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
             _command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
@@ -139,7 +139,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         {
             //Arrange
             _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_account.Code, _account.Id).Returns(false);
-            _serviceManager.AccountService.GetAccountAsync(_account.Id).Returns(_account);
+            _serviceManager.AccountService.GetAsync(_account.Id).Returns(_account);
 
             _command.Version = default!;
 

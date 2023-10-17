@@ -39,7 +39,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         public async Task Get_Accounts_Ok()
         {
             //Arrange
-            _serviceManager.AccountService.GetAccountsAsync().Returns(_accounts);
+            _serviceManager.AccountService.GetAllAsync().Returns(_accounts);
 
             //Act
             var result = await _handler.Handle(_query, CancellationToken.None);

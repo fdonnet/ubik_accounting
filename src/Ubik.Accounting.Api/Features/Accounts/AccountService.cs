@@ -14,14 +14,14 @@ namespace Ubik.Accounting.Api.Features.Accounts
             _context = ctx;
 
         }
-        public async Task<IEnumerable<Account>> GetAccountsAsync()
+        public async Task<IEnumerable<Account>> GetAllAsync()
         {
             var accounts = await _context.Accounts.ToListAsync();
 
             return accounts;
         }
 
-        public async Task<Account?> GetAccountAsync(Guid id)
+        public async Task<Account?> GetAsync(Guid id)
         {
             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
             return account;
@@ -37,7 +37,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
             return await _context.Accounts.AnyAsync(a => a.Code == accountCode && a.Id != currentId);
         }
 
-        public async Task<Account> AddAccountAsync(Account account)
+        public async Task<Account> AddAsync(Account account)
         {
             await _context.Accounts.AddAsync(account);
             await _context.SaveChangesAsync();
@@ -50,7 +50,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
         /// </summary>
         /// <param name="account"></param>
         /// <returns>a bool or throw AccountUpdateDbConcurrencyException if a DbUpdateConcurrencyException occurs</returns>
-        public async Task<Account> UpdateAccountAsync(Account account)
+        public async Task<Account> UpdateAsync(Account account)
         {
             _context.Entry(account).State = EntityState.Modified;
 
@@ -76,7 +76,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
             }
         }
 
-        public async Task<bool> DeleteAccountAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             _context.Accounts.Where(x => x.Id == id).ExecuteDelete();
             await _context.SaveChangesAsync();

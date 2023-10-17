@@ -47,13 +47,13 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                     throw new AccountAlreadyExistsException(request.Code);
 
                 //Check if the account is found
-                var account = await _serviceManager.AccountService.GetAccountAsync(request.Id) 
+                var account = await _serviceManager.AccountService.GetAsync(request.Id) 
                                 ?? throw new AccountNotFoundException(request.Id);
 
                 //Modify the found account
                 account = request.ToAccount(account);
 
-                var result = await _serviceManager.AccountService.UpdateAccountAsync(account);
+                var result = await _serviceManager.AccountService.UpdateAsync(account);
 
                 return result.ToUpdateAccountResult();
             }

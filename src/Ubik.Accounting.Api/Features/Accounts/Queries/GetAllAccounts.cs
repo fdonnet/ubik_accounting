@@ -28,7 +28,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
 
             public async Task<IEnumerable<GetAllAccountsResult>> Handle(GetAllAccountsQuery request, CancellationToken cancellationToken)
             {
-                var accounts = await _serviceManager.AccountService.GetAccountsAsync();
+                var accounts = await _serviceManager.AccountService.GetAllAsync();
                 return accounts.ToGetAllAccountResult();
             }
         }

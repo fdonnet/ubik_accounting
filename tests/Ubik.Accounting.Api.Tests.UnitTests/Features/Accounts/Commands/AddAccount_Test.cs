@@ -35,7 +35,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             _account = command.ToAccount();
             _validationBehavior = new ValidationPipelineBehavior<AddAccountCommand, AddAccountResult>(new AddAccountValidator());
-            _serviceManager.AccountService.AddAccountAsync(_account).Returns(_account);
+            _serviceManager.AccountService.AddAsync(_account).Returns(_account);
         }
 
         [Fact]
