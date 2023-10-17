@@ -1,8 +1,4 @@
-﻿using Docker.DotNet.Models;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using DotNet.Testcontainers.Configurations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -10,17 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Testcontainers.Keycloak;
 using Testcontainers.MariaDb;
 using Ubik.Accounting.Api.Data;
-using IContainer = DotNet.Testcontainers.Containers.IContainer;
 
 //TODO: manage to create container in parallel and see why it's create a container per test group...
 namespace Ubik.Accounting.Api.Tests.Integration
@@ -44,11 +32,12 @@ namespace Ubik.Accounting.Api.Tests.Integration
                                 .WithBindMount(GetWslAbsolutePath("./import"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
                                 .WithCommand(new string[] { "--import-realm" })
                                 .Build();
-       }
+        }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             SetTestEnvVariables();
+
             builder.ConfigureTestServices(services =>
             {
                 var descriptor = services
@@ -61,7 +50,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
 
                 services.AddDbContext<AccountingContext>(options =>
                     options.UseMySql(_dbContainer.GetConnectionString(), ServerVersion.AutoDetect(_dbContainer.GetConnectionString())));
-                
+
                 services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
             });
         }
@@ -90,10 +79,10 @@ namespace Ubik.Accounting.Api.Tests.Integration
         {
             var port = _keycloackContainer.GetMappedPublicPort(8080);
             var host = _keycloackContainer.Hostname;
-            Environment.SetEnvironmentVariable("MetadataAddress", $"http://{host}:{port}/realms/ubik/.well-known/openid-configuration");
-            Environment.SetEnvironmentVariable("Authority", $"http://{host}:{port}/realms/ubik");
-            Environment.SetEnvironmentVariable("AuthorizationUrl", $"http://{host}:{port}/realms/ubik/protocol/openid-connect/auth");
-            Environment.SetEnvironmentVariable("TokenUrl", $"http://{host}:{port}/realms/ubik/protocol/openid-connect/token");
+            Environment.SetEnvironmentVariable("Keycloack__MetadataAddress", $"http://{host}:{port}/realms/ubik/.well-known/openid-configuration");
+            Environment.SetEnvironmentVariable("Keycloack__Authority", $"http://{host}:{port}/realms/ubik");
+            Environment.SetEnvironmentVariable("Keycloack__AuthorizationUrl", $"http://{host}:{port}/realms/ubik/protocol/openid-connect/auth");
+            Environment.SetEnvironmentVariable("Keycloack__TokenUrl", $"http://{host}:{port}/realms/ubik/protocol/openid-connect/token");
         }
     }
 

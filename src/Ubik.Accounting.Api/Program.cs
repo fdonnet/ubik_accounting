@@ -32,7 +32,6 @@ namespace Ubik.Accounting.Api
                 o.RequireHttpsMetadata = bool.Parse(builder.Configuration["Keycloack:RequireHttpsMetadata"]!);
             });
 
-
             // Add services to the container.
             var serverVersion = new MariaDbServerVersion(new Version(11, 1, 2));
             builder.Services.AddDbContextFactory<AccountingContext>(

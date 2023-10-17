@@ -21,7 +21,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
             _mediator = mediator;
         }
 
-        //[Authorize(Roles = "ubik_accounting_account_read")]
+        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
@@ -31,6 +31,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
             return Ok(results);
         }
 
+        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]

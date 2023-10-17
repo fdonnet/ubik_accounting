@@ -1,38 +1,18 @@
 ﻿using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Data;
-using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Models;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 using System.Net;
 using Ubik.ApiService.Common.Exceptions;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using Bogus;
-using System.Text.Json.Nodes;
 using System.Text.Json;
-using Xunit.Abstractions;
-using DotNet.Testcontainers.Containers;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Org.BouncyCastle.Tls;
-using Microsoft.EntityFrameworkCore.Internal;
-using MediatR;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.DeleteAccount;
+using System.Net.Http.Headers;
+using Ubik.Accounting.Api.Tests.Integration.Auth;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
@@ -40,17 +20,19 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
     {
         private readonly DbInitializer _testDBValues;
 
-
         public AccountController_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testDBValues = new DbInitializer();
         }
 
         [Fact]
-        public async Task Get_Accounts_Ok()
+        public async Task GetAll_Accounts_Ok()
         {
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization =new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
             var response = await httpClient.GetAsync("/Account");
@@ -64,10 +46,41 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
+        public async Task GetAll_401_NotAuth()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+            //Act
+            var response = await httpClient.GetAsync("/Account");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task GetAll_403_NoRole()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+            var accessToken = await AuthHelper.GetAccessTokenNoRole();
+
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.GetAsync("/Account");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
         public async Task Get_Account_Ok()
         {
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
             var response = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
@@ -82,10 +95,42 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
+        public async Task Get_401_NoAuth()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            //Act
+            var response = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Get_403_NoRole()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenNoRole();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
         public async Task Get_ProblemDetails_AccountIdNotFound()
         {
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
             var response = await httpClient.GetAsync($"/Account/{Guid.NewGuid()}");
@@ -213,6 +258,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
 
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
             //Act
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
@@ -248,6 +296,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
 
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
             //Act
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
@@ -281,6 +332,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
 
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
             //Act
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
@@ -313,6 +367,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
 
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
             //Act
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
@@ -344,6 +401,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
 
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
             //Act
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
@@ -373,6 +433,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         {
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
@@ -448,26 +511,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR");
-        }
-
-        private async Task<string> GetAccessToken()
-        {
-            var tokenUrl = Environment.GetEnvironmentVariable("TokenUrl");
-            var httpClient = Factory.CreateDefaultClient();
-            httpClient.DefaultRequestHeaders.Add("Content-Type", "application/x-www-form-urlencoded");
-
-            var keyValuesList = new List<KeyValuePair<string, string>>
-            {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", "admin"),
-                new KeyValuePair<string, string>("password", "admin")
-            };
-            var content = new FormUrlEncodedContent(keyValuesList);
-
-            var response = await httpClient.PutAsync(tokenUrl, content);
-
-            return await response.Content.ReadAsStringAsync();
-
         }
     }
 }
