@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 using Ubik.Accounting.Api.Data;
+using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups
 {
@@ -12,14 +15,19 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             _context = ctx;
 
         }
-        public Task<AccountGroup> AddAsync(AccountGroup account)
+        public async Task<AccountGroup> AddAsync(AccountGroup accountGroup)
         {
-            throw new NotImplementedException();
+            await _context.AccountGroups.AddAsync(accountGroup);
+            await _context.SaveChangesAsync();
+
+            return accountGroup;
         }
 
-        public Task<bool> DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            _context.AccountGroups.Where(x => x.Id == id).ExecuteDelete();
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<AccountGroup?> GetAsync(Guid id)
@@ -35,19 +43,40 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             return accountGroups;
         }
 
-        public Task<bool> IfExistsAsync(string accountCode)
+        public async Task<bool> IfExistsAsync(string accountGroupCode)
         {
-            throw new NotImplementedException();
+            return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode);
         }
 
-        public Task<bool> IfExistsWithDifferentIdAsync(string accountCode, Guid currentId)
+        public async Task<bool> IfExistsWithDifferentIdAsync(string accountGroupCode, Guid currentId)
         {
-            throw new NotImplementedException();
+            return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode && a.Id != currentId);
         }
 
-        public Task<AccountGroup> UpdateAsync(AccountGroup account)
+        public async Task<AccountGroup> UpdateAsync(AccountGroup accountGroup)
         {
-            throw new NotImplementedException();
+            _context.Entry(accountGroup).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return accountGroup;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var err = new CustomError()
+                {
+                    ErrorCode = "ACCOUNTGROUP_CONFLICT",
+                    ErrorFriendlyMessage = "You don't have the last version or this account group has been removed, refresh your data before updating.",
+                    ErrorValueDetails = "Version",
+                };
+                var conflict = new AccountUpdateDbConcurrencyException(accountGroup.Version, ex)
+                {
+                    CustomErrors = new List<CustomError> { err }
+                };
+
+                throw conflict;
+            }
         }
     }
 }

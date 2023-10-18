@@ -67,7 +67,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
         [Theory]
         [MemberData(nameof(GetAccountGroups), parameters: new object[] { 5 })]
-        public async Task Add_Account_Ok(AccountGroup accountGroup)
+        public async Task Add_AccountGroup_Ok(AccountGroup accountGroup)
         {
             //Arrange
 
@@ -99,8 +99,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            await _serviceManager.AccountGroupService.DeleteAsync(Guid.NewGuid());
-            var exist = (await _serviceManager.AccountGroupService.GetAsync(Guid.NewGuid())) != null;
+            await _serviceManager.AccountGroupService.DeleteAsync(_testDBValues.AccountGroupIdForDel);
+            var exist = (await _serviceManager.AccountGroupService.GetAsync(_testDBValues.AccountGroupIdForDel)) != null;
 
             //Assert
             exist.Should()
@@ -155,7 +155,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         }
 
         [Fact]
-        public async Task Update_UpdatedAccount_Ok()
+        public async Task Update_UpdatedAccountGroup_Ok()
         {
             //Arrange
             var accountGroup = await _serviceManager.AccountGroupService.GetAsync(_testDBValues.AccountGroupId1);
