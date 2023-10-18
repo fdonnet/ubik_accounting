@@ -29,8 +29,4 @@
     <ProjectReference Include="..\..\src\Ubik.Accounting.Api\Ubik.Accounting.Api.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\AccountGroups\Commands\" />
-  </ItemGroup>
-
 </Project>

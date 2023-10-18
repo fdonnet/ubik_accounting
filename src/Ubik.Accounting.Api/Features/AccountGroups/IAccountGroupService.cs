@@ -7,6 +7,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
         public Task<IEnumerable<AccountGroup>> GetAllAsync();
         public Task<AccountGroup?> GetAsync(Guid id);
         public Task<bool> IfExistsAsync(string accountGroupCode);
+        public Task<bool> IfExistsAsync(Guid accountGroupId);
         public Task<bool> IfExistsWithDifferentIdAsync(string accountGroupCode, Guid currentId);
         public Task<AccountGroup> AddAsync(AccountGroup accountGroup);
         public Task<AccountGroup> UpdateAsync(AccountGroup accountGroup);

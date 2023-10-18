@@ -1,6 +1,8 @@
 ﻿using Ubik.Accounting.Api.Models;
+using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAllAccountGroups;
+using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
 {
@@ -29,6 +31,31 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Description = accountGroup.Description,
                 ParentAccountGroupId = accountGroup.ParentAccountGroupId,
                 Version = accountGroup.Version
+            };
+        }
+
+        public static AddAccountGroupResult ToAddAccountGroupResult(this AccountGroup account)
+        {
+            return new AddAccountGroupResult()
+            {
+                Id = account.Id,
+                Code = account.Code,
+                Label = account.Label,
+                Description = account.Description,
+                ParentAccountGroupId = account.ParentAccountGroupId,
+                Version = account.Version
+            };
+        }
+
+        public static AccountGroup ToAccountGroup(this AddAccountGroupCommand addAccountGroupCommand)
+        {
+            return new AccountGroup()
+            {
+                Id = Guid.NewGuid(),
+                Code = addAccountGroupCommand.Code,
+                Label = addAccountGroupCommand.Label,
+                Description = addAccountGroupCommand.Description,
+                ParentAccountGroupId = addAccountGroupCommand.ParentAccountGroupId,
             };
         }
     }

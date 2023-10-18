@@ -31,8 +31,4 @@
     <ProjectReference Include="..\Ubik.Db.Common\Ubik.DB.Common\Ubik.DB.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\AccountGroups\Commands\" />
-  </ItemGroup>
-
 </Project>
