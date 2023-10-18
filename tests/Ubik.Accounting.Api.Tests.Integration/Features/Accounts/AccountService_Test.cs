@@ -1,8 +1,4 @@
-﻿using Bogus;
-using FluentAssertions;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
-using System.Security.Principal;
+﻿using FluentAssertions;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
@@ -118,7 +114,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory]
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-88f8-428e59bbc22b" })]
+        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-58f8-428e59bbc22b" })]
         public async Task Add_Exception_AccountGroupIdNotExists(Account account)
         {
             //Arrange

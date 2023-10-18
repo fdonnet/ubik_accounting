@@ -1,12 +1,7 @@
-﻿using Bogus;
-using FluentAssertions;
-using MediatR;
-using Microsoft.Extensions.Logging;
+﻿using FluentAssertions;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.Accounts.Commands;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
-using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Api.Features.Accounts.Queries;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
@@ -54,7 +49,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         }
 
         [Fact]
-        public async Task GetAccount_AccountNotFoundException_AccountIdNotFound()
+        public async Task Get_AccountNotFoundException_AccountIdNotFound()
         {
             //Arrange
             _serviceManager.AccountService.GetAsync(_query.Id).Returns(Task.FromResult<Account?>(null));

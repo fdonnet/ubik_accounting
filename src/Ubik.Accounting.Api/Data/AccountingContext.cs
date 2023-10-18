@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 using Ubik.Accounting.Api.Data.Config;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Services;

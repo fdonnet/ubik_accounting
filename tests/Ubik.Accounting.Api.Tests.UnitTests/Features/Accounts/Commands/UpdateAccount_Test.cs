@@ -6,7 +6,6 @@ using Ubik.ApiService.Common.Validators;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using FluentAssertions;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Bogus;
 using Ubik.ApiService.Common.Exceptions;

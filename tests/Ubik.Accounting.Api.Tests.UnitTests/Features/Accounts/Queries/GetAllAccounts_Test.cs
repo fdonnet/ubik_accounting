@@ -1,13 +1,9 @@
-﻿using Bogus;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.Accounts.Commands;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Api.Features.Accounts.Queries;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Validators;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 
@@ -36,7 +32,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         }
 
         [Fact]
-        public async Task Get_Accounts_Ok()
+        public async Task GetAll_Accounts_Ok()
         {
             //Arrange
             _serviceManager.AccountService.GetAllAsync().Returns(_accounts);

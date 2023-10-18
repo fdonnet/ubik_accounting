@@ -32,11 +32,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var httpClient = Factory.CreateDefaultClient();
 
             //Act
-            var responseGetAll = await httpClient.GetAsync("/Account");
-            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
-            var responsePost = await httpClient.PostAsync("/Account", new StringContent("test", Encoding.UTF8, "application/json"));
-            var responsePut = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", new StringContent("test", Encoding.UTF8, "application/json"));
-            var responseDel = await httpClient.DeleteAsync($"/Account/{_testDBValues.AccountId1}");
+            var responseGetAll = await httpClient.GetAsync("/Accounts");
+            var responseGet = await httpClient.GetAsync($"/Accounts/{_testDBValues.AccountId1}");
+            var responsePost = await httpClient.PostAsync("/Accounts", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responsePut = await httpClient.PutAsync($"/Accounts/{_testDBValues.AccountId1}", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responseDel = await httpClient.DeleteAsync($"/Accounts/{_testDBValues.AccountId1}");
 
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -56,11 +56,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var responseGetAll = await httpClient.GetAsync("/Account");
-            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
-            var responsePost = await httpClient.PostAsync("/Account", new StringContent("test", Encoding.UTF8, "application/json"));
-            var responsePut = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", new StringContent("test", Encoding.UTF8, "application/json"));
-            var responseDel = await httpClient.DeleteAsync($"/Account/{_testDBValues.AccountId1}");
+            var responseGetAll = await httpClient.GetAsync("/Accounts");
+            var responseGet = await httpClient.GetAsync($"/Accounts/{_testDBValues.AccountId1}");
+            var responsePost = await httpClient.PostAsync("/Accounts", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responsePut = await httpClient.PutAsync($"/Accounts/{_testDBValues.AccountId1}", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responseDel = await httpClient.DeleteAsync($"/Accounts/{_testDBValues.AccountId1}");
 
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -80,9 +80,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var responsePost = await httpClient.PostAsync("/Account", new StringContent("test", Encoding.UTF8, "application/json"));
-            var responsePut = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", new StringContent("test", Encoding.UTF8, "application/json"));
-            var responseDel = await httpClient.DeleteAsync($"/Account/{_testDBValues.AccountId1}");
+            var responsePost = await httpClient.PostAsync("/Accounts", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responsePut = await httpClient.PutAsync($"/Accounts/{_testDBValues.AccountId1}", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responseDel = await httpClient.DeleteAsync($"/Accounts/{_testDBValues.AccountId1}");
 
             //Assert
             responsePost.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -100,7 +100,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization =new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.GetAsync("/Account");
+            var response = await httpClient.GetAsync("/Accounts");
             var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>();
 
             //Assert
@@ -120,7 +120,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+            var response = await httpClient.GetAsync($"/Accounts/{_testDBValues.AccountId1}");
             var result = await response.Content.ReadFromJsonAsync<GetAccountResult>();
 
             //Assert
@@ -141,7 +141,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.GetAsync($"/Account/{Guid.NewGuid()}");
+            var response = await httpClient.GetAsync($"/Accounts/{Guid.NewGuid()}");
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -167,7 +167,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"/Account", content);
+            var response = await httpClient.PostAsync($"/Accounts", content);
             var result = await response.Content.ReadFromJsonAsync<AddAccountResult>();
 
             //Assert
@@ -199,7 +199,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"/Account", content);
+            var response = await httpClient.PostAsync($"/Accounts", content);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -230,7 +230,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"/Account", content);
+            var response = await httpClient.PostAsync($"/Accounts", content);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -261,7 +261,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"/Account", content);
+            var response = await httpClient.PostAsync($"/Accounts", content);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -285,7 +285,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
 
-            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+            var responseGet = await httpClient.GetAsync($"/Accounts/{_testDBValues.AccountId1}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
 
             fake.Version = resultGet!.Version;
@@ -295,7 +295,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
+            var response = await httpClient.PutAsync($"/Accounts/{_testDBValues.AccountId1}", content);
             var result = await response.Content.ReadFromJsonAsync<UpdateAccountResult>();
 
             //Assert
@@ -323,7 +323,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
 
-            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+            var responseGet = await httpClient.GetAsync($"/Accounts/{_testDBValues.AccountId1}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
 
             fake.Id = default!;
@@ -335,7 +335,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
+            var response = await httpClient.PutAsync($"/Accounts/{_testDBValues.AccountId1}", content);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -359,7 +359,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
 
-            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+            var responseGet = await httpClient.GetAsync($"/Accounts/{_testDBValues.AccountId1}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
 
             fake.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
@@ -370,7 +370,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
+            var response = await httpClient.PutAsync($"/Accounts/{_testDBValues.AccountId1}", content);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -394,7 +394,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
 
-            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId2}");
+            var responseGet = await httpClient.GetAsync($"/Accounts/{_testDBValues.AccountId2}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
 
             fake.Id = resultGet!.Id;
@@ -404,7 +404,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId2}", content);
+            var response = await httpClient.PutAsync($"/Accounts/{_testDBValues.AccountId2}", content);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -428,7 +428,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
 
-            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId2}");
+            var responseGet = await httpClient.GetAsync($"/Accounts/{_testDBValues.AccountId2}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
 
             fake.Id = Guid.NewGuid();
@@ -437,7 +437,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PutAsync($"/Account/{fake.Id}", content);
+            var response = await httpClient.PutAsync($"/Accounts/{fake.Id}", content);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -461,7 +461,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var fakeAc = FakeGenerator.GenerateAccounts(1, _testDBValues.AccountGroupId1).First();
             var fake = fakeAc.ToAddAccountResult();
 
-            var responseGet = await httpClient.GetAsync($"/Account/{_testDBValues.AccountId1}");
+            var responseGet = await httpClient.GetAsync($"/Accounts/{_testDBValues.AccountId1}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
 
             fake.Version = resultGet!.Version;
@@ -471,8 +471,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
-            var response2 = await httpClient.PutAsync($"/Account/{_testDBValues.AccountId1}", content);
+            var response = await httpClient.PutAsync($"/Accounts/{_testDBValues.AccountId1}", content);
+            var response2 = await httpClient.PutAsync($"/Accounts/{_testDBValues.AccountId1}", content);
             var result = await response2.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -493,7 +493,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.DeleteAsync($"/Account/{_testDBValues.AccountIdForDel}");
+            var response = await httpClient.DeleteAsync($"/Accounts/{_testDBValues.AccountIdForDel}");
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -509,7 +509,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.DeleteAsync($"/Account/{Guid.NewGuid()}");
+            var response = await httpClient.DeleteAsync($"/Accounts/{Guid.NewGuid()}");
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -532,7 +532,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             Guid empty = default!;
 
             //Act
-            var response = await httpClient.DeleteAsync($"/Account/{empty}");
+            var response = await httpClient.DeleteAsync($"/Accounts/{empty}");
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert

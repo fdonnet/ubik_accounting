@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
-using Ubik.Accounting.Api.Features.Accounts.Mappers;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Commands;
 public class DeleteAccount
