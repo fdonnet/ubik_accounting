@@ -5,8 +5,8 @@
   "defaultSignatureAlgorithm" : "RS256",
   "revokeRefreshToken" : false,
   "refreshTokenMaxReuse" : 0,
-  "accessTokenLifespan" : 172800,
-  "accessTokenLifespanForImplicitFlow" : 172800,
+  "accessTokenLifespan" : 300,
+  "accessTokenLifespanForImplicitFlow" : 900,
   "ssoSessionIdleTimeout" : 1800,
   "ssoSessionMaxLifespan" : 36000,
   "ssoSessionIdleTimeoutRememberMe" : 0,
@@ -53,6 +53,14 @@
       "containerId" : "2ae66de8-e60f-4e29-9bfc-cbb79647c432",
       "attributes" : { }
     }, {
+      "id" : "24bf1016-7f21-406d-88a3-3d6af89ca534",
+      "name" : "ubik_accounting_accountgroup_read",
+      "description" : "",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2ae66de8-e60f-4e29-9bfc-cbb79647c432",
+      "attributes" : { }
+    }, {
       "id" : "9668e628-8052-41e0-8d38-06d7576bf452",
       "name" : "ubik_accounting_account_read",
       "description" : "",
@@ -86,6 +94,14 @@
       "id" : "224a6941-50e4-4ffa-acfe-c496a99b3ebb",
       "name" : "uma_authorization",
       "description" : "${role_uma_authorization}",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "2ae66de8-e60f-4e29-9bfc-cbb79647c432",
+      "attributes" : { }
+    }, {
+      "id" : "4abcbfef-3156-4489-8f9c-df2c32a27455",
+      "name" : "ubik_accounting_accountgroup_write",
+      "description" : "",
       "composite" : false,
       "clientRole" : false,
       "containerId" : "2ae66de8-e60f-4e29-9bfc-cbb79647c432",
@@ -362,7 +378,7 @@
     "name" : "ubik_accounting_read",
     "path" : "/ubik_accounting_read",
     "attributes" : { },
-    "realmRoles" : [ "ubik_accounting_account_read" ],
+    "realmRoles" : [ "ubik_accounting_accountgroup_read", "ubik_accounting_account_read" ],
     "clientRoles" : { },
     "subGroups" : [ ]
   }, {
@@ -370,7 +386,7 @@
     "name" : "ubik_accounting_readwrite",
     "path" : "/ubik_accounting_readwrite",
     "attributes" : { },
-    "realmRoles" : [ "ubik_accounting_account_read", "ubik_accounting_account_write" ],
+    "realmRoles" : [ "ubik_accounting_accountgroup_read", "ubik_accounting_account_read", "ubik_accounting_account_write", "ubik_accounting_accountgroup_write" ],
     "clientRoles" : { },
     "subGroups" : [ ]
   }, {
@@ -378,7 +394,7 @@
     "name" : "ubik_accounting_write",
     "path" : "/ubik_accounting_write",
     "attributes" : { },
-    "realmRoles" : [ "ubik_accounting_account_write" ],
+    "realmRoles" : [ "ubik_accounting_account_write", "ubik_accounting_accountgroup_write" ],
     "clientRoles" : { },
     "subGroups" : [ ]
   } ],
@@ -398,7 +414,7 @@
   "otpPolicyLookAheadWindow" : 1,
   "otpPolicyPeriod" : 30,
   "otpPolicyCodeReusable" : false,
-  "otpSupportedApplications" : [ "totpAppMicrosoftAuthenticatorName", "totpAppGoogleName", "totpAppFreeOTPName" ],
+  "otpSupportedApplications" : [ "totpAppFreeOTPName", "totpAppMicrosoftAuthenticatorName", "totpAppGoogleName" ],
   "webAuthnPolicyRpEntityName" : "keycloak",
   "webAuthnPolicySignatureAlgorithms" : [ "ES256" ],
   "webAuthnPolicyRpId" : "",
@@ -437,8 +453,8 @@
     "notBefore" : 0,
     "groups" : [ ]
   }, {
-    "id" : "014581e0-0989-4f32-a846-d174fadd3911",
-    "createdTimestamp" : 1697548602123,
+    "id" : "a265ed07-276c-4375-9dfe-ab754095336e",
+    "createdTimestamp" : 1697738547347,
     "username" : "testnorole",
     "enabled" : true,
     "totp" : false,
@@ -447,11 +463,11 @@
     "lastName" : "",
     "email" : "testnorole@test.com",
     "credentials" : [ {
-      "id" : "59589827-31ff-4366-9965-9556ab5bb0ab",
+      "id" : "ae7f6109-e6d6-4d47-a59b-03a156e1159e",
       "type" : "password",
       "userLabel" : "My password",
-      "createdDate" : 1697548612745,
-      "secretData" : "{\"value\":\"SzmtHYRgumV/f3CuifsZ53L/KbUgGNFoxuzSuU0g5js=\",\"salt\":\"nkusrWS49hmvqn+7/ootGg==\",\"additionalParameters\":{}}",
+      "createdDate" : 1697738578638,
+      "secretData" : "{\"value\":\"vxcQX74fYDnYQ/ZxJYzDxzvBcVwyQALlSDJ1xRCQUu0=\",\"salt\":\"I33F3yXS6y6/wcuexNZkaw==\",\"additionalParameters\":{}}",
       "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
     } ],
     "disableableCredentialTypes" : [ ],
@@ -800,7 +816,14 @@
     "authorizationSettings" : {
       "allowRemoteResourceManagement" : true,
       "policyEnforcementMode" : "ENFORCING",
-      "resources" : [ ],
+      "resources" : [ {
+        "name" : "Default Resource",
+        "type" : "urn:ubik_accounting_api:resources:default",
+        "ownerManagedAccess" : false,
+        "attributes" : { },
+        "_id" : "9154b947-70f8-43dd-9bd0-3d73e34700b4",
+        "uris" : [ "/*" ]
+      } ],
       "policies" : [ ],
       "scopes" : [ ],
       "decisionStrategy" : "UNANIMOUS"
@@ -1332,7 +1355,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-sha256-pairwise-sub-mapper", "oidc-usermodel-property-mapper", "saml-role-list-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper", "saml-user-property-mapper", "oidc-address-mapper", "oidc-usermodel-attribute-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "saml-user-attribute-mapper", "saml-role-list-mapper", "oidc-full-name-mapper", "oidc-usermodel-property-mapper", "oidc-address-mapper", "saml-user-property-mapper", "oidc-sha256-pairwise-sub-mapper" ]
       }
     }, {
       "id" : "419d93ee-582f-4102-8769-5ec20c30f1ad",
@@ -1351,7 +1374,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-user-attribute-mapper", "oidc-usermodel-property-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-role-list-mapper", "saml-user-property-mapper", "oidc-full-name-mapper", "oidc-usermodel-attribute-mapper", "oidc-address-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "oidc-usermodel-property-mapper", "saml-user-property-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-role-list-mapper", "oidc-address-mapper" ]
       }
     }, {
       "id" : "176dcc36-a9cc-4fa5-b7cf-1a10dc58806c",

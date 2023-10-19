@@ -16,12 +16,12 @@ using Ubik.Accounting.Api.Data.Init;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
-    public class AccountController_Test : BaseIntegrationTest
+    public class AccountsController_Test : BaseIntegrationTest
     {
         private readonly BaseValuesForAccounts _testValuesForAccounts;
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
 
-        public AccountController_Test(IntegrationTestWebAppFactory factory) : base(factory)
+        public AccountsController_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testValuesForAccounts = new BaseValuesForAccounts();
             _testValuesForAccountGroups = new BaseValuesForAccountGroups();
@@ -210,6 +210,34 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_ALREADY_EXISTS");
+        }
+
+        [Fact]
+        public async Task Post_ProblemDetails_AccountGroupNotFound()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var fakeAc = FakeGenerator.GenerateAccounts(1, _testValuesForAccountGroups.AccountGroupId1).First();
+            var fake = fakeAc.ToAddAccountResult();
+            fake.AccountGroupId = Guid.NewGuid();
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync($"/Accounts", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_NOT_FOUND_FOR_ACCOUNT");
         }
 
         [Fact]
