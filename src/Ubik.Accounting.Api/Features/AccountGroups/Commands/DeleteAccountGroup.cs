@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.DeleteAccount;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
@@ -27,6 +25,18 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
                 //Check if the accountGroup is found
                 var accountGroup = await _serviceManager.AccountGroupService.GetAsync(request.Id) 
                     ?? throw new AccountGroupNotFoundException(request.Id);
+
+                //Has child account groups ?
+                var hasChildAccountGroups = await _serviceManager.AccountGroupService.HasAnyChildAccountGroups(request.Id);
+                if (hasChildAccountGroups)
+                    throw new AccountGroupHasChildAccountGroupsException(request.Id);
+
+
+                //Has child accounts ?
+                var hasChildAccounts = await _serviceManager.AccountGroupService.HasAnyChildAccounts(request.Id);
+                if (hasChildAccounts)
+                    throw new AccountGroupHasChildAccountsException(request.Id);
+
 
                 await _serviceManager.AccountGroupService.DeleteAsync(accountGroup.Id);
 

@@ -35,6 +35,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
             _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns
                 (new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" });
+            _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(false);
+            _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(false);
+
 
             //Act
             var result = await _handler.Handle(_command, CancellationToken.None);
@@ -50,6 +53,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             //Arrange
             _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
             _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(Task.FromResult<AccountGroup?>(null));
+            _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(false);
+            _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(false);
 
             //Act
             Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
@@ -65,6 +70,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             //Arrange
             _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
             _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" });
+            _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(false);
+            _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(false);
             _command.Id = default!;
 
             //Act
@@ -73,10 +80,43 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
                 return _handler.Handle(_command, CancellationToken.None);
             }, CancellationToken.None);
 
-            //Assert (3 errors because version is not specified)
             await act.Should().ThrowAsync<CustomValidationException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
                     && e.CustomErrors.Count() == 1);
+        }
+
+        [Fact]
+        public async Task Del_AccountGroupHasChildAccountGroupsException_AccountGroupIdIsLinkedToChildAccountGroups()
+        {
+            //Arrange
+            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
+            _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" });
+            _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(true);
+            _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(false);
+
+            //Act
+            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+
+            //Assert
+            await act.Should().ThrowAsync<AccountGroupHasChildAccountGroupsException>()
+                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+        }
+
+        [Fact]
+        public async Task Del_AccountGroupHasChildAccountsException_AccountGroupIdIsLinkedToChildAccounts()
+        {
+            //Arrange
+            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
+            _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" });
+            _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(false);
+            _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(true);
+
+            //Act
+            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+
+            //Assert
+            await act.Should().ThrowAsync<AccountGroupHasChildAccountsException>()
+                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
     }
 }

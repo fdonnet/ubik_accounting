@@ -14,11 +14,12 @@ namespace Ubik.Accounting.Api.Data
         public Guid UserId1 { get; } = Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e");
 
         public Guid AccountGroupId1 { get; } = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22a");
+        public Guid AccountGroupIdFirstLvl1 { get; } = Guid.Parse("1529991f-20dd-4888-88f8-428e59bbc22a");
         public Guid AccountGroupId2 { get; } = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22b");
         public Guid AccountGroupIdForDel { get; } = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22c");
         public string AccountGroupCode1 { get; } = "102";
 
-        private DateTime _now = DateTime.UtcNow;
+        private readonly DateTime _now = DateTime.UtcNow;
 
 
         private void LoadAccountGroupsData(AccountingContext context)
@@ -27,6 +28,21 @@ namespace Ubik.Accounting.Api.Data
             {
                 var accountGroups = new AccountGroup[]
                             {
+
+                new AccountGroup
+                {
+                    Id = AccountGroupIdFirstLvl1,
+                    CreatedBy = UserId1,
+                    CreatedAt = _now,
+                    Code = "10",
+                    Description = "Liquidités",
+                    Label = "Liquidités",
+                    ModifiedBy = UserId1,
+                    ModifiedAt = _now,
+                    ParentAccountGroupId = null,
+                    Version = Guid.NewGuid(),
+                    TenantId = TenantId
+                },
                 new AccountGroup
                 {
                     Id = AccountGroupId1,
@@ -37,7 +53,7 @@ namespace Ubik.Accounting.Api.Data
                     Label = "Banques",
                     ModifiedBy = UserId1,
                     ModifiedAt = _now,
-                    ParentAccountGroupId = null,
+                    ParentAccountGroupId = AccountGroupIdFirstLvl1,
                     Version = Guid.NewGuid(),
                     TenantId = TenantId
                 },
@@ -51,7 +67,7 @@ namespace Ubik.Accounting.Api.Data
                     Label = "Autres",
                     ModifiedBy = UserId1,
                     ModifiedAt = _now,
-                    ParentAccountGroupId = null,
+                    ParentAccountGroupId = AccountGroupIdFirstLvl1,
                     Version = Guid.NewGuid(),
                     TenantId = TenantId
                 },
@@ -65,7 +81,7 @@ namespace Ubik.Accounting.Api.Data
                     Label = "To be removed Autres actifs",
                     ModifiedBy = UserId1,
                     ModifiedAt = _now,
-                    ParentAccountGroupId = null,
+                    ParentAccountGroupId = AccountGroupIdFirstLvl1,
                     Version = Guid.NewGuid(),
                     TenantId = TenantId
                 }
@@ -142,7 +158,6 @@ namespace Ubik.Accounting.Api.Data
         public void Initialize(AccountingContext context)
         {
             var userId2 = Guid.NewGuid();
-            var now = DateTime.UtcNow;
 
             if (!context.Users.Any())
             {

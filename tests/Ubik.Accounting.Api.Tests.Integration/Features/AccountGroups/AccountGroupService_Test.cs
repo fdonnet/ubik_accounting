@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
@@ -103,7 +104,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         [Theory]
         [InlineData("102", true)]
         [InlineData("ZZZZZZZXX", false)]
-        public async Task IfExist_TrueOrFalse_AccountGroupExists(string accountGroupCode, bool resultNeeded)
+        public async Task IfExist_TrueOrFalse_Ok(string accountGroupCode, bool resultNeeded)
         {
             //Arrange
 
@@ -117,7 +118,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         [Theory]
         [InlineData("102", "7777f11f-20dd-4888-88f8-428e59bbc535", true)]
         [InlineData("zzzz999", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
-        public async Task IfExistWithDifferentId_TrueorFalse_AccountGroupExistss(string accountGroupCode, string currentGuid, bool resultNeeded)
+        public async Task IfExistWithDifferentId_TrueorFalse_Ok(string accountGroupCode, string currentGuid, bool resultNeeded)
         {
             //Arrange
 
@@ -163,6 +164,30 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             result.Should()
                     .NotBeNull()
                     .And.BeOfType<AccountGroup>();
+        }
+
+        [Theory]
+        [InlineData("1529991f-20dd-4888-88f8-428e59bbc22a", true)]
+        [InlineData("7777f11f-20dd-4888-88f8-420e59bbc535", false)]
+        public async Task HasAnyChildAccountGroups_TrueOrFalse_Ok(Guid id,bool neededResult)
+        {
+            //Act
+            var result = await _serviceManager.AccountGroupService.HasAnyChildAccountGroups(id);
+
+            //Assert
+            result.Should().Be(neededResult);
+        }
+
+        [Theory]
+        [InlineData("1524f11f-20dd-4888-88f8-428e59bbc22a", true)]
+        [InlineData("1529991f-20dd-4888-88f8-428e59bbc22a", false)]
+        public async Task HasAnyChildAccounts_TrueOrFalse_OK(Guid id, bool neededResult)
+        {
+            //Act
+            var result = await _serviceManager.AccountGroupService.HasAnyChildAccounts(id);
+
+            //Assert
+            result.Should().Be(neededResult);
         }
 
         public static IEnumerable<object[]> GeneratedGuids

@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups
 {
@@ -9,6 +10,8 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
         public Task<bool> IfExistsAsync(string accountGroupCode);
         public Task<bool> IfExistsAsync(Guid accountGroupId);
         public Task<bool> IfExistsWithDifferentIdAsync(string accountGroupCode, Guid currentId);
+        public Task<bool> HasAnyChildAccountGroups(Guid Id);
+        public Task<bool> HasAnyChildAccounts(Guid Id);
         public Task<AccountGroup> AddAsync(AccountGroup accountGroup);
         public Task<AccountGroup> UpdateAsync(AccountGroup accountGroup);
         public Task<bool> DeleteAsync(Guid id);
