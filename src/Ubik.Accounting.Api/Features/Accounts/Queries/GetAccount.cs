@@ -19,7 +19,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
             public required string Code { get; set; }
             public required string Label { get; set; }
             public string? Description { get; set; }
-            public Guid AccountGroupId { get; set; }
+            public Guid? AccountGroupId { get; set; }
             public Guid Version { get; set; }
         }
 
@@ -37,10 +37,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
             {
                 var account = await _serviceManager.AccountService.GetAsync(request.Id);
 
-                if (account == null)
-                    throw new AccountNotFoundException(request.Id);
-                else
-                    return account.ToGetAccountResult();
+                return account == null 
+                    ? throw new AccountNotFoundException(request.Id) 
+                    : account.ToGetAccountResult();
             }
         }
     }

@@ -59,7 +59,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
         [Theory]
         [InlineData("1524f11f-20dd-4888-88f8-428e59bbc22a", true)]
-        [InlineData("1524f11f-20dd-4888-88f8-428e59zzzzzz", false)]
+        [InlineData("1524f11f-20dd-4888-88f8-428e59bbbbbb", false)]
         public async Task IfExistAccountGroup_TrueOrFalse_Ok(string accountGroupId, bool resultNeeded)
         {
             //Arrange

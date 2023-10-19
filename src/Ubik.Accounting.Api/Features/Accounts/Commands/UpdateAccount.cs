@@ -13,7 +13,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public string Code { get; set; } = default!;
             public string Label { get; set; } = default!;
             public string? Description { get; set; }
-            public Guid AccountGroupId { get; set; }
+            public Guid? AccountGroupId { get; set; }
             public Guid Version { get; set; }
         }
 
@@ -24,12 +24,11 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public string Code { get; set; } = default!;
             public string Label { get; set; } = default!;
             public string? Description { get; set; }
-            public Guid AccountGroupId { get; set; }
+            public Guid? AccountGroupId { get; set; }
             public Guid Version { get; set; }
         }
 
 
-        //TODO: not forget to add group ID exists check
         public class UpdateAccountHandler : IRequestHandler<UpdateAccountCommand, UpdateAccountResult>
         {
             private readonly IServiceManager _serviceManager;
@@ -51,10 +50,13 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                                 ?? throw new AccountNotFoundException(request.Id);
 
                 //Check if account group exists
-                var accountGroupExists = await _serviceManager.AccountService.IfExistsAccountGroupAsync(request.AccountGroupId);
-                if (!accountGroupExists)
+                if(request.AccountGroupId !=null)
                 {
-                    throw new AccountGroupNotFoundExceptionForAccount(request.AccountGroupId);
+                    var accountGroupExists = await _serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)request.AccountGroupId);
+                    if (!accountGroupExists)
+                    {
+                        throw new AccountGroupNotFoundExceptionForAccount((Guid)request.AccountGroupId);
+                    }
                 }
 
                 //Modify the found account

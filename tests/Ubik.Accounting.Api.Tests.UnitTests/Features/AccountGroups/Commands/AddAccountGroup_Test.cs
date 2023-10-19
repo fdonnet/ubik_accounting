@@ -39,13 +39,13 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _accountGroup = _command.ToAccountGroup();
             _validationBehavior = new ValidationPipelineBehavior<AddAccountGroupCommand, AddAccountGroupResult>(new AddAccountGroupValidator());
             _serviceManager.AccountGroupService.AddAsync(_accountGroup).Returns(_accountGroup);
+            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
         }
 
         [Fact]
         public async Task Add_AccountGroup_Ok()
         {
             //Arrange
-            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
 
             //Act
             var result = await _handler.Handle(_command, CancellationToken.None);
@@ -75,7 +75,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         {
             //Arrange
             var parentGuid = Guid.NewGuid();
-            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
             _serviceManager.AccountGroupService.IfExistsAsync(parentGuid).Returns(true);
             _command.ParentAccountGroupId = parentGuid;
 
@@ -93,7 +92,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         {
             //Arrange
             var parentGuid = Guid.NewGuid();
-            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
             _serviceManager.AccountGroupService.IfExistsAsync(parentGuid).Returns(false);
             _command.ParentAccountGroupId = parentGuid;
 
@@ -109,7 +107,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Add_CustomValidationException_EmptyValuesInFields()
         {
             //Arrange
-            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
             _command.Code = "";
             _command.Label = "";
 
@@ -129,8 +126,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Add_CustomValidationException_TooLongValuesInFields()
         {
             //Arrange
-            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
-
             _command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
             _command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
             _command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));

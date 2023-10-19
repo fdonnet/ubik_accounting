@@ -1,4 +1,8 @@
 ﻿using MediatR;
+using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
+using Ubik.Accounting.Api.Features.Accounts.Exceptions;
+using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
+using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 {
@@ -24,6 +28,45 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
             public string? Description { get; set; }
             public Guid? ParentAccountGroupId { get; set; }
             public Guid Version { get; set; }
+        }
+
+        public class UpdateAccountGroupHandler : IRequestHandler<UpdateAccountGroupCommand, UpdateAccountGroupResult>
+        {
+            private readonly IServiceManager _serviceManager;
+
+            public UpdateAccountGroupHandler(IServiceManager serviceManager)
+            {
+                _serviceManager = serviceManager;
+            }
+
+            public async Task<UpdateAccountGroupResult> Handle(UpdateAccountGroupCommand request, CancellationToken cancellationToken)
+            {
+                //Check if the account group code already exists in other records
+                var alreadyExistsWithOtherId = await _serviceManager.AccountGroupService.IfExistsWithDifferentIdAsync(request.Code, request.Id);
+                if (alreadyExistsWithOtherId)
+                    throw new AccountGroupAlreadyExistsException(request.Code);
+
+                //Check if the account group is found
+                var accountGroup = await _serviceManager.AccountGroupService.GetAsync(request.Id) 
+                    ?? throw new AccountGroupNotFoundException(request.Id);
+
+                //Check if parent account group exists
+                if (request.ParentAccountGroupId != null)
+                {
+                    var parentAccountGroupExists = await _serviceManager.AccountGroupService.IfExistsAsync((Guid)request.ParentAccountGroupId);
+                    if (!parentAccountGroupExists)
+                    {
+                        throw new AccountGroupParentNotFoundException((Guid)request.ParentAccountGroupId);
+                    }
+                }
+
+                //Modify the found account group
+                accountGroup = request.ToAccountGroup(accountGroup);
+
+                var result = await _serviceManager.AccountGroupService.UpdateAsync(accountGroup);
+
+                return result.ToUpdateAccountGroupResult();
+            }
         }
     }
 }

@@ -26,15 +26,15 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _validationBehavior = new ValidationPipelineBehavior<DeleteAccountCommand, bool>(new DeleteAccountValidator());
             _command = new DeleteAccountCommand() { Id=_idToDelete};
 
+            _serviceManager.AccountService.DeleteAsync(_idToDelete).Returns(true);
+            _serviceManager.AccountService.GetAsync(_idToDelete).Returns
+                (new Account() { Id = _idToDelete, Code = "test", Label = "test" });
         }
 
         [Fact]
         public async Task Del_Account_Ok()
         {
             //Arrange
-            _serviceManager.AccountService.DeleteAsync(_idToDelete).Returns(true);
-            _serviceManager.AccountService.GetAsync(_idToDelete).Returns
-                (new Account() { Id = _idToDelete, Code="test", Label="test" });
 
             //Act
             var result = await _handler.Handle(_command, CancellationToken.None);
@@ -48,7 +48,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public async Task Del_AccountNotFoundException_AccountIdNotFound()
         {
             //Arrange
-            _serviceManager.AccountService.DeleteAsync(_idToDelete).Returns(true);
             _serviceManager.AccountService.GetAsync(_idToDelete).Returns(Task.FromResult<Account?>(null));
 
             //Act
@@ -63,8 +62,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public async Task Del_CustomValidationException_IdRequired()
         {
             //Arrange
-            _serviceManager.AccountService.DeleteAsync(_idToDelete).Returns(true);
-            _serviceManager.AccountService.GetAsync(_idToDelete).Returns(new Account() { Id = _idToDelete, Code = "test", Label = "test" });
             _command.Id = default!;
 
             //Act

@@ -225,7 +225,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             fake.Code = "";
             fake.Label = "";
-            fake.AccountGroupId = default!;
 
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
@@ -238,7 +237,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 3);
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 2);
         }
 
         [Fact]
@@ -326,11 +325,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var responseGet = await httpClient.GetAsync($"/Accounts/{_testDBValues.AccountId1}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
 
-            fake.Id = default!;
             fake.Version = default!;
             fake.Code = string.Empty;
             fake.Label = string.Empty;
-            fake.AccountGroupId = default!;
 
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
@@ -343,7 +340,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 4);
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 3);
         }
 
         [Fact]

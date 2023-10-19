@@ -26,18 +26,18 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _idToDelete = Guid.NewGuid();
             _validationBehavior = new ValidationPipelineBehavior<DeleteAccountGroupCommand, bool>(new DeleteAccountGroupValidator());
             _command = new DeleteAccountGroupCommand() { Id = _idToDelete };
+
+            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
+            _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns
+                (new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" });
+            _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(false);
+            _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(false);
         }
 
         [Fact]
         public async Task Del_AccountGroup_Ok()
         {
             //Arrange
-            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
-            _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns
-                (new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" });
-            _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(false);
-            _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(false);
-
 
             //Act
             var result = await _handler.Handle(_command, CancellationToken.None);
@@ -51,10 +51,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Del_AccountGroupNotFoundException_AccountGroupIdNotFound()
         {
             //Arrange
-            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
             _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(Task.FromResult<AccountGroup?>(null));
-            _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(false);
-            _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(false);
 
             //Act
             Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
@@ -68,10 +65,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Del_CustomValidationException_IdRequired()
         {
             //Arrange
-            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
-            _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" });
-            _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(false);
-            _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(false);
             _command.Id = default!;
 
             //Act
@@ -89,10 +82,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Del_AccountGroupHasChildAccountGroupsException_AccountGroupIdIsLinkedToChildAccountGroups()
         {
             //Arrange
-            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
-            _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" });
             _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(true);
-            _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(false);
 
             //Act
             Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
@@ -106,9 +96,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Del_AccountGroupHasChildAccountsException_AccountGroupIdIsLinkedToChildAccounts()
         {
             //Arrange
-            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
-            _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" });
-            _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(false);
             _serviceManager.AccountGroupService.HasAnyChildAccounts(_idToDelete).Returns(true);
 
             //Act

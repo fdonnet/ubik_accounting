@@ -14,8 +14,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         private readonly IServiceManager _serviceManager;
         private readonly GetAllAccountsHandler _handler;
         private readonly GetAllAccountsQuery _query;
-        private IEnumerable<Account> _accounts;
-        private readonly ValidationPipelineBehavior<GetAllAccountsQuery, IEnumerable<GetAllAccountsResult>> _validationBehavior;
+        private readonly IEnumerable<Account> _accounts;
 
         public GetAllAccounts_Test()
         {
@@ -25,10 +24,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             _query = new GetAllAccountsQuery();
 
             _accounts = new Account[] { new Account() { Code = "TEST", Label = "Test" } };
-
-            _validationBehavior = new ValidationPipelineBehavior<GetAllAccountsQuery, 
-                IEnumerable<GetAllAccountsResult>>(new GetAllAccountsValidator());
-
         }
 
         [Fact]

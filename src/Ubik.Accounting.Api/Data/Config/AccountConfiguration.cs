@@ -57,7 +57,7 @@ namespace Ubik.Accounting.Api.Data.Config
                 .HasOne(g => g.AccountGroup)
                 .WithMany(g => g.Accounts)
                 .HasForeignKey(x => x.AccountGroupId)
-                .IsRequired(true);
+                .IsRequired(false);
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Ubik.Accounting.Api.Models;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
+using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAllAccountGroups;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
+using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
 {
@@ -57,6 +59,30 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Description = addAccountGroupCommand.Description,
                 ParentAccountGroupId = addAccountGroupCommand.ParentAccountGroupId,
             };
+        }
+
+        public static UpdateAccountGroupResult ToUpdateAccountGroupResult(this AccountGroup accountGroup)
+        {
+            return new UpdateAccountGroupResult()
+            {
+                Id = accountGroup.Id,
+                Code = accountGroup.Code,
+                Label = accountGroup.Label,
+                Description = accountGroup.Description,
+                ParentAccountGroupId = accountGroup.ParentAccountGroupId,
+                Version = accountGroup.Version
+            };
+        }
+
+        public static AccountGroup ToAccountGroup(this UpdateAccountGroupCommand updateAccountGroupCommand, AccountGroup accountGroup)
+        {
+            accountGroup.Id = updateAccountGroupCommand.Id;
+            accountGroup.Code = updateAccountGroupCommand.Code;
+            accountGroup.Label = updateAccountGroupCommand.Label;
+            accountGroup.Description = updateAccountGroupCommand.Description;
+            accountGroup.ParentAccountGroupId = updateAccountGroupCommand.ParentAccountGroupId;
+            accountGroup.Version = updateAccountGroupCommand.Version;
+            return accountGroup;
         }
     }
 }

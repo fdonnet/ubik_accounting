@@ -31,13 +31,14 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             _account = new Account() { Code = "TEST", Label = "Test" };
 
             _validationBehavior = new ValidationPipelineBehavior<GetAccountQuery, GetAccountResult>(new GetAccountValidator());
+
+            _serviceManager.AccountService.GetAsync(_query.Id).Returns(_account);
         }
 
         [Fact]
         public async Task Get_Account_Ok()
         {
             //Arrange
-            _serviceManager.AccountService.GetAsync(_query.Id).Returns(_account);
 
             //Act
             var result = await _handler.Handle(_query, CancellationToken.None);

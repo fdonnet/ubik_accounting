@@ -29,15 +29,15 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
             };
 
             _accountGroup = new AccountGroup() { Code = "TEST", Label = "Test" };
-
             _validationBehavior = new ValidationPipelineBehavior<GetAccountGroupQuery, GetAccountGroupResult>(new GetAccountGroupValidator());
+
+            _serviceManager.AccountGroupService.GetAsync(_query.Id).Returns(_accountGroup);
         }
 
         [Fact]
         public async Task Get_AccountGroup_Ok()
         {
             //Arrange
-            _serviceManager.AccountGroupService.GetAsync(_query.Id).Returns(_accountGroup);
 
             //Act
             var result = await _handler.Handle(_query, CancellationToken.None);
