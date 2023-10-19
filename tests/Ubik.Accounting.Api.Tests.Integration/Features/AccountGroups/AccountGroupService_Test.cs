@@ -103,7 +103,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
         [Theory]
         [InlineData("102", "1524f188-20dd-4888-88f8-428e59bbc22a", true)]
-        [InlineData("ZZZZZZZXX", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
+        [InlineData("102", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
         public async Task IfExist_TrueOrFalse_Ok(string accountGroupCode
             , Guid accountGroupClassificationId, bool resultNeeded)
         {
@@ -118,7 +118,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
         [Theory]
         [InlineData("102", "1524f188-20dd-4888-88f8-428e59bbc22a","7777f11f-20dd-4888-88f8-428e59bbc535", true)]
-        [InlineData("zzzz999", "7777f11f-20dd-4888-88f8-428e59bbc535","7777f11f-20dd-4888-88f8-428e59bbc535", false)]
+        [InlineData("102", "7777f11f-20dd-4888-88f8-428e59bbc535", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
         public async Task IfExistWithDifferentId_TrueorFalse_Ok(string accountGroupCode, 
             Guid accountGroupClassificationId, Guid currentGuid, bool resultNeeded)
 
