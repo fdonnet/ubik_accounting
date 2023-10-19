@@ -37,6 +37,11 @@ namespace Ubik.Accounting.Api.Features.Accounts
             return await _context.Accounts.AnyAsync(a => a.Code == accountCode && a.Id != currentId);
         }
 
+        public async Task<bool> IfExistsAccountGroupAsync(Guid accountGroupId)
+        {
+            return await _context.AccountGroups.AnyAsync(g=> g.Id == accountGroupId);
+        }
+
         public async Task<Account> AddAsync(Account account)
         {
             await _context.Accounts.AddAsync(account);

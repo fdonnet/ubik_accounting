@@ -50,6 +50,13 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 var account = await _serviceManager.AccountService.GetAsync(request.Id) 
                                 ?? throw new AccountNotFoundException(request.Id);
 
+                //Check if account group exists
+                var accountGroupExists = await _serviceManager.AccountService.IfExistsAccountGroupAsync(request.AccountGroupId);
+                if (!accountGroupExists)
+                {
+                    throw new AccountGroupNotFoundExceptionForAccount(request.AccountGroupId);
+                }
+
                 //Modify the found account
                 account = request.ToAccount(account);
 

@@ -37,10 +37,9 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
             {
                 var accountGroup = await _serviceManager.AccountGroupService.GetAsync(request.Id);
 
-                if (accountGroup == null)
-                    throw new AccountGroupNotFoundException(request.Id);
-                else
-                    return accountGroup.ToGetAccountGroupResult();
+                return accountGroup == null 
+                    ? throw new AccountGroupNotFoundException(request.Id) 
+                    : accountGroup.ToGetAccountGroupResult();
             }
         }
     }

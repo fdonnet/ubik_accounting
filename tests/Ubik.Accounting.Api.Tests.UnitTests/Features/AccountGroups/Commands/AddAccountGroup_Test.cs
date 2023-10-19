@@ -19,7 +19,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
     {
         private readonly IServiceManager _serviceManager;
         private readonly AddAccountGroupHandler _handler;
-        private readonly AddAccountGroupCommand command;
+        private readonly AddAccountGroupCommand _command;
         private readonly AccountGroup _accountGroup;
         private readonly ValidationPipelineBehavior<AddAccountGroupCommand, AddAccountGroupResult> _validationBehavior;
 
@@ -28,7 +28,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _serviceManager = Substitute.For<IServiceManager>();
             _handler = new AddAccountGroupHandler(_serviceManager);
 
-            command = new AddAccountGroupCommand()
+            _command = new AddAccountGroupCommand()
             {
                 Code = "78888",
                 Label = "Test",
@@ -36,7 +36,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
                 ParentAccountGroupId = null
             };
 
-            _accountGroup = command.ToAccountGroup();
+            _accountGroup = _command.ToAccountGroup();
             _validationBehavior = new ValidationPipelineBehavior<AddAccountGroupCommand, AddAccountGroupResult>(new AddAccountGroupValidator());
             _serviceManager.AccountGroupService.AddAsync(_accountGroup).Returns(_accountGroup);
         }
@@ -45,10 +45,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Add_AccountGroup_Ok()
         {
             //Arrange
-            _serviceManager.AccountGroupService.IfExistsAsync(_accountGroup.Code).Returns(false);
+            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
 
             //Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             result.Should()
@@ -60,10 +60,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Add_AccountGroupAlreadyExistsException_AccountGroupCodeAlreadyExists()
         {
             //Arrange
-            _serviceManager.AccountGroupService.IfExistsAsync(_accountGroup.Code).Returns(true);
+            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(true);
 
             //Act
-            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             await act.Should().ThrowAsync<AccountGroupAlreadyExistsException>()
@@ -75,12 +75,12 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         {
             //Arrange
             var parentGuid = Guid.NewGuid();
-            _serviceManager.AccountGroupService.IfExistsAsync(_accountGroup.Code).Returns(false);
+            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
             _serviceManager.AccountGroupService.IfExistsAsync(parentGuid).Returns(true);
-            command.ParentAccountGroupId = parentGuid;
+            _command.ParentAccountGroupId = parentGuid;
 
             //Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             result.Should()
@@ -93,12 +93,12 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         {
             //Arrange
             var parentGuid = Guid.NewGuid();
-            _serviceManager.AccountGroupService.IfExistsAsync(_accountGroup.Code).Returns(false);
+            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
             _serviceManager.AccountGroupService.IfExistsAsync(parentGuid).Returns(false);
-            command.ParentAccountGroupId = parentGuid;
+            _command.ParentAccountGroupId = parentGuid;
 
             //Act
-            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             await act.Should().ThrowAsync<AccountGroupParentNotFoundException>()
@@ -109,14 +109,14 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Add_CustomValidationException_EmptyValuesInFields()
         {
             //Arrange
-            _serviceManager.AccountGroupService.IfExistsAsync(_accountGroup.Code).Returns(false);
-            command.Code = "";
-            command.Label = "";
+            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
+            _command.Code = "";
+            _command.Label = "";
 
             //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(command, () =>
+            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
             {
-                return _handler.Handle(command, CancellationToken.None);
+                return _handler.Handle(_command, CancellationToken.None);
             }, CancellationToken.None);
 
             //Assert
@@ -129,16 +129,16 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Add_CustomValidationException_TooLongValuesInFields()
         {
             //Arrange
-            _serviceManager.AccountGroupService.IfExistsAsync(_accountGroup.Code).Returns(false);
+            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
 
-            command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
-            command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
-            command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
+            _command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
+            _command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
+            _command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
 
             //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(command, () =>
+            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
             {
-                return _handler.Handle(command, CancellationToken.None);
+                return _handler.Handle(_command, CancellationToken.None);
             }, CancellationToken.None);
 
             //Assert

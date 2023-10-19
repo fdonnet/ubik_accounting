@@ -16,7 +16,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
     {
         private readonly IServiceManager _serviceManager;
         private readonly AddAccountHandler _handler;
-        private readonly AddAccountCommand command;
+        private readonly AddAccountCommand _command;
         private readonly Account _account;
         private readonly ValidationPipelineBehavior<AddAccountCommand, AddAccountResult> _validationBehavior;
 
@@ -25,7 +25,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _serviceManager = Substitute.For<IServiceManager>();
             _handler = new AddAccountHandler(_serviceManager);
 
-            command = new AddAccountCommand()
+            _command = new AddAccountCommand()
             {
                 Code = "78888",
                 Label = "Test",
@@ -33,7 +33,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                 AccountGroupId = Guid.NewGuid()
             };
 
-            _account = command.ToAccount();
+            _account = _command.ToAccount();
             _validationBehavior = new ValidationPipelineBehavior<AddAccountCommand, AddAccountResult>(new AddAccountValidator());
             _serviceManager.AccountService.AddAsync(_account).Returns(_account);
         }
@@ -42,10 +42,11 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public async Task Add_Account_Ok()
         {
             //Arrange
-            _serviceManager.AccountService.IfExistsAsync(_account.Code).Returns(false);
+            _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
+            _serviceManager.AccountService.IfExistsAccountGroupAsync(_command.AccountGroupId).Returns(true);
 
             //Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             result.Should()
@@ -57,10 +58,11 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public async Task Add_AccountAlreadyExistsException_AccountCodeAlreadyExists()
         {
             //Arrange
-            _serviceManager.AccountService.IfExistsAsync(_account.Code).Returns(true);
+            _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(true);
+            _serviceManager.AccountService.IfExistsAccountGroupAsync(_command.AccountGroupId).Returns(true);
 
             //Act
-            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             await act.Should().ThrowAsync<AccountAlreadyExistsException>()
@@ -68,18 +70,35 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
+        public async Task Add_AccountGroupNotFoundExceptionForAccount_AccountGroupIdNotExists()
+        {
+            //Arrange
+            _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
+            _serviceManager.AccountService.IfExistsAccountGroupAsync(_command.AccountGroupId).Returns(false);
+
+            //Act
+            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+
+            //Assert
+            await act.Should().ThrowAsync<AccountGroupNotFoundExceptionForAccount>()
+                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+        }
+
+        [Fact]
         public async Task Add_CustomValidationException_EmptyValuesInFields()
         {
             //Arrange
-            _serviceManager.AccountService.IfExistsAsync(_account.Code).Returns(false);
-            command.AccountGroupId = default!;
-            command.Code = "";
-            command.Label = "";
+            _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
+            _serviceManager.AccountService.IfExistsAccountGroupAsync(_command.AccountGroupId).Returns(true);
+
+            _command.AccountGroupId = default!;
+            _command.Code = "";
+            _command.Label = "";
 
             //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(command, () =>
+            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
             {
-                return _handler.Handle(command, CancellationToken.None);
+                return _handler.Handle(_command, CancellationToken.None);
             }, CancellationToken.None);
 
             //Assert
@@ -92,16 +111,17 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public async Task Add_CustomValidationException_TooLongValuesInFields()
         {
             //Arrange
-            _serviceManager.AccountService.IfExistsAsync(_account.Code).Returns(false);
+            _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
+            _serviceManager.AccountService.IfExistsAccountGroupAsync(_command.AccountGroupId).Returns(true);
 
-            command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
-            command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
-            command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
+            _command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
+            _command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
+            _command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
 
             //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(command, () =>
+            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
             {
-                return _handler.Handle(command, CancellationToken.None);
+                return _handler.Handle(_command, CancellationToken.None);
             }, CancellationToken.None);
 
             //Assert

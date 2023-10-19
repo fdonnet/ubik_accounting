@@ -37,10 +37,17 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public async Task<AddAccountResult> Handle(AddAccountCommand request, CancellationToken cancellationToken)
             {
                 var account = request.ToAccount();
+
                 var accountExists = await _serviceManager.AccountService.IfExistsAsync(account.Code);
-                
                 if (accountExists)
                     throw new AccountAlreadyExistsException(request.Code);
+
+                //Check if account group exists
+                var accountGroupExists = await _serviceManager.AccountService.IfExistsAccountGroupAsync(request.AccountGroupId);
+                if (!accountGroupExists)
+                {
+                    throw new AccountGroupNotFoundExceptionForAccount(request.AccountGroupId);
+                }
 
                 await _serviceManager.AccountService.AddAsync(account);
                 await _serviceManager.SaveAsync();
