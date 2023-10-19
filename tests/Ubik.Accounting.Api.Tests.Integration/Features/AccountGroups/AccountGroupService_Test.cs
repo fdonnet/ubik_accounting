@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Ubik.Accounting.Api.Data;
+using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Tests.Integration.Features.Accounts;
@@ -9,12 +9,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 {
     public class AccountGroupService_Test : BaseIntegrationTest
     {
-        private readonly DbInitializer _testDBValues;
+        private readonly BaseValuesForAccountGroups _testAccountGroupValues;
         private readonly IServiceManager _serviceManager;
 
         public AccountGroupService_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
-            _testDBValues = new DbInitializer();
+            _testAccountGroupValues = new BaseValuesForAccountGroups();
             _serviceManager = new ServiceManager(DbContext);
         }
 
@@ -38,7 +38,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            var result = await _serviceManager.AccountGroupService.GetAsync(_testDBValues.AccountGroupId1);
+            var result = await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupId1);
 
             //Assert
             result.Should()
@@ -93,8 +93,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            await _serviceManager.AccountGroupService.DeleteAsync(_testDBValues.AccountGroupIdForDel);
-            var exist = (await _serviceManager.AccountGroupService.GetAsync(_testDBValues.AccountGroupIdForDel)) != null;
+            await _serviceManager.AccountGroupService.DeleteAsync(_testAccountGroupValues.AccountGroupIdForDel);
+            var exist = (await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupIdForDel)) != null;
 
             //Assert
             exist.Should()
@@ -133,7 +133,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         public async Task Update_ModifiedAtFieldUpdated_Ok()
         {
             //Arrange
-            var accountGroup = await _serviceManager.AccountGroupService.GetAsync(_testDBValues.AccountGroupId1);
+            var accountGroup = await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupId1);
 
             accountGroup!.Label = "Modified";
             accountGroup.Description = "Modified";
@@ -152,7 +152,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         public async Task Update_UpdatedAccountGroup_Ok()
         {
             //Arrange
-            var accountGroup = await _serviceManager.AccountGroupService.GetAsync(_testDBValues.AccountGroupId1);
+            var accountGroup = await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupId1);
 
             accountGroup!.Label = "Modified";
             accountGroup.Description = "Modified";

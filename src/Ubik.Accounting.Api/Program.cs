@@ -11,6 +11,7 @@ using FluentValidation;
 using Serilog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Ubik.Accounting.Api.Data.Init;
 
 namespace Ubik.Accounting.Api
 {

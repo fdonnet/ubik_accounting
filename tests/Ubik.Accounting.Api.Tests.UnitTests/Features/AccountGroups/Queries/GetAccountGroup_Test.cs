@@ -61,5 +61,23 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
             await act.Should().ThrowAsync<AccountGroupNotFoundException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }
+
+        [Fact]
+        public async Task Get_CustomValidationException_EmptyValuesInFields()
+        {
+            //Arrange
+            _query.Id = default;
+
+            //Act
+            Func<Task> act = async () => await _validationBehavior.Handle(_query, () =>
+            {
+                return _handler.Handle(_query, CancellationToken.None);
+            }, CancellationToken.None);
+
+            //Assert
+            await act.Should().ThrowAsync<CustomValidationException>()
+                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
+                    && e.CustomErrors.Count() == 1);
+        }
     }
 }

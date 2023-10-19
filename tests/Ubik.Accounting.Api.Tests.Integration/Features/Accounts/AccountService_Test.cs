@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Ubik.Accounting.Api.Data;
+using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
 
@@ -7,12 +7,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
     public class AccountService_Test : BaseIntegrationTest
     {
-        private readonly DbInitializer _testDBValues;
+        private readonly BaseValuesForAccounts _testValuesForAccounts;
         private readonly IServiceManager _serviceManager;
 
         public AccountService_Test(IntegrationTestWebAppFactory factory) : base(factory) 
         {
-            _testDBValues = new DbInitializer();
+            _testValuesForAccounts = new BaseValuesForAccounts();
             _serviceManager =new ServiceManager(DbContext);
         }
 
@@ -22,7 +22,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
                 
             //Act
-            var result = await _serviceManager.AccountService.GetAsync(_testDBValues.AccountId1);
+            var result = await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1);
 
             //Assert
             result.Should()
@@ -145,7 +145,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Update_UpdatedAccount_Ok()
         {
             //Arrange
-            var account = await _serviceManager.AccountService.GetAsync(_testDBValues.AccountId1);
+            var account = await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1);
 
             account!.Label = "Modified";
             account.Description = "Modified";
@@ -163,7 +163,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Update_ModifiedAtFieldUpdated_Ok()
         {
             //Arrange
-            var account = await _serviceManager.AccountService.GetAsync(_testDBValues.AccountId1);
+            var account = await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1);
 
             account!.Label = "Modified";
             account.Description = "Modified";
@@ -184,8 +184,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
             
             //Act
-            await _serviceManager.AccountService.DeleteAsync(_testDBValues.AccountIdForDel);
-            var exist = (await _serviceManager.AccountService.GetAsync(_testDBValues.AccountIdForDel)) != null;
+            await _serviceManager.AccountService.DeleteAsync(_testValuesForAccounts.AccountIdForDel);
+            var exist = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountIdForDel)) != null;
 
             //Assert
             exist.Should()

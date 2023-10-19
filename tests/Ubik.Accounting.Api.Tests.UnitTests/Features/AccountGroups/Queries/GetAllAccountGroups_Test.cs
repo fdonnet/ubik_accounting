@@ -15,8 +15,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
         private readonly IServiceManager _serviceManager;
         private readonly GetAllAccountGroupsHandler _handler;
         private readonly GetAllAccountGroupsQuery _query;
-        private IEnumerable<AccountGroup> _accountGroups;
-        private readonly ValidationPipelineBehavior<GetAllAccountGroupsQuery, IEnumerable<GetAllAccountGroupsResult>> _validationBehavior;
+        private readonly IEnumerable<AccountGroup> _accountGroups;
 
         public GetAllAccountGroups_Test()
         {
@@ -26,9 +25,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
             _query = new GetAllAccountGroupsQuery();
 
             _accountGroups = new AccountGroup[] { new AccountGroup() { Code = "TEST", Label = "Test" } };
-
-            _validationBehavior = new ValidationPipelineBehavior<GetAllAccountGroupsQuery,
-                IEnumerable<GetAllAccountGroupsResult>>(new GetAllAccountGroupsValidator());
         }
 
         [Fact]
