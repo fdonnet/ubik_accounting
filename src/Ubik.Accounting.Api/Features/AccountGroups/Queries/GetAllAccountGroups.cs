@@ -14,6 +14,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
             public required string Label { get; set; }
             public string? Description { get; set; }
             public Guid? ParentAccountGroupId { get; set; }
+            public Guid AccountGroupClassificationId { get; set; }
             public Guid Version { get; set; }
         }
 

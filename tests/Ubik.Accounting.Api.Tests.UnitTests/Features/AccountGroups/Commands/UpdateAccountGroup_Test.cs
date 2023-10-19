@@ -39,6 +39,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
                 Label = "Test",
                 Description = "Test",
                 ParentAccountGroupId = Guid.NewGuid(),
+                AccountGroupClassificationId = Guid.NewGuid(),
                 Version = Guid.NewGuid()
             };
 
@@ -47,7 +48,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _validationBehavior = new ValidationPipelineBehavior<UpdateAccountGroupCommand, UpdateAccountGroupResult>(new UpdateAccountGroupValidator());
 
             _serviceManager.AccountGroupService.UpdateAsync(_accountGroup).Returns(_accountGroup);
-            _serviceManager.AccountGroupService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(false);
+            _serviceManager.AccountGroupService
+                .IfExistsWithDifferentIdAsync(_command.Code, _command.AccountGroupClassificationId, _command.Id).Returns(false);
+
             _serviceManager.AccountGroupService.GetAsync(_command.Id).Returns(_accountGroup);
             _serviceManager.AccountGroupService.IfExistsAsync((Guid)_command.ParentAccountGroupId).Returns(true);
         }
@@ -70,7 +73,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Upd_AccountGroupAlreadyExistsException_AccountGroupCodeAlreadyExistsWithDifferentId()
         {
             //Arrange
-            _serviceManager.AccountGroupService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(true);
+            _serviceManager.AccountGroupService
+                .IfExistsWithDifferentIdAsync(_command.Code, _command.AccountGroupClassificationId, _command.Id).Returns(true);
 
 
             //Act
@@ -99,6 +103,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Upd_CustomValidationException_EmptyValuesInFields()
         {
             //Arrange
+            _command.AccountGroupClassificationId = default!;
             _command.Code = "";
             _command.Label = "";
 
@@ -111,7 +116,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             //Assert (3 errors because version is not specified)
             await act.Should().ThrowAsync<CustomValidationException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 2);
+                    && e.CustomErrors.Count() == 3);
         }
 
         [Fact]

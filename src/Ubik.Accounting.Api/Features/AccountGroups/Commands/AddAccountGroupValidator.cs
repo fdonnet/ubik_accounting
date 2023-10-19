@@ -17,6 +17,9 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 
             RuleFor(command => command.Description)
                 .MaximumLength(700).WithMessage("Description must be 700 characters max.");
+
+            RuleFor(command => command.AccountGroupClassificationId)
+                .NotEmpty().WithMessage("AccountGroupClassificationId is required");
         }
     }
 }

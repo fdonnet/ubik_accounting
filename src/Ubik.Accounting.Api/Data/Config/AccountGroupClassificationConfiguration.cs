@@ -4,11 +4,11 @@ using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Data.Config
 {
-    public class AccountGroupConfiguration : IEntityTypeConfiguration<AccountGroup>
+    public class AccountGroupClassificationConfiguration : IEntityTypeConfiguration<AccountGroupClassification>
     {
-        public void Configure(EntityTypeBuilder<AccountGroup> builder)
+        public void Configure(EntityTypeBuilder<AccountGroupClassification> builder)
         {
-            builder.ToTable("AccountGroups");
+            builder.ToTable("AccountGroupClassifications");
 
             builder.Property(a => a.Code)
            .IsRequired()
@@ -33,7 +33,7 @@ namespace Ubik.Accounting.Api.Data.Config
             builder.Property(a => a.CreatedBy)
                 .IsRequired();
 
-            builder.HasIndex(a => new { a.Code, a.AccountGroupClassificationId })
+            builder.HasIndex(a => a.Code)
             .IsUnique();
 
             builder.HasIndex(a => a.TenantId);
@@ -41,12 +41,6 @@ namespace Ubik.Accounting.Api.Data.Config
             //TODO: Change that quick with userservice
             builder
                 .HasQueryFilter(a => a.TenantId == Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d"));
-
-            builder
-                .HasOne(s => s.ParentAccountGroup)
-                .WithMany(m => m.ChildrenAccountGroups)
-                .HasForeignKey(e => e.ParentAccountGroupId)
-                .IsRequired(false);
 
             builder
                 .HasOne(a => a.CreatedByUser)
@@ -59,12 +53,6 @@ namespace Ubik.Accounting.Api.Data.Config
                 .WithMany()
                 .HasForeignKey(b => b.ModifiedBy)
                 .IsRequired(false);
-
-            builder
-                .HasOne(a => a.AccountGroupClassification)
-                .WithMany(g => g.OwnedAccountGroups)
-                .HasForeignKey(b => b.AccountGroupClassificationId)
-                .IsRequired(true);
         }
     }
 }

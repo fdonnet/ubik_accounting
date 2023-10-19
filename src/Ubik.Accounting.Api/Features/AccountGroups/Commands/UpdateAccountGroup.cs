@@ -16,6 +16,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
             public string Label { get; set; } = default!;
             public string? Description { get; set; }
             public Guid? ParentAccountGroupId { get; set; }
+            public Guid AccountGroupClassificationId { get; set; }
             public Guid Version { get; set; }
         }
 
@@ -27,6 +28,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
             public string Label { get; set; } = default!;
             public string? Description { get; set; }
             public Guid? ParentAccountGroupId { get; set; }
+            public Guid AccountGroupClassificationId { get; set; }
             public Guid Version { get; set; }
         }
 
@@ -42,9 +44,11 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
             public async Task<UpdateAccountGroupResult> Handle(UpdateAccountGroupCommand request, CancellationToken cancellationToken)
             {
                 //Check if the account group code already exists in other records
-                var alreadyExistsWithOtherId = await _serviceManager.AccountGroupService.IfExistsWithDifferentIdAsync(request.Code, request.Id);
+                var alreadyExistsWithOtherId = await _serviceManager.AccountGroupService
+                    .IfExistsWithDifferentIdAsync(request.Code, request.AccountGroupClassificationId, request.Id);
+
                 if (alreadyExistsWithOtherId)
-                    throw new AccountGroupAlreadyExistsException(request.Code);
+                    throw new AccountGroupAlreadyExistsException(request.Code,request.AccountGroupClassificationId);
 
                 //Check if the account group is found
                 var accountGroup = await _serviceManager.AccountGroupService.GetAsync(request.Id) 

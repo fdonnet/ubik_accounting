@@ -12,6 +12,7 @@ namespace Ubik.Accounting.Api.Data.Init
                 var baseValuesForTenants = new BaseValuesForTenants();
                 var baseValuesForUsers = new BaseValuesForUsers();
                 var baseValuesForAccountGroups = new BaseValuesForAccountGroups();
+                var baseValuesForAccountGroupClassifications = new BaseValuesForAccountGroupClassifications();
                 var accountGroups = new AccountGroup[]
                 {
                 new AccountGroup
@@ -24,6 +25,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Liquidités",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
+                    AccountGroupClassificationId = baseValuesForAccountGroupClassifications.AccountGroupClassificationId1,
                     ParentAccountGroupId = null,
                     Version = Guid.NewGuid(),
                     TenantId = baseValuesForTenants.TenantId
@@ -38,6 +40,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Banques",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
+                    AccountGroupClassificationId = baseValuesForAccountGroupClassifications.AccountGroupClassificationId1,
                     ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
                     Version = Guid.NewGuid(),
                     TenantId = baseValuesForTenants.TenantId
@@ -52,6 +55,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Autres",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
+                    AccountGroupClassificationId = baseValuesForAccountGroupClassifications.AccountGroupClassificationId2,
                     ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
                     Version = Guid.NewGuid(),
                     TenantId = baseValuesForTenants.TenantId
@@ -66,6 +70,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "To be removed Autres actifs",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
+                    AccountGroupClassificationId = baseValuesForAccountGroupClassifications.AccountGroupClassificationId1,
                     ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
                     Version = Guid.NewGuid(),
                     TenantId = baseValuesForTenants.TenantId

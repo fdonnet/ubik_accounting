@@ -42,9 +42,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             return accountGroups;
         }
 
-        public async Task<bool> IfExistsAsync(string accountGroupCode)
+        public async Task<bool> IfExistsAsync(string accountGroupCode,Guid accountGroupClassificationId)
         {
-            return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode);
+            return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode 
+                        && a.AccountGroupClassificationId == accountGroupClassificationId);
         }
 
         public async Task<bool> HasAnyChildAccountGroups(Guid Id)
@@ -62,9 +63,12 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             return await _context.AccountGroups.AnyAsync(a => a.Id == accountGroupId);
         }
 
-        public async Task<bool> IfExistsWithDifferentIdAsync(string accountGroupCode, Guid currentId)
+        public async Task<bool> IfExistsWithDifferentIdAsync(string accountGroupCode, Guid accountGroupClassificationId, Guid currentId)
         {
-            return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode && a.Id != currentId);
+            return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode 
+                        && a.AccountGroupClassificationId == accountGroupClassificationId 
+                        && a.Id != currentId);
+
         }
 
         public async Task<AccountGroup> UpdateAsync(AccountGroup accountGroup)

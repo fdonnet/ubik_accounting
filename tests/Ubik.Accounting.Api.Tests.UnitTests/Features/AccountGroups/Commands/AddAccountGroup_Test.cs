@@ -33,13 +33,14 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
                 Code = "78888",
                 Label = "Test",
                 Description = "Test",
-                ParentAccountGroupId = null
+                ParentAccountGroupId = null,
+                AccountGroupClassificationId = Guid.NewGuid(),
             };
 
             _accountGroup = _command.ToAccountGroup();
             _validationBehavior = new ValidationPipelineBehavior<AddAccountGroupCommand, AddAccountGroupResult>(new AddAccountGroupValidator());
             _serviceManager.AccountGroupService.AddAsync(_accountGroup).Returns(_accountGroup);
-            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(false);
+            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code,_command.AccountGroupClassificationId).Returns(false);
         }
 
         [Fact]
@@ -60,7 +61,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         public async Task Add_AccountGroupAlreadyExistsException_AccountGroupCodeAlreadyExists()
         {
             //Arrange
-            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code).Returns(true);
+            _serviceManager.AccountGroupService
+                .IfExistsAsync(_command.Code,_command.AccountGroupClassificationId).Returns(true);
 
             //Act
             Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);

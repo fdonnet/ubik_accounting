@@ -14,6 +14,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
             public string Label { get; set; } = default!;
             public string? Description { get; set; }
             public Guid? ParentAccountGroupId { get; set; }
+            public Guid AccountGroupClassificationId { get; set; }
         }
 
         //Output
@@ -24,6 +25,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
             public string Label { get; set; } = default!;
             public string? Description { get; set; }
             public Guid? ParentAccountGroupId { get; set; }
+            public Guid AccountGroupClassificationId { get; set; }
             public Guid Version { get; set; }
         }
 
@@ -38,14 +40,18 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
             {
                 var accountGroup = request.ToAccountGroup();
 
-                var accountGroupExists = await _serviceManager.AccountGroupService.IfExistsAsync(accountGroup.Code);
+                var accountGroupExists = await _serviceManager.AccountGroupService
+                    .IfExistsAsync(accountGroup.Code, accountGroup.AccountGroupClassificationId);
+
                 if (accountGroupExists)
-                    throw new AccountGroupAlreadyExistsException(request.Code);
+                    throw new AccountGroupAlreadyExistsException(request.Code,request.AccountGroupClassificationId);
                 
                 //Check if parent account group exists
                 if(accountGroup.ParentAccountGroupId != null)
                 {
-                    var parentAccountExists = await _serviceManager.AccountGroupService.IfExistsAsync((Guid)accountGroup.ParentAccountGroupId);
+                    var parentAccountExists = await _serviceManager.AccountGroupService
+                        .IfExistsAsync((Guid)accountGroup.ParentAccountGroupId);
+
                     if (!parentAccountExists)
                         throw new AccountGroupParentNotFoundException((Guid)accountGroup.ParentAccountGroupId);
                 }

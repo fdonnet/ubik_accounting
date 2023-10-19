@@ -23,6 +23,9 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 
             RuleFor(command => command.Version)
                 .NotEmpty().WithMessage("Version is required. Need to be checked for concurrency updates.");
+
+            RuleFor(command => command.AccountGroupClassificationId)
+                .NotEmpty().WithMessage("AccountGroupClassificationId is required");
         }
     }
 }

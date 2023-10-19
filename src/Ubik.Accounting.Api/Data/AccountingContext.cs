@@ -17,6 +17,7 @@ namespace Ubik.Accounting.Api.Data
 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountGroup> AccountGroups { get; set; }
+        public DbSet<AccountGroupClassification> AccountGroupClassifications { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<Entry> Entries { get; set; }
         public DbSet<TaxRate> TaxRates { get; set; }
@@ -36,8 +37,9 @@ namespace Ubik.Accounting.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
+            new AccountGroupClassificationConfiguration().Configure(modelBuilder.Entity<AccountGroupClassification>());
             new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
+            new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
 
             modelBuilder.Entity<Entry>()
             .HasOne(s => s.MainEntry)
