@@ -117,15 +117,12 @@ namespace Ubik.Accounting.Api
                 {
                     o.EnableTryItOutByDefault();
                 });
-            }
 
-            //DB in DEV
-            using (var scope = app.Services.CreateScope())
-            {
+                using var scope = app.Services.CreateScope();
                 var services = scope.ServiceProvider;
 
                 var context = services.GetRequiredService<AccountingContext>();
-                context.Database.EnsureDeleted();
+                //context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
 
                 var initDb = new DbInitializer();
