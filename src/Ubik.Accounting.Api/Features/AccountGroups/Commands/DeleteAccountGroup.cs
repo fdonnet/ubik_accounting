@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
@@ -8,6 +9,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
         //Input
         public record DeleteAccountGroupCommand : IRequest<bool>
         {
+            [Required]
             public Guid Id { get; set; }
         }
 

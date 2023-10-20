@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 
@@ -9,6 +10,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
         //Input
         public record GetAccountQuery : IRequest<GetAccountResult> 
         {
+            [Required]
             public Guid Id { get; set; }
         }
 

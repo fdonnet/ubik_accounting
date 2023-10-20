@@ -3,6 +3,7 @@ using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
+using System.ComponentModel.DataAnnotations;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 {
@@ -11,12 +12,20 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
         //Input
         public record UpdateAccountGroupCommand : IRequest<UpdateAccountGroupResult>
         {
+            [Required]
             public Guid Id { get; set; }
+            [Required]
+            [MaxLength(20)]
             public string Code { get; set; } = default!;
+            [Required]
+            [MaxLength(100)]
             public string Label { get; set; } = default!;
+            [MaxLength(700)]
             public string? Description { get; set; }
             public Guid? ParentAccountGroupId { get; set; }
+            [Required]
             public Guid AccountGroupClassificationId { get; set; }
+            [Required]
             public Guid Version { get; set; }
         }
 

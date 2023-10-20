@@ -2,6 +2,7 @@
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAllAccountGroups;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
+using System.ComponentModel.DataAnnotations;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
 {
@@ -9,6 +10,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
     {
         public record GetChildAccountsQuery : IRequest<IEnumerable<GetChildAccountsResult>>
         {
+            [Required]
             public Guid AccountGroupId { get; set; }
         }
 

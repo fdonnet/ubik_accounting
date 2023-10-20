@@ -12,6 +12,7 @@ using Serilog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Ubik.Accounting.Api.Data.Init;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ubik.Accounting.Api
 {
@@ -48,6 +49,8 @@ namespace Ubik.Accounting.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
+
+            //TODO: change that before PROD
             builder.Services.AddCors(policies =>
             {
                 policies.AddDefaultPolicy(builder =>
@@ -96,6 +99,11 @@ namespace Ubik.Accounting.Api
             //TODO: remove when migrated to service manager
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
             var app = builder.Build();
 
             app.UseSerilogRequestLogging();
@@ -105,7 +113,10 @@ namespace Ubik.Accounting.Api
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(o =>
+                {
+                    o.EnableTryItOutByDefault();
+                });
             }
 
             //DB in DEV

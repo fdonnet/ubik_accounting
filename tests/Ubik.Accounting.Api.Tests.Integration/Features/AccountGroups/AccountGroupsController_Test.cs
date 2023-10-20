@@ -21,6 +21,8 @@ using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using System.Text.Json;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
+using Ubik.Accounting.Api.Features.AccountGroups.Queries;
+using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetChildAccounts;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 {
@@ -44,12 +46,14 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Act
             var responseGetAll = await httpClient.GetAsync("/AccountGroups");
             var responseGet = await httpClient.GetAsync($"/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}");
+            var responseGetChildAccounts = await httpClient.GetAsync($"/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}/Accounts");
             var responsePost = await httpClient.PostAsync("/AccountGroups", new StringContent("test", Encoding.UTF8, "application/json"));
             var responsePut = await httpClient.PutAsync($"/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}", new StringContent("test", Encoding.UTF8, "application/json"));
             var responseDel = await httpClient.DeleteAsync($"/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}");
 
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            responseGetChildAccounts.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseGet.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responsePost.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responsePut.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -68,12 +72,14 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Act
             var responseGetAll = await httpClient.GetAsync("/AccountGroups");
             var responseGet = await httpClient.GetAsync($"/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}");
+            var responseGetChildAccounts = await httpClient.GetAsync($"/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}/Accounts");
             var responsePost = await httpClient.PostAsync("/AccountGroups", new StringContent("test", Encoding.UTF8, "application/json"));
             var responsePut = await httpClient.PutAsync($"/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}", new StringContent("test", Encoding.UTF8, "application/json"));
             var responseDel = await httpClient.DeleteAsync($"/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}");
 
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responseGetChildAccounts.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseGet.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responsePost.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responsePut.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -152,6 +158,47 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
             //Act
             var response = await httpClient.GetAsync($"/AccountGroups/{Guid.NewGuid()}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task GetChildAccounts_Accounts_Ok()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.GetAsync($"/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}/Accounts");
+            var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetChildAccountsResult>>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.AllBeOfType<GetChildAccountsResult>();
+        }
+
+        [Fact]
+        public async Task GetChildAccounts_ProblemDetails_AccountGroupNotFound()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.GetAsync($"/AccountGroups/{Guid.NewGuid()}/Accounts");
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert

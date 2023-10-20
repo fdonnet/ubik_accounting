@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Commands;
@@ -7,6 +8,7 @@ public class DeleteAccount
     //Input
     public record DeleteAccountCommand : IRequest<bool>
     {
+        [Required]
         public Guid Id { get; set; }
     }
 

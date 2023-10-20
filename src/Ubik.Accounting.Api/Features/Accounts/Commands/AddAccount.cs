@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 
@@ -9,8 +10,13 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
         //Input
         public record AddAccountCommand : IRequest<AddAccountResult>
         {
+            [Required]
+            [MaxLength(20)]
             public string Code { get; set; } = default!;
+            [Required]
+            [MaxLength(100)]
             public string Label { get; set; } = default!;
+            [MaxLength(700)]
             public string? Description { get; set; }
         }
 

@@ -7,6 +7,8 @@ using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.DeleteAccountGroup;
+using Ubik.Accounting.Api.Features.AccountGroups.Queries;
+using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetChildAccounts;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups
 {
@@ -41,6 +43,19 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
         public async Task<ActionResult<GetAccountGroupResult>> Get(Guid id)
         {
             var result = await _mediator.Send(new GetAccountGroupQuery() { Id = id });
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
+        [Authorize(Roles = "ubik_accounting_account_read")]
+        [HttpGet("{id}/Accounts")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<GetAccountGroupResult>> GetChildAccount(Guid id)
+        {
+            var result = await _mediator.Send(new GetChildAccountsQuery() { AccountGroupId = id });
             return Ok(result);
         }
 

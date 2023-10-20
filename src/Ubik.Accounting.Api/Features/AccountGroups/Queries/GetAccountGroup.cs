@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 
@@ -9,6 +10,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
         //Input
         public record GetAccountGroupQuery : IRequest<GetAccountGroupResult>
         {
+            [Required]
             public Guid Id { get; set; }
         }
 
