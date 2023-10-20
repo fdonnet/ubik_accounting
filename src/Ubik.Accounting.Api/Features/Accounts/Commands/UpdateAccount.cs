@@ -13,7 +13,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public string Code { get; set; } = default!;
             public string Label { get; set; } = default!;
             public string? Description { get; set; }
-            public Guid? AccountGroupId { get; set; }
             public Guid Version { get; set; }
         }
 
@@ -24,7 +23,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public string Code { get; set; } = default!;
             public string Label { get; set; } = default!;
             public string? Description { get; set; }
-            public Guid? AccountGroupId { get; set; }
             public Guid Version { get; set; }
         }
 
@@ -49,15 +47,15 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 var account = await _serviceManager.AccountService.GetAsync(request.Id) 
                                 ?? throw new AccountNotFoundException(request.Id);
 
-                //Check if account group exists
-                if(request.AccountGroupId !=null)
-                {
-                    var accountGroupExists = await _serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)request.AccountGroupId);
-                    if (!accountGroupExists)
-                    {
-                        throw new AccountGroupNotFoundExceptionForAccount((Guid)request.AccountGroupId);
-                    }
-                }
+                ////Check if account group exists
+                //if(request.AccountGroupId !=null)
+                //{
+                //    var accountGroupExists = await _serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)request.AccountGroupId);
+                //    if (!accountGroupExists)
+                //    {
+                //        throw new AccountGroupNotFoundExceptionForAccount((Guid)request.AccountGroupId);
+                //    }
+                //}
 
                 //Modify the found account
                 account = request.ToAccount(account);

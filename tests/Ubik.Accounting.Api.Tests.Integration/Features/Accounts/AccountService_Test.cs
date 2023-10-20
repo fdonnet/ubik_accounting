@@ -205,7 +205,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
         public static IEnumerable<object[]> GetAccounts(int numTests, string accountGroupId)
         {
-            var accounts = FakeGenerator.GenerateAccounts(numTests, Guid.Parse(accountGroupId));
+            var accounts = FakeGenerator.GenerateAccounts(numTests);
 
             foreach (var account in accounts)
             {

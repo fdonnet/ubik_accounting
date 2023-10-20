@@ -4,34 +4,17 @@ using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Data.Config
 {
-    public class AccountConfiguration : IEntityTypeConfiguration<Account>
+    public class AccountAccountGroupConfiguration : IEntityTypeConfiguration<AccountAccountGroup>
     {
-        public void Configure(EntityTypeBuilder<Account> builder)
+        public void Configure(EntityTypeBuilder<AccountAccountGroup> builder)
         {
-            builder.Property(a => a.Code)
-                .IsRequired()
-                .HasMaxLength(20);
-
-            builder.Property(a => a.Label)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            builder.Property(a => a.Description)
-                .HasMaxLength(700);
-
-            builder.Property(a => a.Version)
-                .IsConcurrencyToken();
-
-            builder.Property(a => a.TenantId)
+            builder.Property(a => a.AccountId)
                 .IsRequired();
 
-            builder.Property(a => a.CreatedAt)
+            builder.Property(a => a.AccountGroupId)
                 .IsRequired();
 
-            builder.Property(a => a.CreatedBy)
-                .IsRequired();
-
-            builder.HasIndex(a => a.Code)
+            builder.HasIndex(a => new { a.AccountGroupId, a.AccountId })
                 .IsUnique();
 
             builder.HasIndex(a => a.TenantId);
@@ -40,7 +23,6 @@ namespace Ubik.Accounting.Api.Data.Config
             builder
                 .HasQueryFilter(a => a.TenantId == Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d"));
 
-            //Relations
             builder
                 .HasOne(a => a.CreatedByUser)
                 .WithMany()

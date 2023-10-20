@@ -1,13 +1,10 @@
-﻿using Ubik.DB.Common;
-
-namespace Ubik.Accounting.Api.Models
+﻿namespace Ubik.Accounting.Api.Models
 {
-    public class Account : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
+    public class AccountAccountGroup
     {
         public Guid Id { get; set; }
-        public required string Code { get; set; }
-        public required string Label { get; set; }
-        public  string? Description { get; set; }
+        public Guid AccountId { get; set; }
+        public Guid AccountGroupId { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
         public DateTime CreatedAt { get; set; }

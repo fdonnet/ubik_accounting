@@ -16,7 +16,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Code = account.Code,
                 Label = account.Label,
                 Description = account.Description,
-                AccountGroupId = account.AccountGroupId,
                 Version = account.Version
             };
         }
@@ -29,7 +28,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Code = account.Code,
                 Label = account.Label,
                 Description = account.Description,
-                AccountGroupId = account.AccountGroupId,
                 Version = account.Version
             };
         }
@@ -42,7 +40,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Code = account.Code,
                 Label = account.Label,
                 Description = account.Description,
-                AccountGroupId = account.AccountGroupId,
                 Version = account.Version
             };
         }
@@ -55,7 +52,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Code = x.Code,
                 Label = x.Label,
                 Description = x.Description,
-                AccountGroupId = x.AccountGroupId,
                 Version = x.Version
             });
         }
@@ -68,7 +64,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Code = addAccountCommand.Code,
                 Label = addAccountCommand.Label,
                 Description = addAccountCommand.Description,
-                AccountGroupId = addAccountCommand.AccountGroupId
             };
         }
 
@@ -78,7 +73,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             account.Code = updateAccountCommand.Code;
             account.Label = updateAccountCommand.Label;
             account.Description = updateAccountCommand.Description;
-            account.AccountGroupId = updateAccountCommand.AccountGroupId;
             account.Version = updateAccountCommand.Version;
             return account;
         }

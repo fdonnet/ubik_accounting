@@ -17,6 +17,7 @@ namespace Ubik.Accounting.Api.Data
 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountGroup> AccountGroups { get; set; }
+        public DbSet<AccountAccountGroup> AccountsAccountGroups { get; set; }
         public DbSet<AccountGroupClassification> AccountGroupClassifications { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<Entry> Entries { get; set; }
@@ -40,6 +41,7 @@ namespace Ubik.Accounting.Api.Data
             new AccountGroupClassificationConfiguration().Configure(modelBuilder.Entity<AccountGroupClassification>());
             new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
+            new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
 
             modelBuilder.Entity<Entry>()
             .HasOne(s => s.MainEntry)

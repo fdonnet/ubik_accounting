@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace Ubik.Accounting.Api.Data.Config
 {
@@ -65,6 +66,13 @@ namespace Ubik.Accounting.Api.Data.Config
                 .WithMany(g => g.OwnedAccountGroups)
                 .HasForeignKey(b => b.AccountGroupClassificationId)
                 .IsRequired(true);
+
+            builder
+                .HasMany(e => e.Accounts)
+                .WithMany()
+                .UsingEntity<AccountAccountGroup>(
+                a => a.HasOne<Account>().WithMany().HasForeignKey(e => e.AccountId),
+                g => g.HasOne<AccountGroup>().WithMany().HasForeignKey(e => e.AccountGroupId));
         }
     }
 }

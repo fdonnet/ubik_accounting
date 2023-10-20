@@ -13,7 +13,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             Guid accountGroupClassificationId, Guid currentId);
 
         public Task<bool> HasAnyChildAccountGroups(Guid Id);
-        public Task<bool> HasAnyChildAccounts(Guid Id);
+        //public Task<bool> HasAnyChildAccounts(Guid Id);
         public Task<AccountGroup> AddAsync(AccountGroup accountGroup);
         public Task<AccountGroup> UpdateAsync(AccountGroup accountGroup);
         public Task<bool> DeleteAsync(Guid id);

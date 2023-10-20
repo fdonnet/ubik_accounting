@@ -32,10 +32,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
                     throw new AccountGroupHasChildAccountGroupsException(request.Id);
 
 
-                //Has child accounts ?
-                var hasChildAccounts = await _serviceManager.AccountGroupService.HasAnyChildAccounts(request.Id);
-                if (hasChildAccounts)
-                    throw new AccountGroupHasChildAccountsException(request.Id);
+                //TODO: Has child accounts ?
+                //var hasChildAccounts = await _serviceManager.AccountGroupService.HasAnyChildAccounts(request.Id);
+                //if (hasChildAccounts)
+                //    throw new AccountGroupHasChildAccountsException(request.Id);
 
 
                 await _serviceManager.AccountGroupService.DeleteAsync(accountGroup.Id);

@@ -31,7 +31,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                 Code = "78888",
                 Label = "Test",
                 Description = "Test",
-                AccountGroupId = Guid.NewGuid(),
                 Version = Guid.NewGuid()
             };
 
@@ -41,7 +40,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             _serviceManager.AccountService.UpdateAsync(_account).Returns(_account);
             _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(false);
-            _serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)_command.AccountGroupId!).Returns(true);
+            //_serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)_command.AccountGroupId!).Returns(true);
             _serviceManager.AccountService.GetAsync(_command.Id).Returns(_account);
         }
 
@@ -73,19 +72,20 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
 
-        [Fact]
-        public async Task Upd_AccountGroupNotFoundExceptionForAccount_AccountGroupIdNotExistsId()
-        {
-            //Arrange
-            _serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)_command.AccountGroupId!).Returns(false);
+        //TODO: see how to adapt
+        //[Fact]
+        //public async Task Upd_AccountGroupNotFoundExceptionForAccount_AccountGroupIdNotExistsId()
+        //{
+        //    //Arrange
+        //    _serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)_command.AccountGroupId!).Returns(false);
 
-            //Act
-            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        //    //Act
+        //    Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
 
-            //Assert
-            await act.Should().ThrowAsync<AccountGroupNotFoundExceptionForAccount>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
-        }
+        //    //Assert
+        //    await act.Should().ThrowAsync<AccountGroupNotFoundExceptionForAccount>()
+        //        .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+        //}
 
         [Fact]
         public async Task Upd_AccountNotFoundException_AccountIdNotFound()

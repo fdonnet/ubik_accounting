@@ -7,7 +7,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
     public static class FakeGenerator
     {
-        public static IEnumerable<Account> GenerateAccounts(int numTests, Guid accountGroupId)
+        public static IEnumerable<Account> GenerateAccounts(int numTests)
         {
             return new Faker<Account>("fr_CH")
                  .CustomInstantiator(a => new Account()
@@ -15,7 +15,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                      Code = a.Finance.Account().ToString(),
                      Label = a.Finance.AccountName().ClampLength(1, 100),
                      Description = a.Lorem.Paragraphs().ClampLength(1, 700),
-                     AccountGroupId = accountGroupId
                  }).Generate(numTests);
         }
 
