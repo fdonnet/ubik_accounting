@@ -45,6 +45,22 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                     .And.BeOfType<AccountGroup>();
         }
 
+        [Fact]
+        public async Task Get_AccountGroup_OkWithChildAccounts()
+        {
+            //Arrange
+
+            //Act
+            var result = await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(_testAccountGroupValues.AccountGroupId1);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroup>()
+                    .And.Match<AccountGroup>(g=>g.Accounts != null);
+        }
+
+
         [Theory, MemberData(nameof(GeneratedGuids))]
         public async Task Get_Null_IdNotExists(Guid id)
         {

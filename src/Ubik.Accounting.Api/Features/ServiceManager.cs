@@ -19,8 +19,7 @@ namespace Ubik.Accounting.Api.Features
         {
             get
             {
-                if (_accountService == null)
-                    _accountService = new AccountService(_context);
+                _accountService ??= new AccountService(_context);
                 return _accountService;
             }
         }
@@ -29,8 +28,7 @@ namespace Ubik.Accounting.Api.Features
         {
             get
             {
-                if (_accountGroupService == null)
-                    _accountGroupService = new AccountGroupService(_context);
+                _accountGroupService ??= new AccountGroupService(_context);
                 return _accountGroupService;
             }
         }

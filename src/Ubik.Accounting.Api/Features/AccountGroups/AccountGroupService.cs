@@ -42,6 +42,15 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             return accountGroups;
         }
 
+        public async Task<AccountGroup?> GetWithChildAccountsAsync(Guid id)
+        {
+            var accountGroup = await _context.AccountGroups
+                                    .Include(a => a.Accounts)
+                                    .FirstOrDefaultAsync(g => g.Id == id);
+
+            return accountGroup;
+        }
+
         public async Task<bool> IfExistsAsync(string accountGroupCode,Guid accountGroupClassificationId)
         {
             return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode 

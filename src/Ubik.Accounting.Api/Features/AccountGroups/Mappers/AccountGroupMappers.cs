@@ -3,8 +3,8 @@ using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAllAccountGroups;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
+using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetChildAccounts;
+
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
 {
@@ -89,6 +89,18 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
             accountGroup.AccountGroupClassificationId = updateAccountGroupCommand.AccountGroupClassificationId;
             accountGroup.Version = updateAccountGroupCommand.Version;
             return accountGroup;
+        }
+
+        public static IEnumerable<GetChildAccountsResult> ToGetChildAccountsResult(this IEnumerable<Account> accounts)
+        {
+            return accounts.Select(x => new GetChildAccountsResult()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Label = x.Label,
+                Description = x.Description,
+                Version = x.Version
+            });
         }
     }
 }

@@ -27,10 +27,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
     public class AccountGroupsController_Test : BaseIntegrationTest
     {
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
+        private readonly BaseValuesForAccountGroupClassifications _testValuesForAccountGroupClassifications;
 
         public AccountGroupsController_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testValuesForAccountGroups = new BaseValuesForAccountGroups();
+            _testValuesForAccountGroupClassifications = new BaseValuesForAccountGroupClassifications();
         }
 
         [Fact]
@@ -171,6 +173,38 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
             //Act
             var fake = FakeGenerator.GenerateAddAccountGroups(1).First();
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync($"/AccountGroups", content);
+            var result = await response.Content.ReadFromJsonAsync<AddAccountGroupResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AddAccountGroupResult>()
+                .And.Match<AddAccountGroupResult>(x =>
+                    x.Code == fake.Code
+                    && x.Label == fake.Label
+                    && x.Description == fake.Description
+                    && x.Version != default!);
+        }
+
+        [Fact]
+        public async Task Post_AccountGroup_OkCodeExistButInOtherClassification()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var fake = FakeGenerator.GenerateAddAccountGroups(1).First();
+            fake.Code = _testValuesForAccountGroups.AccountGroupCode1;
+            fake.AccountGroupClassificationId = _testValuesForAccountGroupClassifications.AccountGroupClassificationId2;
+
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
 
