@@ -39,16 +39,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 if (accountExists)
                     throw new AccountAlreadyExistsException(request.Code);
 
-                //TODO Check if account group exists (if not null)
-                //if(request.AccountGroupId != null)
-                //{
-                //    var accountGroupExists = await _serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)request.AccountGroupId);
-                //    if (!accountGroupExists)
-                //    {
-                //        throw new AccountGroupNotFoundExceptionForAccount((Guid)request.AccountGroupId);
-                //    }
-                //}
-
                 await _serviceManager.AccountService.AddAsync(account);
                 await _serviceManager.SaveAsync();
 

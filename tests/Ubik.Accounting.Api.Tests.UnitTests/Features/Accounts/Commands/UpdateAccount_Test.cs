@@ -72,21 +72,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
 
-        //TODO: see how to adapt
-        //[Fact]
-        //public async Task Upd_AccountGroupNotFoundExceptionForAccount_AccountGroupIdNotExistsId()
-        //{
-        //    //Arrange
-        //    _serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)_command.AccountGroupId!).Returns(false);
-
-        //    //Act
-        //    Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
-
-        //    //Assert
-        //    await act.Should().ThrowAsync<AccountGroupNotFoundExceptionForAccount>()
-        //        .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
-        //}
-
         [Fact]
         public async Task Upd_AccountNotFoundException_AccountIdNotFound()
         {

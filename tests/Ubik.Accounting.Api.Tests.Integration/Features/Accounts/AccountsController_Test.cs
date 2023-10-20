@@ -210,34 +210,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_ALREADY_EXISTS");
         }
 
-        //[Fact]
-        //public async Task Post_ProblemDetails_AccountGroupNotFound()
-        //{
-        //    //Arrange
-        //    var httpClient = Factory.CreateDefaultClient();
-
-        //    var accessToken = await AuthHelper.GetAccessTokenReadWrite();
-        //    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-        //    //Act
-        //    var fakeAc = FakeGenerator.GenerateAccounts(1, _testValuesForAccountGroups.AccountGroupId1).First();
-        //    var fake = fakeAc.ToAddAccountResult();
-        //    fake.AccountGroupId = Guid.NewGuid();
-
-        //    var postAccountJson = JsonSerializer.Serialize(fake);
-        //    var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
-
-        //    var response = await httpClient.PostAsync($"/Accounts", content);
-        //    var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
-
-        //    //Assert
-        //    response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        //    result.Should()
-        //        .NotBeNull()
-        //        .And.BeOfType<CustomProblemDetails>()
-        //        .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_NOT_FOUND_FOR_ACCOUNT");
-        //}
-
         [Fact]
         public async Task Post_ProblemDetails_AccountEmptyFields()
         {

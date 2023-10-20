@@ -58,20 +58,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory]
-        [InlineData("1524f11f-20dd-4888-88f8-428e59bbc22a", true)]
-        [InlineData("1524f11f-20dd-4888-88f8-428e59bbbbbb", false)]
-        public async Task IfExistAccountGroup_TrueOrFalse_Ok(string accountGroupId, bool resultNeeded)
-        {
-            //Arrange
-
-            //Act
-            var result = await _serviceManager.AccountService.IfExistsAccountGroupAsync(Guid.Parse(accountGroupId));
-
-            //Assert
-            result.Should().Be(resultNeeded);
-        }
-
-        [Theory]
         [InlineData("1020", "7777f11f-20dd-4888-88f8-428e59bbc535", true)]
         [InlineData("zzzz999", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
         public async Task IfExistWithDifferentId_TrueorFalse_Ok(string accountCode, string currentGuid, bool resultNeeded)
@@ -126,20 +112,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should().Match<Account>(x => x.ModifiedBy != null && x.ModifiedAt != null);
         }
-
-        [Theory]
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "1524f11f-20dd-4888-58f8-428e59bbc22b" })]
-        public async Task Add_Exception_AccountGroupIdNotExists(Account account)
-        {
-            //Arrange
-
-            //Act
-            Func<Task> act = async () => await _serviceManager.AccountService.AddAsync(account);
-
-            //Assert
-            await act.Should().ThrowAsync<Exception>();
-        }
-
 
         [Fact]
         public async Task Update_UpdatedAccount_Ok()
