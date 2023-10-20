@@ -51,9 +51,9 @@ namespace Ubik.Accounting.Api.Features.Accounts
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AddAccountResult>> Add(AddAccountCommand addAccountCommand)
+        public async Task<ActionResult<AddAccountResult>> Add(AddAccountCommand command)
         {
-            var result = await _mediator.Send(addAccountCommand);
+            var result = await _mediator.Send(command);
             return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
 
@@ -64,10 +64,10 @@ namespace Ubik.Accounting.Api.Features.Accounts
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<UpdateAccountResult>> Update(Guid id, UpdateAccountCommand updateAccountCommand)
+        public async Task<ActionResult<UpdateAccountResult>> Update(Guid id, UpdateAccountCommand command)
         {
-            updateAccountCommand.Id = id;
-            var accountResult = await _mediator.Send(updateAccountCommand);
+            command.Id = id;
+            var accountResult = await _mediator.Send(command);
             return Ok(accountResult);
         }
 
@@ -77,7 +77,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<UpdateAccountResult>> Update(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             await _mediator.Send(new DeleteAccountCommand() { Id = id});
 

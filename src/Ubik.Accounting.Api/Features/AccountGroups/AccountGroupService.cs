@@ -53,11 +53,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             return await _context.AccountGroups.AnyAsync(a => a.ParentAccountGroupId == Id);
         }
 
-        //TODO: has children accounts
-        //public async Task<bool> HasAnyChildAccounts(Guid Id)
-        //{
-        //    return await _context.Accounts.AnyAsync(a => a.AccountGroupId == Id);
-        //}
+        public async Task<bool> HasAnyChildAccounts(Guid Id)
+        {
+            return await _context.AccountsAccountGroups.AnyAsync(a => a.AccountGroupId == Id);
+        }
 
         public async Task<bool> IfExistsAsync(Guid accountGroupId)
         {
