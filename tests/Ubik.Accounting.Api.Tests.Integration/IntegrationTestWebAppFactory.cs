@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Testcontainers.Keycloak;
-using Testcontainers.MariaDb;
+using Testcontainers.PostgreSql;
 using Ubik.Accounting.Api.Data;
 
 //TODO: manage to create container in parallel and see why it's create a container per test group...
@@ -17,13 +17,13 @@ namespace Ubik.Accounting.Api.Tests.Integration
     : WebApplicationFactory<Program>,
       IAsyncLifetime
     {
-        private readonly MariaDbContainer _dbContainer;
+        private readonly PostgreSqlContainer _dbContainer;
         private readonly KeycloakContainer _keycloackContainer;
 
         public IntegrationTestWebAppFactory()
         {
-            _dbContainer = new MariaDbBuilder()
-                .WithImage("mariadb:latest")
+            _dbContainer = new PostgreSqlBuilder()
+                .WithImage("postgres:latest")
                 .WithPassword("TEST_PASSWORD")
                 .Build();
 
@@ -49,7 +49,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
                 }
 
                 services.AddDbContext<AccountingContext>(options =>
-                    options.UseMySql(_dbContainer.GetConnectionString(), ServerVersion.AutoDetect(_dbContainer.GetConnectionString())));
+                    options.UseNpgsql(_dbContainer.GetConnectionString()));
 
                 services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
             });

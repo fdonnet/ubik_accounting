@@ -35,9 +35,8 @@ namespace Ubik.Accounting.Api
             });
 
             // Add services to the container.
-            var serverVersion = new MariaDbServerVersion(new Version(11, 1, 2));
             builder.Services.AddDbContextFactory<AccountingContext>(
-                    options => options.UseMySql(builder.Configuration.GetConnectionString("AccountingContext"), serverVersion), ServiceLifetime.Scoped);
+                 options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
 
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
