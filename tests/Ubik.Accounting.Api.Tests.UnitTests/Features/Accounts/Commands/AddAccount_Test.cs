@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using FluentAssertions;
+using MassTransit;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Accounts.Commands;
@@ -15,6 +16,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
     public class AddAccount_Test
     {
         private readonly IServiceManager _serviceManager;
+        private readonly IPublishEndpoint _publishEndpoint;
         private readonly AddAccountHandler _handler;
         private readonly AddAccountCommand _command;
         private readonly Account _account;
@@ -23,7 +25,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public AddAccount_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
-            _handler = new AddAccountHandler(_serviceManager);
+            _publishEndpoint = Substitute.For<IPublishEndpoint>();
+            _handler = new AddAccountHandler(_serviceManager,_publishEndpoint);
 
             _command = new AddAccountCommand()
             {

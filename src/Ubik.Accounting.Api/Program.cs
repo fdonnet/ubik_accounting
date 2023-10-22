@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Ubik.Accounting.Api.Data.Init;
 using Microsoft.AspNetCore.Mvc;
+using MassTransit;
 
 namespace Ubik.Accounting.Api
 {
@@ -41,6 +42,21 @@ namespace Ubik.Accounting.Api
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+
+            builder.Services.AddMassTransit(config =>
+            {
+                config.SetKebabCaseEndpointNameFormatter();
+                config.UsingRabbitMq((context,configurator) =>
+                {
+                    configurator.Host(new Uri(builder.Configuration["MessageBroker:Host"]!), h =>
+                    {
+                        h.Username(builder.Configuration["MessageBroker:User"]!);
+                        h.Password(builder.Configuration["MessageBroker:Password"]!);
+                    });
+
+                    configurator.ConfigureEndpoints(context);
+                });
+            });
 
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();

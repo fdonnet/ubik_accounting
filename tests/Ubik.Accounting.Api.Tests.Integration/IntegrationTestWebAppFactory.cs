@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Testcontainers.Keycloak;
 using Testcontainers.PostgreSql;
+using Testcontainers.RabbitMq;
 using Ubik.Accounting.Api.Data;
 
 //TODO: manage to create container in parallel and see why it's create a container per test group...
@@ -19,6 +20,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
     {
         private readonly PostgreSqlContainer _dbContainer;
         private readonly KeycloakContainer _keycloackContainer;
+        private readonly RabbitMqContainer _rabbitMQContainer;
 
         public IntegrationTestWebAppFactory()
         {
@@ -28,10 +30,16 @@ namespace Ubik.Accounting.Api.Tests.Integration
                 .Build();
 
             _keycloackContainer = new KeycloakBuilder()
-                                .WithImage("keycloak/keycloak:latest")
+                                .WithImage("quay.io/keycloak/keycloak:latest")
                                 .WithBindMount(GetWslAbsolutePath("./import"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
                                 .WithCommand(new string[] { "--import-realm" })
                                 .Build();
+
+            _rabbitMQContainer = new RabbitMqBuilder()
+                                .WithImage("rabbitmq:3.12-management")
+                                .WithUsername("guest")
+                                .WithPassword("guest")
+                                .Build();       
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -59,8 +67,9 @@ namespace Ubik.Accounting.Api.Tests.Integration
         {
             var keycloackTask = _keycloackContainer.StartAsync();
             var dbTask = _dbContainer.StartAsync();
+            var rabbitTask = _rabbitMQContainer.StartAsync();
 
-            await Task.WhenAll(keycloackTask, dbTask);
+            await Task.WhenAll(keycloackTask, dbTask, rabbitTask);
         }
 
         public new async Task DisposeAsync()
@@ -77,12 +86,16 @@ namespace Ubik.Accounting.Api.Tests.Integration
 
         private void SetTestEnvVariables()
         {
-            var port = _keycloackContainer.GetMappedPublicPort(8080);
-            var host = _keycloackContainer.Hostname;
-            Environment.SetEnvironmentVariable("Keycloack__MetadataAddress", $"http://{host}:{port}/realms/ubik/.well-known/openid-configuration");
-            Environment.SetEnvironmentVariable("Keycloack__Authority", $"http://{host}:{port}/realms/ubik");
-            Environment.SetEnvironmentVariable("Keycloack__AuthorizationUrl", $"http://{host}:{port}/realms/ubik/protocol/openid-connect/auth");
-            Environment.SetEnvironmentVariable("Keycloack__TokenUrl", $"http://{host}:{port}/realms/ubik/protocol/openid-connect/token");
+            var keycloakPort = _keycloackContainer.GetMappedPublicPort(8080);
+            var keycloackHost = _keycloackContainer.Hostname;
+            var rabbitMQPort = _rabbitMQContainer.GetMappedPublicPort(5672);
+            var rabbitMQHost = _rabbitMQContainer.Hostname;
+
+            Environment.SetEnvironmentVariable("Keycloack__MetadataAddress", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/.well-known/openid-configuration");
+            Environment.SetEnvironmentVariable("Keycloack__Authority", $"http://{keycloackHost}:{keycloakPort}/realms/ubik");
+            Environment.SetEnvironmentVariable("Keycloack__AuthorizationUrl", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/protocol/openid-connect/auth");
+            Environment.SetEnvironmentVariable("Keycloack__TokenUrl", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/protocol/openid-connect/token");
+            Environment.SetEnvironmentVariable("MessageBroker__Host", $"amqp://{rabbitMQHost}:{rabbitMQPort}");
         }
     }
 
