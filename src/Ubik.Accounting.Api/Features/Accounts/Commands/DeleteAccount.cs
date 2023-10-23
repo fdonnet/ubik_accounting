@@ -28,7 +28,7 @@ public class DeleteAccount
             var account = await _serviceManager.AccountService.GetAsync(request.Id)
                             ?? throw new AccountNotFoundException(request.Id);
 
-            await _serviceManager.AccountService.DeleteAsync(account.Id);
+            await _serviceManager.AccountService.ExecuteDeleteAsync(account.Id);
 
             return true;
         }

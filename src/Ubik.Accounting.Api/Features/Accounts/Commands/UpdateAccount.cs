@@ -58,7 +58,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 //Modify the found account
                 account = request.ToAccount(account);
 
-                var result = await _serviceManager.AccountService.UpdateAsync(account);
+                var result = _serviceManager.AccountService.Update(account);
+                await _serviceManager.SaveAsync();
 
                 return result.ToUpdateAccountResult();
             }

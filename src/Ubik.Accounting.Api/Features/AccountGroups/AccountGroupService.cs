@@ -17,15 +17,14 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
         public async Task<AccountGroup> AddAsync(AccountGroup accountGroup)
         {
             await _context.AccountGroups.AddAsync(accountGroup);
-            await _context.SaveChangesAsync();
+            _context.SetAuditAndSpecialFields();
 
             return accountGroup;
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<bool> ExecuteDeleteAsync(Guid id)
         {
-            _context.AccountGroups.Where(x => x.Id == id).ExecuteDelete();
-            await _context.SaveChangesAsync();
+            await _context.AccountGroups.Where(x => x.Id == id).ExecuteDeleteAsync();
             return true;
         }
 
@@ -80,30 +79,11 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
 
         }
 
-        public async Task<AccountGroup> UpdateAsync(AccountGroup accountGroup)
+        public AccountGroup Update(AccountGroup accountGroup)
         {
             _context.Entry(accountGroup).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return accountGroup;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                var err = new CustomError()
-                {
-                    ErrorCode = "ACCOUNTGROUP_CONFLICT",
-                    ErrorFriendlyMessage = "You don't have the last version or this account group has been removed, refresh your data before updating.",
-                    ErrorValueDetails = "Version",
-                };
-                var conflict = new AccountUpdateDbConcurrencyException(accountGroup.Version, ex)
-                {
-                    CustomErrors = new List<CustomError> { err }
-                };
-
-                throw conflict;
-            }
+            _context.SetAuditAndSpecialFields();
+            return accountGroup;
         }
     }
 }

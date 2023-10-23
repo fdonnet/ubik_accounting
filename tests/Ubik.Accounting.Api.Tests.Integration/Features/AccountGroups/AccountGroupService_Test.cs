@@ -108,7 +108,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            await _serviceManager.AccountGroupService.DeleteAsync(_testAccountGroupValues.AccountGroupIdForDel);
+            await _serviceManager.AccountGroupService.ExecuteDeleteAsync(_testAccountGroupValues.AccountGroupIdForDel);
             var exist = (await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupIdForDel)) != null;
 
             //Assert
@@ -159,7 +159,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var modifiedAt = accountGroup.ModifiedAt;
 
             //Act
-            var result = await _serviceManager.AccountGroupService.UpdateAsync(accountGroup);
+            var result = _serviceManager.AccountGroupService.Update(accountGroup);
 
             //Assert
             result.Should()
@@ -177,7 +177,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             accountGroup.Description = "Modified";
 
             //Act
-            var result = await _serviceManager.AccountGroupService.UpdateAsync(accountGroup);
+            var result = _serviceManager.AccountGroupService.Update(accountGroup);
 
             //Assert
             result.Should()

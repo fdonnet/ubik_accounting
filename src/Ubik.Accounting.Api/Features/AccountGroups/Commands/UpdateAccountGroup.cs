@@ -76,7 +76,9 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
                 //Modify the found account group
                 accountGroup = request.ToAccountGroup(accountGroup);
 
-                var result = await _serviceManager.AccountGroupService.UpdateAsync(accountGroup);
+                var result = _serviceManager.AccountGroupService.Update(accountGroup);
+                await _serviceManager.SaveAsync();
+
 
                 return result.ToUpdateAccountGroupResult();
             }

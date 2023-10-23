@@ -557,7 +557,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_CONFLICT");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "DB_CONCURRENCY_CONFLICT");
         }
 
         [Fact]

@@ -51,8 +51,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                     throw new AccountAlreadyExistsException(request.Code);
 
                 //Publish and store
-                await _publishEndpoint.Publish(account.ToAccountAdded(),CancellationToken.None);
                 await _serviceManager.AccountService.AddAsync(account);
+                await _publishEndpoint.Publish(account.ToAccountAdded(), CancellationToken.None);
+
+                await _serviceManager.SaveAsync();
 
                 return account.ToAddAccountResult();
             }

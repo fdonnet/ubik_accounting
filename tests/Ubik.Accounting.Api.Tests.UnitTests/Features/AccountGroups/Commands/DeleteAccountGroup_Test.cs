@@ -27,7 +27,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _validationBehavior = new ValidationPipelineBehavior<DeleteAccountGroupCommand, bool>(new DeleteAccountGroupValidator());
             _command = new DeleteAccountGroupCommand() { Id = _idToDelete };
 
-            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete).Returns(true);
+            _serviceManager.AccountGroupService.ExecuteDeleteAsync(_idToDelete).Returns(true);
             _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns
                 (new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" });
             _serviceManager.AccountGroupService.HasAnyChildAccountGroups(_idToDelete).Returns(false);

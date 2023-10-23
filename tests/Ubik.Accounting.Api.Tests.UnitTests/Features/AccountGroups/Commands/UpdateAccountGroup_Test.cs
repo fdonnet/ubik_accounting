@@ -47,7 +47,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _accountGroup = _command.ToAccountGroup(_accountGroup);
             _validationBehavior = new ValidationPipelineBehavior<UpdateAccountGroupCommand, UpdateAccountGroupResult>(new UpdateAccountGroupValidator());
 
-            _serviceManager.AccountGroupService.UpdateAsync(_accountGroup).Returns(_accountGroup);
+            _serviceManager.AccountGroupService.Update(_accountGroup).Returns(_accountGroup);
             _serviceManager.AccountGroupService
                 .IfExistsWithDifferentIdAsync(_command.Code, _command.AccountGroupClassificationId, _command.Id).Returns(false);
 

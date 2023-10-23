@@ -26,7 +26,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _validationBehavior = new ValidationPipelineBehavior<DeleteAccountCommand, bool>(new DeleteAccountValidator());
             _command = new DeleteAccountCommand() { Id=_idToDelete};
 
-            _serviceManager.AccountService.DeleteAsync(_idToDelete).Returns(true);
+            _serviceManager.AccountService.ExecuteDeleteAsync(_idToDelete).Returns(true);
             _serviceManager.AccountService.GetAsync(_idToDelete).Returns
                 (new Account() { Id = _idToDelete, Code = "test", Label = "test" });
         }

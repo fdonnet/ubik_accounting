@@ -123,7 +123,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             account.Description = "Modified";
 
             //Act
-            var result = await _serviceManager.AccountService.UpdateAsync(account);
+            var result = _serviceManager.AccountService.Update(account);
 
             //Assert
             result.Should()
@@ -142,7 +142,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var modifiedAt = account.ModifiedAt;
 
             //Act
-            var result = await _serviceManager.AccountService.UpdateAsync(account);
+            var result = _serviceManager.AccountService.Update(account);
 
             //Assert
             result.Should()
@@ -156,7 +156,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
             
             //Act
-            await _serviceManager.AccountService.DeleteAsync(_testValuesForAccounts.AccountIdForDel);
+            await _serviceManager.AccountService.ExecuteDeleteAsync(_testValuesForAccounts.AccountIdForDel);
             var exist = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountIdForDel)) != null;
 
             //Assert

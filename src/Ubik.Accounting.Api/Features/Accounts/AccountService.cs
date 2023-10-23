@@ -42,7 +42,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
         public async Task<Account> AddAsync(Account account)
         {
             await _context.Accounts.AddAsync(account);
-            await _context.SaveChangesAsync();
+            _context.SetAuditAndSpecialFields();
 
             return account;
         }
@@ -52,36 +52,17 @@ namespace Ubik.Accounting.Api.Features.Accounts
         /// </summary>
         /// <param name="account"></param>
         /// <returns>a bool or throw AccountUpdateDbConcurrencyException if a DbUpdateConcurrencyException occurs</returns>
-        public async Task<Account> UpdateAsync(Account account)
+        public Account Update(Account account)
         {
             _context.Entry(account).State = EntityState.Modified;
+            _context.SetAuditAndSpecialFields();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return account;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                var err = new CustomError()
-                {
-                    ErrorCode = "ACCOUNT_CONFLICT",
-                    ErrorFriendlyMessage = "You don't have the last version or this account has been removed, refresh your data before updating.",
-                    ErrorValueDetails = "Version",
-                };
-                var conflict = new AccountUpdateDbConcurrencyException(account.Version, ex)
-                {
-                    CustomErrors = new List<CustomError> { err }
-                };
-
-                throw conflict;
-            }
+            return account;
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<bool> ExecuteDeleteAsync(Guid id)
         {
-            _context.Accounts.Where(x => x.Id == id).ExecuteDelete();
-            await _context.SaveChangesAsync();
+            await _context.Accounts.Where(x => x.Id == id).ExecuteDeleteAsync();
             return true;
         }
     }

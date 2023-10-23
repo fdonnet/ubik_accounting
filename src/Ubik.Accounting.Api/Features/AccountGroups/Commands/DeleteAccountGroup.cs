@@ -40,7 +40,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
                 //    throw new AccountGroupHasChildAccountsException(request.Id);
 
 
-                await _serviceManager.AccountGroupService.DeleteAsync(accountGroup.Id);
+                await _serviceManager.AccountGroupService.ExecuteDeleteAsync(accountGroup.Id);
 
                 return true;
             }

@@ -38,7 +38,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _account = _command.ToAccount(_account);
             _validationBehavior = new ValidationPipelineBehavior<UpdateAccountCommand, UpdateAccountResult>(new UpdateAccountValidator());
 
-            _serviceManager.AccountService.UpdateAsync(_account).Returns(_account);
+            _serviceManager.AccountService.Update(_account).Returns(_account);
             _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(false);
             //_serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)_command.AccountGroupId!).Returns(true);
             _serviceManager.AccountService.GetAsync(_command.Id).Returns(_account);

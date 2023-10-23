@@ -1,7 +1,10 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 using Ubik.Accounting.Api.Data.Config;
+using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
 using Ubik.DB.Common.Extensions;
 
@@ -33,8 +36,30 @@ namespace Ubik.Accounting.Api.Data
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            try
+            {
+                return await base.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                var err = new CustomError()
+                {
+                    ErrorCode = "DB_CONCURRENCY_CONFLICT",
+                    ErrorFriendlyMessage = "You don't have the last version or the ressource, refresh your data before updating.",
+                    ErrorValueDetails = "Version",
+                };
+                var conflict = new UpdateDbConcurrencyException()
+                {
+                    CustomErrors = new List<CustomError> { err }
+                };
+
+                throw conflict;
+            }
+        }
+
+        public void SetAuditAndSpecialFields()
+        {
             ChangeTracker.SetSpecialFields(_currentUserService);
-            return await base.SaveChangesAsync(cancellationToken);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
