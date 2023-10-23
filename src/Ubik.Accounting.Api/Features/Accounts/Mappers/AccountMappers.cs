@@ -1,4 +1,6 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using System.Security.Principal;
+using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Contracts;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
@@ -75,6 +77,19 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             account.Description = updateAccountCommand.Description;
             account.Version = updateAccountCommand.Version;
             return account;
+        }
+
+        public static AccountAdded ToAccountAdded(this Account account)
+        {
+            return new AccountAdded
+            {
+                Code = account.Code,
+                Label = account.Label,
+                Description = account.Description,
+                Version = account.Version,
+                Id = account.Id,
+                TenantId = account.TenantId
+            };
         }
     }
 }

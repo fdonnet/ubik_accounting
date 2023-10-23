@@ -36,6 +36,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
         {
             private readonly IServiceManager _serviceManager;
             private readonly IPublishEndpoint _publishEndpoint;
+
             public AddAccountHandler(IServiceManager serviceManager, IPublishEndpoint publishEndpoint)
             {
                 _serviceManager = serviceManager;
@@ -49,23 +50,12 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 if (accountExists)
                     throw new AccountAlreadyExistsException(request.Code);
 
+                //Publish and store
+                await _publishEndpoint.Publish(account.ToAccountAdded(),CancellationToken.None);
                 await _serviceManager.AccountService.AddAsync(account);
-                await _serviceManager.SaveAsync();
-
-                await _publishEndpoint.Publish(new AccountCreated 
-                    { 
-                        Code = account.Code,
-                        Label = account.Label,
-                        Description = account.Description,
-                        Version = account.Version,
-                        Id = account.Id,
-                        TenantId = account.TenantId
-                    });
 
                 return account.ToAddAccountResult();
             }
         }
-
-
     }
 }

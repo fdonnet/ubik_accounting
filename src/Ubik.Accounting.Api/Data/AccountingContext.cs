@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data.Config;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Services;
@@ -38,6 +39,11 @@ namespace Ubik.Accounting.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //Build for Masstransit outbox
+            modelBuilder.AddInboxStateEntity(); 
+            modelBuilder.AddOutboxMessageEntity(); 
+            modelBuilder.AddOutboxStateEntity();
+
             new AccountGroupClassificationConfiguration().Configure(modelBuilder.Entity<AccountGroupClassification>());
             new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());

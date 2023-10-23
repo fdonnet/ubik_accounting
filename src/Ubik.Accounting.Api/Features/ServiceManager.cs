@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Data;
+﻿using MassTransit;
+using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.AccountGroups;
 using Ubik.Accounting.Api.Features.Accounts;
 

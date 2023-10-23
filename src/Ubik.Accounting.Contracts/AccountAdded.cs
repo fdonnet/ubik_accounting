@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ubik.Accounting.Contracts
 {
-    public record AccountCreated
+    public record AccountAdded
     {
         public Guid Id { get; set; }
         public required string Code { get; set; }

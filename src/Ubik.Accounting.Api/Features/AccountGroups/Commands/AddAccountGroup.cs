@@ -1,7 +1,10 @@
-﻿using MediatR;
+﻿using MassTransit;
+using MediatR;
 using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
+using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Contracts;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 {
@@ -43,6 +46,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
             {
                 _serviceManager = serviceManager;
             }
+
             public async Task<AddAccountGroupResult> Handle(AddAccountGroupCommand request, CancellationToken cancellationToken)
             {
                 var accountGroup = request.ToAccountGroup();
@@ -64,7 +68,6 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
                 }
 
                 await _serviceManager.AccountGroupService.AddAsync(accountGroup);
-                await _serviceManager.SaveAsync();
 
                 return accountGroup.ToAddAccountGroupResult();
             }

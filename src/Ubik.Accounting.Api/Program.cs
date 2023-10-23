@@ -46,7 +46,7 @@ namespace Ubik.Accounting.Api
             builder.Services.AddMassTransit(config =>
             {
                 config.SetKebabCaseEndpointNameFormatter();
-                config.UsingRabbitMq((context,configurator) =>
+                config.UsingRabbitMq((context, configurator) =>
                 {
                     configurator.Host(new Uri(builder.Configuration["MessageBroker:Host"]!), h =>
                     {
@@ -55,6 +55,12 @@ namespace Ubik.Accounting.Api
                     });
 
                     configurator.ConfigureEndpoints(context);
+                });
+
+                config.AddEntityFrameworkOutbox<AccountingContext>(o =>
+                {
+                    o.UsePostgres();
+                    o.UseBusOutbox();
                 });
             });
 
