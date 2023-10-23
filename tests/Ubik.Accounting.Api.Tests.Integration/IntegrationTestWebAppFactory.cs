@@ -76,6 +76,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
         {
             await _keycloackContainer.DisposeAsync();
             await _dbContainer.DisposeAsync();
+            await _rabbitMQContainer.DisposeAsync();
         }
 
         private static string GetWslAbsolutePath(string windowRealtivePath)

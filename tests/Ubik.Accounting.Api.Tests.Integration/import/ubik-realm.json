@@ -414,7 +414,7 @@
   "otpPolicyLookAheadWindow" : 1,
   "otpPolicyPeriod" : 30,
   "otpPolicyCodeReusable" : false,
-  "otpSupportedApplications" : [ "totpAppFreeOTPName", "totpAppMicrosoftAuthenticatorName", "totpAppGoogleName" ],
+  "otpSupportedApplications" : [ "totpAppGoogleName", "totpAppMicrosoftAuthenticatorName", "totpAppFreeOTPName" ],
   "webAuthnPolicyRpEntityName" : "keycloak",
   "webAuthnPolicySignatureAlgorithms" : [ "ES256" ],
   "webAuthnPolicyRpId" : "",
@@ -462,6 +462,9 @@
     "firstName" : "",
     "lastName" : "",
     "email" : "testnorole@test.com",
+    "attributes" : {
+      "tenantid" : [ "727449e8-e93c-49e6-a5e5-1bf145d3e62d" ]
+    },
     "credentials" : [ {
       "id" : "ae7f6109-e6d6-4d47-a59b-03a156e1159e",
       "type" : "password",
@@ -485,6 +488,9 @@
     "firstName" : "",
     "lastName" : "",
     "email" : "testro@test.com",
+    "attributes" : {
+      "tenantid" : [ "727449e8-e93c-49e6-a5e5-1bf145d3e62d" ]
+    },
     "credentials" : [ {
       "id" : "36cfa8f9-dba0-465f-9c19-0dbb01853ea5",
       "type" : "password",
@@ -508,6 +514,9 @@
     "firstName" : "",
     "lastName" : "",
     "email" : "testrw@test.com",
+    "attributes" : {
+      "te" : [ "727449e8-e93c-49e6-a5e5-1bf145d3e62d" ]
+    },
     "credentials" : [ {
       "id" : "d9df6997-b30f-41f8-b500-580b58ead6d2",
       "type" : "password",
@@ -811,7 +820,7 @@
         "jsonType.label" : "String"
       }
     } ],
-    "defaultClientScopes" : [ "web-origins", "acr", "ez_role_for_web_api_dotnet", "roles", "profile", "email" ],
+    "defaultClientScopes" : [ "web-origins", "acr", "ez_role_for_web_api_dotnet", "roles", "profile", "email", "tenantids" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ],
     "authorizationSettings" : {
       "allowRemoteResourceManagement" : true,
@@ -1037,6 +1046,33 @@
         "claim.name" : "resource_access.${client_id}.roles",
         "jsonType.label" : "String",
         "multivalued" : "true"
+      }
+    } ]
+  }, {
+    "id" : "fa914969-43e3-4e09-be36-a5063bba62d3",
+    "name" : "tenantids",
+    "description" : "",
+    "protocol" : "openid-connect",
+    "attributes" : {
+      "include.in.token.scope" : "true",
+      "display.on.consent.screen" : "false",
+      "gui.order" : "",
+      "consent.screen.text" : ""
+    },
+    "protocolMappers" : [ {
+      "id" : "d0aa0d15-5072-426b-9fc9-9f32a95ed6be",
+      "name" : "tenantids",
+      "protocol" : "openid-connect",
+      "protocolMapper" : "oidc-usermodel-attribute-mapper",
+      "consentRequired" : false,
+      "config" : {
+        "userinfo.token.claim" : "true",
+        "multivalued" : "true",
+        "user.attribute" : "tenantids",
+        "id.token.claim" : "true",
+        "access.token.claim" : "true",
+        "claim.name" : "tenantids",
+        "jsonType.label" : "String"
       }
     } ]
   }, {
@@ -1318,7 +1354,7 @@
       }
     } ]
   } ],
-  "defaultDefaultClientScopes" : [ "role_list", "profile", "email", "roles", "web-origins", "acr", "ez_role_for_web_api_dotnet" ],
+  "defaultDefaultClientScopes" : [ "role_list", "profile", "email", "roles", "web-origins", "acr", "ez_role_for_web_api_dotnet", "tenantids" ],
   "defaultOptionalClientScopes" : [ "offline_access", "address", "phone", "microprofile-jwt" ],
   "browserSecurityHeaders" : {
     "contentSecurityPolicyReportOnly" : "",

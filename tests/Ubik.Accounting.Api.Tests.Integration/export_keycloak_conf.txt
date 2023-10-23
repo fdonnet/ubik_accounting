@@ -1,4 +1,4 @@
-docker exec -it eebb44610817976b605687339482236d9daa75655a6643405c6851b1e8a9e8e3 bash
+docker exec -it 8c57e0eaf44969057329d9e87823ca3b1e3d62f4d1b55219911c307085b01550 bash
 /opt/keycloak/bin/kc.sh export --dir /opt/keycloak/data/import --realm ubik --users realm_file
 docker cp 8c57e0eaf44969057329d9e87823ca3b1e3d62f4d1b55219911c307085b01550:/opt/keycloak/data/import/ubik-realm.json ./ubik-realm.json
 
