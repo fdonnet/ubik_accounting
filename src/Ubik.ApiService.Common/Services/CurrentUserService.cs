@@ -1,16 +1,54 @@
-﻿namespace Ubik.ApiService.Common.Services
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using System.Xml.Linq;
+
+namespace Ubik.ApiService.Common.Services
 {
     public class CurrentUserService : ICurrentUserService
     {
+        private readonly IHttpContextAccessor _contextAccessor;
+        private ICurrentUser _currentUser = null;
+
+        public ICurrentUser CurrentUser
+        {
+            get { return GetCurrentUser(); }
+        }
+
+
+        public CurrentUserService(IHttpContextAccessor contextAccessor)
+        {
+            _contextAccessor = contextAccessor;
+        }
+
         //TODO: need to be replaced by a call to User Grpc + caching
         //TODO: adapt to query the DB and use caching
-        public ICurrentUser GetCurrentUser()
+        private ICurrentUser GetCurrentUser()
         {
-            return new CurrentUser() { 
-                Email = "test@gmail.com", 
-                Id = Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e"), 
-                Name = "testuser", 
-                TenantId= Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d") };
+            if (_currentUser == null)
+            {
+                var identity = _contextAccessor.HttpContext?.User.Identity as ClaimsIdentity;
+
+                if (identity != null)
+                {
+                    IEnumerable<Claim> claims = identity.Claims;
+
+                    var tenantIds = claims.Where(i => i.Type == "tenantids")?.Select(v => v.Value);
+                    var id = claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                    if (tenantIds != null && id != null)
+                    {
+                        _currentUser = new CurrentUser()
+                        {
+                            Id = Guid.Parse(id),
+                            Name = claims.FirstOrDefault(i => i.Type == ClaimTypes.Name)?.Value ?? "",
+                            Email = claims.FirstOrDefault(i => i.Type == ClaimTypes.Email)?.Value ?? "",
+                            TenantIds = tenantIds == null ? new Guid[] { Guid.NewGuid() } : tenantIds.Select(t => Guid.Parse(t)).ToArray()
+                        };
+                    }
+                }
+            }
+            return _currentUser ?? throw new ArgumentNullException("User info cannot be null");
         }
     }
 }

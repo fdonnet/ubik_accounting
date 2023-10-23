@@ -32,7 +32,7 @@
 
     public record BaseValuesForUsers
     {
-        public Guid UserId1 { get; } = Guid.Parse("9124f11f-20dd-4888-88f8-428e59bbc53e");
+        public Guid UserId1 { get; } = Guid.Parse("c9fe1b29-6d1b-420c-ac64-fc8f1a6153af");
     }
 
     public record BaseValuesGeneral

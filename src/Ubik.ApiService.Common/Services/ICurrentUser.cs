@@ -5,7 +5,7 @@
         Guid Id { get; set; }
         string Name { get; set; }
         string Email { get; set; }
-        Guid TenantId { get; set; }
+        Guid[] TenantIds { get; set; }
 
     }
 }

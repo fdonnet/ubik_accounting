@@ -9,6 +9,7 @@ using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGr
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.DeleteAccountGroup;
 using Ubik.Accounting.Api.Features.AccountGroups.Queries;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetChildAccounts;
+using System.Security.Claims;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups
 {

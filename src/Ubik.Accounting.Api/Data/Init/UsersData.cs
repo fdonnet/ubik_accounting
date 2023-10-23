@@ -24,11 +24,19 @@ namespace Ubik.Accounting.Api.Data.Init
                 },
                 new User
                 {
-                    Id = userId2,
+                    Id = Guid.Parse("f67da800-58c5-4082-b2b0-4bb1151d56ee"),
                     Name = "test01",
                     Email = "test01@gmail.com",
                     TenantId = baseValuesForTenants.TenantId
                 },
+                new User
+                {
+                    Id = Guid.Parse("a265ed07-276c-4375-9dfe-ab754095336e"),
+                    Name = "test02",
+                    Email = "test01@gmail.com",
+                    TenantId = baseValuesForTenants.TenantId
+                },
+
                             };
 
                 foreach (User u in users)

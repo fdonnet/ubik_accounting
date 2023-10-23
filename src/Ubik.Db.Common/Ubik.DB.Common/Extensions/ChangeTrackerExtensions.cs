@@ -12,10 +12,9 @@ namespace Ubik.DB.Common.Extensions
         {
             changeTracker.DetectChanges();
             IEnumerable<EntityEntry> entities = changeTracker.Entries();
-            var currentUser = currentUserService.GetCurrentUser();
 
-            SetAuditFields(entities, currentUser);
-            SetTenantField(entities, currentUser);
+            SetAuditFields(entities, currentUserService.CurrentUser);
+            SetTenantField(entities, currentUserService.CurrentUser);
             SetConcurrencyField(entities);
         }
 
@@ -76,7 +75,7 @@ namespace Ubik.DB.Common.Extensions
                 foreach (EntityEntry entry in tenantEntities)
                 {
                     ITenantEntity entity = (ITenantEntity)entry.Entity;
-                    entity.TenantId = currentUser.TenantId;
+                    entity.TenantId = currentUser.TenantIds[0];
                 }
             }
         }
