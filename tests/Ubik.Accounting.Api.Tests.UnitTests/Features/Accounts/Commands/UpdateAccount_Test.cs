@@ -9,12 +9,14 @@ using FluentAssertions;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Bogus;
 using Ubik.ApiService.Common.Exceptions;
+using MassTransit;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 {
     public class UpdateAccount_Test
     {
         private readonly IServiceManager _serviceManager;
+        private readonly IPublishEndpoint _publishEndpoint;
         private readonly UpdateAccountHandler _handler;
         private readonly UpdateAccountCommand _command;
         private readonly Account _account;
@@ -23,7 +25,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public UpdateAccount_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
-            _handler = new UpdateAccountHandler(_serviceManager);
+            _publishEndpoint = Substitute.For<IPublishEndpoint>();
+            _handler = new UpdateAccountHandler(_serviceManager, _publishEndpoint);
 
             _command = new UpdateAccountCommand()
             {

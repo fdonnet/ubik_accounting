@@ -7,12 +7,14 @@ using Ubik.Accounting.Api.Features.Accounts.Commands;
 using FluentAssertions;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.ApiService.Common.Exceptions;
+using MassTransit;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 {
     public class DeleteAccount_Test
     {
         private readonly IServiceManager _serviceManager;
+        private readonly IPublishEndpoint _publishEndpoint;
         private readonly DeleteAccountHandler _handler;
         private readonly DeleteAccountCommand _command;
         private readonly Guid _idToDelete;
@@ -21,7 +23,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public DeleteAccount_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
-            _handler = new DeleteAccountHandler(_serviceManager);
+            _publishEndpoint = Substitute.For<IPublishEndpoint>();
+            _handler = new DeleteAccountHandler(_serviceManager,_publishEndpoint); ;
             _idToDelete = Guid.NewGuid();
             _validationBehavior = new ValidationPipelineBehavior<DeleteAccountCommand, bool>(new DeleteAccountValidator());
             _command = new DeleteAccountCommand() { Id=_idToDelete};

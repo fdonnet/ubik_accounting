@@ -21,7 +21,7 @@ namespace Ubik.ApiService.Common.Exceptions
                 case ServiceAndFeatureExceptionType.Conflict:
                     error.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.8";
                     error.Status = 409;
-                    error.Title = "Resource conflict (already exists)";
+                    error.Title = "Resource conflict";
                     break;
                 case ServiceAndFeatureExceptionType.NotFound:
                     error.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4";

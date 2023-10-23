@@ -91,5 +91,18 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 TenantId = account.TenantId
             };
         }
+
+        public static AccountUpdated ToAccountUpdated(this Account account)
+        {
+            return new AccountUpdated
+            {
+                Code = account.Code,
+                Label = account.Label,
+                Description = account.Description,
+                Version = account.Version,
+                Id = account.Id,
+                TenantId = account.TenantId
+            };
+        }
     }
 }

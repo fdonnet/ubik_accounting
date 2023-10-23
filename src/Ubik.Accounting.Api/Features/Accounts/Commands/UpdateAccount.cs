@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using MassTransit;
+using MediatR;
 using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
@@ -38,10 +39,12 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
         public class UpdateAccountHandler : IRequestHandler<UpdateAccountCommand, UpdateAccountResult>
         {
             private readonly IServiceManager _serviceManager;
+            private readonly IPublishEndpoint _publishEndpoint;
 
-            public UpdateAccountHandler(IServiceManager serviceManager)
+            public UpdateAccountHandler(IServiceManager serviceManager, IPublishEndpoint publishEndpoint)
             {
                 _serviceManager = serviceManager;
+                _publishEndpoint = publishEndpoint;
             }
 
             public async Task<UpdateAccountResult> Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
@@ -59,6 +62,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 account = request.ToAccount(account);
 
                 var result = _serviceManager.AccountService.Update(account);
+                await _publishEndpoint.Publish(account.ToAccountUpdated(), CancellationToken.None);
                 await _serviceManager.SaveAsync();
 
                 return result.ToUpdateAccountResult();
