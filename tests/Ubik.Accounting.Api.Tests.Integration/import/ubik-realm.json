@@ -414,7 +414,7 @@
   "otpPolicyLookAheadWindow" : 1,
   "otpPolicyPeriod" : 30,
   "otpPolicyCodeReusable" : false,
-  "otpSupportedApplications" : [ "totpAppGoogleName", "totpAppMicrosoftAuthenticatorName", "totpAppFreeOTPName" ],
+  "otpSupportedApplications" : [ "totpAppMicrosoftAuthenticatorName", "totpAppFreeOTPName", "totpAppGoogleName" ],
   "webAuthnPolicyRpEntityName" : "keycloak",
   "webAuthnPolicySignatureAlgorithms" : [ "ES256" ],
   "webAuthnPolicyRpId" : "",
@@ -489,7 +489,7 @@
     "lastName" : "",
     "email" : "testro@test.com",
     "attributes" : {
-      "tenantid" : [ "727449e8-e93c-49e6-a5e5-1bf145d3e62d" ]
+      "tenantids" : [ "727449e8-e93c-49e6-a5e5-1bf145d3e62d" ]
     },
     "credentials" : [ {
       "id" : "36cfa8f9-dba0-465f-9c19-0dbb01853ea5",
@@ -511,11 +511,11 @@
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
-    "firstName" : "",
-    "lastName" : "",
+    "firstName" : "test",
+    "lastName" : "test",
     "email" : "testrw@test.com",
     "attributes" : {
-      "te" : [ "727449e8-e93c-49e6-a5e5-1bf145d3e62d" ]
+      "tenantids" : [ "727449e8-e93c-49e6-a5e5-1bf145d3e62d" ]
     },
     "credentials" : [ {
       "id" : "d9df6997-b30f-41f8-b500-580b58ead6d2",
@@ -1066,6 +1066,7 @@
       "protocolMapper" : "oidc-usermodel-attribute-mapper",
       "consentRequired" : false,
       "config" : {
+        "aggregate.attrs" : "false",
         "userinfo.token.claim" : "true",
         "multivalued" : "true",
         "user.attribute" : "tenantids",
