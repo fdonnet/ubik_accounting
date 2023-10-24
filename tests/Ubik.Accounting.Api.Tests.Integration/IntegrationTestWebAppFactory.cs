@@ -1,4 +1,5 @@
-﻿using DotNet.Testcontainers.Configurations;
+﻿using Bogus.DataSets;
+using DotNet.Testcontainers.Configurations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -6,10 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using NSubstitute;
 using Testcontainers.Keycloak;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
 using Ubik.Accounting.Api.Data;
+using Ubik.Accounting.Api.Data.Init;
+using Ubik.ApiService.Common.Services;
 
 //TODO: manage to create container in parallel and see why it's create a container per test group...
 namespace Ubik.Accounting.Api.Tests.Integration
@@ -21,6 +25,28 @@ namespace Ubik.Accounting.Api.Tests.Integration
         private readonly PostgreSqlContainer _dbContainer;
         private readonly KeycloakContainer _keycloackContainer;
         private readonly RabbitMqContainer _rabbitMQContainer;
+
+
+        public class TestUserService : ICurrentUserService
+        {
+            private readonly BaseValuesForUsers _testValuesForUser;
+            private readonly BaseValuesForTenants _testValuesForTenants;
+
+            public TestUserService()
+            {
+                _testValuesForUser = new BaseValuesForUsers();
+                _testValuesForTenants = new BaseValuesForTenants();
+
+            }
+
+            public ICurrentUser CurrentUser =>  new CurrentUser()
+                { 
+                Id = _testValuesForUser.UserId1,
+                Name = "TEST",
+                Email = "test@test.com",
+                TenantIds = new Guid[] { _testValuesForTenants.TenantId }};
+           
+        }
 
         public IntegrationTestWebAppFactory()
         {
@@ -39,7 +65,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
                                 .WithImage("rabbitmq:3.12-management")
                                 .WithUsername("guest")
                                 .WithPassword("guest")
-                                .Build();       
+                                .Build();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -59,6 +85,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
                 services.AddDbContext<AccountingContext>(options =>
                     options.UseNpgsql(_dbContainer.GetConnectionString()));
 
+                services.AddScoped<ICurrentUserService, TestUserService>();
                 services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
             });
         }
