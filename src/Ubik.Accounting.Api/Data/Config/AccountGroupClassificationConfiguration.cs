@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Data.Config
 {
@@ -37,10 +38,6 @@ namespace Ubik.Accounting.Api.Data.Config
             .IsUnique();
 
             builder.HasIndex(a => a.TenantId);
-
-            //TODO: Change that quick with userservice
-            builder
-                .HasQueryFilter(a => a.TenantId == Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d"));
 
             builder
                 .HasOne(a => a.CreatedByUser)

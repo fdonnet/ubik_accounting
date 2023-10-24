@@ -13,10 +13,12 @@ namespace Ubik.Accounting.Api.Data
     public class AccountingContext : DbContext
     {
         private readonly ICurrentUserService _currentUserService;
+        private readonly Guid _tenantId;
         public AccountingContext(DbContextOptions<AccountingContext> options, ICurrentUserService userService)
             : base(options)
         {
             _currentUserService = userService;
+            _tenantId = userService.CurrentUser.TenantIds[0];
         }
 
         public DbSet<Account> Accounts { get; set; }
@@ -68,6 +70,9 @@ namespace Ubik.Accounting.Api.Data
             modelBuilder.AddInboxStateEntity(); 
             modelBuilder.AddOutboxMessageEntity(); 
             modelBuilder.AddOutboxStateEntity();
+
+            //TenantId
+            SetTenantId(modelBuilder);
 
             new AccountGroupClassificationConfiguration().Configure(modelBuilder.Entity<AccountGroupClassification>());
             new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
@@ -127,6 +132,21 @@ namespace Ubik.Accounting.Api.Data
             .WithMany()
             .HasForeignKey(b => b.ModifiedBy)
             .IsRequired(false);
+        }
+
+        private void SetTenantId(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Account>()
+                .HasQueryFilter(mt => mt.TenantId == _tenantId);
+
+            modelBuilder.Entity<AccountGroup>()
+                .HasQueryFilter(mt => mt.TenantId == _tenantId);
+
+            modelBuilder.Entity<AccountGroupClassification>()
+                .HasQueryFilter(mt => mt.TenantId == _tenantId);
+
+            modelBuilder.Entity<AccountAccountGroup>()
+                .HasQueryFilter(mt => mt.TenantId == _tenantId);
         }
     }
 }
