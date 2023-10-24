@@ -5,6 +5,7 @@ using Ubik.DB.Common;
 
 namespace Ubik.Accounting.Api.Models
 {
+    //TODO: will be updated by another service
     [Index(nameof(TenantId), IsUnique = false)]
     [Table("Currencies")]
     public class Currency : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
@@ -16,9 +17,7 @@ namespace Ubik.Accounting.Api.Models
         public Guid TenantId { get; set; }
         public required DateTime CreatedAt { get; set; }
         public required Guid CreatedBy { get; set; }
-        public User CreatedByUser { get; set; } = default!;
         public DateTime? ModifiedAt { get; set; }
         public Guid? ModifiedBy { get; set; }
-        public User? ModifiedByUser { get; set; }
     }
 }

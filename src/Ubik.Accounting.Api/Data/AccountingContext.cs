@@ -26,9 +26,7 @@ namespace Ubik.Accounting.Api.Data
         public DbSet<AccountAccountGroup> AccountsAccountGroups { get; set; }
         public DbSet<AccountGroupClassification> AccountGroupClassifications { get; set; }
         public DbSet<Currency> Currencies { get; set; }
-        public DbSet<Entry> Entries { get; set; }
-        public DbSet<TaxRate> TaxRates { get; set; }
-        public DbSet<User> Users { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -66,72 +64,30 @@ namespace Ubik.Accounting.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //Build for Masstransit outbox
-            modelBuilder.AddInboxStateEntity(); 
-            modelBuilder.AddOutboxMessageEntity(); 
+            //Build for Masstransit inbox/outbox
+            modelBuilder.AddInboxStateEntity();
+            modelBuilder.AddOutboxMessageEntity();
             modelBuilder.AddOutboxStateEntity();
 
             //TenantId
             SetTenantId(modelBuilder);
 
+            //Configure
+            new CurrencyConfiguration().Configure(modelBuilder.Entity<Currency>());
             new AccountGroupClassificationConfiguration().Configure(modelBuilder.Entity<AccountGroupClassification>());
             new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
 
-            modelBuilder.Entity<Entry>()
-            .HasOne(s => s.MainEntry)
-            .WithMany(e => e.CounterpartyEntries)
-            .HasForeignKey(e => e.MainEntryId)
-            .IsRequired(false);
+            //TODO: Fk no cascade (but need to be checked)
+            var cascadeFKs = modelBuilder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetForeignKeys())
+                .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Entry>()
-            .HasOne(s => s.OriginalCurrency)
-            .WithMany()
-            .HasForeignKey(e => e.OriginalCurrencyId)
-            .IsRequired(false);
+            foreach (var fk in cascadeFKs)
+                fk.DeleteBehavior = DeleteBehavior.Restrict;
 
-            modelBuilder.Entity<Entry>()
-            .HasOne(s => s.TaxRate)
-            .WithMany()
-            .HasForeignKey(e => e.TaxRateId)
-            .IsRequired(false);
-
-            modelBuilder.Entity<Currency>()
-            .HasOne(a => a.CreatedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.CreatedBy)
-            .IsRequired(true);
-
-            modelBuilder.Entity<Currency>()
-            .HasOne(a => a.ModifiedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.ModifiedBy)
-            .IsRequired(false);
-
-            modelBuilder.Entity<Entry>()
-            .HasOne(a => a.CreatedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.CreatedBy)
-            .IsRequired(true);
-
-            modelBuilder.Entity<Entry>()
-            .HasOne(a => a.ModifiedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.ModifiedBy)
-            .IsRequired(false);
-
-            modelBuilder.Entity<TaxRate>()
-            .HasOne(a => a.CreatedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.CreatedBy)
-            .IsRequired(true);
-
-            modelBuilder.Entity<TaxRate>()
-            .HasOne(a => a.ModifiedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.ModifiedBy)
-            .IsRequired(false);
+            base.OnModelCreating(modelBuilder);
         }
 
         private void SetTenantId(ModelBuilder modelBuilder)
@@ -146,6 +102,9 @@ namespace Ubik.Accounting.Api.Data
                 .HasQueryFilter(mt => mt.TenantId == _tenantId);
 
             modelBuilder.Entity<AccountAccountGroup>()
+                .HasQueryFilter(mt => mt.TenantId == _tenantId);
+
+            modelBuilder.Entity<Currency>()
                 .HasQueryFilter(mt => mt.TenantId == _tenantId);
         }
     }

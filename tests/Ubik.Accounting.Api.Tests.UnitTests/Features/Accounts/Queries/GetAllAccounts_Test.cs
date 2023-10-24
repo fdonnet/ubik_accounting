@@ -23,7 +23,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
 
             _query = new GetAllAccountsQuery();
 
-            _accounts = new Account[] { new Account() { Code = "TEST", Label = "Test" } };
+            _accounts = new Account[] { new Account() { Code = "TEST", Label = "Test", CurrencyId=Guid.NewGuid() } };
         }
 
         [Fact]

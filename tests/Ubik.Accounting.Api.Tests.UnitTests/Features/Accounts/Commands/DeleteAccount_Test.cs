@@ -31,7 +31,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             _serviceManager.AccountService.ExecuteDeleteAsync(_idToDelete).Returns(true);
             _serviceManager.AccountService.GetAsync(_idToDelete).Returns
-                (new Account() { Id = _idToDelete, Code = "test", Label = "test" });
+                (new Account() { Id = _idToDelete, Code = "test", Label = "test", CurrencyId = Guid.NewGuid() });
         }
 
         [Fact]

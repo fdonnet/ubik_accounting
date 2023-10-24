@@ -47,18 +47,6 @@ namespace Ubik.Accounting.Api.Data.Config
                 .IsRequired(false);
 
             builder
-                .HasOne(a => a.CreatedByUser)
-                .WithMany()
-                .HasForeignKey(b => b.CreatedBy)
-                .IsRequired(true);
-
-            builder
-                .HasOne(a => a.ModifiedByUser)
-                .WithMany()
-                .HasForeignKey(b => b.ModifiedBy)
-                .IsRequired(false);
-
-            builder
                 .HasOne(a => a.AccountGroupClassification)
                 .WithMany(g => g.OwnedAccountGroups)
                 .HasForeignKey(b => b.AccountGroupClassificationId)

@@ -37,18 +37,11 @@ namespace Ubik.Accounting.Api.Data.Config
 
             builder.HasIndex(a => a.TenantId);
 
-            //Relations
             builder
-                .HasOne(a => a.CreatedByUser)
+                .HasOne(s => s.Currency)
                 .WithMany()
-                .HasForeignKey(b => b.CreatedBy)
+                .HasForeignKey(e => e.CurrencyId)
                 .IsRequired(true);
-
-            builder
-                .HasOne(a => a.ModifiedByUser)
-                .WithMany()
-                .HasForeignKey(b => b.ModifiedBy)
-                .IsRequired(false);
         }
     }
 }

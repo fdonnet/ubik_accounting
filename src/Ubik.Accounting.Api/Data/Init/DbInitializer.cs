@@ -6,7 +6,7 @@ namespace Ubik.Accounting.Api.Data.Init
     {
         public void Initialize(AccountingContext context)
         {
-            UsersData.Load(context);
+            CurrenciesData.Load(context);
             AccountGroupClassificationsData.Load(context);
             AccountGroupsData.Load(context);
             AccountsData.Load(context);
