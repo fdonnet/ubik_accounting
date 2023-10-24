@@ -88,7 +88,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory]
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5 })]
+        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "ccfe1b29-6d1b-420c-ac64-fc8f1a6153a1"})]
         public async Task Add_Account_Ok(Account account)
         {
             //Arrange
@@ -103,7 +103,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory]
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5 })]
+        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "ccfe1b29-6d1b-420c-ac64-fc8f1a6153a1" })]
         public async Task Add_AuditFieldsModified_Ok(Account account)
         {
             //Arrange
@@ -177,9 +177,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             }
         }
 
-        public static IEnumerable<object[]> GetAccounts(int numTests)
+        public static IEnumerable<object[]> GetAccounts(int numTests, string currencyId)
         {
-            var accounts = FakeGenerator.GenerateAccounts(numTests);
+            var accounts = FakeGenerator.GenerateAccounts(numTests, Guid.Parse(currencyId));
 
             foreach (var account in accounts)
             {

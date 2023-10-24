@@ -23,6 +23,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public string? Description { get; set; }
             [Required]
             public Guid Version { get; set; }
+            [Required]
+            public Guid CurrencyId { get; set; }
         }
 
         //Output
@@ -32,6 +34,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public string Code { get; set; } = default!;
             public string Label { get; set; } = default!;
             public string? Description { get; set; }
+            public Guid CurrencyId { get; set; }
             public Guid Version { get; set; }
         }
 

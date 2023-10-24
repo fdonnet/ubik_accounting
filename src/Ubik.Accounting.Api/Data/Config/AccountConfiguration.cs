@@ -36,6 +36,12 @@ namespace Ubik.Accounting.Api.Data.Config
                 .IsUnique();
 
             builder.HasIndex(a => a.TenantId);
+
+            builder
+                .HasOne(s => s.Currency)
+                .WithMany()
+                .HasForeignKey(e => e.CurrencyId)
+                .IsRequired(true);
         }
     }
 }

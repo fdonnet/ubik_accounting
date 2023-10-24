@@ -13,7 +13,7 @@ namespace Ubik.Accounting.Api.Data.Init
                 var baseValuesForUsers = new BaseValuesForUsers();
                 var baseValuesForCurrencies = new BaseValuesForCurrencies();
 
-                var accounts = new Currency[]
+                var currencies = new Currency[]
                {
                     new Currency
                     {
@@ -38,6 +38,11 @@ namespace Ubik.Accounting.Api.Data.Init
                         Version = Guid.NewGuid()
                     }
                };
+                foreach (Currency c in currencies)
+                {
+                    context.Currencies.Add(c);
+                }
+                context.SaveChanges();
             }
         }
     }

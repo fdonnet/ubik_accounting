@@ -32,7 +32,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             {
                 Code = "78888",
                 Label = "Test",
-                Description = "Test"
+                Description = "Test",
+                CurrencyId = Guid.NewGuid()
             };
 
             _account = _command.ToAccount();
@@ -77,6 +78,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             //Arrange
             _command.Code = "";
             _command.Label = "";
+            _command.CurrencyId = default!;
 
             //Act
             Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
@@ -87,7 +89,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             //Assert
             await act.Should().ThrowAsync<CustomValidationException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 2);
+                    && e.CustomErrors.Count() == 3);
         }
 
         [Fact]

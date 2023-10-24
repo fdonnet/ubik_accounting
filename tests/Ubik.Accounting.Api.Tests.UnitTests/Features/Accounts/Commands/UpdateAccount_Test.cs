@@ -10,6 +10,7 @@ using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Bogus;
 using Ubik.ApiService.Common.Exceptions;
 using MassTransit;
+using System.Diagnostics;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 {
@@ -34,10 +35,11 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                 Code = "78888",
                 Label = "Test",
                 Description = "Test",
-                Version = Guid.NewGuid()
+                CurrencyId = Guid.NewGuid(),
+                Version = Guid.NewGuid(),
             };
 
-            _account = new Account() { Code = "1800", Label = "1000" };
+            _account = new Account() { Code = "1800", Label = "1000", CurrencyId=Guid.NewGuid() };
             _account = _command.ToAccount(_account);
             _validationBehavior = new ValidationPipelineBehavior<UpdateAccountCommand, UpdateAccountResult>(new UpdateAccountValidator());
 
@@ -95,6 +97,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             //Arrange
             _command.Code = "";
             _command.Label = "";
+            _command.CurrencyId = default!;
 
             //Act
             Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
@@ -105,7 +108,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             //Assert (3 errors because version is not specified)
             await act.Should().ThrowAsync<CustomValidationException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 2);
+                    && e.CustomErrors.Count() == 3);
         }
 
         [Fact]

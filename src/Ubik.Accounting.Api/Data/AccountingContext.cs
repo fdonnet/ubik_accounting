@@ -73,11 +73,11 @@ namespace Ubik.Accounting.Api.Data
             SetTenantId(modelBuilder);
 
             //Configure
+            new CurrencyConfiguration().Configure(modelBuilder.Entity<Currency>());
             new AccountGroupClassificationConfiguration().Configure(modelBuilder.Entity<AccountGroupClassification>());
             new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
-            new CurrencyConfiguration().Configure(modelBuilder.Entity<Currency>());
 
             //TODO: Fk no cascade (but need to be checked)
             var cascadeFKs = modelBuilder.Model.GetEntityTypes()

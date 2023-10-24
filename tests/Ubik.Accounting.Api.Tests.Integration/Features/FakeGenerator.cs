@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Bogus.Extensions;
+using Org.BouncyCastle.Ocsp;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Models;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
@@ -13,22 +14,26 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
     {
         public static IEnumerable<AddAccountCommand> GenerateAddAccounts(int numTests)
         {
+            var testData = new BaseValuesForCurrencies();
             return new Faker<AddAccountCommand>("fr_CH")
                  .CustomInstantiator(a => new AddAccountCommand()
                  {
                      Code = a.Finance.Account().ToString(),
                      Label = a.Finance.AccountName().ClampLength(1, 100),
                      Description = a.Lorem.Paragraphs().ClampLength(1, 700),
+                     CurrencyId = testData.CurrencyId1
                  }).Generate(numTests);
         }
         public static IEnumerable<UpdateAccountCommand> GenerateUpdAccounts(int numTests)
         {
+            var testData = new BaseValuesForCurrencies();
             return new Faker<UpdateAccountCommand>("fr_CH")
                  .CustomInstantiator(a => new UpdateAccountCommand()
                  {
                      Code = a.Finance.Account().ToString(),
                      Label = a.Finance.AccountName().ClampLength(1, 100),
                      Description = a.Lorem.Paragraphs().ClampLength(1, 700),
+                     CurrencyId = testData.CurrencyId1
                  }).Generate(numTests);
         }
 
@@ -58,7 +63,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                  }).Generate(numTests);
         }
 
-        public static IEnumerable<Account> GenerateAccounts(int numTests)
+        public static IEnumerable<Account> GenerateAccounts(int numTests, Guid currencyId)
         {
             return new Faker<Account>("fr_CH")
                  .CustomInstantiator(a => new Account()
@@ -66,6 +71,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Code = a.Finance.Account().ToString(),
                      Label = a.Finance.AccountName().ClampLength(1, 100),
                      Description = a.Lorem.Paragraphs().ClampLength(1, 700),
+                     CurrencyId = currencyId
                  }).Generate(numTests);
         }
 

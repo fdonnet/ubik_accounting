@@ -28,7 +28,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
                 Id = Guid.NewGuid()
             };
 
-            _account = new Account() { Code = "TEST", Label = "Test" };
+            _account = new Account() { Code = "TEST", Label = "Test", CurrencyId=Guid.NewGuid() };
 
             _validationBehavior = new ValidationPipelineBehavior<GetAccountQuery, GetAccountResult>(new GetAccountValidator());
 

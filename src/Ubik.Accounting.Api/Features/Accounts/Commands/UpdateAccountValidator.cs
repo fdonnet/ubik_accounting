@@ -23,6 +23,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
 
             RuleFor(command => command.Version)
                 .NotEmpty().WithMessage("Version is required. Need to be checked for concurrency updates.");
+
+            RuleFor(command => command.CurrencyId)
+                .NotEmpty().WithMessage("CurrencyId is required.");
         }
     }
 }
