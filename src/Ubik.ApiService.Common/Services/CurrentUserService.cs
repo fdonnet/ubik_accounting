@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Xml.Linq;
 
+//TODO: don't forget to change the fake value or recode that for the moment we put the correct tenant_id to allow initial data check on model creating !!!!
 namespace Ubik.ApiService.Common.Services
 {
     public class CurrentUserService : ICurrentUserService
@@ -49,7 +50,7 @@ namespace Ubik.ApiService.Common.Services
                 }
             }
             if (_currentUser == null)
-                _currentUser = new CurrentUser() { Email = "fake@fake.com", Name = "fake", TenantIds = new Guid[] { Guid.NewGuid() }, Id = Guid.NewGuid() };
+                _currentUser = new CurrentUser() { Email = "fake@fake.com", Name = "fake", TenantIds = new Guid[] { Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d") }, Id = Guid.NewGuid() };
             
             return _currentUser;
         }
