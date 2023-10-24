@@ -64,18 +64,30 @@ namespace Ubik.Accounting.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //Build for Masstransit outbox
-            modelBuilder.AddInboxStateEntity(); 
-            modelBuilder.AddOutboxMessageEntity(); 
+            //Build for Masstransit inbox/outbox
+            modelBuilder.AddInboxStateEntity();
+            modelBuilder.AddOutboxMessageEntity();
             modelBuilder.AddOutboxStateEntity();
 
             //TenantId
             SetTenantId(modelBuilder);
 
+            //Configure
             new AccountGroupClassificationConfiguration().Configure(modelBuilder.Entity<AccountGroupClassification>());
             new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
+            new CurrencyConfiguration().Configure(modelBuilder.Entity<Currency>());
+
+            //TODO: Fk no cascade (but need to be checked)
+            var cascadeFKs = modelBuilder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetForeignKeys())
+                .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
+
+            foreach (var fk in cascadeFKs)
+                fk.DeleteBehavior = DeleteBehavior.Restrict;
+
+            base.OnModelCreating(modelBuilder);
         }
 
         private void SetTenantId(ModelBuilder modelBuilder)
@@ -90,6 +102,9 @@ namespace Ubik.Accounting.Api.Data
                 .HasQueryFilter(mt => mt.TenantId == _tenantId);
 
             modelBuilder.Entity<AccountAccountGroup>()
+                .HasQueryFilter(mt => mt.TenantId == _tenantId);
+
+            modelBuilder.Entity<Currency>()
                 .HasQueryFilter(mt => mt.TenantId == _tenantId);
         }
     }

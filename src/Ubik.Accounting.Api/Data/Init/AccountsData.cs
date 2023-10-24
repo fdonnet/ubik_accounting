@@ -12,6 +12,7 @@ namespace Ubik.Accounting.Api.Data.Init
                 var baseValuesForTenants = new BaseValuesForTenants();
                 var baseValuesForUsers = new BaseValuesForUsers();
                 var baseValuesForAccounts = new BaseValuesForAccounts();
+                var baseValuesForCurrencies = new BaseValuesForCurrencies();
 
                 var accounts = new Account[]
                 {
@@ -19,6 +20,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     {
                         Id= baseValuesForAccounts.AccountId1,
                         Code = baseValuesForAccounts.AccountCode1,
+                        CurrencyId = baseValuesForCurrencies.CurrencyId1,
                         CreatedBy= baseValuesForUsers.UserId1,
                         CreatedAt = baseValuesGeneral.GenerationTime,
                         Label = "Banque 1",
@@ -32,6 +34,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     {
                         Id= baseValuesForAccounts.AccountId2,
                         Code = "1030",
+                        CurrencyId = baseValuesForCurrencies.CurrencyId2,
                         CreatedBy= baseValuesForUsers.UserId1,
                         CreatedAt = baseValuesGeneral.GenerationTime,
                         Label = "Banque 2",
@@ -46,6 +49,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     {
                         Id= baseValuesForAccounts.AccountIdForDel,
                         Code = "2030",
+                        CurrencyId = baseValuesForCurrencies.CurrencyId1,
                         CreatedBy= baseValuesForUsers.UserId1,
                         CreatedAt = baseValuesGeneral.GenerationTime,
                         Label = "Banque for removal",

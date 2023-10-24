@@ -7,6 +7,8 @@ namespace Ubik.Accounting.Api.Models
         public Guid Id { get; set; }
         public required string Code { get; set; }
         public required string Label { get; set; }
+        public required Guid CurrencyId { get; set; }
+        public Currency? Currency { get; set; }
         public  string? Description { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }

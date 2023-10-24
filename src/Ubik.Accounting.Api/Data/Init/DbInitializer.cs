@@ -10,6 +10,7 @@ namespace Ubik.Accounting.Api.Data.Init
             AccountGroupsData.Load(context);
             AccountsData.Load(context);
             AccountsAccountGroupsData.Load(context);
+            CurrenciesData.Load(context);
         }
     }
 }

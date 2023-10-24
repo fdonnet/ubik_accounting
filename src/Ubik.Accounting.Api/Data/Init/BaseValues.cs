@@ -39,4 +39,10 @@
     {
         public DateTime GenerationTime { get; }  = DateTime.UtcNow;
     }
+
+    public record BaseValuesForCurrencies
+    {
+        public Guid CurrencyId1 { get; } = Guid.Parse("CCfe1b29-6d1b-420c-ac64-fc8f1a6153CC");
+        public Guid CurrencyId2 { get; } = Guid.Parse("CC2e1b29-6d1b-420c-ac64-fc8f1a6153CC");
+    }
 }
