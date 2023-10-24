@@ -26,9 +26,7 @@ namespace Ubik.Accounting.Api.Data
         public DbSet<AccountAccountGroup> AccountsAccountGroups { get; set; }
         public DbSet<AccountGroupClassification> AccountGroupClassifications { get; set; }
         public DbSet<Currency> Currencies { get; set; }
-        public DbSet<Entry> Entries { get; set; }
-        public DbSet<TaxRate> TaxRates { get; set; }
-        public DbSet<User> Users { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -78,60 +76,6 @@ namespace Ubik.Accounting.Api.Data
             new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
-
-            modelBuilder.Entity<Entry>()
-            .HasOne(s => s.MainEntry)
-            .WithMany(e => e.CounterpartyEntries)
-            .HasForeignKey(e => e.MainEntryId)
-            .IsRequired(false);
-
-            modelBuilder.Entity<Entry>()
-            .HasOne(s => s.OriginalCurrency)
-            .WithMany()
-            .HasForeignKey(e => e.OriginalCurrencyId)
-            .IsRequired(false);
-
-            modelBuilder.Entity<Entry>()
-            .HasOne(s => s.TaxRate)
-            .WithMany()
-            .HasForeignKey(e => e.TaxRateId)
-            .IsRequired(false);
-
-            modelBuilder.Entity<Currency>()
-            .HasOne(a => a.CreatedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.CreatedBy)
-            .IsRequired(true);
-
-            modelBuilder.Entity<Currency>()
-            .HasOne(a => a.ModifiedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.ModifiedBy)
-            .IsRequired(false);
-
-            modelBuilder.Entity<Entry>()
-            .HasOne(a => a.CreatedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.CreatedBy)
-            .IsRequired(true);
-
-            modelBuilder.Entity<Entry>()
-            .HasOne(a => a.ModifiedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.ModifiedBy)
-            .IsRequired(false);
-
-            modelBuilder.Entity<TaxRate>()
-            .HasOne(a => a.CreatedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.CreatedBy)
-            .IsRequired(true);
-
-            modelBuilder.Entity<TaxRate>()
-            .HasOne(a => a.ModifiedByUser)
-            .WithMany()
-            .HasForeignKey(b => b.ModifiedBy)
-            .IsRequired(false);
         }
 
         private void SetTenantId(ModelBuilder modelBuilder)

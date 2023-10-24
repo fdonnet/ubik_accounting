@@ -36,19 +36,6 @@ namespace Ubik.Accounting.Api.Data.Config
                 .IsUnique();
 
             builder.HasIndex(a => a.TenantId);
-
-            //Relations
-            builder
-                .HasOne(a => a.CreatedByUser)
-                .WithMany()
-                .HasForeignKey(b => b.CreatedBy)
-                .IsRequired(true);
-
-            builder
-                .HasOne(a => a.ModifiedByUser)
-                .WithMany()
-                .HasForeignKey(b => b.ModifiedBy)
-                .IsRequired(false);
         }
     }
 }

@@ -12,9 +12,7 @@ namespace Ubik.Accounting.Api.Models
         public Guid TenantId { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid CreatedBy { get; set; }
-        public User CreatedByUser { get; set; } = default!;
         public DateTime? ModifiedAt { get; set; }
         public Guid? ModifiedBy { get; set; }
-        public User? ModifiedByUser { get; set; }
     }
 }

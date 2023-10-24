@@ -9,7 +9,7 @@ namespace Ubik.ApiService.Common.Services
     public class CurrentUserService : ICurrentUserService
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        private ICurrentUser _currentUser = null;
+        private ICurrentUser _currentUser = default!;
 
         public ICurrentUser CurrentUser
         {
@@ -28,9 +28,7 @@ namespace Ubik.ApiService.Common.Services
         {
             if (_currentUser == null)
             {
-                var identity = _contextAccessor.HttpContext?.User.Identity as ClaimsIdentity;
-
-                if (identity != null)
+                if (_contextAccessor.HttpContext?.User.Identity is ClaimsIdentity identity)
                 {
                     IEnumerable<Claim> claims = identity.Claims;
 
@@ -49,8 +47,14 @@ namespace Ubik.ApiService.Common.Services
                     }
                 }
             }
-            if (_currentUser == null)
-                _currentUser = new CurrentUser() { Email = "fake@fake.com", Name = "fake", TenantIds = new Guid[] { Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d") }, Id = Guid.NewGuid() };
+            //TODO: remove and adapt => cannot keep this fake return
+            _currentUser ??= new CurrentUser() 
+            { 
+                Email = "fake@fake.com", 
+                Name = "fake", 
+                TenantIds = new Guid[] { Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d") }, 
+                Id = Guid.NewGuid() 
+            };
             
             return _currentUser;
         }
