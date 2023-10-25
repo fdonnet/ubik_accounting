@@ -97,7 +97,11 @@ namespace Ubik.Accounting.Api
             });
 
             //Strandard API things
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(o =>
+            {
+                o.Filters.Add(new ProducesAttribute("application/json"));
+            });
+
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddEndpointsApiExplorer();
 
@@ -174,6 +178,10 @@ namespace Ubik.Accounting.Api
                 app.UseSwaggerUI(o =>
                 {
                     o.EnableTryItOutByDefault();
+
+                    //TODO: change all this value in PROD and don't expose that
+                    o.OAuthClientId(builder.Configuration["SwaggerUI:ClientId"]!);
+                    o.OAuthClientSecret(builder.Configuration["SwaggerUI:ClientSecret"]!);
 
                     var descriptions = app.DescribeApiVersions();
 
