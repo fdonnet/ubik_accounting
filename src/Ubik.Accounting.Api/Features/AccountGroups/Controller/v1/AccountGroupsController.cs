@@ -7,15 +7,15 @@ using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.DeleteAccountGroup;
-using Ubik.Accounting.Api.Features.AccountGroups.Queries;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetChildAccounts;
-using System.Security.Claims;
+using Asp.Versioning;
 
-namespace Ubik.Accounting.Api.Features.AccountGroups
+namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class AccountGroupsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -25,6 +25,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             _mediator = mediator;
         }
 
+        /// <summary>
+        /// Get all account groups
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Roles = "ubik_accounting_accountgroup_read")]
         [HttpGet]
         [ProducesResponseType(200)]

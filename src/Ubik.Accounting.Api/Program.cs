@@ -14,6 +14,11 @@ using Microsoft.OpenApi.Models;
 using Ubik.Accounting.Api.Data.Init;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
+using Asp.Versioning;
+using Microsoft.Extensions.Options;
+using Ubik.Accounting.Api.Swagger;
+using MassTransit.Configuration;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Ubik.Accounting.Api
 {
@@ -23,8 +28,12 @@ namespace Ubik.Accounting.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            //Log
+            //TODO: Begin to log usefull things
             builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
+            //Auth schema
             //TODO change https in PROD
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, o =>
@@ -35,14 +44,21 @@ namespace Ubik.Accounting.Api
                 o.RequireHttpsMetadata = bool.Parse(builder.Configuration["Keycloack:RequireHttpsMetadata"]!);
             });
 
-            // Add services to the container.
+            //DB
             builder.Services.AddDbContextFactory<AccountingContext>(
                  options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
 
+            //MediatR + remove standard model validations
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
+            //MessageBroker with masstransit
             builder.Services.AddMassTransit(config =>
             {
                 config.SetKebabCaseEndpointNameFormatter();
@@ -64,14 +80,31 @@ namespace Ubik.Accounting.Api
                 });
             });
 
+            //Api versioning
+            var apiVersionBuilder = builder.Services.AddApiVersioning(o =>
+            {
+                o.AssumeDefaultVersionWhenUnspecified = false;
+                o.DefaultApiVersion = new ApiVersion(1, 0);
+                o.ReportApiVersions = true;
+                o.ApiVersionReader = ApiVersionReader.Combine(new UrlSegmentApiVersionReader(),
+                                                    new HeaderApiVersionReader("x-api-version"),
+                                                    new MediaTypeApiVersionReader("x-api-version"));
+            });
+
+            apiVersionBuilder.AddApiExplorer(o =>
+            {
+                o.GroupNameFormat = "'v'VVV";
+                o.SubstituteApiVersionInUrl = true;
+            });
+
+            //Strandard API things
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
 
             //TODO: change that before PROD
+            //CORS
             builder.Services.AddCors(policies =>
             {
                 policies.AddDefaultPolicy(builder =>
@@ -80,6 +113,8 @@ namespace Ubik.Accounting.Api
                 });
             });
 
+            //Swagger config
+            builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             builder.Services.AddSwaggerGen(c =>
             {
                 c.AddSecurityDefinition(
@@ -109,36 +144,50 @@ namespace Ubik.Accounting.Api
                                 Type = ReferenceType.SecurityScheme
                             }
                         },
-                        new List<string>()
+                            new List<string>()
                     }
                     });
 
+                c.OperationFilter<SwaggerDefaultValues>();
 
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
+
+            //Services injection
+            //TODO: see if we need to integrate the user service more
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
-            //TODO: remove when migrated to service manager
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
 
+            //Build the app
             var app = builder.Build();
 
             app.UseSerilogRequestLogging();
             app.UseExceptionHandler(app.Logger, app.Environment);
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                //TODO: Maybe we will expose swagger in PROD too
                 app.UseSwagger();
                 app.UseSwaggerUI(o =>
                 {
                     o.EnableTryItOutByDefault();
+
+                    var descriptions = app.DescribeApiVersions();
+
+                    // Build a swagger endpoint for each discovered API version
+                    foreach (var description in descriptions)
+                    {
+                        var url = $"/swagger/{description.GroupName}/swagger.json";
+                        var name = description.GroupName.ToUpperInvariant();
+                        o.SwaggerEndpoint(url, name);
+                    }
                 });
 
+                //DB Init on DEV
                 using var scope = app.Services.CreateScope();
                 var services = scope.ServiceProvider;
 
