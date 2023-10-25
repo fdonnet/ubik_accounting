@@ -24,7 +24,6 @@ namespace Ubik.Accounting.Api
 {
     public class Program
     {
-        public string KeycloackPort = "8080";
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
