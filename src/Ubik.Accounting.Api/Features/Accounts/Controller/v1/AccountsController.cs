@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Exceptions;
@@ -8,11 +9,12 @@ using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 
-namespace Ubik.Accounting.Api.Features.Accounts
+namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class AccountsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -79,7 +81,7 @@ namespace Ubik.Accounting.Api.Features.Accounts
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult> Delete(Guid id)
         {
-            await _mediator.Send(new DeleteAccountCommand() { Id = id});
+            await _mediator.Send(new DeleteAccountCommand() { Id = id });
 
             return NoContent();
         }

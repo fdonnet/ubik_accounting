@@ -14,6 +14,11 @@ using Microsoft.OpenApi.Models;
 using Ubik.Accounting.Api.Data.Init;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
+using Asp.Versioning;
+using Microsoft.Extensions.Options;
+using Ubik.Accounting.Api.Swagger;
+using MassTransit.Configuration;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Ubik.Accounting.Api
 {
@@ -64,6 +69,22 @@ namespace Ubik.Accounting.Api
                 });
             });
 
+            var apiVersionBuilder = builder.Services.AddApiVersioning(o =>
+            {
+                o.AssumeDefaultVersionWhenUnspecified = false;
+                o.DefaultApiVersion = new ApiVersion(1, 0);
+                o.ReportApiVersions = true;
+                o.ApiVersionReader = ApiVersionReader.Combine(new UrlSegmentApiVersionReader(),
+                                                    new HeaderApiVersionReader("x-api-version"),
+                                                    new MediaTypeApiVersionReader("x-api-version"));
+            });
+
+            apiVersionBuilder.AddApiExplorer(o =>
+            {
+                o.GroupNameFormat = "'v'VVV";
+                o.SubstituteApiVersionInUrl = true;
+            });
+
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
 
@@ -80,6 +101,7 @@ namespace Ubik.Accounting.Api
                 });
             });
 
+            builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             builder.Services.AddSwaggerGen(c =>
             {
                 c.AddSecurityDefinition(
@@ -109,11 +131,15 @@ namespace Ubik.Accounting.Api
                                 Type = ReferenceType.SecurityScheme
                             }
                         },
-                        new List<string>()
+                            new List<string>()
                     }
                     });
 
+                c.OperationFilter<SwaggerDefaultValues>();
 
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
@@ -137,6 +163,16 @@ namespace Ubik.Accounting.Api
                 app.UseSwaggerUI(o =>
                 {
                     o.EnableTryItOutByDefault();
+
+                    var descriptions = app.DescribeApiVersions();
+
+                    // Build a swagger endpoint for each discovered API version
+                    foreach (var description in descriptions)
+                    {
+                        var url = $"/swagger/{description.GroupName}/swagger.json";
+                        var name = description.GroupName.ToUpperInvariant();
+                        o.SwaggerEndpoint(url, name);
+                    }
                 });
 
                 using var scope = app.Services.CreateScope();
