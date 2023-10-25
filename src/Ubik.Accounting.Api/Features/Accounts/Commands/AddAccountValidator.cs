@@ -12,10 +12,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 .MaximumLength(20).WithMessage("Code must be 20 characters max.");
 
             RuleFor(command => command.Category)
-                .NotEmpty().WithMessage("Category is required");
+                .NotNull().WithMessage("Category is required");
 
             RuleFor(command => command.Domain)
-                .NotEmpty().WithMessage("Domain is required");
+                .NotNull().WithMessage("Domain is required");
 
             RuleFor(command => command.Label)
                 .NotEmpty().WithMessage("Label is required")

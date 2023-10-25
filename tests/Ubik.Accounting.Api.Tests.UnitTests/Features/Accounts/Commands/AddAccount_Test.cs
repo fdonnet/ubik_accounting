@@ -9,6 +9,7 @@ using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Validators;
+using Ubik.ApiService.DB.Enums;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
@@ -33,7 +34,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                 Code = "78888",
                 Label = "Test",
                 Description = "Test",
-                CurrencyId = Guid.NewGuid()
+                CurrencyId = Guid.NewGuid(),
+                Category = AccountCategory.General,
+                Domain = AccountDomain.Asset
             };
 
             _account = _command.ToAccount();
@@ -79,6 +82,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _command.Code = "";
             _command.Label = "";
             _command.CurrencyId = default!;
+
 
             //Act
             Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>

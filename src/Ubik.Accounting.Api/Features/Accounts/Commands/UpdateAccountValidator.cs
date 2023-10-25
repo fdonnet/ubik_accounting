@@ -19,10 +19,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 .MaximumLength(100).WithMessage("Label must be 100 characters max.");
 
             RuleFor(command => command.Category)
-                .NotEmpty().WithMessage("Category is required");
+                .NotNull().WithMessage("Category is required");
 
             RuleFor(command => command.Domain)
-                .NotEmpty().WithMessage("Domain is required");
+                .NotNull().WithMessage("Domain is required");
 
             RuleFor(command => command.Description)
                 .MaximumLength(700).WithMessage("Description must be 700 characters max.");

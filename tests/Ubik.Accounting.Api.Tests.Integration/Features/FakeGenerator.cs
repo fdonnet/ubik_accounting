@@ -3,6 +3,7 @@ using Bogus.Extensions;
 using Org.BouncyCastle.Ocsp;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.DB.Enums;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
@@ -21,7 +22,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Code = a.Finance.Account().ToString(),
                      Label = a.Finance.AccountName().ClampLength(1, 100),
                      Description = a.Lorem.Paragraphs().ClampLength(1, 700),
-                     CurrencyId = testData.CurrencyId1
+                     CurrencyId = testData.CurrencyId1,
+                     Category = AccountCategory.General,
+                     Domain = AccountDomain.Asset
                  }).Generate(numTests);
         }
         public static IEnumerable<UpdateAccountCommand> GenerateUpdAccounts(int numTests)
@@ -33,7 +36,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Code = a.Finance.Account().ToString(),
                      Label = a.Finance.AccountName().ClampLength(1, 100),
                      Description = a.Lorem.Paragraphs().ClampLength(1, 700),
-                     CurrencyId = testData.CurrencyId1
+                     CurrencyId = testData.CurrencyId1,
+                     Category = AccountCategory.General,
+                     Domain = AccountDomain.Asset
                  }).Generate(numTests);
         }
 
@@ -71,6 +76,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Code = a.Finance.Account().ToString(),
                      Label = a.Finance.AccountName().ClampLength(1, 100),
                      Description = a.Lorem.Paragraphs().ClampLength(1, 700),
+                     Category = AccountCategory.General,
+                     Domain = AccountDomain.Asset,
                      CurrencyId = currencyId
                  }).Generate(numTests);
         }
