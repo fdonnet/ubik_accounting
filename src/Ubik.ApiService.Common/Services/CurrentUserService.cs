@@ -23,7 +23,7 @@ namespace Ubik.ApiService.Common.Services
         }
 
         //TODO: need to be replaced by a call to User Grpc + caching
-        //TODO: adapt to query the DB and use caching
+        //TODO: adapt to query the DB and use caching --- maybe, we will see (the auth claims can be sufficent)
         private ICurrentUser GetCurrentUser()
         {
             if (_currentUser == null)
