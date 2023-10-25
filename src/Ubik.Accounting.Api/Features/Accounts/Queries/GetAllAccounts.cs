@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
+using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Queries
 {
@@ -12,6 +13,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
             public Guid Id { get; set; }
             public required string Code { get; set; }
             public required string Label { get; set; }
+            public AccountCategory Category { get; set; }
+            public AccountDomain Domain { get; set; }
             public string? Description { get; set; }
             public Guid CurrencyId { get; set; }
             public Guid Version { get; set; }

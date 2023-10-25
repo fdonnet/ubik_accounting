@@ -1,4 +1,5 @@
-﻿using Ubik.DB.Common;
+﻿using Ubik.ApiService.DB.Enums;
+using Ubik.DB.Common;
 
 namespace Ubik.Accounting.Api.Models
 {
@@ -10,6 +11,8 @@ namespace Ubik.Accounting.Api.Models
         public required Guid CurrencyId { get; set; }
         public Currency? Currency { get; set; }
         public  string? Description { get; set; }
+        public AccountCategory Category { get; set; }
+        public AccountDomain Domain { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
         public DateTime CreatedAt { get; set; }

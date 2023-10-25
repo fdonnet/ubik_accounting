@@ -37,6 +37,14 @@ namespace Ubik.Accounting.Api.Data.Config
 
             builder.HasIndex(a => a.TenantId);
 
+            builder.Property(a => a.Domain)
+                .IsRequired()
+                .HasConversion<int>();
+
+            builder.Property(a => a.Category)
+                .IsRequired()
+                .HasConversion<int>();
+
             builder
                 .HasOne(s => s.Currency)
                 .WithMany()
