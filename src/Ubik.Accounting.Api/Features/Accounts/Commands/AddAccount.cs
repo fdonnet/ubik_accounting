@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts;
+using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Commands
 {
@@ -21,6 +22,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             [MaxLength(700)]
             public string? Description { get; set; }
             [Required]
+            public AccountCategory Category { get; set; }
+            [Required]
+            public AccountDomain Domain { get; set; }
+            [Required]
             public Guid CurrencyId { get; set; }
         }
 
@@ -30,6 +35,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public Guid Id { get; set; }
             public string Code { get; set; } = default!;
             public string Label { get; set; } = default!;
+            public AccountCategory Category { get; set; }
+            public AccountDomain Domain { get; set; }
             public string? Description { get; set; }
             public Guid CurrencyId { get; set; }
             public Guid Version { get; set; }

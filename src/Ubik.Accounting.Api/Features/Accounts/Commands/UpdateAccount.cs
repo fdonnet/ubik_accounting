@@ -3,6 +3,7 @@ using MediatR;
 using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
+using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Commands
 {
@@ -19,6 +20,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             [Required]
             [MaxLength(100)]
             public string Label { get; set; } = default!;
+            [Required]
+            public AccountCategory Category { get; set; }
+            [Required]
+            public AccountDomain Domain { get; set; }
             [MaxLength(700)]
             public string? Description { get; set; }
             [Required]
@@ -33,6 +38,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public Guid Id { get; set; }
             public string Code { get; set; } = default!;
             public string Label { get; set; } = default!;
+            public AccountCategory Category { get; set; }
+            public AccountDomain Domain { get; set; }
             public string? Description { get; set; }
             public Guid CurrencyId { get; set; }
             public Guid Version { get; set; }

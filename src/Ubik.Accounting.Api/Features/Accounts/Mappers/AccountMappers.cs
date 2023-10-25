@@ -17,6 +17,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Id = account.Id,
                 Code = account.Code,
                 Label = account.Label,
+                Category = account.Category,
+                Domain = account.Domain,
                 Description = account.Description,
                 CurrencyId = account.CurrencyId,
                 Version = account.Version
@@ -30,6 +32,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Id = account.Id,
                 Code = account.Code,
                 Label = account.Label,
+                Category = account.Category,
+                Domain = account.Domain,
                 Description = account.Description,
                 CurrencyId = account.CurrencyId,
                 Version = account.Version
@@ -43,6 +47,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Id = account.Id,
                 Code = account.Code,
                 Label = account.Label,
+                Category = account.Category,
+                Domain = account.Domain,
                 Description = account.Description,
                 CurrencyId = account.CurrencyId,
                 Version = account.Version
@@ -56,6 +62,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Id = x.Id,
                 Code = x.Code,
                 Label = x.Label,
+                Category = x.Category,
+                Domain = x.Domain,
                 Description = x.Description,
                 CurrencyId = x.CurrencyId,
                 Version = x.Version
@@ -69,6 +77,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Id = Guid.NewGuid(),
                 Code = addAccountCommand.Code,
                 Label = addAccountCommand.Label,
+                Category = addAccountCommand.Category,
+                Domain = addAccountCommand.Domain,
                 Description = addAccountCommand.Description,
                 CurrencyId = addAccountCommand.CurrencyId
             };
@@ -79,6 +89,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             account.Id = updateAccountCommand.Id;
             account.Code = updateAccountCommand.Code;
             account.Label = updateAccountCommand.Label;
+            account.Category = updateAccountCommand.Category;
+            account.Domain = updateAccountCommand.Domain;
             account.Description = updateAccountCommand.Description;
             account.Version = updateAccountCommand.Version;
             account.CurrencyId = updateAccountCommand.CurrencyId;
@@ -91,6 +103,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             {
                 Code = account.Code,
                 Label = account.Label,
+                Category = account.Category,
+                Domain = account.Domain,
                 Description = account.Description,
                 Version = account.Version,
                 Id = account.Id,
@@ -105,6 +119,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             {
                 Code = account.Code,
                 Label = account.Label,
+                Category = account.Category,
+                Domain = account.Domain,
                 Description = account.Description,
                 Version = account.Version,
                 Id = account.Id,

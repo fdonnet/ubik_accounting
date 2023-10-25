@@ -1,4 +1,5 @@
 ﻿using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Api.Data.Init
 {
@@ -25,6 +26,8 @@ namespace Ubik.Accounting.Api.Data.Init
                         CreatedAt = baseValuesGeneral.GenerationTime,
                         Label = "Banque 1",
                         Description = "Compte bancaire cash",
+                        Category = AccountCategory.General,
+                        Domain = AccountDomain.Asset,
                         ModifiedBy= baseValuesForUsers.UserId1,
                         ModifiedAt = baseValuesGeneral.GenerationTime,
                         TenantId= baseValuesForTenants.TenantId,
@@ -39,6 +42,8 @@ namespace Ubik.Accounting.Api.Data.Init
                         CreatedAt = baseValuesGeneral.GenerationTime,
                         Label = "Banque 2",
                         Description = "Compte bancaire cash",
+                        Category = AccountCategory.General,
+                        Domain = AccountDomain.Asset,
                         ModifiedBy= baseValuesForUsers.UserId1,
                         ModifiedAt = baseValuesGeneral.GenerationTime,
                         TenantId= baseValuesForTenants.TenantId,
@@ -54,6 +59,8 @@ namespace Ubik.Accounting.Api.Data.Init
                         CreatedAt = baseValuesGeneral.GenerationTime,
                         Label = "Banque for removal",
                         Description = "Compte bancaire cash old",
+                        Category = AccountCategory.Liquidity,
+                        Domain = AccountDomain.Asset,
                         ModifiedBy= baseValuesForUsers.UserId1,
                         ModifiedAt = baseValuesGeneral.GenerationTime,
                         TenantId= baseValuesForTenants.TenantId,
