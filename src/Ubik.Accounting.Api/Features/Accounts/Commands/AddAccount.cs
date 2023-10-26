@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts;
@@ -21,9 +22,11 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public string Label { get; set; } = default!;
             [MaxLength(700)]
             public string? Description { get; set; }
-            [Required]
+            [JsonRequired]
+            [EnumDataType(typeof(AccountCategory))]
             public AccountCategory Category { get; set; }
-            [Required]
+            [JsonRequired]
+            [EnumDataType(typeof(AccountDomain))]
             public AccountDomain Domain { get; set; }
             [Required]
             public Guid CurrencyId { get; set; }

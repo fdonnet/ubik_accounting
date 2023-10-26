@@ -28,14 +28,16 @@ namespace Ubik.ApiService.Common.Exceptions
 
                 if (errors.Count > 0)
                 {
+                    var i= 0;
                     foreach (var error in errors)
                     {
                         validationErrors.Add(new ProblemDetailError()
                         {
                             Code = "VALIDATION_ERROR",
                             FriendlyMsg = error.ErrorMessage,
-                            ValueInError = keyModelStatePair.Key
+                            ValueInError = $"Field:{keyModelStatePair.Key} / Value:See Friendly msg"
                         });
+                        i++;
                     }
                 }
             }

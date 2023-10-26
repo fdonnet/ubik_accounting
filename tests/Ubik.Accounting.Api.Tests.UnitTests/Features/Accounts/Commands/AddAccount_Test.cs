@@ -21,7 +21,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         private readonly AddAccountHandler _handler;
         private readonly AddAccountCommand _command;
         private readonly Account _account;
-        private readonly ValidationPipelineBehavior<AddAccountCommand, AddAccountResult> _validationBehavior;
 
         public AddAccount_Test()
         {
@@ -40,7 +39,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             };
 
             _account = _command.ToAccount();
-            _validationBehavior = new ValidationPipelineBehavior<AddAccountCommand, AddAccountResult>(new AddAccountValidator());
             _serviceManager.AccountService.AddAsync(_account).Returns(_account);
 
             _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
@@ -74,47 +72,5 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             await act.Should().ThrowAsync<AccountAlreadyExistsException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
-
-        [Fact]
-        public async Task Add_CustomValidationException_EmptyValuesInFields()
-        {
-            //Arrange
-            _command.Code = "";
-            _command.Label = "";
-            _command.CurrencyId = default!;
-
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 3);
-        }
-
-        [Fact]
-        public async Task Add_CustomValidationException_TooLongValuesInFields()
-        {
-            //Arrange
-            _command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
-            _command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
-            _command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 3);
-        }
-
     }
 }

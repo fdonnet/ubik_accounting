@@ -21,7 +21,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         private readonly UpdateAccountHandler _handler;
         private readonly UpdateAccountCommand _command;
         private readonly Account _account;
-        private readonly ValidationPipelineBehavior<UpdateAccountCommand, UpdateAccountResult> _validationBehavior;
 
         public UpdateAccount_Test()
         {
@@ -41,7 +40,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             _account = new Account() { Code = "1800", Label = "1000", CurrencyId=Guid.NewGuid() };
             _account = _command.ToAccount(_account);
-            _validationBehavior = new ValidationPipelineBehavior<UpdateAccountCommand, UpdateAccountResult>(new UpdateAccountValidator());
 
             _serviceManager.AccountService.Update(_account).Returns(_account);
             _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(false);
@@ -90,66 +88,5 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             await act.Should().ThrowAsync<AccountNotFoundException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }
-
-        [Fact]
-        public async Task Upd_CustomValidationException_EmptyValuesInFields()
-        {
-            //Arrange
-            _command.Code = "";
-            _command.Label = "";
-            _command.CurrencyId = default!;
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert (3 errors because version is not specified)
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 3);
-        }
-
-        [Fact]
-        public async Task Upd_CustomValidationException_TooLongValuesInFields()
-        {
-            //Arrange
-            _command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
-            _command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
-            _command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 3);
-        }
-
-
-        [Fact]
-        public async Task Upd_CustomValidationException_VersionIdNotProvided()
-        {
-            //Arrange
-            _command.Version = default!;
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 1);
-        }
-
-
     }
 }

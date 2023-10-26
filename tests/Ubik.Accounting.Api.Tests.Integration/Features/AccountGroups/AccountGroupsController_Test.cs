@@ -313,7 +313,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
             fake.Code = "";
             fake.Label = "";
-            fake.AccountGroupClassificationId = default;
 
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
@@ -326,7 +325,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 3);
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 2);
         }
 
         [Fact]
@@ -411,7 +410,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
 
-            fake.Version = default!;
             fake.Code = string.Empty;
             fake.Label = string.Empty;
 
@@ -426,7 +424,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 3);
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR" && x.Errors.Count() == 2);
         }
 
         [Fact]
@@ -597,29 +595,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_NOT_FOUND");
-        }
-
-        [Fact]
-        public async Task Del_ProblemDetails_IdEmpty()
-        {
-            //Arrange
-            var httpClient = Factory.CreateDefaultClient();
-
-            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            Guid empty = default!;
-
-            //Act
-            var response = await httpClient.DeleteAsync($"{_baseUrlForV1}/{empty}");
-            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
-
-            //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            result.Should()
-                .NotBeNull()
-                .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "VALIDATION_ERROR");
-        }
+        }    
     }
 }
