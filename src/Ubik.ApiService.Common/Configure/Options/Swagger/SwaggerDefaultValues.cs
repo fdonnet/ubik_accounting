@@ -4,7 +4,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 
-namespace Ubik.Accounting.Api.Swagger
+namespace Ubik.ApiService.Common.Configure.Options.Swagger
 {
     public class SwaggerDefaultValues : IOperationFilter
     {

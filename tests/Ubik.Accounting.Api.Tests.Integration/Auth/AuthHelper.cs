@@ -7,7 +7,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Auth
         internal async static Task<string> GetAccessTokenReadOnly()
         {
             using var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, Environment.GetEnvironmentVariable("Keycloack__TokenUrl"));
+            var request = new HttpRequestMessage(HttpMethod.Post, Environment.GetEnvironmentVariable("AuthServer__TokenUrl"));
 
             var collection = new List<KeyValuePair<string, string>>
             {
@@ -32,7 +32,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Auth
         internal async static Task<string> GetAccessTokenReadWrite()
         {
             using var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, Environment.GetEnvironmentVariable("Keycloack__TokenUrl"));
+            var request = new HttpRequestMessage(HttpMethod.Post, Environment.GetEnvironmentVariable("AuthServer__TokenUrl"));
 
             var collection = new List<KeyValuePair<string, string>>
             {
@@ -57,7 +57,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Auth
         internal async static Task<string> GetAccessTokenNoRole()
         {
             using var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, Environment.GetEnvironmentVariable("Keycloack__TokenUrl"));
+            var request = new HttpRequestMessage(HttpMethod.Post, Environment.GetEnvironmentVariable("AuthServer__TokenUrl"));
 
             var collection = new List<KeyValuePair<string, string>>
             {
