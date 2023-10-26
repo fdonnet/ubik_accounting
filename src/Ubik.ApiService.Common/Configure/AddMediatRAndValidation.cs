@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Validators;
 
 namespace Ubik.ApiService.Common.Configure
@@ -21,11 +22,6 @@ namespace Ubik.ApiService.Common.Configure
             services.AddValidatorsFromAssembly(currentAssembly);
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(currentAssembly));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
-
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
         }
     }
 }

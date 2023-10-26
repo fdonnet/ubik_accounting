@@ -20,6 +20,8 @@ using MassTransit.Configuration;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Ubik.Accounting.Api
 {
@@ -70,12 +72,14 @@ namespace Ubik.Accounting.Api
             //TODO: see if we need to integrate the user service more
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
             //Strandard API things
             builder.Services.AddControllers(o =>
             {
                 o.Filters.Add(new ProducesAttribute("application/json"));
-            });
+            }).AddJsonOptions(options =>
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())); 
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddEndpointsApiExplorer();
