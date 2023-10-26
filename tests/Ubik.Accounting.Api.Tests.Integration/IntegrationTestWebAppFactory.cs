@@ -119,15 +119,15 @@ namespace Ubik.Accounting.Api.Tests.Integration
             var rabbitMQPort = _rabbitMQContainer.GetMappedPublicPort(5672);
             var rabbitMQHost = _rabbitMQContainer.Hostname;
 
-            Environment.SetEnvironmentVariable("Keycloack__MetadataAddress", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/.well-known/openid-configuration");
-            Environment.SetEnvironmentVariable("Keycloack__Authority", $"http://{keycloackHost}:{keycloakPort}/realms/ubik");
-            Environment.SetEnvironmentVariable("Keycloack__AuthorizationUrl", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/protocol/openid-connect/auth");
-            Environment.SetEnvironmentVariable("Keycloack__TokenUrl", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/protocol/openid-connect/token");
+            Environment.SetEnvironmentVariable("AuthServer__MetadataAddress", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/.well-known/openid-configuration");
+            Environment.SetEnvironmentVariable("AuthServer__Authority", $"http://{keycloackHost}:{keycloakPort}/realms/ubik");
+            Environment.SetEnvironmentVariable("AuthServer__AuthorizationUrl", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/protocol/openid-connect/auth");
+            Environment.SetEnvironmentVariable("AuthServer__TokenUrl", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/protocol/openid-connect/token");
             Environment.SetEnvironmentVariable("MessageBroker__Host", $"amqp://{rabbitMQHost}:{rabbitMQPort}");
         }
     }
 
-    [CollectionDefinition("Keycloack and DB")]
+    [CollectionDefinition("AuthServer and DB")]
     public class KeycloackAndDb : ICollectionFixture<IntegrationTestWebAppFactory>
     {
 

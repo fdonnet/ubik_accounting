@@ -4,7 +4,7 @@ using Ubik.Accounting.Api.Data;
 
 namespace Ubik.Accounting.Api.Tests.Integration
 {
-    [Collection("Keycloack and DB")]
+    [Collection("AuthServer and DB")]
     public abstract class BaseIntegrationTest
         : IDisposable
     {

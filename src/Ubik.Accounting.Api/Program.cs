@@ -16,9 +16,10 @@ using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Asp.Versioning;
 using Microsoft.Extensions.Options;
-using Ubik.Accounting.Api.Swagger;
 using MassTransit.Configuration;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Ubik.ApiService.Common.Configure;
+using Ubik.ApiService.Common.Configure.Options;
 
 namespace Ubik.Accounting.Api
 {
@@ -32,69 +33,43 @@ namespace Ubik.Accounting.Api
             //TODO: Begin to log usefull things
             builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
-            //Auth schema
-            //TODO change https in PROD
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, o =>
-            {
-                o.MetadataAddress = builder.Configuration["Keycloack:MetadataAddress"]!;
-                o.Authority = builder.Configuration["Keycloack:Authority"];
-                o.Audience = builder.Configuration["Keycloack:Audience"];
-                o.RequireHttpsMetadata = bool.Parse(builder.Configuration["Keycloack:RequireHttpsMetadata"]!);
-            });
+            //Options
+            var authOptions = new AuthServerOptions();
+            builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
+            var msgBrokerOptions = new MessageBrokerOptions();
+            builder.Configuration.GetSection(MessageBrokerOptions.Position).Bind(msgBrokerOptions);
+            var swaggerUIOptions = new SwaggerUIOptions();
+            builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
+
+            //Auth server and JWT
+            builder.Services.AddAuthServerAndJwt(authOptions);
 
             //DB
             builder.Services.AddDbContextFactory<AccountingContext>(
                  options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
 
             //MediatR + remove standard model validations
-            builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
-
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
+            builder.Services.AddMediatRAndValidation(Assembly.GetExecutingAssembly());
 
             //MessageBroker with masstransit
-            builder.Services.AddMassTransit(config =>
-            {
-                config.SetKebabCaseEndpointNameFormatter();
-                config.UsingRabbitMq((context, configurator) =>
-                {
-                    configurator.Host(new Uri(builder.Configuration["MessageBroker:Host"]!), h =>
-                    {
-                        h.Username(builder.Configuration["MessageBroker:User"]!);
-                        h.Password(builder.Configuration["MessageBroker:Password"]!);
-                    });
-
-                    configurator.ConfigureEndpoints(context);
-                });
-
-                config.AddEntityFrameworkOutbox<AccountingContext>(o =>
-                {
-                    o.UsePostgres();
-                    o.UseBusOutbox();
-                });
-            });
+            builder.Services.AddMasstransitMsgBroker<AccountingContext>(msgBrokerOptions);
 
             //Api versioning
-            var apiVersionBuilder = builder.Services.AddApiVersioning(o =>
-            {
-                o.AssumeDefaultVersionWhenUnspecified = false;
-                o.DefaultApiVersion = new ApiVersion(1, 0);
-                o.ReportApiVersions = true;
-                o.ApiVersionReader = ApiVersionReader.Combine(new UrlSegmentApiVersionReader(),
-                                                    new HeaderApiVersionReader("x-api-version"),
-                                                    new MediaTypeApiVersionReader("x-api-version"));
-            });
+            builder.Services.AddApiVersionAndExplorer();
 
-            apiVersionBuilder.AddApiExplorer(o =>
-            {
-                o.GroupNameFormat = "'v'VVV";
-                o.SubstituteApiVersionInUrl = true;
-            });
+            //Cors
+            builder.Services.AddCustomCors();
+
+            //Swagger config
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, 
+                $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
+
+            builder.Services.AddSwaggerGenWithAuth(authOptions,xmlPath);
+
+            //Services injection
+            //TODO: see if we need to integrate the user service more
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             //Strandard API things
             builder.Services.AddControllers(o =>
@@ -104,66 +79,6 @@ namespace Ubik.Accounting.Api
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddEndpointsApiExplorer();
-
-
-            //TODO: change that before PROD
-            //CORS
-            builder.Services.AddCors(policies =>
-            {
-                policies.AddDefaultPolicy(builder =>
-                {
-                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-                });
-            });
-
-            //Swagger config
-            builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.AddSecurityDefinition(
-                                "oauth2",
-                                new OpenApiSecurityScheme
-                                {
-                                    Type = SecuritySchemeType.OAuth2,
-                                    Flows = new OpenApiOAuthFlows
-                                    {
-                                        AuthorizationCode = new OpenApiOAuthFlow
-                                        {
-                                            AuthorizationUrl = new Uri(builder.Configuration["Keycloack:AuthorizationUrl"]!),
-                                            TokenUrl = new Uri(builder.Configuration["Keycloack:TokenUrl"]!),
-                                            Scopes = new Dictionary<string, string> { }
-                                        }
-                                    }
-                                });
-
-
-                c.AddSecurityRequirement(
-                    new OpenApiSecurityRequirement
-                    {
-                    {
-                        new OpenApiSecurityScheme{
-                            Reference = new OpenApiReference{
-                                Id = "oauth2", //The name of the previously defined security scheme.
-                                Type = ReferenceType.SecurityScheme
-                            }
-                        },
-                            new List<string>()
-                    }
-                    });
-
-                c.OperationFilter<SwaggerDefaultValues>();
-
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
-            });
-
-
-            //Services injection
-            //TODO: see if we need to integrate the user service more
-            builder.Services.AddScoped<IServiceManager, ServiceManager>();
-            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-
 
             //Build the app
             var app = builder.Build();
@@ -175,24 +90,7 @@ namespace Ubik.Accounting.Api
             {
                 //TODO: Maybe we will expose swagger in PROD too
                 app.UseSwagger();
-                app.UseSwaggerUI(o =>
-                {
-                    o.EnableTryItOutByDefault();
-
-                    //TODO: change all this value in PROD and don't expose that
-                    o.OAuthClientId(builder.Configuration["SwaggerUI:ClientId"]!);
-                    o.OAuthClientSecret(builder.Configuration["SwaggerUI:ClientSecret"]!);
-
-                    var descriptions = app.DescribeApiVersions();
-
-                    // Build a swagger endpoint for each discovered API version
-                    foreach (var description in descriptions)
-                    {
-                        var url = $"/swagger/{description.GroupName}/swagger.json";
-                        var name = description.GroupName.ToUpperInvariant();
-                        o.SwaggerEndpoint(url, name);
-                    }
-                });
+                app.UseSwaggerUIWithAuth(swaggerUIOptions);
 
                 //DB Init on DEV
                 using var scope = app.Services.CreateScope();
