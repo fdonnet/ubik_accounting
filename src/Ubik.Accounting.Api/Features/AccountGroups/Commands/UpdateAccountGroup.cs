@@ -4,6 +4,7 @@ using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 {
@@ -13,6 +14,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
         public record UpdateAccountGroupCommand : IRequest<UpdateAccountGroupResult>
         {
             [Required]
+            [JsonIgnore]
             public Guid Id { get; set; }
             [Required]
             [MaxLength(20)]

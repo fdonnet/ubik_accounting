@@ -14,6 +14,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
         public record UpdateAccountCommand : IRequest<UpdateAccountResult>
         {
             [Required]
+            [JsonIgnore]
             public Guid Id { get; set; }
             [Required]
             [MaxLength(20)]
