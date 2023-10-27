@@ -1,7 +1,9 @@
 ﻿using Asp.Versioning;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Ubik.Accounting.Api.Features.Accounts.Queries;
 using Ubik.ApiService.Common.Exceptions;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.DeleteAccount;
@@ -28,10 +30,12 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<GetAllAccountsResult>>> GetAll()
+        public async Task<ActionResult<IEnumerable<GetAllAccountsResult>>> GetAll(IRequestClient<GetAllAccountsQuery> client)
         {
-            var results = await _mediator.Send(new GetAllAccountsQuery());
-            return Ok(results);
+            //var results = await _mediator.Send(new GetAllAccountsQuery());
+            var response = await client.GetResponse<IGetAllAccountsResult>(new { });
+            //return Ok(results);
+            return Ok(response.Message.Accounts);
         }
 
         [Authorize(Roles = "ubik_accounting_account_read")]

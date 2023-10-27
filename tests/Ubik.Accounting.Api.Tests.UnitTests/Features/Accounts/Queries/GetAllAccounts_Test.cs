@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using MassTransit;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
@@ -12,14 +13,14 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
     public class GetAllAccounts_Test
     {
         private readonly IServiceManager _serviceManager;
-        private readonly GetAllAccountsHandler _handler;
+        private readonly GetAllAccountsConsumer _consumer;
         private readonly GetAllAccountsQuery _query;
         private readonly IEnumerable<Account> _accounts;
 
         public GetAllAccounts_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
-            _handler = new GetAllAccountsHandler(_serviceManager);
+            _consumer = new GetAllAccountsConsumer(_serviceManager);
 
             _query = new GetAllAccountsQuery();
 
@@ -32,8 +33,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             //Arrange
             _serviceManager.AccountService.GetAllAsync().Returns(_accounts);
 
+            var context = Substitute.For<ConsumeContext<GetAllAccountsQuery>>(_query);
+
             //Act
-            var result = await _handler.Handle(_query, CancellationToken.None);
+            var result = await _consumer.Consume(context);
 
             //Assert
             result.Should()

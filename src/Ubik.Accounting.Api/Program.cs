@@ -22,6 +22,7 @@ using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 
 namespace Ubik.Accounting.Api
 {
@@ -54,7 +55,34 @@ namespace Ubik.Accounting.Api
             builder.Services.AddMediatRAndValidation(Assembly.GetExecutingAssembly());
 
             //MessageBroker with masstransit
-            builder.Services.AddMasstransitMsgBroker<AccountingContext>(msgBrokerOptions);
+            //builder.Services.AddMasstransitMsgBroker<AccountingContext>(msgBrokerOptions, Assembly.GetExecutingAssembly());
+            builder.Services.AddMassTransit(config =>
+            {
+                config.SetKebabCaseEndpointNameFormatter();
+                config.UsingRabbitMq((context, configurator) =>
+                {
+                    configurator.Host(new Uri(msgBrokerOptions.Host), h =>
+                    {
+                        h.Username(msgBrokerOptions.User);
+                        h.Password(msgBrokerOptions.Password);
+                    });
+
+                    configurator.ConfigureEndpoints(context);
+                });
+
+                config.AddEntityFrameworkOutbox<AccountingContext>(o =>
+                {
+                    o.UsePostgres();
+                    o.UseBusOutbox();
+                });
+
+                //Add all consumers
+                config.AddConsumers(Assembly.GetExecutingAssembly());
+
+                //Add clients
+                config.AddRequestClient<GetAllAccountsQuery>();
+            });
+
 
             //Api versioning
             builder.Services.AddApiVersionAndExplorer();
