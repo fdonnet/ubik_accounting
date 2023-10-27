@@ -19,10 +19,10 @@ namespace Ubik.ApiService.Common.Validators
             var validationResult = await _validator.ValidateAsync(request);
 
             return !validationResult.IsValid
-                ? throw new CustomValidationException(validationResult.Errors.Select(e=>new CustomError()
+                ? throw new CustomValidationException(validationResult.Errors.Select(e => new CustomError()
                 {
-                    ErrorCode="VALIDATION_ERROR",
-                    ErrorFriendlyMessage=e.ErrorMessage,
+                    ErrorCode = "VALIDATION_ERROR",
+                    ErrorFriendlyMessage = e.ErrorMessage,
                     ErrorValueDetails = $"Field:{e.PropertyName} / Value:{e.AttemptedValue ?? string.Empty}"
                 }).ToList())
                 : await next();
