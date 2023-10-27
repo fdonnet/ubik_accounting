@@ -100,7 +100,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
 
             //Assert
             await act.Should().ThrowAsync<AccountGroupParentNotFoundException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams);
         }
     }
 }

@@ -11,11 +11,11 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Exceptions
          : base($"An parent account group with this id: {parentAccountGroupId} is not found.")
         {
 
-            ErrorType = ServiceAndFeatureExceptionType.NotFound;
+            ErrorType = ServiceAndFeatureExceptionType.BadParams;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "PARENT_ACCOUNTGROUP_NOTFOUND",
-                ErrorFriendlyMessage = "The parent account group is not found.",
+                ErrorFriendlyMessage = "The parent account group specified is not found.",
                 ErrorValueDetails = $"Field:ParentAccountGroupId / Value:{parentAccountGroupId}"
             }};
         }
