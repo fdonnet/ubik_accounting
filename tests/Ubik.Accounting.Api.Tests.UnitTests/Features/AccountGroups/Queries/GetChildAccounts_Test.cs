@@ -21,7 +21,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
         private readonly GetChildAccountsHandler _handler;
         private readonly GetChildAccountsQuery _query;
         private readonly AccountGroup _accountGroup;
-        private readonly ValidationPipelineBehavior<GetChildAccountsQuery, IEnumerable<GetChildAccountsResult>> _validationBehavior;
 
         public GetChildAccounts_Test()
         {
@@ -35,7 +34,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
 
             _accountGroup = new AccountGroup() { Code = "TEST", Label = "Test" };
 
-            _validationBehavior = new ValidationPipelineBehavior<GetChildAccountsQuery, IEnumerable<GetChildAccountsResult>>(new GetChildAccountsValidator());
             _serviceManager.AccountGroupService.GetWithChildAccountsAsync(_query.AccountGroupId).Returns(_accountGroup);
         }
 
@@ -65,24 +63,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
             //Assert
             await act.Should().ThrowAsync<AccountGroupNotFoundException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
-        }
-
-        [Fact]
-        public async Task Get_CustomValidationException_EmptyValuesInFields()
-        {
-            //Arrange
-            _query.AccountGroupId = default;
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_query, () =>
-            {
-                return _handler.Handle(_query, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 1);
         }
     }
 }

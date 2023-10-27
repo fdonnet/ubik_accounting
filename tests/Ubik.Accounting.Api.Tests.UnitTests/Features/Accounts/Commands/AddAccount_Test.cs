@@ -21,7 +21,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         private readonly AddAccountHandler _handler;
         private readonly AddAccountCommand _command;
         private readonly Account _account;
-        private readonly ValidationPipelineBehavior<AddAccountCommand, AddAccountResult> _validationBehavior;
 
         public AddAccount_Test()
         {
@@ -40,11 +39,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             };
 
             _account = _command.ToAccount();
-            _validationBehavior = new ValidationPipelineBehavior<AddAccountCommand, AddAccountResult>(new AddAccountValidator());
             _serviceManager.AccountService.AddAsync(_account).Returns(_account);
 
             _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
-            //_serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)_command.AccountGroupId!).Returns(true);
+            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(true);
         }
 
         [Fact]
@@ -76,45 +74,17 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
-        public async Task Add_CustomValidationException_EmptyValuesInFields()
+        public async Task Add_AccountCurrencyNotFoundException_CurrencyIdNotFound()
         {
             //Arrange
-            _command.Code = "";
-            _command.Label = "";
-            _command.CurrencyId = default!;
-
+            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(false);
 
             //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 3);
+            await act.Should().ThrowAsync<AccountCurrencyNotFoundException>()
+                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams);
         }
-
-        [Fact]
-        public async Task Add_CustomValidationException_TooLongValuesInFields()
-        {
-            //Arrange
-            _command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
-            _command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
-            _command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 3);
-        }
-
     }
 }

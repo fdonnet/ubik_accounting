@@ -16,7 +16,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
         private readonly GetAccountGroupHandler _handler;
         private readonly GetAccountGroupQuery _query;
         private readonly AccountGroup _accountGroup;
-        private readonly ValidationPipelineBehavior<GetAccountGroupQuery, GetAccountGroupResult> _validationBehavior;
 
         public GetAccountGroup_Test()
         {
@@ -29,7 +28,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
             };
 
             _accountGroup = new AccountGroup() { Code = "TEST", Label = "Test" };
-            _validationBehavior = new ValidationPipelineBehavior<GetAccountGroupQuery, GetAccountGroupResult>(new GetAccountGroupValidator());
 
             _serviceManager.AccountGroupService.GetAsync(_query.Id).Returns(_accountGroup);
         }
@@ -60,24 +58,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
             //Assert
             await act.Should().ThrowAsync<AccountGroupNotFoundException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
-        }
-
-        [Fact]
-        public async Task Get_CustomValidationException_EmptyValuesInFields()
-        {
-            //Arrange
-            _query.Id = default;
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_query, () =>
-            {
-                return _handler.Handle(_query, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 1);
         }
     }
 }

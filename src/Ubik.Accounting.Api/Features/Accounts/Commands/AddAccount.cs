@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts;
@@ -21,9 +22,11 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             public string Label { get; set; } = default!;
             [MaxLength(700)]
             public string? Description { get; set; }
-            [Required]
+            [JsonRequired]
+            [EnumDataType(typeof(AccountCategory))]
             public AccountCategory Category { get; set; }
-            [Required]
+            [JsonRequired]
+            [EnumDataType(typeof(AccountDomain))]
             public AccountDomain Domain { get; set; }
             [Required]
             public Guid CurrencyId { get; set; }
@@ -60,7 +63,12 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 if (accountExists)
                     throw new AccountAlreadyExistsException(request.Code);
 
-                //Publish and store
+                //Check if the specified currency exists
+                var curExists = await _serviceManager.AccountService.IfExistsCurrencyAsync(request.CurrencyId);
+                if (!curExists)
+                    throw new AccountCurrencyNotFoundException(request.CurrencyId);
+
+                //Store and publish
                 await _serviceManager.AccountService.AddAsync(account);
                 await _publishEndpoint.Publish(account.ToAccountAdded(), CancellationToken.None);
 

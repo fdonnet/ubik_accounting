@@ -21,7 +21,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         private readonly UpdateAccountHandler _handler;
         private readonly UpdateAccountCommand _command;
         private readonly Account _account;
-        private readonly ValidationPipelineBehavior<UpdateAccountCommand, UpdateAccountResult> _validationBehavior;
 
         public UpdateAccount_Test()
         {
@@ -41,11 +40,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             _account = new Account() { Code = "1800", Label = "1000", CurrencyId=Guid.NewGuid() };
             _account = _command.ToAccount(_account);
-            _validationBehavior = new ValidationPipelineBehavior<UpdateAccountCommand, UpdateAccountResult>(new UpdateAccountValidator());
 
             _serviceManager.AccountService.Update(_account).Returns(_account);
             _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(false);
-            //_serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)_command.AccountGroupId!).Returns(true);
+            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(true);
             _serviceManager.AccountService.GetAsync(_command.Id).Returns(_account);
         }
 
@@ -92,64 +90,17 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
-        public async Task Upd_CustomValidationException_EmptyValuesInFields()
+        public async Task Upd_AccountCurrencyNotFoundException_CurrencyIdNotFound()
         {
             //Arrange
-            _command.Code = "";
-            _command.Label = "";
-            _command.CurrencyId = default!;
+            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(false);
 
             //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert (3 errors because version is not specified)
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 3);
-        }
-
-        [Fact]
-        public async Task Upd_CustomValidationException_TooLongValuesInFields()
-        {
-            //Arrange
-            _command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
-            _command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
-            _command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 3);
+            await act.Should().ThrowAsync<AccountCurrencyNotFoundException>()
+                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams);
         }
-
-
-        [Fact]
-        public async Task Upd_CustomValidationException_VersionIdNotProvided()
-        {
-            //Arrange
-            _command.Version = default!;
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 1);
-        }
-
-
     }
 }

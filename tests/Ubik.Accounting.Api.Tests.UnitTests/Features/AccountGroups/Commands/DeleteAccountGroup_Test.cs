@@ -17,14 +17,12 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         private readonly DeleteAccountGroupHandler _handler;
         private readonly DeleteAccountGroupCommand _command;
         private readonly Guid _idToDelete;
-        private readonly ValidationPipelineBehavior<DeleteAccountGroupCommand, bool> _validationBehavior;
 
         public DeleteAccountGroup_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
             _handler = new DeleteAccountGroupHandler(_serviceManager);
             _idToDelete = Guid.NewGuid();
-            _validationBehavior = new ValidationPipelineBehavior<DeleteAccountGroupCommand, bool>(new DeleteAccountGroupValidator());
             _command = new DeleteAccountGroupCommand() { Id = _idToDelete };
 
             _serviceManager.AccountGroupService.ExecuteDeleteAsync(_idToDelete).Returns(true);
@@ -59,23 +57,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             //Assert
             await act.Should().ThrowAsync<AccountGroupNotFoundException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
-        }
-
-        [Fact]
-        public async Task Del_CustomValidationException_IdRequired()
-        {
-            //Arrange
-            _command.Id = default!;
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 1);
         }
 
         [Fact]

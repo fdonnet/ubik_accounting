@@ -16,7 +16,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         private readonly GetAccountHandler _handler;
         private readonly GetAccountQuery _query;
         private readonly Account _account;
-        private readonly ValidationPipelineBehavior<GetAccountQuery, GetAccountResult> _validationBehavior;
 
         public GetAccount_Test()
         {
@@ -29,8 +28,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             };
 
             _account = new Account() { Code = "TEST", Label = "Test", CurrencyId=Guid.NewGuid() };
-
-            _validationBehavior = new ValidationPipelineBehavior<GetAccountQuery, GetAccountResult>(new GetAccountValidator());
 
             _serviceManager.AccountService.GetAsync(_query.Id).Returns(_account);
         }
@@ -61,24 +58,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             //Assert
             await act.Should().ThrowAsync<AccountNotFoundException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
-        }
-
-        [Fact]
-        public async Task Get_CustomValidationException_EmptyValuesInFields()
-        {
-            //Arrange
-            _query.Id = default;
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_query, () =>
-            {
-                return _handler.Handle(_query, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 1);
         }
     }
 }

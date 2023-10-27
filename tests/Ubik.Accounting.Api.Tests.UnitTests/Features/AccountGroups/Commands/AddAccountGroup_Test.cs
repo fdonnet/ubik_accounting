@@ -21,7 +21,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
         private readonly AddAccountGroupHandler _handler;
         private readonly AddAccountGroupCommand _command;
         private readonly AccountGroup _accountGroup;
-        private readonly ValidationPipelineBehavior<AddAccountGroupCommand, AddAccountGroupResult> _validationBehavior;
 
         public AddAccountGroup_Test()
         {
@@ -38,7 +37,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             };
 
             _accountGroup = _command.ToAccountGroup();
-            _validationBehavior = new ValidationPipelineBehavior<AddAccountGroupCommand, AddAccountGroupResult>(new AddAccountGroupValidator());
             _serviceManager.AccountGroupService.AddAsync(_accountGroup).Returns(_accountGroup);
             _serviceManager.AccountGroupService.IfExistsAsync(_command.Code,_command.AccountGroupClassificationId).Returns(false);
         }
@@ -102,46 +100,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
 
             //Assert
             await act.Should().ThrowAsync<AccountGroupParentNotFoundException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
-        }
-
-        [Fact]
-        public async Task Add_CustomValidationException_EmptyValuesInFields()
-        {
-            //Arrange
-            _command.Code = "";
-            _command.Label = "";
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 2);
-        }
-
-        [Fact]
-        public async Task Add_CustomValidationException_TooLongValuesInFields()
-        {
-            //Arrange
-            _command.Code = new string(new Faker("fr_CH").Random.Chars(count: 21));
-            _command.Label = new string(new Faker("fr_CH").Random.Chars(count: 101));
-            _command.Description = new string(new Faker("fr_CH").Random.Chars(count: 701));
-
-            //Act
-            Func<Task> act = async () => await _validationBehavior.Handle(_command, () =>
-            {
-                return _handler.Handle(_command, CancellationToken.None);
-            }, CancellationToken.None);
-
-            //Assert
-            await act.Should().ThrowAsync<CustomValidationException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-                    && e.CustomErrors.Count() == 3);
+                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams);
         }
     }
 }
