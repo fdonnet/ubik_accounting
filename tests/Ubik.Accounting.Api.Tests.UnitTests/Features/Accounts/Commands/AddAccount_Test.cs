@@ -42,7 +42,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _serviceManager.AccountService.AddAsync(_account).Returns(_account);
 
             _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
-            //_serviceManager.AccountService.IfExistsAccountGroupAsync((Guid)_command.AccountGroupId!).Returns(true);
+            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(true);
         }
 
         [Fact]
@@ -71,6 +71,20 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             //Assert
             await act.Should().ThrowAsync<AccountAlreadyExistsException>()
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+        }
+
+        [Fact]
+        public async Task Add_AccountCurrencyNotFoundException_CurrencyIdNotFound()
+        {
+            //Arrange
+            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(false);
+
+            //Act
+            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+
+            //Assert
+            await act.Should().ThrowAsync<AccountCurrencyNotFoundException>()
+                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams);
         }
     }
 }

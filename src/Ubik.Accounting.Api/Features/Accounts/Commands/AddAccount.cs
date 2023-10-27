@@ -63,7 +63,12 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 if (accountExists)
                     throw new AccountAlreadyExistsException(request.Code);
 
-                //Publish and store
+                //Check if the specified currency exists
+                var curExists = await _serviceManager.AccountService.IfExistsCurrencyAsync(request.CurrencyId);
+                if (!curExists)
+                    throw new AccountCurrencyNotFoundException(request.CurrencyId);
+
+                //Store and publish
                 await _serviceManager.AccountService.AddAsync(account);
                 await _publishEndpoint.Publish(account.ToAccountAdded(), CancellationToken.None);
 

@@ -212,6 +212,33 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
+        public async Task Post_ProblemDetails_CurrencyIdNotFound()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var fake = FakeGenerator.GenerateAddAccounts(1).First();
+            fake.CurrencyId = Guid.NewGuid();
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync($"{_baseUrlForV1}", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_CURRENCY_NOT_FOUND");
+        }
+
+        [Fact]
         public async Task Post_ProblemDetails_EmptyFields()
         {
             //Arrange
@@ -436,6 +463,37 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Put_ProblemDetails_CurrencyIdNotFound()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var fake = FakeGenerator.GenerateUpdAccounts(1).First();
+
+            var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
+
+            fake.CurrencyId = Guid.NewGuid();
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_CURRENCY_NOT_FOUND");
         }
 
         [Fact]

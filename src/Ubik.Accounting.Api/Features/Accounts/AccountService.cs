@@ -65,5 +65,10 @@ namespace Ubik.Accounting.Api.Features.Accounts
             await _context.Accounts.Where(x => x.Id == id).ExecuteDeleteAsync();
             return true;
         }
+
+        public async Task<bool> IfExistsCurrencyAsync(Guid currencyId)
+        {
+            return await _context.Currencies.AnyAsync(c => c.Id == currencyId);
+        }
     }
 }

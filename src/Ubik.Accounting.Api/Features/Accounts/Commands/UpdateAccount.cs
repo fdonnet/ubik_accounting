@@ -71,9 +71,15 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 var account = await _serviceManager.AccountService.GetAsync(request.Id) 
                                 ?? throw new AccountNotFoundException(request.Id);
 
+                //Check if the specified currency exists
+                var curExists = await _serviceManager.AccountService.IfExistsCurrencyAsync(request.CurrencyId);
+                if (!curExists)
+                    throw new AccountCurrencyNotFoundException(request.CurrencyId);
+
                 //Modify the found account
                 account = request.ToAccount(account);
 
+                //Store and publish
                 var result = _serviceManager.AccountService.Update(account);
                 await _publishEndpoint.Publish(account.ToAccountUpdated(), CancellationToken.None);
                 await _serviceManager.SaveAsync();
