@@ -50,7 +50,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
-        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AddAccountResult>> Add(AddAccountCommand command)
