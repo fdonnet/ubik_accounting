@@ -1,10 +1,7 @@
-﻿using MassTransit;
-using MediatR;
+﻿using MediatR;
 using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
-using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Contracts;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 {

@@ -5,24 +5,16 @@ using Ubik.ApiService.Common.Services;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Api.Features;
 using System.Reflection;
-using MediatR;
-using Ubik.ApiService.Common.Validators;
-using FluentValidation;
 using Serilog;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.OpenApi.Models;
 using Ubik.Accounting.Api.Data.Init;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
-using Asp.Versioning;
-using Microsoft.Extensions.Options;
-using MassTransit.Configuration;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
+using Ubik.Accounting.Contracts.Accounts.Queries;
+using Ubik.Accounting.Contracts.Accounts.Commands;
 
 namespace Ubik.Accounting.Api
 {
@@ -81,6 +73,7 @@ namespace Ubik.Accounting.Api
 
                 //Add clients
                 config.AddRequestClient<GetAllAccountsQuery>();
+                config.AddRequestClient<AddAccountCommand>();
             });
 
 

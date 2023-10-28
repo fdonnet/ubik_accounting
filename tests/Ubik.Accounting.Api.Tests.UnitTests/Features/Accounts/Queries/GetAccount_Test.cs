@@ -2,10 +2,8 @@
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
-using Ubik.Accounting.Api.Features.Accounts.Queries;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
-using Ubik.ApiService.Common.Validators;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries

@@ -1,6 +1,4 @@
-﻿using Ubik.Accounting.Api.Models;
-
-namespace Ubik.Accounting.Api.Data.Init
+﻿namespace Ubik.Accounting.Api.Data.Init
 {
     //internal static class UsersData
     //{

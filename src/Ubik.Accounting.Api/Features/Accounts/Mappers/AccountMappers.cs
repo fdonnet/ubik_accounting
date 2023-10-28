@@ -1,10 +1,9 @@
-﻿using System.Security.Principal;
-using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Contracts;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
+﻿using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.Accounting.Contracts.Accounts.Events;
+using Ubik.Accounting.Contracts.Accounts.Results;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
-using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Mappers
 {

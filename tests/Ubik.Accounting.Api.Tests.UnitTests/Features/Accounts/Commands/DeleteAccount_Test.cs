@@ -1,9 +1,7 @@
 ﻿using static Ubik.Accounting.Api.Features.Accounts.Commands.DeleteAccount;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Validators;
 using NSubstitute;
-using Ubik.Accounting.Api.Features.Accounts.Commands;
 using FluentAssertions;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.ApiService.Common.Exceptions;

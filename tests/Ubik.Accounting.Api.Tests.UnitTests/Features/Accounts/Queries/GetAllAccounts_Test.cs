@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Common;
 using MassTransit;
 using MassTransit.Testing;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
+using Ubik.Accounting.Api.Features.Accounts.Queries;
 using Ubik.Accounting.Api.Models;
-using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
+using Ubik.Accounting.Contracts.Accounts.Queries;
+using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
 {
@@ -29,7 +29,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         {
             //Arrange
             var client = _harness.GetRequestClient<GetAllAccountsQuery>();
-            var consumerHarness = _harness.GetConsumerHarness<GetAllAccountsConsumer>();
+            var consumerHarness = _harness.GetConsumerHarness<AccountingGetAllAccountsConsumer>();
 
             //Act
             var response = await client.GetResponse<IGetAllAccountsResult>(new { });
@@ -53,7 +53,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
                 .AddMassTransitTestHarness(x =>
                 {
                     x.AddScoped<IServiceManager>(sm => _serviceManager);
-                    x.AddConsumer<GetAllAccountsConsumer>();
+                    x.AddConsumer<AccountingGetAllAccountsConsumer>();
 
                 }).BuildServiceProvider(true);
 

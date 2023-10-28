@@ -2,8 +2,7 @@
 using MediatR;
 using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
-using Ubik.Accounting.Api.Features.Accounts.Mappers;
-using Ubik.Accounting.Contracts;
+using Ubik.Accounting.Contracts.Accounts.Events;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Commands;
 public class DeleteAccount

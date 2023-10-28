@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using System.ComponentModel.DataAnnotations;

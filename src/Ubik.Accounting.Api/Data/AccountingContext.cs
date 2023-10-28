@@ -1,8 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Principal;
 using Ubik.Accounting.Api.Data.Config;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;

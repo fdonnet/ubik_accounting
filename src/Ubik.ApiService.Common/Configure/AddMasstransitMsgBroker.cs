@@ -1,13 +1,7 @@
 ﻿using MassTransit;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.ApiService.Common.Configure.Options;
 
 namespace Ubik.ApiService.Common.Configure

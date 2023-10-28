@@ -1,27 +1,18 @@
 ﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Data.Init;
-using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 using Ubik.Accounting.Api.Tests.Integration.Auth;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAllAccountGroups;
 using Bogus;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 using Ubik.ApiService.Common.Exceptions;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAccountGroup;
-using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using System.Text.Json;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
-using Ubik.Accounting.Api.Features.AccountGroups.Queries;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetChildAccounts;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups

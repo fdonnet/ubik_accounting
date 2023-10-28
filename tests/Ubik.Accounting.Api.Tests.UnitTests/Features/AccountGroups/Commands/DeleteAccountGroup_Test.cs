@@ -1,11 +1,9 @@
 ﻿using FluentAssertions;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.AccountGroups.Commands;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
-using Ubik.ApiService.Common.Validators;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.DeleteAccountGroup;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands

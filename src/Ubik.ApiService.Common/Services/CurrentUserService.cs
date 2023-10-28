@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using System.Xml.Linq;
 
 //TODO: don't forget to change the fake value or recode that for the moment we put the correct tenant_id to allow initial data check on model creating !!!!
 namespace Ubik.ApiService.Common.Services

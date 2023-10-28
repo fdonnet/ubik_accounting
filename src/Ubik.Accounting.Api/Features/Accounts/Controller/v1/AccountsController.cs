@@ -3,13 +3,13 @@ using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Ubik.Accounting.Api.Features.Accounts.Queries;
+using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.Accounting.Contracts.Accounts.Queries;
+using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.DeleteAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
-using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
 {
@@ -32,10 +32,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<GetAllAccountsResult>>> GetAll(IRequestClient<GetAllAccountsQuery> client)
         {
-            //var results = await _mediator.Send(new GetAllAccountsQuery());
-            var response = await client.GetResponse<IGetAllAccountsResult>(new { });
-            //return Ok(results);
-            return Ok(response.Message.Accounts);
+            var result = await client.GetResponse<IGetAllAccountsResult>(new { });
+            return Ok(result.Message.Accounts);
         }
 
         [Authorize(Roles = "ubik_accounting_account_read")]
@@ -56,10 +54,11 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AddAccountResult>> Add(AddAccountCommand command)
+        public async Task<ActionResult<AddAccountResult>> Add(AddAccountCommand command, IRequestClient<AddAccountCommand> client)
         {
-            var result = await _mediator.Send(command);
-            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+            var result = await client.GetResponse<AddAccountResult>(command);
+            //var result = await _mediator.Send(command);
+            return CreatedAtAction(nameof(Get), new { id = result.Message.Id }, result);
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]

@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using System.Net.Http.Json;
 using System.Text;
-using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 using System.Net;
 using Ubik.ApiService.Common.Exceptions;
@@ -9,11 +8,10 @@ using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using Bogus;
 using System.Text.Json;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
-using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using System.Net.Http.Headers;
 using Ubik.Accounting.Api.Tests.Integration.Auth;
 using Ubik.Accounting.Api.Data.Init;
-using System.Text.Json.Serialization;
+using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {

@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
-using Ubik.ApiService.Common.Exceptions;
-using Ubik.Accounting.Contracts;
-using MassTransit;
 
 namespace Ubik.Accounting.Api.Features.Accounts
 {

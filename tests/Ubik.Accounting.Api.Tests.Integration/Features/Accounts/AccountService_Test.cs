@@ -1,9 +1,7 @@
 ﻿using FluentAssertions;
-using NSubstitute;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {

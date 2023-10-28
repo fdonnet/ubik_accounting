@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAllAccountGroups;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using System.ComponentModel.DataAnnotations;

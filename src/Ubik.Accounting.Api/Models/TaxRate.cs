@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Ubik.DB.Common;
-
-namespace Ubik.Accounting.Api.Models
+﻿namespace Ubik.Accounting.Api.Models
 {
     //[Index(nameof(TenantId), IsUnique = false)]
     //[Table("TaxRates")]

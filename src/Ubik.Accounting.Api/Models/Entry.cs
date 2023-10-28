@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Ubik.DB.Common;
-
-namespace Ubik.Accounting.Api.Models
+﻿namespace Ubik.Accounting.Api.Models
 {
     //Keep for next microservice that will manage the entries
     //public enum DebitCredit

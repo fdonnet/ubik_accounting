@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Models;
-using Microsoft.Extensions.Hosting;
-using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Data.Config
 {

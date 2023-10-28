@@ -1,17 +1,5 @@
-﻿using FluentValidation;
-using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.ApiService.Common.Exceptions;
-using Ubik.ApiService.Common.Validators;
 
 namespace Ubik.ApiService.Common.Configure
 {

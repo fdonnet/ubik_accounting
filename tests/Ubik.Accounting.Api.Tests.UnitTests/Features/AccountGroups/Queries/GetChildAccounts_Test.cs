@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.Accounting.Api.Features;
+﻿using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Validators;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetChildAccounts;
 using NSubstitute;
-using Ubik.Accounting.Api.Features.AccountGroups.Queries;
 using FluentAssertions;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.ApiService.Common.Exceptions;
