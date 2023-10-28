@@ -33,18 +33,18 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                 await context.RespondAsync(new AccountAlreadyExistsException(account.Code));
                 return;
             }
-                //Check if the specified currency exists
-                var curExists = await _serviceManager.AccountService.IfExistsCurrencyAsync(account.CurrencyId);
-                if (!curExists)
-                    throw new AccountCurrencyNotFoundException(account.CurrencyId);
+            //Check if the specified currency exists
+            var curExists = await _serviceManager.AccountService.IfExistsCurrencyAsync(account.CurrencyId);
+            if (!curExists)
+                throw new AccountCurrencyNotFoundException(account.CurrencyId);
 
-                //Store and publish AccountAdded evenet
-                await _serviceManager.AccountService.AddAsync(account);
-                await _publishEndpoint.Publish(account.ToAccountAdded(), CancellationToken.None);
-                await _serviceManager.SaveAsync();
+            //Store and publish AccountAdded evenet
+            await _serviceManager.AccountService.AddAsync(account);
+            await _publishEndpoint.Publish(account.ToAccountAdded(), CancellationToken.None);
+            await _serviceManager.SaveAsync();
 
-                //Response
-                await context.RespondAsync(account.ToAddAccountResult());
+            //Response
+            await context.RespondAsync(account.ToAddAccountResult());
         }
     }
 }

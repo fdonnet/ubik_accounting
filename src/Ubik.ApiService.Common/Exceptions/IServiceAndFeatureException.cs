@@ -18,7 +18,7 @@
 
     public interface IServiceAndFeatureException
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; } //Allow to identify what we need to do
-        public List<CustomError> CustomErrors { get; init; }
+        public ServiceAndFeatureExceptionType ErrorType { get; } 
+        public List<CustomError> CustomErrors { get; }
     }
 }

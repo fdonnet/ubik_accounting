@@ -57,27 +57,27 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AddAccountResult>> Add(AddAccountCommand command, IRequestClient<AddAccountCommand> client)
         {
-            var response = await client.GetResponse<AddAccountResult, AccountAlreadyExistsException>(command);
+            var (result,error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureException>(command);
 
-            //if (result.IsCompletedSuccessfully)
-            //{
-            //    var addedAccount = (await result).Message;
-            //    return CreatedAtAction(nameof(Get), new { id = addedAccount.Id }, result);
-            //}
-            //else
-            //{
-            //    var problem = await exception;
-            //    return BadRequest(problem.Message.ToValidationProblemDetails(HttpContext)) ;
-            //}
+            if (result.IsCompletedSuccessfully)
+            {
+                var addedAccount = (await result).Message;
+                return CreatedAtAction(nameof(Get), new { id = addedAccount.Id }, result);
+            }
+            else
+            {
+                var problem = await error;
+                return BadRequest(problem.Message.CustomErrors[0]);
+            }
 
-            if(response.Is(out Response<AddAccountResult> addedAccount))
-                return Ok(addedAccount);
+            //if(response.Is(out Response<AddAccountResult> addedAccount))
+            //    return Ok(addedAccount);
 
-            if (response.Is(out Response<AccountAlreadyExistsException> exception))
-                return BadRequest(exception.Message.ToValidationProblemDetails(HttpContext));
+            //if (response.Is(out Response<AccountAlreadyExistsException> exception))
+            //    return BadRequest(exception.Message.ToValidationProblemDetails(HttpContext));
 
-            return BadRequest();
-            //var result = await _mediator.Send(command);
+            //return BadRequest();
+            ////var result = await _mediator.Send(command);
 
         }
 
