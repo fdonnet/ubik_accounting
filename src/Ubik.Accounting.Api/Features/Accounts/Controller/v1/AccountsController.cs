@@ -3,6 +3,7 @@ using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Results;
@@ -56,9 +57,28 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AddAccountResult>> Add(AddAccountCommand command, IRequestClient<AddAccountCommand> client)
         {
-            var result = await client.GetResponse<AddAccountResult>(command);
+            var response = await client.GetResponse<AddAccountResult, AccountAlreadyExistsException>(command);
+
+            //if (result.IsCompletedSuccessfully)
+            //{
+            //    var addedAccount = (await result).Message;
+            //    return CreatedAtAction(nameof(Get), new { id = addedAccount.Id }, result);
+            //}
+            //else
+            //{
+            //    var problem = await exception;
+            //    return BadRequest(problem.Message.ToValidationProblemDetails(HttpContext)) ;
+            //}
+
+            if(response.Is(out Response<AddAccountResult> addedAccount))
+                return Ok(addedAccount);
+
+            if (response.Is(out Response<AccountAlreadyExistsException> exception))
+                return BadRequest(exception.Message.ToValidationProblemDetails(HttpContext));
+
+            return BadRequest();
             //var result = await _mediator.Send(command);
-            return CreatedAtAction(nameof(Get), new { id = result.Message.Id }, result);
+
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]

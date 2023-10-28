@@ -5,11 +5,11 @@ using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Queries
 {
-    public class AccountingGetAllAccountsConsumer : IConsumer<GetAllAccountsQuery>
+    public class GetAllAccountsConsumer : IConsumer<GetAllAccountsQuery>
     {
         private readonly IServiceManager _serviceManager;
 
-        public AccountingGetAllAccountsConsumer(IServiceManager serviceManager)
+        public GetAllAccountsConsumer(IServiceManager serviceManager)
         {
             _serviceManager = serviceManager;
         }

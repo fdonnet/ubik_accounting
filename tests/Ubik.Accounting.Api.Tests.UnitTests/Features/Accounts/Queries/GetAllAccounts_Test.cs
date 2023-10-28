@@ -24,12 +24,27 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             _accounts = new Account[] { new Account() { Code = "TEST", Label = "Test", CurrencyId=Guid.NewGuid() } };
         }
 
+        public async Task InitializeAsync()
+        {
+            _serviceManager.AccountService.GetAllAsync().Returns(_accounts);
+            _provider = new ServiceCollection()
+                .AddMassTransitTestHarness(x =>
+                {
+                    x.AddScoped<IServiceManager>(sm => _serviceManager);
+                    x.AddConsumer<GetAllAccountsConsumer>();
+
+                }).BuildServiceProvider(true);
+
+            _harness = _provider.GetRequiredService<ITestHarness>();
+            await _harness.Start();
+        }
+
         [Fact]
         public async Task GetAll_Accounts_Ok()
         {
             //Arrange
             var client = _harness.GetRequestClient<GetAllAccountsQuery>();
-            var consumerHarness = _harness.GetConsumerHarness<AccountingGetAllAccountsConsumer>();
+            var consumerHarness = _harness.GetConsumerHarness<GetAllAccountsConsumer>();
 
             //Act
             var response = await client.GetResponse<IGetAllAccountsResult>(new { });
@@ -44,21 +59,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             consumerConsumed.Should().Be(true);
             response.Message.Accounts.Should().HaveCount(1);
             response.Message.Accounts.Should().AllBeOfType<GetAllAccountsResult>();
-        }
-
-        public async Task InitializeAsync()
-        {
-            _serviceManager.AccountService.GetAllAsync().Returns(_accounts);
-            _provider = new ServiceCollection()
-                .AddMassTransitTestHarness(x =>
-                {
-                    x.AddScoped<IServiceManager>(sm => _serviceManager);
-                    x.AddConsumer<AccountingGetAllAccountsConsumer>();
-
-                }).BuildServiceProvider(true);
-
-            _harness = _provider.GetRequiredService<ITestHarness>();
-            await _harness.Start();
         }
 
         public async Task DisposeAsync()

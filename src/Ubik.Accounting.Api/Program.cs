@@ -46,11 +46,10 @@ namespace Ubik.Accounting.Api
             //MediatR + remove standard model validations
             builder.Services.AddMediatRAndValidation(Assembly.GetExecutingAssembly());
 
-            //MessageBroker with masstransit
-            //builder.Services.AddMasstransitMsgBroker<AccountingContext>(msgBrokerOptions, Assembly.GetExecutingAssembly());
+            //MessageBroker with masstransit + outbox
             builder.Services.AddMassTransit(config =>
             {
-                config.SetKebabCaseEndpointNameFormatter();
+                config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(prefix: "AccountingApi", includeNamespace: false));
                 config.UsingRabbitMq((context, configurator) =>
                 {
                     configurator.Host(new Uri(msgBrokerOptions.Host), h =>

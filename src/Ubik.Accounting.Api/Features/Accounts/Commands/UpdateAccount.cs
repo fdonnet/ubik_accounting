@@ -65,8 +65,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             {
                 //Check if the account code already exists in other records
                 bool exists = await _serviceManager.AccountService.IfExistsWithDifferentIdAsync(request.Code, request.Id);
-                if (exists)
-                    throw new AccountAlreadyExistsException(request.Code);
+                //TOCHANGE
+                //if (exists)
+                //    throw new AccountAlreadyExistsException(request.Code);
 
                 //Check if the account is found
                 var account = await _serviceManager.AccountService.GetAsync(request.Id) 
