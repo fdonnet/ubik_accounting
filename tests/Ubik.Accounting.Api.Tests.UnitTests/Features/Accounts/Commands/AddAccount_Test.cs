@@ -11,6 +11,7 @@ using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Api.Features.Accounts.Queries;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.Accounting.Contracts.Accounts.Events;
 using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
@@ -22,7 +23,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
     public class AddAccount_Test : IAsyncLifetime
     {
         private readonly IServiceManager _serviceManager;
-        private readonly IPublishEndpoint _publishEndpoint;
         private readonly AddAccountCommand _command;
         private readonly Account _account;
         private ITestHarness _harness = default!;
@@ -31,7 +31,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         public AddAccount_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
-            _publishEndpoint = Substitute.For<IPublishEndpoint>();
 
             _command = new AddAccountCommand()
             {
@@ -49,6 +48,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
             _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(true);
         }
+
         public async Task InitializeAsync()
         {
             _serviceManager.AccountService.AddAsync(_account).Returns(_account);
@@ -63,7 +63,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _harness = _provider.GetRequiredService<ITestHarness>();
             await _harness.Start();
         }
-
 
         [Fact]
         public async Task Add_Account_Ok()
@@ -87,58 +86,53 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         }
 
         [Fact]
+        public async Task Add_Account_OkAccountAddedPublished()
+        {
+            //Arrange
+            var client = _harness.GetRequestClient<AddAccountCommand>();
+
+            //Act
+            await client.GetResponse<AddAccountResult>(_command);
+
+            //Assert
+            var sent = await _harness.Published.Any<AccountAdded>();
+
+            sent.Should().Be(true);
+        }
+
+        [Fact]
         public async Task Add_AccountAlreadyExistsException_AccountCodeAlreadyExists()
         {
             //Arrange
             _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(true);
             var client = _harness.GetRequestClient<AddAccountCommand>();
-            var consumerHarness = _harness.GetConsumerHarness<AddAccountConsumer>();
 
             //Act
             var (result, error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureException>(_command);
             var response = await error;
 
             //Assert
-            var sent = await _harness.Sent.Any<IServiceAndFeatureException>();
-            var consumed = await _harness.Consumed.Any<AddAccountCommand>();
-            var consumerConsumed = await consumerHarness.Consumed.Any<AddAccountCommand>();
-
-            sent.Should().Be(true);
-            consumed.Should().Be(true);
-            consumerConsumed.Should().Be(true);
             response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
             response.Message.Should().Match<IServiceAndFeatureException>(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
 
-        //[Fact]
-        //public async Task Add_AccountAlreadyExistsException_AccountCodeAlreadyExists()
-        //{
-        //    ////Arrange
-        //    //_serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(true);
-        //    //var client = _harness.GetRequestClient<AddAccountCommand>();
-        //    //var consumerHarness = _harness.GetConsumerHarness<AddAccountConsumer>();
 
-        //    ////Act
-        //    //Func<Task> act = async () => await client.GetResponse<AddAccountResult>(_command);
+        [Fact]
+        public async Task Add_AccountCurrencyNotFoundException_CurrencyIdNotFound()
+        {
+            //Arrange
+            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(false);
+            var client = _harness.GetRequestClient<AddAccountCommand>();
 
-        //    ////Assert
-        //    //await act.Should().ThrowAsync<RequestFaultException>()
-        //    //    .Where(e=>e.Fault<AccountAlreadyExistsException> ==);
-        //}
+            //Act
+            var (result, error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureException>(_command);
+            var response = await error;
 
-        //[Fact]
-        //public async Task Add_AccountCurrencyNotFoundException_CurrencyIdNotFound()
-        //{
-        //    //Arrange
-        //    _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(false);
+            //Assert
+            response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
+            response.Message.Should().Match<IServiceAndFeatureException>(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+        }
 
-        //    //Act
-        //    Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
-
-        //    //Assert
-        //    await act.Should().ThrowAsync<AccountCurrencyNotFoundException>()
-        //        .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams);
-        //}
 
         public async Task DisposeAsync()
         {

@@ -8,7 +8,6 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.DeleteAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 
@@ -91,11 +90,18 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult> Delete(Guid id)
+        public async Task<ActionResult> Delete(Guid id, IRequestClient<DeleteAccountCommand> client)
         {
-            await _mediator.Send(new DeleteAccountCommand() { Id = id });
+            var (result, error) = await client.GetResponse<DeleteAccountResult, 
+                IServiceAndFeatureException>(new DeleteAccountCommand { Id = id});
 
-            return NoContent();
+            if (result.IsCompletedSuccessfully)
+                return NoContent();
+            else
+            {
+                var problem = await error;
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
+            }
         }
     }
 }

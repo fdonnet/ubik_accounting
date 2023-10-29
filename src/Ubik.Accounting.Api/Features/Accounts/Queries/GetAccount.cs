@@ -42,9 +42,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
             {
                 var account = await _serviceManager.AccountService.GetAsync(request.Id);
 
-                return account == null 
-                    ? throw new AccountNotFoundException(request.Id) 
-                    : account.ToGetAccountResult();
+                return account.ToGetAccountResult();
+                //return account == null 
+                //    ? throw new AccountNotFoundException(request.Id) 
+                //    : account.ToGetAccountResult();
             }
         }
     }

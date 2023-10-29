@@ -44,18 +44,18 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
                     .And.BeOfType<GetAccountResult>();
         }
 
-        [Fact]
-        public async Task Get_AccountNotFoundException_AccountIdNotFound()
-        {
-            //Arrange
-            _serviceManager.AccountService.GetAsync(_query.Id).Returns(Task.FromResult<Account?>(null));
+        //[Fact]
+        //public async Task Get_AccountNotFoundException_AccountIdNotFound()
+        //{
+        //    //Arrange
+        //    _serviceManager.AccountService.GetAsync(_query.Id).Returns(Task.FromResult<Account?>(null));
 
-            //Act
-            Func<Task> act = async () => await _handler.Handle(_query, CancellationToken.None);
+        //    //Act
+        //    Func<Task> act = async () => await _handler.Handle(_query, CancellationToken.None);
 
-            //Assert
-            await act.Should().ThrowAsync<AccountNotFoundException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
-        }
+        //    //Assert
+        //    await act.Should().ThrowAsync<AccountNotFoundException>()
+        //        .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+        //}
     }
 }

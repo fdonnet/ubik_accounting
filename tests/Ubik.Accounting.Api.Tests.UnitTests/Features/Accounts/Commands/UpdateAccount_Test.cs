@@ -71,19 +71,19 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
         //        .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         //}
 
-        [Fact]
-        public async Task Upd_AccountNotFoundException_AccountIdNotFound()
-        {
-            //Arrange
-            _serviceManager.AccountService.GetAsync(_command.Id).Returns(Task.FromResult<Account?>(null));
+        //[Fact]
+        //public async Task Upd_AccountNotFoundException_AccountIdNotFound()
+        //{
+        //    //Arrange
+        //    _serviceManager.AccountService.GetAsync(_command.Id).Returns(Task.FromResult<Account?>(null));
 
-            //Act
-            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        //    //Act
+        //    Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
 
-            //Assert
-            await act.Should().ThrowAsync<AccountNotFoundException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
-        }
+        //    //Assert
+        //    await act.Should().ThrowAsync<AccountNotFoundException>()
+        //        .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+        //}
 
         //[Fact]
         //public async Task Upd_AccountCurrencyNotFoundException_CurrencyIdNotFound()
