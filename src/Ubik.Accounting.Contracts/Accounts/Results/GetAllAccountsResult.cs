@@ -4,13 +4,13 @@ namespace Ubik.Accounting.Contracts.Accounts.Results
 {
     public record GetAllAccountsResult
     {
-        public Guid Id { get; set; }
-        public string Code { get; set; } = default!;
-        public string Label { get; set; } = default!;
-        public AccountCategory Category { get; set; }
-        public AccountDomain Domain { get; set; }
-        public string? Description { get; set; }
-        public Guid CurrencyId { get; set; }
-        public Guid Version { get; set; }
+        public Guid Id { get; init; }
+        public string Code { get; init; } = default!;
+        public string Label { get; init; } = default!;
+        public AccountCategory Category { get; init; }
+        public AccountDomain Domain { get; init; }
+        public string? Description { get; init; }
+        public Guid CurrencyId { get; init; }
+        public Guid Version { get; init; }
     }
 }

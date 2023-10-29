@@ -4,14 +4,14 @@ namespace Ubik.Accounting.Contracts.Accounts.Events
 {
     public record AccountAdded
     {
-        public Guid Id { get; set; }
-        public required string Code { get; set; }
-        public required string Label { get; set; }
-        public AccountCategory Category { get; set; }
-        public AccountDomain Domain { get; set; }
-        public string? Description { get; set; }
-        public Guid CurrencyId { get; set; }
-        public Guid Version { get; set; }
-        public Guid TenantId { get; set; }
+        public Guid Id { get; init; }
+        public required string Code { get; init; }
+        public required string Label { get; init; }
+        public AccountCategory Category { get; init; }
+        public AccountDomain Domain { get; init; }
+        public string? Description { get; init; }
+        public Guid CurrencyId { get; init; }
+        public Guid Version { get; init; }
+        public Guid TenantId { get; init; }
     }
 }

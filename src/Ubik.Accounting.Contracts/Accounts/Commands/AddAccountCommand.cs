@@ -17,19 +17,19 @@ namespace Ubik.Accounting.Contracts.Accounts.Commands
     {
         [Required]
         [MaxLength(20)]
-        public string Code { get; set; } = default!;
+        public string Code { get; init; } = default!;
         [Required]
         [MaxLength(100)]
-        public string Label { get; set; } = default!;
+        public string Label { get; init; } = default!;
         [MaxLength(700)]
-        public string? Description { get; set; }
+        public string? Description { get; init; }
         [JsonRequired]
         [EnumDataType(typeof(AccountCategory))]
-        public AccountCategory Category { get; set; }
+        public AccountCategory Category { get; init; }
         [JsonRequired]
         [EnumDataType(typeof(AccountDomain))]
-        public AccountDomain Domain { get; set; }
+        public AccountDomain Domain { get; init; }
         [Required]
-        public Guid CurrencyId { get; set; }
+        public Guid CurrencyId { get; init; }
     }
 }
