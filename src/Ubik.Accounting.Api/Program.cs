@@ -74,6 +74,7 @@ namespace Ubik.Accounting.Api
                 config.AddRequestClient<GetAllAccountsQuery>();
                 config.AddRequestClient<AddAccountCommand>();
                 config.AddRequestClient<DeleteAccountCommand>();
+                config.AddRequestClient<UpdateAccountCommand>();
             });
 
 

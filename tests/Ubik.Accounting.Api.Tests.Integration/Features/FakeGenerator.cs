@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Bogus.Extensions;
+using MassTransit.DependencyInjection.Registration;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
@@ -26,18 +27,22 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Domain = AccountDomain.Asset
                  }).Generate(numTests);
         }
-        public static IEnumerable<UpdateAccountCommand> GenerateUpdAccounts(int numTests)
+        public static IEnumerable<UpdateAccountCommand> GenerateUpdAccounts(int numTests, Guid id = default,
+            string? code = null, string? label = null, Guid version = default)
+
         {
             var testData = new BaseValuesForCurrencies();
             return new Faker<UpdateAccountCommand>("fr_CH")
                  .CustomInstantiator(a => new UpdateAccountCommand()
                  {
-                     Code = a.Finance.Account().ToString(),
-                     Label = a.Finance.AccountName().ClampLength(1, 100),
+                     Id = id != default ? id : default,
+                     Code = code ?? a.Finance.Account().ToString(),
+                     Label = label ?? a.Finance.AccountName().ClampLength(1, 100),
                      Description = a.Lorem.Paragraphs().ClampLength(1, 700),
                      CurrencyId = testData.CurrencyId1,
                      Category = AccountCategory.General,
-                     Domain = AccountDomain.Asset
+                     Domain = AccountDomain.Asset,
+                     Version = version != default ? version : default
                  }).Generate(numTests);
         }
 

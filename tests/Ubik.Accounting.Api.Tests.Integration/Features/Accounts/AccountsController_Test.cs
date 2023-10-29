@@ -304,14 +304,10 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var fake = FakeGenerator.GenerateUpdAccounts(1).First();
-
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
 
-            fake.Version = resultGet!.Version;
-            fake.Id = resultGet!.Id;
-            fake.Code = _testValuesForAccounts.AccountCode1;
+            var fake = FakeGenerator.GenerateUpdAccounts(1, resultGet!.Id, _testValuesForAccounts.AccountCode1,version: resultGet!.Version).First();
 
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
@@ -345,7 +341,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
-
             fake.Code = string.Empty;
             fake.Label = string.Empty;
 

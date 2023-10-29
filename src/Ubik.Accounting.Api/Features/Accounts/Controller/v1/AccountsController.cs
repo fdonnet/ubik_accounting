@@ -8,7 +8,6 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
@@ -77,11 +76,23 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<UpdateAccountResult>> Update(Guid id, UpdateAccountCommand command)
+        public async Task<ActionResult<UpdateAccountResult>> Update(Guid id, 
+            UpdateAccountCommand command, IRequestClient<UpdateAccountCommand> client)
         {
             command.Id = id;
-            var accountResult = await _mediator.Send(command);
-            return Ok(accountResult);
+
+            var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureException>(command);
+
+            if (result.IsCompletedSuccessfully)
+            {
+                var updatedAccount = (await result).Message;
+                return Ok(updatedAccount);
+            }
+            else
+            {
+                var problem = await error;
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
+            }
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]
