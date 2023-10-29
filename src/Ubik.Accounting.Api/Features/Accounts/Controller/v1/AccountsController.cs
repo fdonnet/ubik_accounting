@@ -67,18 +67,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
             else
             {
                 var problem = await error;
-                return BadRequest(problem.Message.CustomErrors[0]);
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
             }
-
-            //if(response.Is(out Response<AddAccountResult> addedAccount))
-            //    return Ok(addedAccount);
-
-            //if (response.Is(out Response<AccountAlreadyExistsException> exception))
-            //    return BadRequest(exception.Message.ToValidationProblemDetails(HttpContext));
-
-            //return BadRequest();
-            ////var result = await _mediator.Send(command);
-
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]
