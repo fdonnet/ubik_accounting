@@ -2,10 +2,10 @@
 using Bogus.Extensions;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.DB.Enums;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features

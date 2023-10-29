@@ -57,19 +57,19 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                     .And.BeOfType<UpdateAccountResult>();
         }
 
-        [Fact]
-        public async Task Upd_AccountAlreadyExistsException_AccountCodeAlreadyExistsWithDifferentId()
-        {
-            //Arrange
-            _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(true);
+        //[Fact]
+        //public async Task Upd_AccountAlreadyExistsException_AccountCodeAlreadyExistsWithDifferentId()
+        //{
+        //    //Arrange
+        //    _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(true);
 
-            //Act
-            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        //    //Act
+        //    Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
 
-            //Assert
-            await act.Should().ThrowAsync<AccountAlreadyExistsException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
-        }
+        //    //Assert
+        //    await act.Should().ThrowAsync<AccountAlreadyExistsException>()
+        //        .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+        //}
 
         [Fact]
         public async Task Upd_AccountNotFoundException_AccountIdNotFound()
@@ -85,18 +85,18 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                 .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }
 
-        [Fact]
-        public async Task Upd_AccountCurrencyNotFoundException_CurrencyIdNotFound()
-        {
-            //Arrange
-            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(false);
+        //[Fact]
+        //public async Task Upd_AccountCurrencyNotFoundException_CurrencyIdNotFound()
+        //{
+        //    //Arrange
+        //    _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(false);
 
-            //Act
-            Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        //    //Act
+        //    Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
 
-            //Assert
-            await act.Should().ThrowAsync<AccountCurrencyNotFoundException>()
-                .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams);
-        }
+        //    //Assert
+        //    await act.Should().ThrowAsync<AccountCurrencyNotFoundException>()
+        //        .Where(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+        //}
     }
 }

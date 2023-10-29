@@ -4,7 +4,6 @@ using System.Text;
 using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 using System.Net;
 using Ubik.ApiService.Common.Exceptions;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.AddAccount;
 using Bogus;
 using System.Text.Json;
 using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;

@@ -15,6 +15,7 @@ using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.DB.Enums;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 {
@@ -83,6 +84,30 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             consumerConsumed.Should().Be(true);
             response.Message.Should().BeOfType<AddAccountResult>();
             response.Message.Should().Match<AddAccountResult>(a=>a.Code == _command.Code);
+        }
+
+        [Fact]
+        public async Task Add_AccountAlreadyExistsException_AccountCodeAlreadyExists()
+        {
+            //Arrange
+            _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(true);
+            var client = _harness.GetRequestClient<AddAccountCommand>();
+            var consumerHarness = _harness.GetConsumerHarness<AddAccountConsumer>();
+
+            //Act
+            var (result, error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureException>(_command);
+            var response = await error;
+
+            //Assert
+            var sent = await _harness.Sent.Any<IServiceAndFeatureException>();
+            var consumed = await _harness.Consumed.Any<AddAccountCommand>();
+            var consumerConsumed = await consumerHarness.Consumed.Any<AddAccountCommand>();
+
+            sent.Should().Be(true);
+            consumed.Should().Be(true);
+            consumerConsumed.Should().Be(true);
+            response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
+            response.Message.Should().Match<IServiceAndFeatureException>(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
 
         //[Fact]

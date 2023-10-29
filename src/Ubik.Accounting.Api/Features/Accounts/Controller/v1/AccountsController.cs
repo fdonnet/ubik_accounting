@@ -62,7 +62,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
             if (result.IsCompletedSuccessfully)
             {
                 var addedAccount = (await result).Message;
-                return CreatedAtAction(nameof(Get), new { id = addedAccount.Id }, result);
+                return CreatedAtAction(nameof(Get), new { id = addedAccount.Id }, addedAccount);
             }
             else
             {
