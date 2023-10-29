@@ -75,8 +75,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
 
                 //Check if the specified currency exists
                 var curExists = await _serviceManager.AccountService.IfExistsCurrencyAsync(request.CurrencyId);
-                if (!curExists)
-                    throw new AccountCurrencyNotFoundException(request.CurrencyId);
+                //TODO: TO adpat
+                //if (!curExists)
+                //    throw new AccountCurrencyNotFoundException(request.CurrencyId);
 
                 //Modify the found account
                 account = request.ToAccount(account);
