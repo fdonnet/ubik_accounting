@@ -9,13 +9,12 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
-using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
 {
     /// <summary>
-    /// For all queries endpoints => call the service manager and access to data
-    /// For all command endpoints => call the message bus
+    /// For all queries endpoints => call the service manager and access the data
+    /// For all commands endpoints => call the message bus
     /// </summary>
     [Authorize]
     [ApiController]
@@ -38,9 +37,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<GetAllAccountsResult>>> GetAll(IRequestClient<GetAllAccountsQuery> client)
         {
-            var accounts = (await _serviceManager.AccountService.GetAllAsync()).ToGetAllAccountResult();
+            var result = (await _serviceManager.AccountService.GetAllAsync()).ToGetAllAccountResult();
 
-            return Ok(accounts);
+            return Ok(result);
         }
 
         [Authorize(Roles = "ubik_accounting_account_read")]
@@ -51,8 +50,11 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<GetAccountResult>> Get(Guid id)
         {
-            var result = await _mediator.Send(new GetAccountQuery() { Id = id });
-            return Ok(result);
+            var result = await _serviceManager.AccountService.GetAsync(id);
+            if (result.IsSuccess)
+                return Ok(result.Result.ToGetAccountResult());
+            else
+                return new ObjectResult(result.Exception.ToValidationProblemDetails(HttpContext));
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]

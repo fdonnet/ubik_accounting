@@ -1,8 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LanguageExt;
+using LanguageExt.Common;
+using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
+using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Exceptions;
 
-namespace Ubik.Accounting.Api.Features.Accounts
+namespace Ubik.Accounting.Api.Features.Accounts.Services
 {
     public class AccountService : IAccountService
     {
@@ -19,10 +23,13 @@ namespace Ubik.Accounting.Api.Features.Accounts
             return accounts;
         }
 
-        public async Task<Account?> GetAsync(Guid id)
+        public async Task<ResultT<Account>> GetAsync(Guid id)
         {
             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
-            return account;
+            if (account == null)
+                return new ResultT<Account>() {IsSuccess = false, Exception = new AccountNotFoundException(id)};
+
+                return new ResultT<Account>() {IsSuccess = true, Result = account };
         }
 
         public async Task<bool> IfExistsAsync(string accountCode)

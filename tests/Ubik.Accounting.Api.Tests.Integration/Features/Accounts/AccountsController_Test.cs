@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using System.Net.Http.Json;
 using System.Text;
-using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 using System.Net;
 using Ubik.ApiService.Common.Exceptions;
 using Bogus;

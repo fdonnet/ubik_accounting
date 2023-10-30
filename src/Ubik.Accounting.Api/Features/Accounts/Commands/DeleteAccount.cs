@@ -23,19 +23,19 @@ public class DeleteAccountConsumer : IConsumer<DeleteAccountCommand>
     public async Task Consume(ConsumeContext<DeleteAccountCommand> context)
     {
         //Check if the account is found
-        var account = await _serviceManager.AccountService.GetAsync(context.Message.Id);
+        //var account = await _serviceManager.AccountService.GetAsync(context.Message.Id);
 
-        if (account == null)
-        {
-            await context.RespondAsync(new AccountNotFoundException(context.Message.Id));
-            return;
-        }
+        //if (account == null)
+        //{
+        //    await context.RespondAsync(new AccountNotFoundException(context.Message.Id));
+        //    return;
+        //}
 
-        await _serviceManager.AccountService.ExecuteDeleteAsync(account.Id);
-        await _publishEndpoint.Publish(new AccountDeleted { Id = account.Id }, CancellationToken.None);
-        await _serviceManager.SaveAsync();
+        //await _serviceManager.AccountService.ExecuteDeleteAsync(account.Id);
+        //await _publishEndpoint.Publish(new AccountDeleted { Id = account.Id }, CancellationToken.None);
+        //await _serviceManager.SaveAsync();
 
-        await context.RespondAsync <DeleteAccountResult>(new {Deleted = true});
+        //await context.RespondAsync <DeleteAccountResult>(new {Deleted = true});
     }
 }
 
