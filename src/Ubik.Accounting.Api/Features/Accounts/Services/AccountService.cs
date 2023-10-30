@@ -63,8 +63,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         {
             //Check if the account is found
             var accountPresent = await GetAsync(account.Id);
-            if (accountPresent == null)
-                return new ResultT<Account>() { IsSuccess = false, Exception = new AccountNotFoundException(account.Id) };
+            if(!accountPresent.IsSuccess)
+                return accountPresent;
 
             var accountToUpd = accountPresent.Result;
 
@@ -90,11 +90,15 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         {
             var account = await GetAsync(id);
 
-            if (account == null)
+            if(account.IsSuccess)
+            {
+                await _context.Accounts.Where(x => x.Id == id).ExecuteDeleteAsync();
+                return new ResultT<bool>() { IsSuccess = true, Result = true };
+            }
+            else
+            {
                 return new ResultT<bool>() { IsSuccess = false, Exception = new AccountNotFoundException(id) };
-
-            await _context.Accounts.Where(x => x.Id == id).ExecuteDeleteAsync();
-            return new ResultT<bool>() { IsSuccess = true, Result=true };
+            }
         }
 
         public async Task<bool> IfExistsCurrencyAsync(Guid currencyId)
