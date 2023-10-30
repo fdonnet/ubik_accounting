@@ -23,7 +23,7 @@ namespace Ubik.ApiService.Common.Filters
 
         public Task Send(ConsumeContext<T> context, IPipe<ConsumeContext<T>> next)
         {
-            var tenantId = context.Headers.Get<string>("TenandId");
+            var tenantId = context.Headers.Get<string>("TenantId");
 
             if (Guid.TryParse(tenantId, out var setTenantID))
                 _userService.CurrentUser.TenantIds[0] = setTenantID;

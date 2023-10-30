@@ -22,7 +22,7 @@ namespace Ubik.ApiService.Common.Filters
 
         public Task Send(PublishContext<T> context, IPipe<PublishContext<T>> next)
         {
-            context.Headers.Set("TenandId", _userService.CurrentUser.TenantIds[0].ToString());
+            context.Headers.Set("TenantId", _userService.CurrentUser.TenantIds[0].ToString());
 
             return next.Send(context);
         }
