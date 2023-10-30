@@ -10,6 +10,7 @@ using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Commands
@@ -39,7 +40,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
 
                     await context.RespondAsync(res.Result.ToUpdateAccountResult());
                 }
-                catch (DBConcurrencyException)
+                catch (UpdateDbConcurrencyException)
                 {
                     await context.RespondAsync(new AccountUpdateConcurrencyExeception(context.Message.Version));
                 }
