@@ -7,28 +7,29 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.DB.Enums;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
+
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features
 {
     public static class FakeGenerator
     {
-        public static IEnumerable<AddAccountCommand> GenerateAddAccounts(int numTests)
+        public static IEnumerable<AddAccountCommand> GenerateAddAccounts(int numTests,
+            string? code = null, string? label = null, string? description = null, Guid currencyId = default)
         {
             var testData = new BaseValuesForCurrencies();
             return new Faker<AddAccountCommand>("fr_CH")
                  .CustomInstantiator(a => new AddAccountCommand()
                  {
-                     Code = a.Finance.Account().ToString(),
-                     Label = a.Finance.AccountName().ClampLength(1, 100),
-                     Description = a.Lorem.Paragraphs().ClampLength(1, 700),
-                     CurrencyId = testData.CurrencyId1,
+                     Code = code ?? a.Finance.Account().ToString(),
+                     Label = label ?? a.Finance.AccountName().ClampLength(1, 100),
+                     Description = description ?? a.Lorem.Paragraphs().ClampLength(1, 700),
+                     CurrencyId = currencyId != default ? currencyId : testData.CurrencyId1,
                      Category = AccountCategory.General,
                      Domain = AccountDomain.Asset
                  }).Generate(numTests);
         }
         public static IEnumerable<UpdateAccountCommand> GenerateUpdAccounts(int numTests, Guid id = default,
-            string? code = null, string? label = null, Guid version = default)
+            string? code = null, string? label = null, Guid version = default, string? description = null, Guid currencyId = default)
 
         {
             var testData = new BaseValuesForCurrencies();
@@ -38,8 +39,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Id = id != default ? id : default,
                      Code = code ?? a.Finance.Account().ToString(),
                      Label = label ?? a.Finance.AccountName().ClampLength(1, 100),
-                     Description = a.Lorem.Paragraphs().ClampLength(1, 700),
-                     CurrencyId = testData.CurrencyId1,
+                     Description = description ?? a.Lorem.Paragraphs().ClampLength(1, 700),
+                     CurrencyId = currencyId != default ? currencyId : testData.CurrencyId1,
                      Category = AccountCategory.General,
                      Domain = AccountDomain.Asset,
                      Version = version != default ? version : default

@@ -1,7 +1,6 @@
 ﻿using NSubstitute;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
-using static Ubik.Accounting.Api.Features.Accounts.Commands.UpdateAccount;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using FluentAssertions;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
