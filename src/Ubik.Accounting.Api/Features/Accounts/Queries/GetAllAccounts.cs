@@ -5,6 +5,10 @@ using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Queries
 {
+    /// <summary>
+    /// This consumer is only used when called from other microservice
+    /// The api clien will call service manager directly
+    /// </summary>
     public class GetAllAccountsConsumer : IConsumer<GetAllAccountsQuery>
     {
         private readonly IServiceManager _serviceManager;

@@ -13,7 +13,6 @@ namespace Ubik.Accounting.Contracts.Accounts.Commands
     public record UpdateAccountCommand
     {
         [Required]
-        [JsonIgnore]
         public Guid Id { get; set; }
         [Required]
         [MaxLength(20)]

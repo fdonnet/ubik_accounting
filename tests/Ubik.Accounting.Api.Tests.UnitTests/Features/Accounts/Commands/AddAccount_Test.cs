@@ -44,14 +44,12 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             _account = _command.ToAccount();
             _serviceManager.AccountService.AddAsync(_account).Returns(_account);
-
             _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
             _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(true);
         }
 
         public async Task InitializeAsync()
         {
-            _serviceManager.AccountService.AddAsync(_account).Returns(_account);
             _provider = new ServiceCollection()
                 .AddMassTransitTestHarness(x =>
                 {
@@ -113,7 +111,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             //Assert
             response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-            response.Message.Should().Match<IServiceAndFeatureException>(e => e.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+            response.Message.Should().Match<IServiceAndFeatureException>(e => 
+                e.ErrorType == ServiceAndFeatureExceptionType.Conflict
+                && e.CustomErrors[0].ErrorCode == "ACCOUNT_ALREADY_EXISTS");
         }
 
 
@@ -130,7 +130,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             //Assert
             response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-            response.Message.Should().Match<IServiceAndFeatureException>(e => e.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+            response.Message.Should().Match<IServiceAndFeatureException>(e => 
+                e.ErrorType == ServiceAndFeatureExceptionType.BadParams
+                && e.CustomErrors[0].ErrorCode == "ACCOUNT_CURRENCY_NOT_FOUND");
         }
 
 

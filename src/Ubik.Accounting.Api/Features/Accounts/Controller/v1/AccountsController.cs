@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
+using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Results;
@@ -12,6 +13,10 @@ using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAccount;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
 {
+    /// <summary>
+    /// For all queries endpoints => call the service manager and access to data
+    /// For all command endpoints => call the message bus
+    /// </summary>
     [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
@@ -19,10 +24,12 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
     public class AccountsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IServiceManager _serviceManager;
 
-        public AccountsController(IMediator mediator)
+        public AccountsController(IMediator mediator, IServiceManager serviceManager)
         {
             _mediator = mediator;
+            _serviceManager = serviceManager;
         }
 
         [Authorize(Roles = "ubik_accounting_account_read")]
@@ -31,8 +38,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<GetAllAccountsResult>>> GetAll(IRequestClient<GetAllAccountsQuery> client)
         {
-            var result = await client.GetResponse<IGetAllAccountsResult>(new { });
-            return Ok(result.Message.Accounts);
+            var accounts = (await _serviceManager.AccountService.GetAllAsync()).ToGetAllAccountResult();
+
+            return Ok(accounts);
         }
 
         [Authorize(Roles = "ubik_accounting_account_read")]

@@ -101,7 +101,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             //Assert
             response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-            response.Message.Should().Match<IServiceAndFeatureException>(e => e.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+            response.Message.Should().Match<IServiceAndFeatureException>(e => 
+                e.ErrorType == ServiceAndFeatureExceptionType.NotFound
+                && e.CustomErrors[0].ErrorCode == "ACCOUNT_NOT_FOUND");
         }
 
         public async Task DisposeAsync()

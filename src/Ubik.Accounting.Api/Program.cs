@@ -15,6 +15,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.ApiService.Common.Filters;
 
 namespace Ubik.Accounting.Api
 {
@@ -59,6 +60,11 @@ namespace Ubik.Accounting.Api
                     });
 
                     configurator.ConfigureEndpoints(context);
+
+                    //Use to pass tenantid when message broker is used to contact the api (async)
+                    configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
+                    configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);
+                    configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
                 });
 
                 config.AddEntityFrameworkOutbox<AccountingContext>(o =>
