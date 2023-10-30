@@ -35,7 +35,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<GetAllAccountsResult>>> GetAll(IRequestClient<GetAllAccountsQuery> client)
+        public async Task<ActionResult<IEnumerable<GetAllAccountsResult>>> GetAll()
         {
             var result = (await _serviceManager.AccountService.GetAllAsync()).ToGetAllAccountResult();
 
@@ -51,10 +51,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         public async Task<ActionResult<GetAccountResult>> Get(Guid id)
         {
             var result = await _serviceManager.AccountService.GetAsync(id);
-            if (result.IsSuccess)
-                return Ok(result.Result.ToGetAccountResult());
-            else
-                return new ObjectResult(result.Exception.ToValidationProblemDetails(HttpContext));
+            return result.IsSuccess
+                ? (ActionResult<GetAccountResult>)Ok(result.Result.ToGetAccountResult())
+                : (ActionResult<GetAccountResult>)new ObjectResult(result.Exception.ToValidationProblemDetails(HttpContext));
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]

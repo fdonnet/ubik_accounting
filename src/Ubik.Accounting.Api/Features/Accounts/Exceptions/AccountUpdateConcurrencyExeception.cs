@@ -2,20 +2,20 @@
 
 namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
 {
-    public record AccountAlreadyExistsException : IServiceAndFeatureException
+    public record AccountUpdateConcurrencyExeception : IServiceAndFeatureException
     {
         public ServiceAndFeatureExceptionType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountAlreadyExistsException(string codeAlreadyExisting)
+        public AccountUpdateConcurrencyExeception(Guid version)
         {
 
             ErrorType = ServiceAndFeatureExceptionType.Conflict;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
-                ErrorCode = "ACCOUNT_ALREADY_EXISTS",
-                ErrorFriendlyMessage = "The account already exists. Code field needs to be unique.",
-                ErrorValueDetails = $"Field:Code / Value:{codeAlreadyExisting}"
+                ErrorCode = "ACCOUNT_UPDATE_CONCURRENCY",
+                ErrorFriendlyMessage = "You don't have the last version of this account.",
+                ErrorValueDetails = $"Field:Version / Value:{version}"
             }};
         }
     }

@@ -14,7 +14,7 @@ namespace Ubik.ApiService.Common.Filters
         IFilter<ConsumeContext<T>>
         where T : class
     {
-        private ICurrentUserService _userService;
+        private readonly ICurrentUserService _userService;
 
         public TenantIdConsumeFilter(ICurrentUserService userService)
         {
@@ -25,10 +25,9 @@ namespace Ubik.ApiService.Common.Filters
         {
             var tenantId = context.Headers.Get<string>("TenantId");
 
-            if (Guid.TryParse(tenantId, out var setTenantID))
-                _userService.CurrentUser.TenantIds[0] = setTenantID;
-            else
-                _userService.CurrentUser.TenantIds[0] = default(Guid);
+            _userService.CurrentUser.TenantIds[0] = Guid.TryParse(tenantId, out var setTenantID) 
+                ? setTenantID 
+                : default;
 
             return next.Send(context);
         }

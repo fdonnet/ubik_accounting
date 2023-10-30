@@ -1,8 +1,11 @@
 ﻿using MassTransit;
+using MassTransit.Transports;
 using MediatR;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Text.Json.Serialization;
+using System.Threading;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Api.Models;
@@ -24,44 +27,25 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
 
         public async Task Consume(ConsumeContext<UpdateAccountCommand> context)
         {
-            //var msg = context.Message;
+            var account = context.Message.ToAccount();
+            var res = await _serviceManager.AccountService.UpdateAsync(account);
 
-            ////Check if the account is found
-            //var account = await _serviceManager.AccountService.GetAsync(msg.Id);
-            //if (account == null)
-            //{
-            //    await context.RespondAsync(new AccountNotFoundException(msg.Id));
-            //    return;
-            //}
+            if(res.IsSuccess)
+            {
+                try
+                {
+                    await _publishEndpoint.Publish(account.ToAccountUpdated(), CancellationToken.None);
+                    await _serviceManager.SaveAsync();
 
-            ////Check if the account code already exists in other records
-            //bool exists = await _serviceManager.AccountService
-            //    .IfExistsWithDifferentIdAsync(msg.Code, msg.Id);
-
-            //if (exists)
-            //{
-            //    await context.RespondAsync(new AccountAlreadyExistsException(msg.Code));
-            //    return;
-            //}
-
-            ////Check if the specified currency exists
-            //var curExists = await _serviceManager.AccountService.IfExistsCurrencyAsync(msg.CurrencyId);
-            //if(!curExists)
-            //{
-            //    await context.RespondAsync(new AccountCurrencyNotFoundException(msg.CurrencyId));
-            //    return;
-            //}
-
-            ////Modify the found account
-            //account = msg.ToAccount(account);
-
-            //////Store and publish
-            //_serviceManager.AccountService.Update(account);
-            //await _publishEndpoint.Publish(account.ToAccountUpdated(), CancellationToken.None);
-            //await _serviceManager.SaveAsync();
-
-            ////Response
-            //await context.RespondAsync(account.ToUpdateAccountResult());
+                    await context.RespondAsync(res.Result.ToUpdateAccountResult());
+                }
+                catch (DBConcurrencyException)
+                {
+                    await context.RespondAsync(new AccountUpdateConcurrencyExeception(context.Message.Version));
+                }
+            }
+            else
+                await context.RespondAsync(res.Exception);
         }
     }
 }

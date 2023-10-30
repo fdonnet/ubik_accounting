@@ -119,11 +119,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
             var account = await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1);
 
-            account!.Label = "Modified";
-            account.Description = "Modified";
+            var res = account.Result;
+            res!.Label = "Modified";
+            res.Description = "Modified";
 
             //Act
-            var result = _serviceManager.AccountService.Update(account);
+            var result = await _serviceManager.AccountService.UpdateAsync(res);
 
             //Assert
             result.Should()
@@ -137,12 +138,13 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
             var account = await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1);
 
-            account!.Label = "Modified";
-            account.Description = "Modified";
-            var modifiedAt = account.ModifiedAt;
+            var res = account.Result;
+            res!.Label = "Modified";
+            res.Description = "Modified";
+            var modifiedAt = res.ModifiedAt;
 
             //Act
-            var result = _serviceManager.AccountService.Update(account);
+            var result = await _serviceManager.AccountService.UpdateAsync(res);
 
             //Assert
             result.Should()

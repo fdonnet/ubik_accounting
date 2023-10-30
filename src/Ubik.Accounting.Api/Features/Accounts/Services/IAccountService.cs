@@ -11,9 +11,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         public Task<ResultT<Account>> GetAsync(Guid id);
         public Task<bool> IfExistsAsync(string accountCode);
         public Task<bool> IfExistsWithDifferentIdAsync(string accountCode, Guid currentId);
-        public Task<Account> AddAsync(Account account);
-        public Account Update(Account account);
-        public Task<bool> ExecuteDeleteAsync(Guid id);
+        public Task<ResultT<Account>> AddAsync(Account account);
+        public Task<ResultT<Account>> UpdateAsync(Account account);
+        public Task<ResultT<bool>> ExecuteDeleteAsync(Guid id);
         public Task<bool> IfExistsCurrencyAsync(Guid currencyId);
 
     }

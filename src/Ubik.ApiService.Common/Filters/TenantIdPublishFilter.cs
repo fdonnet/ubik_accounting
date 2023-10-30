@@ -13,7 +13,7 @@ namespace Ubik.ApiService.Common.Filters
         IFilter<PublishContext<T>>
         where T : class
     {
-        private ICurrentUserService _userService;
+        private readonly ICurrentUserService _userService;
 
         public TenantIdPublishFilter(ICurrentUserService userService)
         {

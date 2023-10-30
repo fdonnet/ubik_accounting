@@ -3,6 +3,7 @@ using MediatR;
 using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
+using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Events;
 using Ubik.Accounting.Contracts.Accounts.Results;
@@ -22,20 +23,16 @@ public class DeleteAccountConsumer : IConsumer<DeleteAccountCommand>
 
     public async Task Consume(ConsumeContext<DeleteAccountCommand> context)
     {
-        //Check if the account is found
-        //var account = await _serviceManager.AccountService.GetAsync(context.Message.Id);
+        var res = await _serviceManager.AccountService.ExecuteDeleteAsync(context.Message.Id);
 
-        //if (account == null)
-        //{
-        //    await context.RespondAsync(new AccountNotFoundException(context.Message.Id));
-        //    return;
-        //}
-
-        //await _serviceManager.AccountService.ExecuteDeleteAsync(account.Id);
-        //await _publishEndpoint.Publish(new AccountDeleted { Id = account.Id }, CancellationToken.None);
-        //await _serviceManager.SaveAsync();
-
-        //await context.RespondAsync <DeleteAccountResult>(new {Deleted = true});
+        if(res.IsSuccess)
+        {
+            await _publishEndpoint.Publish(new AccountDeleted { Id = context.Message.Id }, CancellationToken.None);
+            await _serviceManager.SaveAsync();
+            await context.RespondAsync<DeleteAccountResult>(new { Deleted = true });
+        }
+        else
+            await context.RespondAsync(res.Exception);
     }
 }
 

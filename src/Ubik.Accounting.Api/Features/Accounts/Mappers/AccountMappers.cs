@@ -54,7 +54,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
 
         public static IEnumerable<GetAllAccountsResult> ToGetAllAccountResult(this IEnumerable<Account> accounts)
         {
-            return accounts.Select(x => new GetAllAccountsResult() 
+            return accounts.Select(x => new GetAllAccountsResult()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -94,6 +94,34 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             return account;
         }
 
+        public static Account ToAccount(this Account accountForUpd, Account account)
+        {
+            account.Id = accountForUpd.Id;
+            account.Code = accountForUpd.Code;
+            account.Label = accountForUpd.Label;
+            account.Category = accountForUpd.Category;
+            account.Domain = accountForUpd.Domain;
+            account.Description = accountForUpd.Description;
+            account.Version = accountForUpd.Version;
+            account.CurrencyId = accountForUpd.CurrencyId;
+            return account;
+        }
+
+        public static Account ToAccount(this UpdateAccountCommand updateAccountCommand)
+        {
+            return new Account()
+            {
+                Id = updateAccountCommand.Id,
+                Code = updateAccountCommand.Code,
+                Label = updateAccountCommand.Label,
+                Category = updateAccountCommand.Category,
+                Domain = updateAccountCommand.Domain,
+                Description = updateAccountCommand.Description,
+                Version = updateAccountCommand.Version,
+                CurrencyId = updateAccountCommand.CurrencyId,
+            };
+        }
+
         public static AccountAdded ToAccountAdded(this Account account)
         {
             return new AccountAdded
@@ -106,7 +134,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Version = account.Version,
                 Id = account.Id,
                 TenantId = account.TenantId,
-                CurrencyId =account.CurrencyId
+                CurrencyId = account.CurrencyId
             };
         }
 
