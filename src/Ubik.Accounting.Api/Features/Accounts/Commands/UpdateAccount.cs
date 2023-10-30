@@ -1,17 +1,8 @@
 ﻿using MassTransit;
-using MassTransit.Transports;
-using MediatR;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Text.Json.Serialization;
-using System.Threading;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
-using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Exceptions;
-using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Commands
 {

@@ -1,5 +1,4 @@
 ﻿using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;

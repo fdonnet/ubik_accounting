@@ -3,10 +3,8 @@ using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Commands;
-using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
 

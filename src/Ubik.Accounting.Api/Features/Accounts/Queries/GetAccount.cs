@@ -1,14 +1,6 @@
-﻿using LanguageExt;
-using MassTransit;
-using MediatR;
-using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
+﻿using MassTransit;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
-using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Queries;
-using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.ApiService.Common.Exceptions;
-using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Queries
 {

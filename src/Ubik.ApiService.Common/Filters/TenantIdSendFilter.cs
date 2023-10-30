@@ -1,9 +1,4 @@
 ﻿using MassTransit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.ApiService.Common.Services;
 
 //TODO: change to be adapted to select tenantId not first tenantid of the list

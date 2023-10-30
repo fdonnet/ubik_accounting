@@ -1,6 +1,4 @@
-﻿using LanguageExt;
-using LanguageExt.Common;
-using Ubik.Accounting.Api.Models;
+﻿using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Services

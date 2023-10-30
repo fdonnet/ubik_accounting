@@ -1,11 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.ApiService.Common.Exceptions;
-using Ubik.ApiService.DB.Enums;
+﻿using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Contracts.Accounts.Results
 {

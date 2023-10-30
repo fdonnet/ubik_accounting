@@ -3,7 +3,6 @@ using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using FluentAssertions;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.ApiService.Common.Exceptions;
 using MassTransit;
 using Ubik.Accounting.Contracts.Accounts.Commands;
