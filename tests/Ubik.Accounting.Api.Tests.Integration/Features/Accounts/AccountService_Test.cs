@@ -36,11 +36,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountService.GetAsync(id)).Result;
+            var result = (await _serviceManager.AccountService.GetAsync(id)).Exception;
 
             //Assert
             result.Should()
-                    .BeNull();
+                    .NotBeNull();
+
         }
 
         [Theory]

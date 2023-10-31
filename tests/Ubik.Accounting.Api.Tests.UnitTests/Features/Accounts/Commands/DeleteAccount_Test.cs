@@ -66,8 +66,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             sent.Should().Be(true);
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
-            response.Message.Should().BeOfType<DeleteAccountResult>();
-            response.Message.Should().Match<DeleteAccountResult>(a => a.Deleted == true);
+            response.Message.Should()
+                .BeOfType<DeleteAccountResult>()
+                .And.Match<DeleteAccountResult>(a => a.Deleted == true);
         }
 
         [Fact]

@@ -66,8 +66,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var result= await client.GetResponse<IGetAllAccountsResult>(new { });
 
             //Assert
-            result.Message.Should().BeAssignableTo<IGetAllAccountsResult>();
-            result.Message.Should().Match<IGetAllAccountsResult>(a => a.Accounts[0] is GetAllAccountsResult);
+            result.Message.Should()
+                .BeAssignableTo<IGetAllAccountsResult>()
+                .And.Match<IGetAllAccountsResult>(a => a.Accounts[0] is GetAllAccountsResult);
         }
 
 
@@ -81,8 +82,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var result = await client.GetResponse<GetAccountResult>(new GetAccountQuery { Id=_testValuesForAccounts.AccountId1});
 
             //Assert
-            result.Message.Should().BeAssignableTo<GetAccountResult>();
-            result.Message.Should().Match<GetAccountResult>(a => a.Id == _testValuesForAccounts.AccountId1);
+            result.Message.Should()
+                .BeAssignableTo<GetAccountResult>()
+                .And.Match<GetAccountResult>(a => a.Id == _testValuesForAccounts.AccountId1);
         }
 
         [Fact]
@@ -97,10 +99,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var prob = await error;
 
             //Assert
-            prob.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-            prob.Message.Should().Match<IServiceAndFeatureException>(a =>
-                a.ErrorType == ServiceAndFeatureExceptionType.NotFound
-                && a.CustomErrors[0].ErrorCode == "ACCOUNT_NOT_FOUND");
+            prob.Message.Should()
+                .BeAssignableTo<IServiceAndFeatureException>()
+                .And.Match<IServiceAndFeatureException>(a =>
+                    a.ErrorType == ServiceAndFeatureExceptionType.NotFound
+                    && a.CustomErrors[0].ErrorCode == "ACCOUNT_NOT_FOUND");
         }
            
 

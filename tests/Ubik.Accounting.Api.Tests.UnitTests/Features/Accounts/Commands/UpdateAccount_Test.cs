@@ -76,8 +76,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             sent.Should().Be(true);
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
-            response.Message.Should().BeOfType<UpdateAccountResult>();
-            response.Message.Should().Match<UpdateAccountResult>(a => a.Code == _command.Code);
+            response.Message.Should()
+                .BeOfType<UpdateAccountResult>()
+                .And.Match<UpdateAccountResult>(a => a.Code == _command.Code);
         }
 
         [Fact]

@@ -57,8 +57,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             sent.Should().Be(true);
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
-            response.Message.Accounts.Should().HaveCount(1);
-            response.Message.Accounts.Should().AllBeOfType<GetAllAccountsResult>();
+            response.Message.Accounts.Should()
+                .HaveCount(1)
+                .And.AllBeOfType<GetAllAccountsResult>();
         }
 
         public async Task DisposeAsync()

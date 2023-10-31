@@ -70,8 +70,9 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             sent.Should().Be(true);
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
-            response.Message.Should().BeOfType<GetAccountResult>();
-            response.Message.Should().Match<GetAccountResult>(a => a.Code == _account.Code);
+            response.Message.Should()
+                .BeOfType<GetAccountResult>()
+                .And.Match<GetAccountResult>(a => a.Code == _account.Code);
         }
 
         //[Fact]
