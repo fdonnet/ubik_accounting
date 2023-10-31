@@ -12,6 +12,8 @@ using Ubik.Accounting.Api.Features;
 using Ubik.ApiService.Common.Filters;
 using Ubik.ApiService.Common.Services;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
+using Ubik.ApiService.Common.Exceptions;
+using LanguageExt.Pipes;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
@@ -19,10 +21,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
+        private readonly BaseValuesForAccounts _testValuesForAccounts;
 
         public AccountQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
-            
+            _testValuesForAccounts = new BaseValuesForAccounts();
         }
 
         public async Task InitializeAsync()
@@ -32,6 +35,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 {
                     x.AddScoped<ICurrentUserService>(us => new FakeUserService());
                     x.AddRequestClient<GetAllAccountsQuery>();
+                    x.AddRequestClient<GetAccountQuery>();
                     x.UsingRabbitMq((context, configurator) =>
                     {
 
@@ -65,6 +69,40 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Message.Should().BeAssignableTo<IGetAllAccountsResult>();
             result.Message.Should().Match<IGetAllAccountsResult>(a => a.Accounts[0] is GetAllAccountsResult);
         }
+
+
+        [Fact]
+        public async Task Get_Account_Ok()
+        {
+            //Arrange
+            var client = _harness.GetRequestClient<GetAccountQuery>();
+
+            //Act
+            var result = await client.GetResponse<GetAccountResult>(new GetAccountQuery { Id=_testValuesForAccounts.AccountId1});
+
+            //Assert
+            result.Message.Should().BeAssignableTo<GetAccountResult>();
+            result.Message.Should().Match<GetAccountResult>(a => a.Id == _testValuesForAccounts.AccountId1);
+        }
+
+        [Fact]
+        public async Task Get_IServiceAndFeatureException_AccountIdNotFound()
+        {
+            //Arrange
+            var client = _harness.GetRequestClient<GetAccountQuery>();
+
+            //Act
+            var (result, error) = await client.GetResponse<GetAccountResult, IServiceAndFeatureException>(new GetAccountQuery { Id = Guid.NewGuid() });
+
+            var prob = await error;
+
+            //Assert
+            prob.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
+            prob.Message.Should().Match<IServiceAndFeatureException>(a =>
+                a.ErrorType == ServiceAndFeatureExceptionType.NotFound
+                && a.CustomErrors[0].ErrorCode == "ACCOUNT_NOT_FOUND");
+        }
+           
 
         public async Task DisposeAsync()
         {
