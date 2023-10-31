@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Ubik.Accounting.Api.Features.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.Accounts.Events;
+using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 {
@@ -85,24 +86,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             sent.Should().Be(true);
         }
-
-        //[Fact]
-        //public async Task Del_AccountNotFoundException_AccountIdNotFound()
-        //{
-        //    //Arrange
-        //    _serviceManager.AccountService.GetAsync(_idToDelete).Returns(new ResultT<Account> { IsSuccess=false,Exception = new AccountNotFoundException(_idToDelete)});
-        //    var client = _harness.GetRequestClient<DeleteAccountCommand>();
-
-        //    //Act
-        //    var (result, error) = await client.GetResponse<DeleteAccountResult, IServiceAndFeatureException>(_command);
-        //    var response = await error;
-
-        //    //Assert
-        //    response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-        //    response.Message.Should().Match<IServiceAndFeatureException>(e => 
-        //        e.ErrorType == ServiceAndFeatureExceptionType.NotFound
-        //        && e.CustomErrors[0].ErrorCode == "ACCOUNT_NOT_FOUND");
-        //}
 
         public async Task DisposeAsync()
         {

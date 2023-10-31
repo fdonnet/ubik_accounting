@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Ubik.Accounting.Api.Features.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.Accounts.Events;
+using Ubik.Accounting.Api.Features.Accounts.Exceptions;
+using Ubik.Accounting.Contracts.Accounts.Queries;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 {
@@ -95,62 +97,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             sent.Should().Be(true);
         }
-
-        //[Fact]
-        //public async Task Upd_AccountAlreadyExistsException_AccountCodeAlreadyExistsWithDifferentId()
-        //{
-        //    //Arrange
-        //    _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(true);
-        //    var client = _harness.GetRequestClient<UpdateAccountCommand>();
-
-        //    //Act
-        //    var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureException>(_command);
-        //    var response = await error;
-
-        //    //Assert
-        //    response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-        //    response.Message.Should().Match<IServiceAndFeatureException>(e => 
-        //        e.ErrorType == ServiceAndFeatureExceptionType.Conflict
-        //        && e.CustomErrors[0].ErrorCode == "ACCOUNT_ALREADY_EXISTS");
-        //}
-
-        //[Fact]
-        //public async Task Upd_AccountNotFoundException_AccountIdNotFound()
-        //{
-        //    //Arrange
-        //    _serviceManager.AccountService.GetAsync(_command.Id).Returns(new ResultT<Account> 
-        //    { IsSuccess=false,Exception=new AccountNotFoundException(_command.Id)});
-
-        //    var client = _harness.GetRequestClient<UpdateAccountCommand>();
-
-        //    //Act
-        //    var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureException>(_command);
-        //    var response = await error;
-
-        //    //Assert
-        //    response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-        //    response.Message.Should().Match<IServiceAndFeatureException>(e =>
-        //        e.ErrorType == ServiceAndFeatureExceptionType.NotFound
-        //        && e.CustomErrors[0].ErrorCode == "ACCOUNT_NOT_FOUND");
-        //}
-
-        //[Fact]
-        //public async Task Upd_AccountCurrencyNotFoundException_CurrencyIdNotFound()
-        //{
-        //    //Arrange
-        //    _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(false);
-        //    var client = _harness.GetRequestClient<UpdateAccountCommand>();
-
-        //    //Act
-        //    var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureException>(_command);
-        //    var response = await error;
-
-        //    //Assert
-        //    response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-        //    response.Message.Should().Match<IServiceAndFeatureException>(e =>
-        //        e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-        //        && e.CustomErrors[0].ErrorCode == "ACCOUNT_CURRENCY_NOT_FOUND");
-        //}
 
         public async Task DisposeAsync()
         {

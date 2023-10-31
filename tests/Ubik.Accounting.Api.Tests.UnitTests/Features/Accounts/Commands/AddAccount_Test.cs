@@ -94,44 +94,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             sent.Should().Be(true);
         }
 
-        //[Fact]
-        //public async Task Add_AccountAlreadyExistsException_AccountCodeAlreadyExists()
-        //{
-        //    //Arrange
-        //    _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(true);
-        //    var client = _harness.GetRequestClient<AddAccountCommand>();
-
-        //    //Act
-        //    var (result, error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureException>(_command);
-        //    var response = await error;
-
-        //    //Assert
-        //    response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-        //    response.Message.Should().Match<IServiceAndFeatureException>(e => 
-        //        e.ErrorType == ServiceAndFeatureExceptionType.Conflict
-        //        && e.CustomErrors[0].ErrorCode == "ACCOUNT_ALREADY_EXISTS");
-        //}
-
-
-        //[Fact]
-        //public async Task Add_AccountCurrencyNotFoundException_CurrencyIdNotFound()
-        //{
-        //    //Arrange
-        //    _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(false);
-        //    var client = _harness.GetRequestClient<AddAccountCommand>();
-
-        //    //Act
-        //    var (result, error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureException>(_command);
-        //    var response = await error;
-
-        //    //Assert
-        //    response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-        //    response.Message.Should().Match<IServiceAndFeatureException>(e => 
-        //        e.ErrorType == ServiceAndFeatureExceptionType.BadParams
-        //        && e.CustomErrors[0].ErrorCode == "ACCOUNT_CURRENCY_NOT_FOUND");
-        //}
-
-
         public async Task DisposeAsync()
         {
             await _harness.Stop();
