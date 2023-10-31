@@ -1,12 +1,13 @@
 ﻿using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups
 {
     public interface IAccountGroupService
     {
         public Task<IEnumerable<AccountGroup>> GetAllAsync();
-        public Task<AccountGroup?> GetAsync(Guid id);
-        public Task<AccountGroup?> GetWithChildAccountsAsync(Guid id);
+        public Task<ResultT<AccountGroup>> GetAsync(Guid id);
+        public Task<ResultT<AccountGroup>> GetWithChildAccountsAsync(Guid id);
         public Task<bool> IfExistsAsync(string accountGroupCode, Guid accountGroupClassificationId);
         public Task<bool> IfExistsAsync(Guid accountGroupId);
         public Task<bool> IfExistsWithDifferentIdAsync(string accountGroupCode,
@@ -14,8 +15,8 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
 
         public Task<bool> HasAnyChildAccountGroups(Guid Id);
         public Task<bool> HasAnyChildAccounts(Guid Id);
-        public Task<AccountGroup> AddAsync(AccountGroup accountGroup);
-        public AccountGroup Update(AccountGroup accountGroup);
-        public Task<bool> ExecuteDeleteAsync(Guid id);
+        public Task<ResultT<AccountGroup>> AddAsync(AccountGroup accountGroup);
+        public Task<ResultT<AccountGroup>> UpdateAsync(AccountGroup accountGroup);
+        public Task<ResultT<bool>> ExecuteDeleteAsync(Guid id);
     }
 }

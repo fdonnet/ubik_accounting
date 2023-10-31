@@ -54,7 +54,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 return new ResultT<Account>() { IsSuccess = false, Exception = new AccountCurrencyNotFoundException(account.CurrencyId) };
 
             account.Id = NewId.NextGuid();
-
             await _context.Accounts.AddAsync(account);
             _context.SetAuditAndSpecialFields();
 

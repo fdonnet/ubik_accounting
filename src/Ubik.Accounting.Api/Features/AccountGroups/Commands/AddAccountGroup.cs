@@ -1,73 +1,38 @@
-﻿using MediatR;
+﻿using MassTransit;
+using MediatR;
 using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 {
-    public class AddAccountGroup
+
+    public class AddAccountGroupConsumer : IConsumer<AddAccountGroupCommand>
     {
+        private readonly IServiceManager _serviceManager;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        //Input
-        public record AddAccountGroupCommand : IRequest<AddAccountGroupResult>
+        public AddAccountGroupConsumer(IServiceManager serviceManager, IPublishEndpoint publishEndpoint)
         {
-            [Required]
-            [MaxLength(20)]
-            public string Code { get; set; } = default!;
-            [Required]
-            [MaxLength(100)]
-            public string Label { get; set; } = default!;
-            [MaxLength(700)]
-            public string? Description { get; set; }
-            public Guid? ParentAccountGroupId { get; set; }
-            [Required]
-            public Guid AccountGroupClassificationId { get; set; }
+            _serviceManager = serviceManager;
+            _publishEndpoint = publishEndpoint;
         }
-
-        //Output
-        public record AddAccountGroupResult
+        public async Task Consume(ConsumeContext<AddAccountGroupCommand> context)
         {
-            public Guid Id { get; set; }
-            public string Code { get; set; } = default!;
-            public string Label { get; set; } = default!;
-            public string? Description { get; set; }
-            public Guid? ParentAccountGroupId { get; set; }
-            public Guid AccountGroupClassificationId { get; set; }
-            public Guid Version { get; set; }
-        }
+            var account = context.Message.ToAccountGroup();
 
-        public class AddAccountGroupHandler : IRequestHandler<AddAccountGroupCommand, AddAccountGroupResult>
-        {
-            private readonly IServiceManager _serviceManager;
-            public AddAccountGroupHandler(IServiceManager serviceManager)
+            var result = await _serviceManager.AccountGroupService.AddAsync(account);
+
+            if (result.IsSuccess)
             {
-                _serviceManager = serviceManager;
+                //Store and publish AccountGroupAdded event
+                await _publishEndpoint.Publish(result.Result.ToAccountGroupAdded(), CancellationToken.None);
+                await _serviceManager.SaveAsync();
+                await context.RespondAsync(result.Result.ToAddAccountGroupResult());
             }
-
-            public async Task<AddAccountGroupResult> Handle(AddAccountGroupCommand request, CancellationToken cancellationToken)
-            {
-                var accountGroup = request.ToAccountGroup();
-
-                var accountGroupExists = await _serviceManager.AccountGroupService
-                    .IfExistsAsync(accountGroup.Code, accountGroup.AccountGroupClassificationId);
-
-                if (accountGroupExists)
-                    throw new AccountGroupAlreadyExistsException(request.Code,request.AccountGroupClassificationId);
-                
-                //Check if parent account group exists
-                if(accountGroup.ParentAccountGroupId != null)
-                {
-                    var parentAccountExists = await _serviceManager.AccountGroupService
-                        .IfExistsAsync((Guid)accountGroup.ParentAccountGroupId);
-
-                    if (!parentAccountExists)
-                        throw new AccountGroupParentNotFoundException((Guid)accountGroup.ParentAccountGroupId);
-                }
-
-                await _serviceManager.AccountGroupService.AddAsync(accountGroup);
-
-                return accountGroup.ToAddAccountGroupResult();
-            }
+            else
+                await context.RespondAsync(result.Exception);
         }
     }
 }
