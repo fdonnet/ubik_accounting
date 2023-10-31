@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Bogus.DataSets;
 using Bogus.Extensions;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Models;
@@ -45,29 +46,35 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                  }).Generate(numTests);
         }
 
-        public static IEnumerable<AddAccountGroupCommand> GenerateAddAccountGroups(int numTests)
+        public static IEnumerable<AddAccountGroupCommand> GenerateAddAccountGroups(int numTests, 
+            string? code = null, string? label = null, Guid accountGroupClassificationId = default,
+            string? description = null)
         {
             var testData = new BaseValuesForAccountGroupClassifications();
             return new Faker<AddAccountGroupCommand>("fr_CH")
                  .CustomInstantiator(a => new AddAccountGroupCommand()
                  {
-                     Code = a.Finance.Account().ToString(),
-                     Label = a.Finance.AccountName().ClampLength(1, 100),
-                     Description = a.Lorem.Paragraphs().ClampLength(1, 700),
-                     AccountGroupClassificationId = testData.AccountGroupClassificationId1
+                     Code = code ?? a.Finance.Account().ToString(),
+                     Label = label ?? a.Finance.AccountName().ClampLength(1, 100),
+                     Description = description ?? a.Lorem.Paragraphs().ClampLength(1, 700),
+                     AccountGroupClassificationId = accountGroupClassificationId != default ? accountGroupClassificationId : testData.AccountGroupClassificationId1                     
                  }).Generate(numTests);
         }
 
-        public static IEnumerable<UpdateAccountGroupCommand> GenerateUpdAccountGroups(int numTests)
+        public static IEnumerable<UpdateAccountGroupCommand> GenerateUpdAccountGroups(int numTests,
+            string? code = null, string? label = null, Guid accountGroupClassificationId = default,
+            string? description = null, Guid version = default, Guid id = default)
         {
             var testData = new BaseValuesForAccountGroupClassifications();
             return new Faker<UpdateAccountGroupCommand>("fr_CH")
                  .CustomInstantiator(a => new UpdateAccountGroupCommand()
                  {
-                     Code = a.Finance.Account().ToString(),
-                     Label = a.Finance.AccountName().ClampLength(1, 100),
-                     Description = a.Lorem.Paragraphs().ClampLength(1, 700),
-                     AccountGroupClassificationId = testData.AccountGroupClassificationId1
+                     Id = id != default ? id : default,
+                     Code = code ?? a.Finance.Account().ToString(),
+                     Label = label ?? a.Finance.AccountName().ClampLength(1, 100),
+                     Description = description ?? a.Lorem.Paragraphs().ClampLength(1, 700),
+                     AccountGroupClassificationId = accountGroupClassificationId != default ? accountGroupClassificationId : testData.AccountGroupClassificationId1,
+                     Version = version != default ? version : default
                  }).Generate(numTests);
         }
 

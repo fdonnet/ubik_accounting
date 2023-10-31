@@ -20,12 +20,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
     [Route("api/v{version:apiVersion}/[controller]")]
     public class AccountsController : ControllerBase
     {
-        private readonly IMediator _mediator;
         private readonly IServiceManager _serviceManager;
 
-        public AccountsController(IMediator mediator, IServiceManager serviceManager)
+        public AccountsController(IServiceManager serviceManager)
         {
-            _mediator = mediator;
             _serviceManager = serviceManager;
         }
 

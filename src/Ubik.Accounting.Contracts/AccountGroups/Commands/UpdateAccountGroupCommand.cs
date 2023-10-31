@@ -6,8 +6,7 @@ namespace Ubik.Accounting.Contracts.AccountGroups.Commands
     public record UpdateAccountGroupCommand
     {
         [Required]
-        [JsonIgnore]
-        public Guid Id { get; set; }
+       public Guid Id { get; set; }
         [Required]
         [MaxLength(20)]
         public string Code { get; init; } = default!;

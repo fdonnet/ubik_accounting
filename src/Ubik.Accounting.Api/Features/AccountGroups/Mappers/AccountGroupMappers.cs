@@ -68,12 +68,13 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
         {
             return new AccountGroup()
             {
-                Id = NewId.NextGuid(),
+                Id = updAccountGroupCommand.Id,
                 Code = updAccountGroupCommand.Code,
                 Label = updAccountGroupCommand.Label,
                 Description = updAccountGroupCommand.Description,
                 ParentAccountGroupId = updAccountGroupCommand.ParentAccountGroupId,
                 AccountGroupClassificationId = updAccountGroupCommand.AccountGroupClassificationId,
+                Version = updAccountGroupCommand.Version
             };
         }
 

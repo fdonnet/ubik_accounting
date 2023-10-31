@@ -159,7 +159,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
 
             toUpdate = accountGroup.ToAccountGroup(toUpdate);
 
-            _context.Entry(accountGroup).State = EntityState.Modified;
+            _context.Entry(toUpdate).State = EntityState.Modified;
             _context.SetAuditAndSpecialFields();
 
             return new ResultT<AccountGroup> { IsSuccess = true, Result = toUpdate };
