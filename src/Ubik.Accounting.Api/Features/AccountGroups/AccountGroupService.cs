@@ -46,6 +46,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             return new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
         }
 
+        //TODO: see if we want to manage account child group deletion on cascade
         public async Task<ResultT<bool>> ExecuteDeleteAsync(Guid id)
         {
             var accountGrp = await GetAsync(id);

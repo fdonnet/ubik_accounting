@@ -1,6 +1,7 @@
 ﻿using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using MassTransit;
 using Ubik.Accounting.Contracts.AccountGroups.Queries;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
 {
@@ -21,7 +22,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
             var result = await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(context.Message.AccountGroupId);
 
             if (result.IsSuccess)
-                await context.RespondAsync(result.Result.Accounts!.ToGetChildAccountsResult());
+                await context.RespondAsync<IGetChildAccountsResults>(new { ChildAccounts = result.Result.Accounts!.ToGetChildAccountsResult()});
             else
                 await context.RespondAsync(result.Exception);
         }

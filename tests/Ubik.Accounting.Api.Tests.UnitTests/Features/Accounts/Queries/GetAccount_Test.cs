@@ -54,7 +54,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         [Fact]
         public async Task Get_Account_Ok()
         {
-
             //Arrange
             var client = _harness.GetRequestClient<GetAccountQuery>();
             var consumerHarness = _harness.GetConsumerHarness<GetAccountConsumer>();
@@ -74,25 +73,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
                 .BeOfType<GetAccountResult>()
                 .And.Match<GetAccountResult>(a => a.Code == _account.Code);
         }
-
-        //[Fact]
-        //public async Task Get_AccountNotFoundException_AccountIdNotFound()
-        //{
-        //    //Arrange
-        //    var result = new ResultT<Account> { IsSuccess = false, Exception= new AccountNotFoundException(_account.Id) };
-        //    _serviceManager.AccountService.GetAsync(_query.Id).Returns(_result);
-        //    var client = _harness.GetRequestClient<AddAccountCommand>();
-
-        //    //Act
-        //    var (res, error) = await client.GetResponse<GetAccountResult, IServiceAndFeatureException>(_query);
-        //    var response = await error;
-
-        //    //Assert
-        //    response.Message.Should().BeAssignableTo<IServiceAndFeatureException>();
-        //    response.Message.Should().Match<IServiceAndFeatureException>(e =>
-        //        e.ErrorType == ServiceAndFeatureExceptionType.Conflict
-        //        && e.CustomErrors[0].ErrorCode == "ACCOUNT_ALREADY_EXISTS");
-        //}
 
         public async Task DisposeAsync()
         {

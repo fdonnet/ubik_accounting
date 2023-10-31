@@ -4,7 +4,7 @@ namespace Ubik.Accounting.Contracts.AccountGroups.Results
 {
     public interface IGetAllAccountGroupsResult
     {
-        GetAllAccountsResult[] AccountGroups { get; }
+        GetAllAccountGroupsResult[] AccountGroups { get; }
     }
 }
 
