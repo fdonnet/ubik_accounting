@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MassTransit;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +28,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Fake
                 Email = "fake@fake.com",
                 Name = "fake",
                 TenantIds = new Guid[] { Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d") },
-                Id = Guid.NewGuid()
+                Id = NewId.NextGuid()
             };
 
             return _currentUser;

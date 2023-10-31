@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using MassTransit;
+using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Events;
 using Ubik.Accounting.Contracts.Accounts.Results;
@@ -71,7 +72,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
         {
             return new Account()
             {
-                Id = Guid.NewGuid(),
+                Id = NewId.NextGuid(),
                 Code = addAccountCommand.Code,
                 Label = addAccountCommand.Label,
                 Category = addAccountCommand.Category,

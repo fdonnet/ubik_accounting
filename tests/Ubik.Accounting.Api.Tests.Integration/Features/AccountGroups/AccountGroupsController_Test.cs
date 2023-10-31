@@ -14,6 +14,7 @@ using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetChildAccounts;
 using Ubik.Accounting.Contracts.Accounts.Results;
+using MassTransit;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 {
@@ -500,7 +501,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId2}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
 
-            fake.Id = Guid.NewGuid();
+            fake.Id = NewId.NextGuid();
             fake.Version = resultGet!.Version;
 
             var postAccountJson = JsonSerializer.Serialize(fake);

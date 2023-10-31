@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using MassTransit;
+using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Api.Data.Init
@@ -31,7 +32,7 @@ namespace Ubik.Accounting.Api.Data.Init
                         ModifiedBy= baseValuesForUsers.UserId1,
                         ModifiedAt = baseValuesGeneral.GenerationTime,
                         TenantId= baseValuesForTenants.TenantId,
-                        Version = Guid.NewGuid()
+                        Version = NewId.NextGuid()
                     },
                     new Account
                     {
@@ -47,7 +48,7 @@ namespace Ubik.Accounting.Api.Data.Init
                         ModifiedBy= baseValuesForUsers.UserId1,
                         ModifiedAt = baseValuesGeneral.GenerationTime,
                         TenantId= baseValuesForTenants.TenantId,
-                        Version = Guid.NewGuid()
+                        Version = NewId.NextGuid()
                     },
 
                     new Account
@@ -64,7 +65,7 @@ namespace Ubik.Accounting.Api.Data.Init
                         ModifiedBy= baseValuesForUsers.UserId1,
                         ModifiedAt = baseValuesGeneral.GenerationTime,
                         TenantId= baseValuesForTenants.TenantId,
-                        Version = Guid.NewGuid()
+                        Version = NewId.NextGuid()
                     }
                 };
 

@@ -4,7 +4,7 @@
     //{
     //    internal static void Load(AccountingContext context)
     //    {
-    //        var userId2 = Guid.NewGuid();
+    //        var userId2 = NewId.NextGuid();
 
     //        if (!context.Users.Any())
     //        {

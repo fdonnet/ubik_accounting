@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using MassTransit;
+using Ubik.Accounting.Api.Models;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
 using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAccountGroup;
@@ -56,7 +57,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
         {
             return new AccountGroup()
             {
-                Id = Guid.NewGuid(),
+                Id = NewId.NextGuid(),
                 Code = addAccountGroupCommand.Code,
                 Label = addAccountGroupCommand.Label,
                 Description = addAccountGroupCommand.Description,

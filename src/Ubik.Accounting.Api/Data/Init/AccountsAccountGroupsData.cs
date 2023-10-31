@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using MassTransit;
+using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Data.Init
 {
@@ -18,38 +19,38 @@ namespace Ubik.Accounting.Api.Data.Init
                 {
                 new AccountAccountGroup
                 {
-                    Id = Guid.NewGuid(),
+                    Id = NewId.NextGuid(),
                     AccountGroupId = baseValuesForAccountGroups.AccountGroupId1,
                     AccountId= baseValuesForAccounts.AccountId1,
                     CreatedBy = baseValuesForUsers.UserId1,
                     CreatedAt = baseValuesGeneral.GenerationTime,
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    Version = Guid.NewGuid(),
+                    Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                 },
                 new AccountAccountGroup
                 {
-                    Id = Guid.NewGuid(),
+                    Id = NewId.NextGuid(),
                     AccountGroupId = baseValuesForAccountGroups.AccountGroupId1,
                     AccountId= baseValuesForAccounts.AccountId2,
                     CreatedBy = baseValuesForUsers.UserId1,
                     CreatedAt = baseValuesGeneral.GenerationTime,
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    Version = Guid.NewGuid(),
+                    Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                 },
                                 new AccountAccountGroup
                 {
-                    Id = Guid.NewGuid(),
+                    Id = NewId.NextGuid(),
                     AccountGroupId = baseValuesForAccountGroups.AccountGroupId2,
                     AccountId= baseValuesForAccounts.AccountId1,
                     CreatedBy = baseValuesForUsers.UserId1,
                     CreatedAt = baseValuesGeneral.GenerationTime,
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    Version = Guid.NewGuid(),
+                    Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                 }
             };

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Models;
 
@@ -14,6 +15,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
         }
         public async Task<AccountGroup> AddAsync(AccountGroup accountGroup)
         {
+            accountGroup.Id = NewId.NextGuid();
             await _context.AccountGroups.AddAsync(accountGroup);
             _context.SetAuditAndSpecialFields();
 

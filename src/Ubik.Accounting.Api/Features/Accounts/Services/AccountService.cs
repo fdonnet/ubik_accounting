@@ -1,4 +1,5 @@
 ﻿using LanguageExt;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
@@ -51,6 +52,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             var curExists = await IfExistsCurrencyAsync(account.CurrencyId);
             if (!curExists)
                 return new ResultT<Account>() { IsSuccess = false, Exception = new AccountCurrencyNotFoundException(account.CurrencyId) };
+
+            account.Id = NewId.NextGuid();
 
             await _context.Accounts.AddAsync(account);
             _context.SetAuditAndSpecialFields();
