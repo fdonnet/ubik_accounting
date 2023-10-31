@@ -4,8 +4,6 @@ using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.DB.Enums;
-using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
-using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
 
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features

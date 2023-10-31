@@ -1,37 +1,29 @@
-﻿using MediatR;
+﻿using MassTransit;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
+using Ubik.Accounting.Contracts.AccountGroups.Queries;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
 {
-    public class GetAllAccountGroups
+    /// <summary>
+    /// This consumer is only used when called from other microservice
+    /// The api clien will call service manager directly
+    /// </summary>
+    public class GetAllAccountGroupsConsumer : IConsumer<GetAllAccountGroupsQuery>
     {
-        public record GetAllAccountGroupsQuery : IRequest<IEnumerable<GetAllAccountGroupsResult>> { }
+        private readonly IServiceManager _serviceManager;
 
-        public record GetAllAccountGroupsResult
+        public GetAllAccountGroupsConsumer(IServiceManager serviceManager)
         {
-            public Guid Id { get; set; }
-            public required string Code { get; set; }
-            public required string Label { get; set; }
-            public string? Description { get; set; }
-            public Guid? ParentAccountGroupId { get; set; }
-            public Guid AccountGroupClassificationId { get; set; }
-            public Guid Version { get; set; }
+            _serviceManager = serviceManager;
         }
-
-        public class GetAllAccountGroupsHandler : IRequestHandler<GetAllAccountGroupsQuery, IEnumerable<GetAllAccountGroupsResult>>
+        public async Task Consume(ConsumeContext<GetAllAccountGroupsQuery> context)
         {
-            private readonly IServiceManager _serviceManager;
-
-            public GetAllAccountGroupsHandler(IServiceManager serviceManager)
+            var res = await _serviceManager.AccountGroupService.GetAllAsync();
+            await context.RespondAsync<IGetAllAccountGroupsResult>(new
             {
-                _serviceManager = serviceManager;
-            }
-
-            public async Task<IEnumerable<GetAllAccountGroupsResult>> Handle(GetAllAccountGroupsQuery request, CancellationToken cancellationToken)
-            {
-                var accountGroups = await _serviceManager.AccountGroupService.GetAllAsync();
-                return accountGroups.ToGetAllAccountGroupsResult();
-            }
+                AccountGroups = res.ToGetAllAccountGroupsResult()
+            });
         }
     }
 }

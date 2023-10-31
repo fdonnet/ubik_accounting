@@ -1,49 +1,33 @@
-﻿using MediatR;
-using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
+﻿using MassTransit;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Contracts.AccountGroups.Events;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 {
-    public class DeleteAccountGroup
+    public class DeleteAccountGroupConsumer : IConsumer<DeleteAccountGroupCommand>
     {
-        //Input
-        public record DeleteAccountGroupCommand : IRequest<bool>
+        private readonly IServiceManager _serviceManager;
+        private readonly IPublishEndpoint _publishEndpoint;
+
+        public DeleteAccountGroupConsumer(IServiceManager serviceManager, IPublishEndpoint publishEndpoint)
         {
-            [Required]
-            public Guid Id { get; set; }
+            _serviceManager = serviceManager;
+            _publishEndpoint = publishEndpoint;
         }
 
-        public class DeleteAccountGroupHandler : IRequestHandler<DeleteAccountGroupCommand, bool>
+        public async Task Consume(ConsumeContext<DeleteAccountGroupCommand> context)
         {
-            private readonly IServiceManager _serviceManager;
+            var res = await _serviceManager.AccountGroupService.ExecuteDeleteAsync(context.Message.Id);
 
-            public DeleteAccountGroupHandler(IServiceManager serviceManager)
+            if (res.IsSuccess)
             {
-                _serviceManager = serviceManager;
+                await _publishEndpoint.Publish(new AccountGroupDeleted { Id = context.Message.Id }, CancellationToken.None);
+                await _serviceManager.SaveAsync();
+                await context.RespondAsync<DeleteAccountGroupResult>(new { Deleted = true });
             }
-
-            public async Task<bool> Handle(DeleteAccountGroupCommand request, CancellationToken cancellationToken)
-            {
-                //Check if the accountGroup is found
-                var accountGroup = await _serviceManager.AccountGroupService.GetAsync(request.Id) 
-                    ?? throw new AccountGroupNotFoundException(request.Id);
-
-                //Has child account groups ?
-                var hasChildAccountGroups = await _serviceManager.AccountGroupService.HasAnyChildAccountGroups(request.Id);
-                if (hasChildAccountGroups)
-                    throw new AccountGroupHasChildAccountGroupsException(request.Id);
-
-
-                //TODO: Has child accounts ?
-                //var hasChildAccounts = await _serviceManager.AccountGroupService.HasAnyChildAccounts(request.Id);
-                //if (hasChildAccounts)
-                //    throw new AccountGroupHasChildAccountsException(request.Id);
-
-
-                await _serviceManager.AccountGroupService.ExecuteDeleteAsync(accountGroup.Id);
-
-                return true;
-            }
+            else
+                await context.RespondAsync(res.Exception);
         }
     }
 }

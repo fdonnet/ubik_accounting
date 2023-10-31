@@ -4,16 +4,11 @@ using MassTransit;
 using Ubik.Accounting.Contracts.Accounts.Queries;
 using Microsoft.Extensions.DependencyInjection;
 using FluentAssertions;
-using Ubik.Accounting.Contracts.Accounts.Commands;
-using System.Diagnostics;
 using MassTransit.Testing;
-using Ubik.Accounting.Api.Features.Accounts.Commands;
-using Ubik.Accounting.Api.Features;
 using Ubik.ApiService.Common.Filters;
 using Ubik.ApiService.Common.Services;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
 using Ubik.ApiService.Common.Exceptions;
-using LanguageExt.Pipes;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {

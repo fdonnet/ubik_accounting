@@ -1,9 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Ubik.Accounting.Contracts.AccountGroups.Commands
 {
-    public record AddAccountGroupCommand
+    public record UpdateAccountGroupCommand
     {
+        [Required]
+        [JsonIgnore]
+        public Guid Id { get; set; }
         [Required]
         [MaxLength(20)]
         public string Code { get; init; } = default!;
@@ -15,5 +19,7 @@ namespace Ubik.Accounting.Contracts.AccountGroups.Commands
         public Guid? ParentAccountGroupId { get; init; }
         [Required]
         public Guid AccountGroupClassificationId { get; init; }
+        [Required]
+        public Guid Version { get; init; }
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace Ubik.Accounting.Contracts.AccountGroups.Events
+﻿namespace Ubik.Accounting.Contracts.AccountGroups.Results
 {
-    public record AccountGroupUpdated
+    public record UpdateAccountGroupResult
     {
         public Guid Id { get; init; }
         public string Code { get; init; } = default!;

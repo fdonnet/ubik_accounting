@@ -13,9 +13,9 @@ using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Filters;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
 
 namespace Ubik.Accounting.Api
 {
@@ -43,9 +43,6 @@ namespace Ubik.Accounting.Api
             //DB
             builder.Services.AddDbContextFactory<AccountingContext>(
                  options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
-
-            //MediatR + remove standard model validations
-            builder.Services.AddMediatRAndValidation(Assembly.GetExecutingAssembly());
 
             //MessageBroker with masstransit + outbox
             builder.Services.AddMassTransit(config =>
@@ -80,6 +77,10 @@ namespace Ubik.Accounting.Api
                 config.AddRequestClient<AddAccountCommand>();
                 config.AddRequestClient<DeleteAccountCommand>();
                 config.AddRequestClient<UpdateAccountCommand>();
+
+                config.AddRequestClient<AddAccountGroupCommand>();
+                config.AddRequestClient<DeleteAccountGroupCommand>();
+                config.AddRequestClient<UpdateAccountGroupCommand>();
             });
 
 

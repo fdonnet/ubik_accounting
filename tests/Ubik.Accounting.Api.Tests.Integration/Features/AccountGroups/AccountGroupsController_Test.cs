@@ -5,14 +5,9 @@ using System.Net;
 using System.Text;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Tests.Integration.Auth;
-using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAllAccountGroups;
 using Bogus;
 using Ubik.ApiService.Common.Exceptions;
-using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAccountGroup;
 using System.Text.Json;
-using static Ubik.Accounting.Api.Features.AccountGroups.Commands.AddAccountGroup;
-using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
-using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetChildAccounts;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using MassTransit;
 

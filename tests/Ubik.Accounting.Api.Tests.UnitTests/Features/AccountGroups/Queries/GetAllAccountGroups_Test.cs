@@ -3,7 +3,6 @@ using NSubstitute;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using Ubik.Accounting.Api.Models;
-using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAllAccountGroups;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
 {

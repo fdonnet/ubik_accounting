@@ -1,10 +1,10 @@
-﻿namespace Ubik.Accounting.Contracts.AccountGroups.Events
+﻿namespace Ubik.Accounting.Contracts.AccountGroups.Results
 {
-    public record AccountGroupUpdated
+    public record GetAllAccountGroupsResult
     {
         public Guid Id { get; init; }
-        public string Code { get; init; } = default!;
-        public string Label { get; init; } = default!;
+        public required string Code { get; init; }
+        public required string Label { get; init; }
         public string? Description { get; init; }
         public Guid? ParentAccountGroupId { get; init; }
         public Guid AccountGroupClassificationId { get; init; }

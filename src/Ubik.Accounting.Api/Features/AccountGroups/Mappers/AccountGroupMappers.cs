@@ -3,11 +3,6 @@ using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Events;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.Accounting.Contracts.Accounts.Events;
-using static Ubik.Accounting.Api.Features.AccountGroups.Commands.UpdateAccountGroup;
-using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAccountGroup;
-using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAllAccountGroups;
-using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetChildAccounts;
 
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
@@ -66,6 +61,19 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Description = addAccountGroupCommand.Description,
                 ParentAccountGroupId = addAccountGroupCommand.ParentAccountGroupId,
                 AccountGroupClassificationId = addAccountGroupCommand.AccountGroupClassificationId,
+            };
+        }
+
+        public static AccountGroup ToAccountGroup(this UpdateAccountGroupCommand updAccountGroupCommand)
+        {
+            return new AccountGroup()
+            {
+                Id = NewId.NextGuid(),
+                Code = updAccountGroupCommand.Code,
+                Label = updAccountGroupCommand.Label,
+                Description = updAccountGroupCommand.Description,
+                ParentAccountGroupId = updAccountGroupCommand.ParentAccountGroupId,
+                AccountGroupClassificationId = updAccountGroupCommand.AccountGroupClassificationId,
             };
         }
 

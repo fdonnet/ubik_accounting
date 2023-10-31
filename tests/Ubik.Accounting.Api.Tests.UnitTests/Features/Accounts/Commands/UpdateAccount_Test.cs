@@ -11,8 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Ubik.Accounting.Api.Features.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.Accounts.Events;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
-using Ubik.Accounting.Contracts.Accounts.Queries;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 {

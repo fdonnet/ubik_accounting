@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 
@@ -90,9 +89,12 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
                                     .Include(a => a.Accounts)
                                     .FirstOrDefaultAsync(g => g.Id == id);
 
-            return accountGroup == null
-                ? new ResultT<AccountGroup>() { IsSuccess = false, Exception = new AccountGroupNotFoundException(id) }
-                : new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
+            if (accountGroup is null)
+                return new ResultT<AccountGroup>() { IsSuccess = false, Exception = new AccountGroupNotFoundException(id) };
+
+            accountGroup.Accounts ??= new List<Account>();
+
+            return new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
         }
 
         public async Task<bool> IfExistsAsync(string accountGroupCode, Guid accountGroupClassificationId)
