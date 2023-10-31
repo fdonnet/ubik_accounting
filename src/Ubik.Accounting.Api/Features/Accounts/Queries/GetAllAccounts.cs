@@ -20,7 +20,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
         public async Task Consume(ConsumeContext<GetAllAccountsQuery> context)
         {
             var accounts = await _serviceManager.AccountService.GetAllAsync();
-            await context.RespondAsync<IGetAllAccountsResult>(new
+            await context.RespondAsync<GetAllAccountsResults>(new
             {
                 Accounts = accounts.ToGetAllAccountResult()
             });

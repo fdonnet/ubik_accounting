@@ -54,10 +54,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
             var consumerHarness = _harness.GetConsumerHarness<GetAllAccountGroupsConsumer>();
 
             //Act
-            var response = await client.GetResponse<IGetAllAccountGroupsResult>(new { });
+            var response = await client.GetResponse<GetAllAccountGroupsResults>(new { });
 
             //Assert
-            var sent = await _harness.Sent.Any<IGetAllAccountGroupsResult>();
+            var sent = await _harness.Sent.Any<GetAllAccountGroupsResults>();
             var consumed = await _harness.Consumed.Any<GetAllAccountGroupsQuery>();
             var consumerConsumed = await consumerHarness.Consumed.Any<GetAllAccountGroupsQuery>();
 

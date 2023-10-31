@@ -58,12 +58,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var client = _harness.GetRequestClient<GetAllAccountsQuery>();
 
             //Act
-            var result= await client.GetResponse<IGetAllAccountsResult>(new { });
+            var result= await client.GetResponse<GetAllAccountsResults>(new { });
 
             //Assert
             result.Message.Should()
-                .BeAssignableTo<IGetAllAccountsResult>()
-                .And.Match<IGetAllAccountsResult>(a => a.Accounts[0] is GetAllAccountsResult);
+                .BeAssignableTo<GetAllAccountsResults>()
+                .And.Match<GetAllAccountsResults>(a => a.Accounts[0] is GetAllAccountsResult);
         }
 
 

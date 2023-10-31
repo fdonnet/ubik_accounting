@@ -22,7 +22,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
             var result = await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(context.Message.AccountGroupId);
 
             if (result.IsSuccess)
-                await context.RespondAsync<IGetChildAccountsResults>(new { ChildAccounts = result.Result.Accounts!.ToGetChildAccountsResult()});
+                await context.RespondAsync<GetChildAccountsResults>(new { ChildAccounts = result.Result.Accounts!.ToGetChildAccountsResult()});
             else
                 await context.RespondAsync(result.Exception);
         }

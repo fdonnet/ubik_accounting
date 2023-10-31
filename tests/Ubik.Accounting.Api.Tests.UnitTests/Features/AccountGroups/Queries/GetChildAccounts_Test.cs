@@ -74,10 +74,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
             var consumerHarness = _harness.GetConsumerHarness<GetChildAccountsConsumer>();
 
             //Act
-            var response = await client.GetResponse<IGetChildAccountsResults>(_query);
+            var response = await client.GetResponse<GetChildAccountsResults>(_query);
 
             //Assert
-            var sent = await _harness.Sent.Any<IGetChildAccountsResults>();
+            var sent = await _harness.Sent.Any<GetChildAccountsResults>();
             var consumed = await _harness.Consumed.Any<GetChildAccountsQuery>();
             var consumerConsumed = await consumerHarness.Consumed.Any<GetChildAccountsQuery>();
 
@@ -85,7 +85,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
             response.Message.Should()
-                .BeAssignableTo<IGetChildAccountsResults>();
+                .BeAssignableTo<GetChildAccountsResults>();
         }
 
         public async Task DisposeAsync()

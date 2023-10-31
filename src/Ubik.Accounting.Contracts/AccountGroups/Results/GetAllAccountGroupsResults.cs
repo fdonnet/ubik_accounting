@@ -2,9 +2,9 @@
 
 namespace Ubik.Accounting.Contracts.AccountGroups.Results
 {
-    public interface IGetAllAccountGroupsResult
+    public record GetAllAccountGroupsResults
     {
-        GetAllAccountGroupsResult[] AccountGroups { get; }
+        public GetAllAccountGroupsResult[] AccountGroups { get; init; } = default!;
     }
 }
 

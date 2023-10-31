@@ -20,7 +20,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
         public async Task Consume(ConsumeContext<GetAllAccountGroupsQuery> context)
         {
             var res = await _serviceManager.AccountGroupService.GetAllAsync();
-            await context.RespondAsync<IGetAllAccountGroupsResult>(new
+            await context.RespondAsync<GetAllAccountGroupsResults>(new
             {
                 AccountGroups = res.ToGetAllAccountGroupsResult()
             });

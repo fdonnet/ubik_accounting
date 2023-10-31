@@ -47,10 +47,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             var consumerHarness = _harness.GetConsumerHarness<GetAllAccountsConsumer>();
 
             //Act
-            var response = await client.GetResponse<IGetAllAccountsResult>(new { });
+            var response = await client.GetResponse<GetAllAccountsResults>(new { });
 
             //Assert
-            var sent = await _harness.Sent.Any<IGetAllAccountsResult>();
+            var sent = await _harness.Sent.Any<GetAllAccountsResults>();
             var consumed = await _harness.Consumed.Any<GetAllAccountsQuery>();
             var consumerConsumed = await consumerHarness.Consumed.Any<GetAllAccountsQuery>();
 

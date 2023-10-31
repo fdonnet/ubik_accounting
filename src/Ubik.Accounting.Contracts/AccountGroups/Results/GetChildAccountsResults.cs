@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Ubik.Accounting.Contracts.AccountGroups.Results
 {
-    public interface IGetChildAccountsResults
+    public record GetChildAccountsResults
     {
-        GetChildAccountsResult[] ChildAccounts { get; }
+        public GetChildAccountsResult[] ChildAccounts { get; init; } = default!;
     }
 }
