@@ -1,39 +1,29 @@
-﻿using MediatR;
+﻿using MassTransit;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
-using Ubik.ApiService.DB.Enums;
+using Ubik.Accounting.Contracts.Accounts.Queries;
+using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Queries
 {
-    public class GetAllAccounts
+    /// <summary>
+    /// This consumer is only used when called from other microservice
+    /// The api clien will call service manager directly
+    /// </summary>
+    public class GetAllAccountsConsumer : IConsumer<GetAllAccountsQuery>
     {
-        public record GetAllAccountsQuery : IRequest<IEnumerable<GetAllAccountsResult>> { }
+        private readonly IServiceManager _serviceManager;
 
-        public record GetAllAccountsResult
+        public GetAllAccountsConsumer(IServiceManager serviceManager)
         {
-            public Guid Id { get; set; }
-            public required string Code { get; set; }
-            public required string Label { get; set; }
-            public AccountCategory Category { get; set; }
-            public AccountDomain Domain { get; set; }
-            public string? Description { get; set; }
-            public Guid CurrencyId { get; set; }
-            public Guid Version { get; set; }
+            _serviceManager = serviceManager;
         }
-
-        public class GetAllAccountsHandler : IRequestHandler<GetAllAccountsQuery, IEnumerable<GetAllAccountsResult>>
+        public async Task Consume(ConsumeContext<GetAllAccountsQuery> context)
         {
-            private readonly IServiceManager _serviceManager;
-
-            public GetAllAccountsHandler(IServiceManager serviceManager)
+            var accounts = await _serviceManager.AccountService.GetAllAsync();
+            await context.RespondAsync<GetAllAccountsResults>(new
             {
-                _serviceManager = serviceManager;
-            }
-
-            public async Task<IEnumerable<GetAllAccountsResult>> Handle(GetAllAccountsQuery request, CancellationToken cancellationToken)
-            {
-                var accounts = await _serviceManager.AccountService.GetAllAsync();
-                return accounts.ToGetAllAccountResult();
-            }
+                Accounts = accounts.ToGetAllAccountResult()
+            });
         }
     }
 }

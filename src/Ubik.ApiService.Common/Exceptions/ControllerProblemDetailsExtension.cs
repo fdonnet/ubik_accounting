@@ -9,7 +9,7 @@ namespace Ubik.ApiService.Common.Exceptions
         {
             var problemDetailErrors = ex.CustomErrors.Select(e => new ProblemDetailError()
             {
-                ValueInError = e.ErrorValueDetails,
+                ValueInError = e.ErrorValueDetails ?? string.Empty,
                 Code = e.ErrorCode,
                 FriendlyMsg = e.ErrorFriendlyMessage
             });

@@ -2,12 +2,6 @@
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.ApiService.Common.Configure.Options.Swagger;
 

@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using MassTransit;
+using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Data.Init
 {
@@ -24,7 +25,7 @@ namespace Ubik.Accounting.Api.Data.Init
                         ModifiedBy= baseValuesForUsers.UserId1,
                         ModifiedAt = baseValuesGeneral.GenerationTime,
                         TenantId= baseValuesForTenants.TenantId,
-                        Version = Guid.NewGuid()
+                        Version = NewId.NextGuid()
                     },
                     new Currency
                     {
@@ -35,7 +36,7 @@ namespace Ubik.Accounting.Api.Data.Init
                         ModifiedBy= baseValuesForUsers.UserId1,
                         ModifiedAt = baseValuesGeneral.GenerationTime,
                         TenantId= baseValuesForTenants.TenantId,
-                        Version = Guid.NewGuid()
+                        Version = NewId.NextGuid()
                     }
                };
                 foreach (Currency c in currencies)

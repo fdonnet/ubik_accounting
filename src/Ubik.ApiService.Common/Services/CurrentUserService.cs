@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using MassTransit;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using System.Xml.Linq;
 
 //TODO: don't forget to change the fake value or recode that for the moment we put the correct tenant_id to allow initial data check on model creating !!!!
 namespace Ubik.ApiService.Common.Services
@@ -42,7 +41,7 @@ namespace Ubik.ApiService.Common.Services
                             Id = Guid.Parse(id),
                             Name = claims.FirstOrDefault(i => i.Type == ClaimTypes.Name)?.Value ?? "",
                             Email = claims.FirstOrDefault(i => i.Type == ClaimTypes.Email)?.Value ?? "",
-                            TenantIds = tenantIds == null ? new Guid[] { Guid.NewGuid() } : tenantIds.Select(t => Guid.Parse(t)).ToArray()
+                            TenantIds = tenantIds == null ? new Guid[] { NewId.NextGuid() } : tenantIds.Select(t => Guid.Parse(t)).ToArray()
                         };
                     }
                 }
@@ -53,7 +52,7 @@ namespace Ubik.ApiService.Common.Services
                 Email = "fake@fake.com", 
                 Name = "fake", 
                 TenantIds = new Guid[] { Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d") }, 
-                Id = Guid.NewGuid() 
+                Id = NewId.NextGuid()
             };
             
             return _currentUser;

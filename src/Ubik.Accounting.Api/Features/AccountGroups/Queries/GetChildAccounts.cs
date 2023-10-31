@@ -1,47 +1,30 @@
-﻿using MediatR;
-using static Ubik.Accounting.Api.Features.AccountGroups.Queries.GetAllAccountGroups;
-using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
-using System.ComponentModel.DataAnnotations;
+﻿using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
+using MassTransit;
+using Ubik.Accounting.Contracts.AccountGroups.Queries;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
 {
-    public class GetChildAccounts
+    /// <summary>
+    /// This consumer is only used when called from other microservice
+    /// The api client will call service manager directly
+    /// </summary>
+    public class GetChildAccountsConsumer : IConsumer<GetChildAccountsQuery>
     {
-        public record GetChildAccountsQuery : IRequest<IEnumerable<GetChildAccountsResult>>
+        private readonly IServiceManager _serviceManager;
+
+        public GetChildAccountsConsumer(IServiceManager serviceManager)
         {
-            [Required]
-            public Guid AccountGroupId { get; set; }
+            _serviceManager = serviceManager;
         }
-
-        public record GetChildAccountsResult
+        public async Task Consume(ConsumeContext<GetChildAccountsQuery> context)
         {
-            public Guid Id { get; set; }
-            public required string Code { get; set; }
-            public required string Label { get; set; }
-            public string? Description { get; set; }
-            public Guid Version { get; set; }
-        }
+            var result = await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(context.Message.AccountGroupId);
 
-        public class GetChildAccountsHandler : IRequestHandler<GetChildAccountsQuery, IEnumerable<GetChildAccountsResult>>
-        {
-            private readonly IServiceManager _serviceManager;
-
-            public GetChildAccountsHandler(IServiceManager serviceManager)
-            {
-                _serviceManager = serviceManager;
-            }
-
-            public async Task<IEnumerable<GetChildAccountsResult>> Handle(GetChildAccountsQuery query, CancellationToken cancellationToken)
-            {
-                var accountGroup = await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(query.AccountGroupId);
-
-                return accountGroup == null
-                    ? throw new AccountGroupNotFoundException(query.AccountGroupId)
-                    : accountGroup.Accounts == null
-                    ? new List<GetChildAccountsResult>()
-                    : accountGroup.Accounts.ToGetChildAccountsResult();
-            }
+            if (result.IsSuccess)
+                await context.RespondAsync<GetChildAccountsResults>(new { ChildAccounts = result.Result.Accounts!.ToGetChildAccountsResult()});
+            else
+                await context.RespondAsync(result.Exception);
         }
     }
 }

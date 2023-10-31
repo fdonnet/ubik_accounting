@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using Ubik.DB.Common;
-
-namespace Ubik.Accounting.Api.Models
+﻿namespace Ubik.Accounting.Api.Models
 {
     //Will be read only, all data will be updated by message broker
     //Will see if we really need a specific user table for this microservices 

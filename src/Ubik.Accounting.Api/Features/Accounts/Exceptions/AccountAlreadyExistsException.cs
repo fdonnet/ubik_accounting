@@ -2,13 +2,12 @@
 
 namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
 {
-    public class AccountAlreadyExistsException : Exception, IServiceAndFeatureException
+    public record AccountAlreadyExistsException : IServiceAndFeatureException
     {
         public ServiceAndFeatureExceptionType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public AccountAlreadyExistsException(string codeAlreadyExisting)
-         : base($"An account with this code: {codeAlreadyExisting} already exists.")
         {
 
             ErrorType = ServiceAndFeatureExceptionType.Conflict;

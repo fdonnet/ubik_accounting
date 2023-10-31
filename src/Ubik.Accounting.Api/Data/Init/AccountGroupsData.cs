@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using MassTransit;
+using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Data.Init
 {
@@ -27,7 +28,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     ModifiedAt = baseValuesGeneral.GenerationTime,
                     AccountGroupClassificationId = baseValuesForAccountGroupClassifications.AccountGroupClassificationId1,
                     ParentAccountGroupId = null,
-                    Version = Guid.NewGuid(),
+                    Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                 },
                 new AccountGroup
@@ -42,7 +43,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     ModifiedAt = baseValuesGeneral.GenerationTime,
                     AccountGroupClassificationId = baseValuesForAccountGroupClassifications.AccountGroupClassificationId1,
                     ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
-                    Version = Guid.NewGuid(),
+                    Version =NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                 },
                 new AccountGroup
@@ -57,7 +58,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     ModifiedAt = baseValuesGeneral.GenerationTime,
                     AccountGroupClassificationId = baseValuesForAccountGroupClassifications.AccountGroupClassificationId2,
                     ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
-                    Version = Guid.NewGuid(),
+                    Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                 },
                                 new AccountGroup
@@ -72,7 +73,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     ModifiedAt = baseValuesGeneral.GenerationTime,
                     AccountGroupClassificationId = baseValuesForAccountGroupClassifications.AccountGroupClassificationId1,
                     ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
-                    Version = Guid.NewGuid(),
+                    Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                 }
 

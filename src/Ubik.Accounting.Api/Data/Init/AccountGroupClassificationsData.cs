@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using MassTransit;
+using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Data.Init
 {
@@ -24,7 +25,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Test",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    Version = Guid.NewGuid(),
+                    Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                     },
                     new AccountGroupClassification
@@ -37,7 +38,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Test",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    Version = Guid.NewGuid(),
+                    Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                     }
                 };

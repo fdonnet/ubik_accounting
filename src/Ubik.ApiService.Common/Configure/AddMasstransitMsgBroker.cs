@@ -1,19 +1,14 @@
 ﻿using MassTransit;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using Ubik.ApiService.Common.Configure.Options;
 
 namespace Ubik.ApiService.Common.Configure
 {
     public static class ServiceConfigurationMessageBroker
     {
-        public static void AddMasstransitMsgBroker<TDbContext>(this IServiceCollection services, MessageBrokerOptions options)
+        public static void AddMasstransitMsgBroker<TDbContext>(this IServiceCollection services, MessageBrokerOptions options, Assembly currentAssembly)
             where TDbContext : DbContext
         {
             services.AddMassTransit(config =>
@@ -35,6 +30,8 @@ namespace Ubik.ApiService.Common.Configure
                     o.UsePostgres();
                     o.UseBusOutbox();
                 });
+
+                config.AddConsumers(currentAssembly);
             });
         }
     }

@@ -9,7 +9,6 @@ namespace Ubik.Accounting.Api.Tests.Integration
         : IDisposable
     {
         private readonly IServiceScope _scope;
-        protected readonly ISender Sender;
         public readonly AccountingContext DbContext;
         public IntegrationTestWebAppFactory Factory { get; }
 
@@ -17,8 +16,6 @@ namespace Ubik.Accounting.Api.Tests.Integration
         {
             Factory = factory;
             _scope = factory.Services.CreateScope();
-
-            Sender = _scope.ServiceProvider.GetRequiredService<ISender>();
 
             DbContext = _scope.ServiceProvider
                 .GetRequiredService<AccountingContext>();

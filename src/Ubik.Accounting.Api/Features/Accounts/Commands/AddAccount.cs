@@ -1,81 +1,34 @@
 ﻿using MassTransit;
-using MediatR;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
-using Ubik.Accounting.Contracts;
-using Ubik.ApiService.DB.Enums;
+using Ubik.Accounting.Contracts.Accounts.Commands;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Commands
 {
-    public class AddAccount
+    public class AddAccountConsumer : IConsumer<AddAccountCommand>
     {
-        //Input
-        public record AddAccountCommand : IRequest<AddAccountResult>
+        private readonly IServiceManager _serviceManager;
+        private readonly IPublishEndpoint _publishEndpoint;
+
+        public AddAccountConsumer(IServiceManager serviceManager, IPublishEndpoint publishEndpoint)
         {
-            [Required]
-            [MaxLength(20)]
-            public string Code { get; set; } = default!;
-            [Required]
-            [MaxLength(100)]
-            public string Label { get; set; } = default!;
-            [MaxLength(700)]
-            public string? Description { get; set; }
-            [JsonRequired]
-            [EnumDataType(typeof(AccountCategory))]
-            public AccountCategory Category { get; set; }
-            [JsonRequired]
-            [EnumDataType(typeof(AccountDomain))]
-            public AccountDomain Domain { get; set; }
-            [Required]
-            public Guid CurrencyId { get; set; }
+            _serviceManager = serviceManager;
+            _publishEndpoint = publishEndpoint;
         }
-
-        //Output
-        public record AddAccountResult
+        public async Task Consume(ConsumeContext<AddAccountCommand> context)
         {
-            public Guid Id { get; set; }
-            public string Code { get; set; } = default!;
-            public string Label { get; set; } = default!;
-            public AccountCategory Category { get; set; }
-            public AccountDomain Domain { get; set; }
-            public string? Description { get; set; }
-            public Guid CurrencyId { get; set; }
-            public Guid Version { get; set; }
-        }
+            var account = context.Message.ToAccount();
 
-        public class AddAccountHandler : IRequestHandler<AddAccountCommand, AddAccountResult>
-        {
-            private readonly IServiceManager _serviceManager;
-            private readonly IPublishEndpoint _publishEndpoint;
+            var result = await _serviceManager.AccountService.AddAsync(account);
 
-            public AddAccountHandler(IServiceManager serviceManager, IPublishEndpoint publishEndpoint)
+            if(result.IsSuccess)
             {
-                _serviceManager = serviceManager;
-                _publishEndpoint = publishEndpoint;
-            }
-            public async Task<AddAccountResult> Handle(AddAccountCommand request, CancellationToken cancellationToken)
-            {
-                var account = request.ToAccount();
-
-                var accountExists = await _serviceManager.AccountService.IfExistsAsync(account.Code);
-                if (accountExists)
-                    throw new AccountAlreadyExistsException(request.Code);
-
-                //Check if the specified currency exists
-                var curExists = await _serviceManager.AccountService.IfExistsCurrencyAsync(request.CurrencyId);
-                if (!curExists)
-                    throw new AccountCurrencyNotFoundException(request.CurrencyId);
-
-                //Store and publish
-                await _serviceManager.AccountService.AddAsync(account);
-                await _publishEndpoint.Publish(account.ToAccountAdded(), CancellationToken.None);
-
+                //Store and publish AccountAdded event
+                await _publishEndpoint.Publish(result.Result.ToAccountAdded(), CancellationToken.None);
                 await _serviceManager.SaveAsync();
-
-                return account.ToAddAccountResult();
+                await context.RespondAsync(result.Result.ToAddAccountResult());
             }
+            else
+                await context.RespondAsync(result.Exception);
         }
     }
 }

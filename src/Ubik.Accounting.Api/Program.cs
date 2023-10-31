@@ -5,23 +5,17 @@ using Ubik.ApiService.Common.Services;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Api.Features;
 using System.Reflection;
-using MediatR;
-using Ubik.ApiService.Common.Validators;
-using FluentValidation;
 using Serilog;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.OpenApi.Models;
 using Ubik.Accounting.Api.Data.Init;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
-using Asp.Versioning;
-using Microsoft.Extensions.Options;
-using MassTransit.Configuration;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.ApiService.Common.Filters;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
 
 namespace Ubik.Accounting.Api
 {
@@ -50,11 +44,45 @@ namespace Ubik.Accounting.Api
             builder.Services.AddDbContextFactory<AccountingContext>(
                  options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
 
-            //MediatR + remove standard model validations
-            builder.Services.AddMediatRAndValidation(Assembly.GetExecutingAssembly());
+            //MessageBroker with masstransit + outbox
+            builder.Services.AddMassTransit(config =>
+            {
+                config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(prefix: "AccountingApi", includeNamespace: false));
+                config.UsingRabbitMq((context, configurator) =>
+                {
+                    configurator.Host(new Uri(msgBrokerOptions.Host), h =>
+                    {
+                        h.Username(msgBrokerOptions.User);
+                        h.Password(msgBrokerOptions.Password);
+                    });
 
-            //MessageBroker with masstransit
-            builder.Services.AddMasstransitMsgBroker<AccountingContext>(msgBrokerOptions);
+                    configurator.ConfigureEndpoints(context);
+
+                    //Use to pass tenantid when message broker is used to contact the api (async)
+                    configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
+                    configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);
+                    configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
+                });
+
+                config.AddEntityFrameworkOutbox<AccountingContext>(o =>
+                {
+                    o.UsePostgres();
+                    o.UseBusOutbox();
+                });
+
+                //Add all consumers
+                config.AddConsumers(Assembly.GetExecutingAssembly());
+
+                //Add clients
+                config.AddRequestClient<AddAccountCommand>();
+                config.AddRequestClient<DeleteAccountCommand>();
+                config.AddRequestClient<UpdateAccountCommand>();
+
+                config.AddRequestClient<AddAccountGroupCommand>();
+                config.AddRequestClient<DeleteAccountGroupCommand>();
+                config.AddRequestClient<UpdateAccountGroupCommand>();
+            });
+
 
             //Api versioning
             builder.Services.AddApiVersionAndExplorer();

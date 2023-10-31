@@ -1,45 +1,70 @@
 ﻿using FluentAssertions;
+using MassTransit;
+using MassTransit.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Api.Features.Accounts.Queries;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Validators;
-using static Ubik.Accounting.Api.Features.Accounts.Queries.GetAllAccounts;
+using Ubik.Accounting.Contracts.Accounts.Queries;
+using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
 {
-    public class GetAllAccounts_Test
+    public class GetAllAccounts_Test : IAsyncLifetime
     {
         private readonly IServiceManager _serviceManager;
-        private readonly GetAllAccountsHandler _handler;
-        private readonly GetAllAccountsQuery _query;
         private readonly IEnumerable<Account> _accounts;
+        private ITestHarness _harness = default!;
+        private IServiceProvider _provider = default!;
 
         public GetAllAccounts_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
-            _handler = new GetAllAccountsHandler(_serviceManager);
-
-            _query = new GetAllAccountsQuery();
-
             _accounts = new Account[] { new Account() { Code = "TEST", Label = "Test", CurrencyId=Guid.NewGuid() } };
+        }
+
+        public async Task InitializeAsync()
+        {
+            _serviceManager.AccountService.GetAllAsync().Returns(_accounts);
+            _provider = new ServiceCollection()
+                .AddMassTransitTestHarness(x =>
+                {
+                    x.AddScoped<IServiceManager>(sm => _serviceManager);
+                    x.AddConsumer<GetAllAccountsConsumer>();
+
+                }).BuildServiceProvider(true);
+
+            _harness = _provider.GetRequiredService<ITestHarness>();
+            await _harness.Start();
         }
 
         [Fact]
         public async Task GetAll_Accounts_Ok()
         {
             //Arrange
-            _serviceManager.AccountService.GetAllAsync().Returns(_accounts);
+            var client = _harness.GetRequestClient<GetAllAccountsQuery>();
+            var consumerHarness = _harness.GetConsumerHarness<GetAllAccountsConsumer>();
 
             //Act
-            var result = await _handler.Handle(_query, CancellationToken.None);
+            var response = await client.GetResponse<GetAllAccountsResults>(new { });
 
             //Assert
-            result.Should()
-                    .NotBeNull()
-                    .And.BeEquivalentTo(_accounts.ToGetAllAccountResult())
-                    .And.HaveCount(1);
+            var sent = await _harness.Sent.Any<GetAllAccountsResults>();
+            var consumed = await _harness.Consumed.Any<GetAllAccountsQuery>();
+            var consumerConsumed = await consumerHarness.Consumed.Any<GetAllAccountsQuery>();
+
+            sent.Should().Be(true);
+            consumed.Should().Be(true);
+            consumerConsumed.Should().Be(true);
+            response.Message.Accounts.Should()
+                .HaveCount(1)
+                .And.AllBeOfType<GetAllAccountsResult>();
+        }
+
+        public async Task DisposeAsync()
+        {
+            await _harness.Stop();
         }
     }
 }

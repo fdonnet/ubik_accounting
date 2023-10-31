@@ -2,13 +2,12 @@
 
 namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
 {
-    public class AccountCurrencyNotFoundException : Exception, IServiceAndFeatureException
+    public record AccountCurrencyNotFoundException : IServiceAndFeatureException
     {
         public ServiceAndFeatureExceptionType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public AccountCurrencyNotFoundException(Guid idNotFound)
-         : base($"The currency id specified: {idNotFound} is not found.")
         {
             ErrorType = ServiceAndFeatureExceptionType.BadParams;
             CustomErrors = new List<CustomError>() { new CustomError()

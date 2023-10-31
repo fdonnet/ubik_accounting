@@ -1,21 +1,23 @@
 ﻿using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using NSubstitute;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
+using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
+using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Services;
+using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 {
     public class AccountGroupService_Test : BaseIntegrationTest
     {
         private readonly BaseValuesForAccountGroups _testAccountGroupValues;
+        private readonly BaseValuesForAccountGroupClassifications _testClassifications;
         private readonly IServiceManager _serviceManager;
 
         public AccountGroupService_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testAccountGroupValues = new BaseValuesForAccountGroups();
+            _testClassifications = new BaseValuesForAccountGroupClassifications();
             _serviceManager = new ServiceManager(DbContext);
         }
 
@@ -39,12 +41,28 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            var result = await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupId1);
+            var result = (await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupId1)).Result;
 
             //Assert
             result.Should()
                     .NotBeNull()
                     .And.BeOfType<AccountGroup>();
+        }
+
+        [Theory, MemberData(nameof(GeneratedGuids))]
+        public async Task Get_AccountGroupNotFoundException_IdNotExists(Guid id)
+        {
+            //Arrange
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.GetAsync(id)).Exception;
+
+            //Assert
+            result.Should()
+           .NotBeNull()
+           .And.BeOfType<AccountGroupNotFoundException>()
+           .And.Match<AccountGroupNotFoundException>(a =>
+               a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }
 
         [Fact]
@@ -53,27 +71,13 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            var result = await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(_testAccountGroupValues.AccountGroupId1);
+            var result = (await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(_testAccountGroupValues.AccountGroupId1)).Result;
 
             //Assert
             result.Should()
                     .NotBeNull()
                     .And.BeOfType<AccountGroup>()
-                    .And.Match<AccountGroup>(g=>g.Accounts != null);
-        }
-
-
-        [Theory, MemberData(nameof(GeneratedGuids))]
-        public async Task Get_Null_IdNotExists(Guid id)
-        {
-            //Arrange
-
-            //Act
-            var result = await _serviceManager.AccountGroupService.GetAsync(id);
-
-            //Assert
-            result.Should()
-            .BeNull();
+                    .And.Match<AccountGroup>(g => g.Accounts != null);
         }
 
         [Theory]
@@ -83,12 +87,56 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            var result = await _serviceManager.AccountGroupService.AddAsync(accountGroup);
+            var result = (await _serviceManager.AccountGroupService.AddAsync(accountGroup)).Result;
 
             //Assert
             result.Should()
                     .NotBeNull()
                     .And.BeOfType<AccountGroup>();
+        }
+
+        [Fact]
+        public async Task Add_AccountGroupAlreadyExistsException_AccountGroupCodeAlreadyExists()
+        {
+            //Arrange
+            var accountGroup = new AccountGroup
+            {
+                Code = "10",
+                Label = "Test",
+                AccountGroupClassificationId = _testClassifications.AccountGroupClassificationId1
+            };
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.AddAsync(accountGroup)).Exception;
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroupAlreadyExistsException>()
+                    .And.Match<AccountGroupAlreadyExistsException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+        }
+
+        [Fact]
+        public async Task Add_AccountGroupParentNotFoundException_AccountGroupCodeAlreadyExists()
+        {
+            //Arrange
+            var accountGroup = new AccountGroup
+            {
+                Code = "102",
+                Label = "Test",
+                ParentAccountGroupId = Guid.NewGuid()
+            };
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.AddAsync(accountGroup)).Exception;
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroupParentNotFoundException>()
+                    .And.Match<AccountGroupParentNotFoundException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
         }
 
         [Theory]
@@ -98,7 +146,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            var result = await _serviceManager.AccountGroupService.AddAsync(accountGroup);
+            var result = (await _serviceManager.AccountGroupService.AddAsync(accountGroup)).Result;
 
             //Assert
             result.Should().Match<AccountGroup>(x => x.ModifiedBy != null && x.ModifiedAt != null);
@@ -111,11 +159,27 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
             //Act
             await _serviceManager.AccountGroupService.ExecuteDeleteAsync(_testAccountGroupValues.AccountGroupIdForDel);
-            var exist = (await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupIdForDel)) != null;
+            var exist = (await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupIdForDel)).IsSuccess;
 
             //Assert
             exist.Should()
                 .BeFalse();
+        }
+
+        [Fact]
+        public async Task Delete_AccountGroupNotFoundException_AccountGroupIdNotFound()
+        {
+            //Arrange
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.ExecuteDeleteAsync(Guid.NewGuid())).Exception;
+
+            //Assert
+            result.Should()
+                     .NotBeNull()
+                     .And.BeOfType<AccountGroupNotFoundException>()
+                     .And.Match<AccountGroupNotFoundException>(a =>
+                         a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }
 
         [Theory]
@@ -134,9 +198,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         }
 
         [Theory]
-        [InlineData("102", "1524f188-20dd-4888-88f8-428e59bbc22a","7777f11f-20dd-4888-88f8-428e59bbc535", true)]
+        [InlineData("102", "1524f188-20dd-4888-88f8-428e59bbc22a", "7777f11f-20dd-4888-88f8-428e59bbc535", true)]
         [InlineData("102", "7777f11f-20dd-4888-88f8-428e59bbc535", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
-        public async Task IfExistWithDifferentId_TrueorFalse_Ok(string accountGroupCode, 
+        public async Task IfExistWithDifferentId_TrueorFalse_Ok(string accountGroupCode,
             Guid accountGroupClassificationId, Guid currentGuid, bool resultNeeded)
 
         {
@@ -154,14 +218,16 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         public async Task Update_ModifiedAtFieldUpdated_Ok()
         {
             //Arrange
-            var accountGroup = await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupId1);
+            var accountGroup = (await _serviceManager.AccountGroupService
+                .GetAsync(_testAccountGroupValues.AccountGroupId1)).Result;
 
             accountGroup!.Label = "Modified";
             accountGroup.Description = "Modified";
+
             var modifiedAt = accountGroup.ModifiedAt;
 
             //Act
-            var result = _serviceManager.AccountGroupService.Update(accountGroup);
+            var result = (await _serviceManager.AccountGroupService.UpdateAsync(accountGroup)).Result;
 
             //Assert
             result.Should()
@@ -173,24 +239,97 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         public async Task Update_UpdatedAccountGroup_Ok()
         {
             //Arrange
-            var accountGroup = await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupId1);
+            var accountGroup = (await _serviceManager.AccountGroupService
+                .GetAsync(_testAccountGroupValues.AccountGroupId1)).Result;
 
             accountGroup!.Label = "Modified";
             accountGroup.Description = "Modified";
 
             //Act
-            var result = _serviceManager.AccountGroupService.Update(accountGroup);
+            var result = (await _serviceManager.AccountGroupService.UpdateAsync(accountGroup)).Result;
 
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroup>();
+                    .And.BeOfType<AccountGroup>()
+                    .And.Match<AccountGroup>(a =>
+                        a.Label == "Modified"
+                        && a.Version != accountGroup.Version);
         }
+
+        [Fact]
+        public async Task Update_AccountGroupNotFoundException_AccountGroupIdNotFound()
+        {
+            //Arrange
+            var accountGroup = (await _serviceManager.AccountGroupService
+                .GetAsync(_testAccountGroupValues.AccountGroupId1)).Result;
+
+            accountGroup.Id = Guid.NewGuid();
+            accountGroup.Label = "Modified";
+            accountGroup.Description = "Modified";
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.UpdateAsync(accountGroup)).Exception;
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroupNotFoundException>()
+                    .And.Match<AccountGroupNotFoundException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+        }
+
+        [Fact]
+        public async Task Update_AccountGroupParentNotFoundException_AccountGroupParentIdNotFound()
+        {
+            //Arrange
+            var accountGroup = (await _serviceManager.AccountGroupService
+                .GetAsync(_testAccountGroupValues.AccountGroupId1)).Result;
+
+            accountGroup!.Label = "Modified";
+            accountGroup.Description = "Modified";
+            accountGroup.ParentAccountGroupId = Guid.NewGuid();
+
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.UpdateAsync(accountGroup)).Exception;
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroupParentNotFoundException>()
+                    .And.Match<AccountGroupParentNotFoundException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+        }
+
+        [Fact]
+        public async Task Update_AccountGroupAlreadyExistsException_AccountGroupCodeAlreadyExistsInClassification()
+        {
+            //Arrange
+            var accountGroup = (await _serviceManager.AccountGroupService
+                .GetAsync(_testAccountGroupValues.AccountGroupId1)).Result;
+
+            accountGroup!.Label = "Modified";
+            accountGroup.Description = "Modified";
+            accountGroup.Code = "10";
+
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.UpdateAsync(accountGroup)).Exception;
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroupAlreadyExistsException>()
+                    .And.Match<AccountGroupAlreadyExistsException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+        }
+
 
         [Theory]
         [InlineData("1529991f-20dd-4888-88f8-428e59bbc22a", true)]
         [InlineData("1524f11f-20dd-4888-88f8-428e59bbc22a", false)]
-        public async Task HasAnyChildAccountGroups_TrueOrFalse_Ok(Guid id,bool neededResult)
+        public async Task HasAnyChildAccountGroups_TrueOrFalse_Ok(Guid id, bool neededResult)
         {
             //Act
             var result = await _serviceManager.AccountGroupService.HasAnyChildAccountGroups(id);

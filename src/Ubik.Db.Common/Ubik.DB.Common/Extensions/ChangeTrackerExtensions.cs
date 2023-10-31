@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Ubik.ApiService.Common.Services;
 
@@ -97,7 +98,7 @@ namespace Ubik.DB.Common.Extensions
                 foreach (EntityEntry entry in concurrencyEntities)
                 {
                     IConcurrencyCheckEntity entity = (IConcurrencyCheckEntity)entry.Entity;
-                    entity.Version = Guid.NewGuid();
+                    entity.Version = NewId.NextGuid();
                 }
             }
         }

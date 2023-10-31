@@ -9,16 +9,16 @@
         NotAuthentified = 401
     }
 
-    public struct CustomError
+    public record CustomError
     {
-        public string ErrorFriendlyMessage;
-        public string ErrorCode;
-        public string ErrorValueDetails;
+        public string ErrorFriendlyMessage { get; set; } = default!;
+        public string ErrorCode { get; set; }=default!;
+        public string? ErrorValueDetails { get; set; }
     }
 
     public interface IServiceAndFeatureException
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; } //Allow to identify what we need to do
-        public List<CustomError> CustomErrors { get; init; }
+        public ServiceAndFeatureExceptionType ErrorType { get; } 
+        public List<CustomError> CustomErrors { get; }
     }
 }

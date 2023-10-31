@@ -1,49 +1,25 @@
-﻿using MediatR;
-using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
+﻿using MassTransit;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
+using Ubik.Accounting.Contracts.AccountGroups.Queries;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
 {
-    public class GetAccountGroup
+    public class GetAccountGroupConsumer : IConsumer<GetAccountGroupQuery>
     {
-        //Input
-        public record GetAccountGroupQuery : IRequest<GetAccountGroupResult>
+        private readonly IServiceManager _serviceManager;
+
+        public GetAccountGroupConsumer(IServiceManager serviceManager)
         {
-            [Required]
-            public Guid Id { get; set; }
+            _serviceManager = serviceManager;
         }
-
-        //Output
-        public record GetAccountGroupResult
+        public async Task Consume(ConsumeContext<GetAccountGroupQuery> context)
         {
-            public Guid Id { get; set; }
-            public required string Code { get; set; }
-            public required string Label { get; set; }
-            public string? Description { get; set; }
-            public Guid? ParentAccountGroupId { get; set; }
-            public Guid AccountGroupClassificationId { get; set; }
-            public Guid Version { get; set; }
-        }
+            var result = await _serviceManager.AccountGroupService.GetAsync(context.Message.Id);
 
-        //Handler
-        public class GetAccountGroupHandler : IRequestHandler<GetAccountGroupQuery, GetAccountGroupResult>
-        {
-            private readonly IServiceManager _serviceManager;
-
-            public GetAccountGroupHandler(IServiceManager serviceManager)
-            {
-                _serviceManager = serviceManager;
-            }
-
-            public async Task<GetAccountGroupResult> Handle(GetAccountGroupQuery request, CancellationToken cancellationToken)
-            {
-                var accountGroup = await _serviceManager.AccountGroupService.GetAsync(request.Id);
-
-                return accountGroup == null 
-                    ? throw new AccountGroupNotFoundException(request.Id) 
-                    : accountGroup.ToGetAccountGroupResult();
-            }
+            if (result.IsSuccess)
+                await context.RespondAsync(result.Result.ToGetAccountGroupResult());
+            else
+                await context.RespondAsync(result.Exception);
         }
     }
 }
