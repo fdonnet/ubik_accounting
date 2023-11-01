@@ -11,14 +11,14 @@ using Ubik.Accounting.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
 {
-    public class GetAllClassifications_Test : IAsyncLifetime
+    public class ClassificationQueries_Test : IAsyncLifetime
     {
         private readonly IServiceManager _serviceManager;
         private readonly IEnumerable<Classification> _values;
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
 
-        public GetAllClassifications_Test()
+        public ClassificationQueries_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
 

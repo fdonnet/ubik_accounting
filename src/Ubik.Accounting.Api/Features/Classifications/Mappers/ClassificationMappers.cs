@@ -16,5 +16,17 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
                 Version = x.Version
             });
         }
+
+        public static GetClassificationsResult ToGetClassificationResult(this Classification current)
+        {
+            return new GetClassificationsResult()
+            {
+                Id = current.Id,
+                Code = current.Code,
+                Label = current.Label,
+                Description = current.Description,
+                Version = current.Version
+            };
+        }
     }
 }
