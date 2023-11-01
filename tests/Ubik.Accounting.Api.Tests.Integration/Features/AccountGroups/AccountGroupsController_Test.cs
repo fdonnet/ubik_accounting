@@ -37,8 +37,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}");
             var responseGetChildAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}/Accounts");
-            var responsePost = await httpClient.PostAsync(_baseUrlForV1, new StringContent("test", Encoding.UTF8, "application/json"));
-            var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responsePost = await httpClient.PostAsync(_baseUrlForV1, 
+                new StringContent("test", Encoding.UTF8, "application/json"));
+
+            var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}", 
+                new StringContent("test", Encoding.UTF8, "application/json"));
+
             var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}");
 
             //Assert
@@ -63,8 +67,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}");
             var responseGetChildAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}/Accounts");
-            var responsePost = await httpClient.PostAsync(_baseUrlForV1, new StringContent("test", Encoding.UTF8, "application/json"));
-            var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responsePost = await httpClient.PostAsync(_baseUrlForV1, 
+                new StringContent("test", Encoding.UTF8, "application/json"));
+
+            var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}",
+                new StringContent("test", Encoding.UTF8, "application/json"));
+
             var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}");
 
             //Assert
