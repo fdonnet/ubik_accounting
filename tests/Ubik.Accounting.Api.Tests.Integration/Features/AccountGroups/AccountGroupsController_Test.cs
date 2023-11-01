@@ -287,6 +287,32 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         }
 
         [Fact]
+        public async Task Post_ProblemDetails_ClassificationNotFound()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var fake = FakeGenerator.GenerateAddAccountGroups(1, accountGroupClassificationId: Guid.NewGuid()).First();
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync(_baseUrlForV1, content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_CLASSIFICATION_NOTFOUND");
+        }
+
+        [Fact]
         public async Task Post_ProblemDetails_EmptyFields()
         {
             //Arrange
@@ -375,6 +401,39 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                     && x.Label == fake.Label
                     && x.Description == fake.Description
                     && x.Version != fake.Version);
+        }
+
+        [Fact]
+        public async Task Put_ProblemDetails_ClassificationNotFound()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountGroupResult>();
+
+            var fake = FakeGenerator.GenerateUpdAccountGroups(1,
+                version: resultGet!.Version,
+                id: resultGet.Id,
+                code: resultGet.Code,
+                accountGroupClassificationId: Guid.NewGuid()).First();
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_CLASSIFICATION_NOTFOUND");
         }
 
         [Fact]

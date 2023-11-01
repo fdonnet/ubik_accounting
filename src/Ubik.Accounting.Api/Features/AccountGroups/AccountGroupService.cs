@@ -42,7 +42,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             return new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
         }
 
-        public async Task<ResultT<AccountGroup>> ValidateRelationsAsync(AccountGroup accountGroup)
+        private async Task<ResultT<AccountGroup>> ValidateRelationsAsync(AccountGroup accountGroup)
         {
             if (accountGroup.ParentAccountGroupId != null)
             {

@@ -139,6 +139,29 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                         a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
         }
 
+        [Fact]
+        public async Task Add_AccountGroupClassificationNotFound_AccountGroupClassificationIdNotFound()
+        {
+            //Arrange
+            var accountGroup = new AccountGroup
+            {
+                Code = "zzz",
+                Label = "Test",
+                ParentAccountGroupId =null,
+                AccountGroupClassificationId = Guid.NewGuid()
+            };
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.AddAsync(accountGroup)).Exception;
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroupClassificationNotFound>()
+                    .And.Match<AccountGroupClassificationNotFound>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+        }
+
         [Theory]
         [MemberData(nameof(GetAccountGroups), parameters: new object[] { 5 })]
         public async Task Add_AuditFieldsModified_Ok(AccountGroup accountGroup)
@@ -301,6 +324,30 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                     .And.Match<AccountGroupParentNotFoundException>(a =>
                         a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
         }
+
+        [Fact]
+        public async Task Update_AccountGroupClassificationNotFound_AccountGroupClassificationIdNotFound()
+        {
+            //Arrange
+            var accountGroup = (await _serviceManager.AccountGroupService
+                .GetAsync(_testAccountGroupValues.AccountGroupId1)).Result;
+
+            accountGroup!.Label = "Modified";
+            accountGroup.Description = "Modified";
+            accountGroup.AccountGroupClassificationId = Guid.NewGuid();
+
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.UpdateAsync(accountGroup)).Exception;
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroupClassificationNotFound>()
+                    .And.Match<AccountGroupClassificationNotFound>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+        }
+
 
         [Fact]
         public async Task Update_AccountGroupAlreadyExistsException_AccountGroupCodeAlreadyExistsInClassification()
