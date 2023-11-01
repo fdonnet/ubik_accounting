@@ -13,7 +13,7 @@ namespace Ubik.Accounting.Api.Data.Init
                 var baseValuesForTenants = new BaseValuesForTenants();
                 var baseValuesForUsers = new BaseValuesForUsers();
                 var baseValuesForAccountGroups = new BaseValuesForAccountGroups();
-                var baseValuesForAccountGroupClassifications = new BaseValuesForAccountGroupClassifications();
+                var baseValuesForAccountGroupClassifications = new BaseValuesForClassifications();
                 var accountGroups = new AccountGroup[]
                 {
                 new AccountGroup

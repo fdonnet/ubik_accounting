@@ -11,13 +11,13 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
     public class AccountGroupService_Test : BaseIntegrationTest
     {
         private readonly BaseValuesForAccountGroups _testAccountGroupValues;
-        private readonly BaseValuesForAccountGroupClassifications _testClassifications;
+        private readonly BaseValuesForClassifications _testClassifications;
         private readonly IServiceManager _serviceManager;
 
         public AccountGroupService_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testAccountGroupValues = new BaseValuesForAccountGroups();
-            _testClassifications = new BaseValuesForAccountGroupClassifications();
+            _testClassifications = new BaseValuesForClassifications();
             _serviceManager = new ServiceManager(DbContext);
         }
 

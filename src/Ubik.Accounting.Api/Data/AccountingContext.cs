@@ -22,7 +22,7 @@ namespace Ubik.Accounting.Api.Data
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountGroup> AccountGroups { get; set; }
         public DbSet<AccountAccountGroup> AccountsAccountGroups { get; set; }
-        public DbSet<AccountGroupClassification> AccountGroupClassifications { get; set; }
+        public DbSet<Classification> AccountGroupClassifications { get; set; }
         public DbSet<Currency> Currencies { get; set; }
 
 
@@ -72,7 +72,7 @@ namespace Ubik.Accounting.Api.Data
 
             //Configure
             new CurrencyConfiguration().Configure(modelBuilder.Entity<Currency>());
-            new AccountGroupClassificationConfiguration().Configure(modelBuilder.Entity<AccountGroupClassification>());
+            new ClassificationConfiguration().Configure(modelBuilder.Entity<Classification>());
             new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
@@ -96,7 +96,7 @@ namespace Ubik.Accounting.Api.Data
             modelBuilder.Entity<AccountGroup>()
                 .HasQueryFilter(mt => mt.TenantId == _tenantId);
 
-            modelBuilder.Entity<AccountGroupClassification>()
+            modelBuilder.Entity<Classification>()
                 .HasQueryFilter(mt => mt.TenantId == _tenantId);
 
             modelBuilder.Entity<AccountAccountGroup>()

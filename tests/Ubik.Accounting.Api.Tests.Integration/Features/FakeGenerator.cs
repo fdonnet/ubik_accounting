@@ -50,7 +50,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
             string? code = null, string? label = null, Guid accountGroupClassificationId = default,
             string? description = null)
         {
-            var testData = new BaseValuesForAccountGroupClassifications();
+            var testData = new BaseValuesForClassifications();
             return new Faker<AddAccountGroupCommand>("fr_CH")
                  .CustomInstantiator(a => new AddAccountGroupCommand()
                  {
@@ -65,7 +65,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
             string? code = null, string? label = null, Guid accountGroupClassificationId = default,
             string? description = null, Guid version = default, Guid id = default)
         {
-            var testData = new BaseValuesForAccountGroupClassifications();
+            var testData = new BaseValuesForClassifications();
             return new Faker<UpdateAccountGroupCommand>("fr_CH")
                  .CustomInstantiator(a => new UpdateAccountGroupCommand()
                  {
@@ -94,7 +94,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
 
         public static IEnumerable<AccountGroup> GenerateAccountGroups(int numTests)
         {
-            var testData = new BaseValuesForAccountGroupClassifications();
+            var testData = new BaseValuesForClassifications();
             return new Faker<AccountGroup>("fr_CH")
                  .CustomInstantiator(a => new AccountGroup()
                  {

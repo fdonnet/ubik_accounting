@@ -4,11 +4,11 @@ using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Data.Config
 {
-    public class AccountGroupClassificationConfiguration : IEntityTypeConfiguration<AccountGroupClassification>
+    public class ClassificationConfiguration : IEntityTypeConfiguration<Classification>
     {
-        public void Configure(EntityTypeBuilder<AccountGroupClassification> builder)
+        public void Configure(EntityTypeBuilder<Classification> builder)
         {
-            builder.ToTable("AccountGroupClassifications");
+            builder.ToTable("Classifications");
 
             builder.Property(a => a.Code)
            .IsRequired()

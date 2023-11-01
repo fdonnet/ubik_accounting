@@ -42,35 +42,6 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             return new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
         }
 
-        private async Task<ResultT<AccountGroup>> ValidateRelationsAsync(AccountGroup accountGroup)
-        {
-            if (accountGroup.ParentAccountGroupId != null)
-            {
-                var parentAccountExists = await IfExistsAsync((Guid)accountGroup.ParentAccountGroupId);
-
-                if (!parentAccountExists)
-                    return new ResultT<AccountGroup>
-                    {
-                        IsSuccess = false,
-                        Exception = new AccountGroupParentNotFoundException((Guid)accountGroup.ParentAccountGroupId)
-                    };
-            }
-
-            var classificationExists = await IfClassificationExists(accountGroup.AccountGroupClassificationId);
-            if (!classificationExists)
-                return new ResultT<AccountGroup>
-                {
-                    IsSuccess = false,
-                    Exception = new AccountGroupClassificationNotFound(accountGroup.AccountGroupClassificationId)
-                };
-
-            return new ResultT<AccountGroup>
-            {
-                IsSuccess = true,
-                Result = accountGroup
-            };
-        }
-
         //TODO: see if we want to manage account child group deletion on cascade
         public async Task<ResultT<bool>> ExecuteDeleteAsync(Guid id)
         {
@@ -189,6 +160,35 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
         public async Task<bool> IfClassificationExists(Guid accountGroupClassificationId)
         {
             return await _context.AccountGroupClassifications.AnyAsync(a => a.Id == accountGroupClassificationId);
+        }
+
+        private async Task<ResultT<AccountGroup>> ValidateRelationsAsync(AccountGroup accountGroup)
+        {
+            if (accountGroup.ParentAccountGroupId != null)
+            {
+                var parentAccountExists = await IfExistsAsync((Guid)accountGroup.ParentAccountGroupId);
+
+                if (!parentAccountExists)
+                    return new ResultT<AccountGroup>
+                    {
+                        IsSuccess = false,
+                        Exception = new AccountGroupParentNotFoundException((Guid)accountGroup.ParentAccountGroupId)
+                    };
+            }
+
+            var classificationExists = await IfClassificationExists(accountGroup.AccountGroupClassificationId);
+
+            return !classificationExists
+                ? new ResultT<AccountGroup>
+                {
+                    IsSuccess = false,
+                    Exception = new AccountGroupClassificationNotFound(accountGroup.AccountGroupClassificationId)
+                }
+                : new ResultT<AccountGroup>
+                {
+                    IsSuccess = true,
+                    Result = accountGroup
+                };
         }
     }
 }

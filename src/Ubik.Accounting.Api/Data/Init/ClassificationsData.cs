@@ -3,7 +3,7 @@ using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Data.Init
 {
-    internal static class AccountGroupClassificationsData
+    internal static class ClassificationsData
     {
         internal static void Load(AccountingContext context)
         {
@@ -12,10 +12,10 @@ namespace Ubik.Accounting.Api.Data.Init
                 var baseValuesGeneral = new BaseValuesGeneral();
                 var baseValuesForTenants = new BaseValuesForTenants();
                 var baseValuesForUsers = new BaseValuesForUsers();
-                var baseValuesForAccountGroupClassifications = new BaseValuesForAccountGroupClassifications();
-                var accountGroupClassifications = new AccountGroupClassification[]
+                var baseValuesForAccountGroupClassifications = new BaseValuesForClassifications();
+                var accountGroupClassifications = new Classification[]
                 {
-                    new AccountGroupClassification
+                    new Classification
                     {
                     Id = baseValuesForAccountGroupClassifications.AccountGroupClassificationId1,
                     CreatedBy = baseValuesForUsers.UserId1,
@@ -28,7 +28,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                     },
-                    new AccountGroupClassification
+                    new Classification
                     {
                     Id = baseValuesForAccountGroupClassifications.AccountGroupClassificationId2,
                     CreatedBy = baseValuesForUsers.UserId1,
@@ -43,7 +43,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     }
                 };
 
-                foreach (AccountGroupClassification cl in accountGroupClassifications)
+                foreach (Classification cl in accountGroupClassifications)
                 {
                     context.AccountGroupClassifications.Add(cl);
                 }

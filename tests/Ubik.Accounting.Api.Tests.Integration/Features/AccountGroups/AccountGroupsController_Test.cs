@@ -17,13 +17,13 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
     public class AccountGroupsController_Test : BaseIntegrationTest
     {
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
-        private readonly BaseValuesForAccountGroupClassifications _testValuesForAccountGroupClassifications;
+        private readonly BaseValuesForClassifications _testValuesForAccountGroupClassifications;
         private readonly string _baseUrlForV1;
         
         public AccountGroupsController_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testValuesForAccountGroups = new BaseValuesForAccountGroups();
-            _testValuesForAccountGroupClassifications = new BaseValuesForAccountGroupClassifications();
+            _testValuesForAccountGroupClassifications = new BaseValuesForClassifications();
             _baseUrlForV1 = "/api/v1/AccountGroups";
         }
 

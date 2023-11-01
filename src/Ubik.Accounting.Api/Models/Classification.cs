@@ -2,7 +2,7 @@
 
 namespace Ubik.Accounting.Api.Models
 {
-    public class AccountGroupClassification
+    public class Classification
     {
         public Guid Id { get; set; }
         public required string Code { get; set; }
