@@ -325,6 +325,15 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                         a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
 
+        [Theory]
+        [InlineData("1524f188-20dd-4888-88f8-428e59bbc22a", true)]
+        [InlineData("7777f11f-20dd-4888-88f8-428e59bbc535", false)]
+        public async Task IfExistsClassification_TrueOrFalse_Ok(Guid classificationId, bool result)
+        {
+            var exist = await _serviceManager.AccountGroupService.IfClassificationExists(classificationId);
+
+            exist.Should().Be(result);
+        }
 
         [Theory]
         [InlineData("1529991f-20dd-4888-88f8-428e59bbc22a", true)]
@@ -349,6 +358,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should().Be(neededResult);
         }
+
+
 
         public static IEnumerable<object[]> GeneratedGuids
         {

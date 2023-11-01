@@ -15,8 +15,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
 
         public Task<bool> HasAnyChildAccountGroups(Guid Id);
         public Task<bool> HasAnyChildAccounts(Guid Id);
+        public Task<bool> IfClassificationExists(Guid accountGroupClassificationId);
         public Task<ResultT<AccountGroup>> AddAsync(AccountGroup accountGroup);
         public Task<ResultT<AccountGroup>> UpdateAsync(AccountGroup accountGroup);
         public Task<ResultT<bool>> ExecuteDeleteAsync(Guid id);
+        public Task<ResultT<AccountGroup>> ValidateRelationsAsync(AccountGroup accountGroup);
     }
 }

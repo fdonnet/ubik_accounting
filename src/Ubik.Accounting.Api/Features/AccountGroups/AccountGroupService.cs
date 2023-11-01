@@ -18,6 +18,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
         }
         public async Task<ResultT<AccountGroup>> AddAsync(AccountGroup accountGroup)
         {
+            //Already exists
             var exist = await IfExistsAsync(accountGroup.Code, accountGroup.AccountGroupClassificationId);
             if (exist)
                 return new ResultT<AccountGroup>
@@ -27,6 +28,22 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
                             accountGroup.Code, accountGroup.AccountGroupClassificationId)
                 };
 
+            //Validate dependencies
+            var validated = await ValidateRelationsAsync(accountGroup);
+
+            if (!validated.IsSuccess)
+                return validated;
+
+
+            accountGroup.Id = NewId.NextGuid();
+            await _context.AccountGroups.AddAsync(accountGroup);
+            _context.SetAuditAndSpecialFields();
+
+            return new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
+        }
+
+        public async Task<ResultT<AccountGroup>> ValidateRelationsAsync(AccountGroup accountGroup)
+        {
             if (accountGroup.ParentAccountGroupId != null)
             {
                 var parentAccountExists = await IfExistsAsync((Guid)accountGroup.ParentAccountGroupId);
@@ -39,11 +56,19 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
                     };
             }
 
-            accountGroup.Id = NewId.NextGuid();
-            await _context.AccountGroups.AddAsync(accountGroup);
-            _context.SetAuditAndSpecialFields();
+            var classificationExists = await IfClassificationExists(accountGroup.AccountGroupClassificationId);
+            if (!classificationExists)
+                return new ResultT<AccountGroup>
+                {
+                    IsSuccess = false,
+                    Exception = new AccountGroupClassificationNotFound(accountGroup.AccountGroupClassificationId)
+                };
 
-            return new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
+            return new ResultT<AccountGroup>
+            {
+                IsSuccess = true,
+                Result = accountGroup
+            };
         }
 
         //TODO: see if we want to manage account child group deletion on cascade
@@ -129,13 +154,14 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
 
         public async Task<ResultT<AccountGroup>> UpdateAsync(AccountGroup accountGroup)
         {
+            //Is found
             var present = await GetAsync(accountGroup.Id);
-
             if (!present.IsSuccess)
                 return present;
 
             var toUpdate = present.Result;
 
+            //Group code already exists in the same classification
             var alreadyExistsWithOtherId = await IfExistsWithDifferentIdAsync(accountGroup.Code,
                 accountGroup.AccountGroupClassificationId, accountGroup.Id);
 
@@ -146,23 +172,23 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
                     Exception = new AccountGroupAlreadyExistsException(accountGroup.Code, accountGroup.AccountGroupClassificationId)
                 };
 
-            if (accountGroup.ParentAccountGroupId != null)
-            {
-                var parentAccountGroupExists = await IfExistsAsync((Guid)accountGroup.ParentAccountGroupId);
-                if (!parentAccountGroupExists)
-                    return new ResultT<AccountGroup>
-                    {
-                        IsSuccess = false,
-                        Exception = new AccountGroupParentNotFoundException((Guid)accountGroup.ParentAccountGroupId)
-                    };
-            }
+            //Validate dependencies
+            var validated = await ValidateRelationsAsync(accountGroup);
+            if (!validated.IsSuccess)
+                return validated;
 
+            //Save
             toUpdate = accountGroup.ToAccountGroup(toUpdate);
 
             _context.Entry(toUpdate).State = EntityState.Modified;
             _context.SetAuditAndSpecialFields();
 
             return new ResultT<AccountGroup> { IsSuccess = true, Result = toUpdate };
+        }
+
+        public async Task<bool> IfClassificationExists(Guid accountGroupClassificationId)
+        {
+            return await _context.AccountGroupClassifications.AnyAsync(a => a.Id == accountGroupClassificationId);
         }
     }
 }
