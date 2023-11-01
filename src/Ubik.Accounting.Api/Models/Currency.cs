@@ -6,8 +6,6 @@ using Ubik.DB.Common;
 namespace Ubik.Accounting.Api.Models
 {
     //TODO: will be updated by another service
-    [Index(nameof(TenantId), IsUnique = false)]
-    [Table("Currencies")]
     public class Currency : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
     {
         public Guid Id { get; set; }
