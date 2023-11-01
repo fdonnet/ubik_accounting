@@ -1,7 +1,7 @@
 ﻿using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 
-namespace Ubik.Accounting.Api.Features.Classifications
+namespace Ubik.Accounting.Api.Features.Classifications.Services
 {
     public interface IClassificationService
     {

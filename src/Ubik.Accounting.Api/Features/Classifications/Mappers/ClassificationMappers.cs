@@ -1,5 +1,4 @@
 ﻿using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Mappers

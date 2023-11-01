@@ -3,15 +3,11 @@ using Ubik.Accounting.Api.Models;
 using NSubstitute;
 using FluentAssertions;
 using Ubik.ApiService.Common.Exceptions;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using MassTransit.Testing;
 using Ubik.Accounting.Contracts.AccountGroups.Queries;
 using Microsoft.Extensions.DependencyInjection;
 using MassTransit;
 using Ubik.Accounting.Api.Features.AccountGroups.Queries;
-using Ubik.Accounting.Api.Features.Accounts.Queries;
-using Ubik.Accounting.Contracts.Accounts.Queries;
-using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries

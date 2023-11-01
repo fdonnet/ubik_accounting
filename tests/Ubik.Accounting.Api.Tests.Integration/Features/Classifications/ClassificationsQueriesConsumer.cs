@@ -2,15 +2,8 @@
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
-using Ubik.Accounting.Contracts.AccountGroups.Queries;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Classifications.Queries;
 using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Filters;

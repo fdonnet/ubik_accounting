@@ -7,7 +7,6 @@ using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Ubik.Accounting.Api.Features.Accounts.Commands;
 using Ubik.Accounting.Api.Features.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.AccountGroups.Events;

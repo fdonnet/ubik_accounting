@@ -1,16 +1,9 @@
-﻿using Docker.DotNet.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Tests.Integration.Auth;
 using FluentAssertions;
 using System.Net.Http.Json;
-using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications

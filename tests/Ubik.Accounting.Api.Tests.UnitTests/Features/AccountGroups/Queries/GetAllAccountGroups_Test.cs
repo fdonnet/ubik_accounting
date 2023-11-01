@@ -4,14 +4,10 @@ using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using Ubik.Accounting.Api.Features.AccountGroups.Queries;
-using Ubik.Accounting.Api.Features.Accounts.Queries;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Queries;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.Accounting.Contracts.Accounts.Queries;
-using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
 {

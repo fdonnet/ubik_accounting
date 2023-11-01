@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.AccountGroups.Commands;
-using Ubik.Accounting.Api.Features.Accounts.Commands;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Events;

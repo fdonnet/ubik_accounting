@@ -1,7 +1,7 @@
 ﻿using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 
-namespace Ubik.Accounting.Api.Features.AccountGroups
+namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
     public interface IAccountGroupService
     {

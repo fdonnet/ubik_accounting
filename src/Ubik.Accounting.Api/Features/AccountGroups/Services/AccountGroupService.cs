@@ -6,7 +6,7 @@ using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 
-namespace Ubik.Accounting.Api.Features.AccountGroups
+namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
     public class AccountGroupService : IAccountGroupService
     {

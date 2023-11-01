@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Ubik.Accounting.Api.Data;
 
 namespace Ubik.Accounting.Api.Tests.Integration

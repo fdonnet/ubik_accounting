@@ -1,13 +1,6 @@
 ﻿using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.Classifications.Exceptions;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
