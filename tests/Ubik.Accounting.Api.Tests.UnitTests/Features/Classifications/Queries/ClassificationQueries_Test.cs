@@ -81,10 +81,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
             var consumerHarness = _harness.GetConsumerHarness<GetClassificationConsumer>();
 
             //Act
-            var response = await client.GetResponse<GetClassificationsResult>(query);
+            var response = await client.GetResponse<GetClassificationResult>(query);
 
             //Assert
-            var sent = await _harness.Sent.Any<GetClassificationsResult>();
+            var sent = await _harness.Sent.Any<GetClassificationResult>();
             var consumed = await _harness.Consumed.Any<GetClassificationQuery>();
             var consumerConsumed = await consumerHarness.Consumed.Any<GetClassificationQuery>();
 
@@ -92,8 +92,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
             response.Message.Should()
-                .BeOfType<GetClassificationsResult>()
-                .And.Match<GetClassificationsResult>(a => a.Code == fake.Code);
+                .BeOfType<GetClassificationResult>()
+                .And.Match<GetClassificationResult>(a => a.Code == fake.Code);
         }
 
         public async Task DisposeAsync()

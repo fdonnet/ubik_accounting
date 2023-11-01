@@ -17,9 +17,9 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
             });
         }
 
-        public static GetClassificationsResult ToGetClassificationResult(this Classification current)
+        public static GetClassificationResult ToGetClassificationResult(this Classification current)
         {
-            return new GetClassificationsResult()
+            return new GetClassificationResult()
             {
                 Id = current.Id,
                 Code = current.Code,

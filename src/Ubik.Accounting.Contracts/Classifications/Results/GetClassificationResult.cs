@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ubik.Accounting.Contracts.Classifications.Results
 {
-    public record GetClassificationsResult
+    public record GetClassificationResult
     {
         public Guid Id { get; set; }
         public string Code { get; set; } = default!;
