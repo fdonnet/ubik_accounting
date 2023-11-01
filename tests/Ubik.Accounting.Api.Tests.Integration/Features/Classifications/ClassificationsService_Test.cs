@@ -14,12 +14,12 @@ using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 {
-    public  class ClassificationService_Test : BaseIntegrationTest
+    public  class ClassificationsService_Test : BaseIntegrationTest
     {
         private readonly BaseValuesForClassifications _testClassifications;
         private readonly IServiceManager _serviceManager;
 
-        public ClassificationService_Test(IntegrationTestWebAppFactory factory) : base(factory)
+        public ClassificationsService_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testClassifications = new BaseValuesForClassifications();
             _serviceManager = new ServiceManager(DbContext);

@@ -12,13 +12,13 @@ using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
-    public class AccountQueriesConsumer_Test : BaseIntegrationTest, IAsyncLifetime
+    public class AccountsQueriesConsumer_Test : BaseIntegrationTest, IAsyncLifetime
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
         private readonly BaseValuesForAccounts _testValuesForAccounts;
 
-        public AccountQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : base(factory)
+        public AccountsQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testValuesForAccounts = new BaseValuesForAccounts();
         }
@@ -100,8 +100,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                     a.ErrorType == ServiceAndFeatureExceptionType.NotFound
                     && a.CustomErrors[0].ErrorCode == "ACCOUNT_NOT_FOUND");
         }
-           
-
+         
         public async Task DisposeAsync()
         {
             await _harness.Stop();

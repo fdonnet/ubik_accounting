@@ -22,7 +22,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
             _serviceManager = serviceManager;
         }
 
-        //[Authorize(Roles = "ubik_accounting_accountgroup_read")]
+        [Authorize(Roles = "ubik_accounting_classification_read")]
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]

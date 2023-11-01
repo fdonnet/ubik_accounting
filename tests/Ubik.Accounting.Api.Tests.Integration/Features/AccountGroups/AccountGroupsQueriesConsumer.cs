@@ -19,13 +19,13 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 {
-    public  class AccountGroupQueriesConsumer : BaseIntegrationTest, IAsyncLifetime
+    public  class AccountGroupsQueriesConsumer : BaseIntegrationTest, IAsyncLifetime
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
 
-        public AccountGroupQueriesConsumer(IntegrationTestWebAppFactory factory) : base(factory)
+        public AccountGroupsQueriesConsumer(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testValuesForAccountGroups = new BaseValuesForAccountGroups();
         }
