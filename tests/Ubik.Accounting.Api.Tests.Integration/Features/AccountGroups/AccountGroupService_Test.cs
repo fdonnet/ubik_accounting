@@ -139,6 +139,29 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                         a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
         }
 
+        [Fact]
+        public async Task Add_AccountGroupClassificationNotFound_AccountGroupClassificationIdNotFound()
+        {
+            //Arrange
+            var accountGroup = new AccountGroup
+            {
+                Code = "zzz",
+                Label = "Test",
+                ParentAccountGroupId =null,
+                AccountGroupClassificationId = Guid.NewGuid()
+            };
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.AddAsync(accountGroup)).Exception;
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroupClassificationNotFound>()
+                    .And.Match<AccountGroupClassificationNotFound>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+        }
+
         [Theory]
         [MemberData(nameof(GetAccountGroups), parameters: new object[] { 5 })]
         public async Task Add_AuditFieldsModified_Ok(AccountGroup accountGroup)
@@ -303,6 +326,30 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         }
 
         [Fact]
+        public async Task Update_AccountGroupClassificationNotFound_AccountGroupClassificationIdNotFound()
+        {
+            //Arrange
+            var accountGroup = (await _serviceManager.AccountGroupService
+                .GetAsync(_testAccountGroupValues.AccountGroupId1)).Result;
+
+            accountGroup!.Label = "Modified";
+            accountGroup.Description = "Modified";
+            accountGroup.AccountGroupClassificationId = Guid.NewGuid();
+
+
+            //Act
+            var result = (await _serviceManager.AccountGroupService.UpdateAsync(accountGroup)).Exception;
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroupClassificationNotFound>()
+                    .And.Match<AccountGroupClassificationNotFound>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+        }
+
+
+        [Fact]
         public async Task Update_AccountGroupAlreadyExistsException_AccountGroupCodeAlreadyExistsInClassification()
         {
             //Arrange
@@ -325,6 +372,15 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                         a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
 
+        [Theory]
+        [InlineData("1524f188-20dd-4888-88f8-428e59bbc22a", true)]
+        [InlineData("7777f11f-20dd-4888-88f8-428e59bbc535", false)]
+        public async Task IfExistsClassification_TrueOrFalse_Ok(Guid classificationId, bool result)
+        {
+            var exist = await _serviceManager.AccountGroupService.IfClassificationExists(classificationId);
+
+            exist.Should().Be(result);
+        }
 
         [Theory]
         [InlineData("1529991f-20dd-4888-88f8-428e59bbc22a", true)]
@@ -349,6 +405,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should().Be(neededResult);
         }
+
+
 
         public static IEnumerable<object[]> GeneratedGuids
         {

@@ -2,13 +2,12 @@
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Exceptions
 {
-    public class AccountGroupAlreadyExistsException : Exception, IServiceAndFeatureException
+    public record AccountGroupAlreadyExistsException : IServiceAndFeatureException
     {
         public ServiceAndFeatureExceptionType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public AccountGroupAlreadyExistsException(string codeAlreadyExisting, Guid accountGroupClassification)
-         : base($"An account group with this code: {codeAlreadyExisting} already exists.")
         {
 
             ErrorType = ServiceAndFeatureExceptionType.Conflict;
