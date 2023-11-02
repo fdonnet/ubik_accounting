@@ -180,7 +180,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            await _serviceManager.AccountGroupService.ExecuteDeleteAsync(_testAccountGroupValues.AccountGroupIdForDel);
+            await _serviceManager.AccountGroupService.DeleteAsync(_testAccountGroupValues.AccountGroupIdForDel);
             var exist = (await _serviceManager.AccountGroupService.GetAsync(_testAccountGroupValues.AccountGroupIdForDel)).IsSuccess;
 
             //Assert
@@ -194,7 +194,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountGroupService.ExecuteDeleteAsync(Guid.NewGuid())).Exception;
+            var result = (await _serviceManager.AccountGroupService.DeleteAsync(Guid.NewGuid())).Exception;
 
             //Assert
             result.Should()

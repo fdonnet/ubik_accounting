@@ -47,15 +47,15 @@ namespace Ubik.Accounting.Api.Data.Config
             builder
                 .HasOne(a => a.AccountGroupClassification)
                 .WithMany(g => g.OwnedAccountGroups)
-                .HasForeignKey(b => b.AccountGroupClassificationId)
+                .HasForeignKey(b => b.AccountGroupClassificationId).OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
             builder
                 .HasMany(e => e.Accounts)
                 .WithMany()
                 .UsingEntity<AccountAccountGroup>(
-                a => a.HasOne<Account>().WithMany().HasForeignKey(e => e.AccountId),
-                g => g.HasOne<AccountGroup>().WithMany().HasForeignKey(e => e.AccountGroupId));
+                a => a.HasOne<Account>().WithMany().HasForeignKey(e => e.AccountId).OnDelete(DeleteBehavior.Cascade),
+                g => g.HasOne<AccountGroup>().WithMany().HasForeignKey(e => e.AccountGroupId).OnDelete(DeleteBehavior.Cascade));
         }
     }
 }
