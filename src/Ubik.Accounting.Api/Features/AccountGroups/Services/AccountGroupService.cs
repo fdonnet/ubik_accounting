@@ -50,6 +50,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             if (accountGrp.IsSuccess)
             {
                 using var transaction = _context.Database.BeginTransaction();
+                await DeleteAllChildrenAccountGroupAsync(id);
                 await _context.AccountGroups.Where(x => x.Id == id).ExecuteDeleteAsync();
 
                 transaction.Commit();
@@ -69,7 +70,13 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 
         public async Task DeleteAllChildrenAccountGroupAsync(Guid id)
         {
-            //var children = await _context.AccountGroups.Where(ag => )
+            var children = await _context.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
+
+            foreach(var child in children)
+            {
+                await DeleteAllChildrenAccountGroupAsync(child.Id);
+                await _context.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
+            }
         }
 
         public async Task<ResultT<AccountGroup>> GetAsync(Guid id)
