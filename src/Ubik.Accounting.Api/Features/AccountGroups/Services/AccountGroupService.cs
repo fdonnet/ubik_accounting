@@ -42,7 +42,6 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             return new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
         }
 
-        //TODO: check that (how to delete recursivly the accountgroup tree...
         public async Task<ResultT<bool>> DeleteAsync(Guid id)
         {
             var accountGrp = await GetAsync(id);
@@ -50,7 +49,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             if (accountGrp.IsSuccess)
             {
                 using var transaction = _context.Database.BeginTransaction();
-                await DeleteAllChildrenAccountGroupAsync(id);
+                await DeleteAllChildrenOfAsync(id);
                 await _context.AccountGroups.Where(x => x.Id == id).ExecuteDeleteAsync();
 
                 transaction.Commit();
@@ -68,13 +67,13 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                 };
         }
 
-        public async Task DeleteAllChildrenAccountGroupAsync(Guid id)
+        public async Task DeleteAllChildrenOfAsync(Guid id)
         {
             var children = await _context.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
 
             foreach(var child in children)
             {
-                await DeleteAllChildrenAccountGroupAsync(child.Id);
+                await DeleteAllChildrenOfAsync(child.Id);
                 await _context.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
             }
         }
