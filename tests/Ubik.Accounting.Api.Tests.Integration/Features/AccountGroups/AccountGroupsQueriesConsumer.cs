@@ -116,6 +116,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                     a.ErrorType == ServiceAndFeatureExceptionType.NotFound
                     && a.CustomErrors[0].ErrorCode == "ACCOUNTGROUP_NOT_FOUND");
         }
+
         public async Task DisposeAsync()
         {
             await _harness.Stop();

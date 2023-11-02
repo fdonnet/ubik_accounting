@@ -56,7 +56,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Code = code ?? a.Finance.Account().ToString(),
                      Label = label ?? a.Finance.AccountName().ClampLength(1, 100),
                      Description = description ?? a.Lorem.Paragraphs().ClampLength(1, 700),
-                     AccountGroupClassificationId = accountGroupClassificationId != default ? accountGroupClassificationId : testData.AccountGroupClassificationId1                     
+                     AccountGroupClassificationId = accountGroupClassificationId != default ? accountGroupClassificationId : testData.ClassificationId1                     
                  }).Generate(numTests);
         }
 
@@ -72,7 +72,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Code = code ?? a.Finance.Account().ToString(),
                      Label = label ?? a.Finance.AccountName().ClampLength(1, 100),
                      Description = description ?? a.Lorem.Paragraphs().ClampLength(1, 700),
-                     AccountGroupClassificationId = accountGroupClassificationId != default ? accountGroupClassificationId : testData.AccountGroupClassificationId1,
+                     AccountGroupClassificationId = accountGroupClassificationId != default ? accountGroupClassificationId : testData.ClassificationId1,
                      Version = version != default ? version : default
                  }).Generate(numTests);
         }
@@ -100,7 +100,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Code = a.Finance.Account().ToString(),
                      Label = a.Finance.AccountName().ClampLength(1, 100),
                      Description = a.Lorem.Paragraphs().ClampLength(1, 700),
-                     AccountGroupClassificationId = testData.AccountGroupClassificationId1
+                     AccountGroupClassificationId = testData.ClassificationId1
                  }).Generate(numTests);
         }
     }

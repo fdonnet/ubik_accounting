@@ -102,7 +102,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             {
                 Code = "10",
                 Label = "Test",
-                AccountGroupClassificationId = _testClassifications.AccountGroupClassificationId1
+                AccountGroupClassificationId = _testClassifications.ClassificationId1
             };
 
             //Act

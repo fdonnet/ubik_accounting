@@ -38,7 +38,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
 
             //Act
-            var result = (await _serviceManager.ClassificationService.GetAsync(_testClassifications.AccountGroupClassificationId1)).Result;
+            var result = (await _serviceManager.ClassificationService.GetAsync(_testClassifications.ClassificationId1)).Result;
 
             //Assert
             result.Should()

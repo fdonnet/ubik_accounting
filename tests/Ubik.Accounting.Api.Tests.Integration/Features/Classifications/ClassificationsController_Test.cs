@@ -5,6 +5,7 @@ using Ubik.Accounting.Api.Tests.Integration.Auth;
 using FluentAssertions;
 using System.Net.Http.Json;
 using Ubik.Accounting.Contracts.Classifications.Results;
+using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 {
@@ -27,10 +28,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 
             //Act
             var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
+            var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}");
 
 
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            responseGet.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
         }
 
@@ -45,10 +48,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 
             //Act
             var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
+            var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}");
 
 
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responseGet.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
@@ -69,6 +74,48 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             result.Should()
                 .NotBeNull()
                 .And.AllBeOfType<GetAllClassificationsResult>(); ;
+        }
+
+        [Fact]
+        public async Task Get_Classification_Ok()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}");
+            var result = await response.Content.ReadFromJsonAsync<GetClassificationResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<GetClassificationResult>()
+                .And.Match<GetClassificationResult>(x => x.Code == _testValuesForClassifications.ClassificationCode1);
+        }
+
+        [Fact]
+        public async Task Get_ProblemDetails_IdNotFound()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
         }
     }
 }

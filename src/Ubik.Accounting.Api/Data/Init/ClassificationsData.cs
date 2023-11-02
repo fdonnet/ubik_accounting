@@ -17,7 +17,7 @@ namespace Ubik.Accounting.Api.Data.Init
                 {
                     new Classification
                     {
-                    Id = baseValuesForAccountGroupClassifications.AccountGroupClassificationId1,
+                    Id = baseValuesForAccountGroupClassifications.ClassificationId1,
                     CreatedBy = baseValuesForUsers.UserId1,
                     CreatedAt = baseValuesGeneral.GenerationTime,
                     Code = "SWISSPLAN",
@@ -30,7 +30,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     },
                     new Classification
                     {
-                    Id = baseValuesForAccountGroupClassifications.AccountGroupClassificationId2,
+                    Id = baseValuesForAccountGroupClassifications.ClassificationId2,
                     CreatedBy = baseValuesForUsers.UserId1,
                     CreatedAt = baseValuesGeneral.GenerationTime,
                     Code = "SWISSPLAN2",

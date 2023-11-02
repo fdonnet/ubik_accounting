@@ -19,10 +19,10 @@
 
     public record BaseValuesForClassifications
     {
-        public Guid AccountGroupClassificationId1 { get; } = Guid.Parse("1524f188-20dd-4888-88f8-428e59bbc22a");
-        public Guid AccountGroupClassificationId2 { get; } = Guid.Parse("1524f189-20dd-4888-88f8-428e59bbc22a");
-        public Guid AccountGroupClassificationIdForDel { get; } = Guid.Parse("1524f190-20dd-4888-88f8-428e59bbc22c");
-        public string AccountGroupClassificationCode1 { get; } = "SWISSPLAN";
+        public Guid ClassificationId1 { get; } = Guid.Parse("1524f188-20dd-4888-88f8-428e59bbc22a");
+        public Guid ClassificationId2 { get; } = Guid.Parse("1524f189-20dd-4888-88f8-428e59bbc22a");
+        public Guid ClassificationIdForDel { get; } = Guid.Parse("1524f190-20dd-4888-88f8-428e59bbc22c");
+        public string ClassificationCode1 { get; } = "SWISSPLAN";
     }
 
     public record BaseValuesForTenants

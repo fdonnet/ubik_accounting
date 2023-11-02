@@ -248,7 +248,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Act
             var fake = FakeGenerator.GenerateAddAccountGroups(1,
                 code: _testValuesForAccountGroups.AccountGroupCode1,
-                accountGroupClassificationId: _testValuesForAccountGroupClassifications.AccountGroupClassificationId2).First();
+                accountGroupClassificationId: _testValuesForAccountGroupClassifications.ClassificationId2).First();
 
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
