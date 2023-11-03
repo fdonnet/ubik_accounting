@@ -27,7 +27,7 @@ namespace Ubik.Accounting.Api
 
             //Log
             //TODO: Begin to log usefull things
-            builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+            //builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
             //Options
             var authOptions = new AuthServerOptions();
@@ -90,6 +90,9 @@ namespace Ubik.Accounting.Api
             //Cors
             builder.Services.AddCustomCors();
 
+            //Tracing and metrics
+            builder.Services.AddTracingAndMetrics();
+
             //Swagger config
             var xmlPath = Path.Combine(AppContext.BaseDirectory, 
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
@@ -115,7 +118,8 @@ namespace Ubik.Accounting.Api
             //Build the app
             var app = builder.Build();
 
-            app.UseSerilogRequestLogging();
+            app.MapPrometheusScrapingEndpoint();
+            //app.UseSerilogRequestLogging();
             app.UseExceptionHandler(app.Logger, app.Environment);
 
             if (app.Environment.IsDevelopment())
@@ -136,7 +140,7 @@ namespace Ubik.Accounting.Api
                 initDb.Initialize(context);
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
 
