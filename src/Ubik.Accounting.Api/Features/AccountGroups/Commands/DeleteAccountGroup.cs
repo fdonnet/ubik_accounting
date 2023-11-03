@@ -18,7 +18,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 
         public async Task Consume(ConsumeContext<DeleteAccountGroupCommand> context)
         {
-            var res = await _serviceManager.AccountGroupService.ExecuteDeleteAsync(context.Message.Id);
+            var res = await _serviceManager.AccountGroupService.DeleteAsync(context.Message.Id);
 
             if (res.IsSuccess)
             {

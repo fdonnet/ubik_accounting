@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.Classifications.Exceptions;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 
-namespace Ubik.Accounting.Api.Features.Classifications
+namespace Ubik.Accounting.Api.Features.Classifications.Services
 {
     public class ClassificationService : IClassificationService
     {

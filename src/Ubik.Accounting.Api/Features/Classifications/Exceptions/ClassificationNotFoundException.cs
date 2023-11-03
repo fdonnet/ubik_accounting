@@ -13,7 +13,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Exceptions
             ErrorType = ServiceAndFeatureExceptionType.NotFound;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
-                ErrorCode = "CLASSIFICATION_NOTFOUND",
+                ErrorCode = "CLASSIFICATION_NOT_FOUND",
                 ErrorFriendlyMessage = "The classification is not found.",
                 ErrorValueDetails = $"Field:Id / Value:{id}"
             }};

@@ -20,13 +20,7 @@ namespace Ubik.Accounting.Api.Data.Config
             builder.Property(a => a.TenantId)
                 .IsRequired();
 
-            builder.Property(a => a.CreatedAt)
-                .IsRequired();
-
-            builder.Property(a => a.CreatedBy)
-                .IsRequired();
-
-            builder.HasIndex(a => a.IsoCode)
+            builder.HasIndex(a => new { a.IsoCode, a.TenantId })
                 .IsUnique();
 
             builder.HasIndex(a => a.TenantId);

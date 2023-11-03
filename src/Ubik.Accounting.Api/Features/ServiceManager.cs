@@ -1,7 +1,7 @@
 ﻿using Ubik.Accounting.Api.Data;
-using Ubik.Accounting.Api.Features.Classifications;
-using Ubik.Accounting.Api.Features.AccountGroups;
 using Ubik.Accounting.Api.Features.Accounts.Services;
+using Ubik.Accounting.Api.Features.AccountGroups.Services;
+using Ubik.Accounting.Api.Features.Classifications.Services;
 
 namespace Ubik.Accounting.Api.Features
 {

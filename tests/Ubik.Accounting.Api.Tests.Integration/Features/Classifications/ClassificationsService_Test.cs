@@ -1,25 +1,18 @@
 ﻿using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.Classifications.Exceptions;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 {
-    public  class ClassificationService_Test : BaseIntegrationTest
+    public  class ClassificationsService_Test : BaseIntegrationTest
     {
         private readonly BaseValuesForClassifications _testClassifications;
         private readonly IServiceManager _serviceManager;
 
-        public ClassificationService_Test(IntegrationTestWebAppFactory factory) : base(factory)
+        public ClassificationsService_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testClassifications = new BaseValuesForClassifications();
             _serviceManager = new ServiceManager(DbContext);
@@ -45,7 +38,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
 
             //Act
-            var result = (await _serviceManager.ClassificationService.GetAsync(_testClassifications.AccountGroupClassificationId1)).Result;
+            var result = (await _serviceManager.ClassificationService.GetAsync(_testClassifications.ClassificationId1)).Result;
 
             //Assert
             result.Should()

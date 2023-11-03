@@ -2,30 +2,23 @@
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
 using Ubik.Accounting.Contracts.AccountGroups.Queries;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.Accounting.Contracts.Accounts.Queries;
-using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Filters;
 using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 {
-    public  class AccountGroupQueriesConsumer : BaseIntegrationTest, IAsyncLifetime
+    public  class AccountGroupsQueriesConsumer : BaseIntegrationTest, IAsyncLifetime
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
 
-        public AccountGroupQueriesConsumer(IntegrationTestWebAppFactory factory) : base(factory)
+        public AccountGroupsQueriesConsumer(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testValuesForAccountGroups = new BaseValuesForAccountGroups();
         }
@@ -123,6 +116,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                     a.ErrorType == ServiceAndFeatureExceptionType.NotFound
                     && a.CustomErrors[0].ErrorCode == "ACCOUNTGROUP_NOT_FOUND");
         }
+
         public async Task DisposeAsync()
         {
             await _harness.Stop();

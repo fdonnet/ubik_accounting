@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.AccountGroups.Commands;
-using Ubik.Accounting.Api.Features.Accounts.Commands;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Events;
@@ -29,7 +28,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _idToDelete = Guid.NewGuid();
             _command = new DeleteAccountGroupCommand() { Id = _idToDelete };
 
-            _serviceManager.AccountGroupService.ExecuteDeleteAsync(_idToDelete)
+            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete)
                 .Returns(new ResultT<bool> { Result = true, IsSuccess = true });
 
             var accountGroup = new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" };

@@ -6,7 +6,7 @@ using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 
-namespace Ubik.Accounting.Api.Features.AccountGroups
+namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
     public class AccountGroupService : IAccountGroupService
     {
@@ -42,14 +42,17 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
             return new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
         }
 
-        //TODO: see if we want to manage account child group deletion on cascade
-        public async Task<ResultT<bool>> ExecuteDeleteAsync(Guid id)
+        public async Task<ResultT<bool>> DeleteAsync(Guid id)
         {
             var accountGrp = await GetAsync(id);
 
             if (accountGrp.IsSuccess)
             {
+                using var transaction = _context.Database.BeginTransaction();
+                await DeleteAllChildrenOfAsync(id);
                 await _context.AccountGroups.Where(x => x.Id == id).ExecuteDeleteAsync();
+
+                transaction.Commit();
                 return new ResultT<bool>
                 {
                     IsSuccess = true,
@@ -62,6 +65,17 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
                     IsSuccess = false,
                     Exception = new AccountGroupNotFoundException(id)
                 };
+        }
+
+        public async Task DeleteAllChildrenOfAsync(Guid id)
+        {
+            var children = await _context.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
+
+            foreach(var child in children)
+            {
+                await DeleteAllChildrenOfAsync(child.Id);
+                await _context.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
+            }
         }
 
         public async Task<ResultT<AccountGroup>> GetAsync(Guid id)

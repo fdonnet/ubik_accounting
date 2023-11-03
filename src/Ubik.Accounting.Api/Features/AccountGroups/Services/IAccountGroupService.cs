@@ -1,7 +1,7 @@
 ﻿using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 
-namespace Ubik.Accounting.Api.Features.AccountGroups
+namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
     public interface IAccountGroupService
     {
@@ -18,6 +18,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups
         public Task<bool> IfClassificationExists(Guid accountGroupClassificationId);
         public Task<ResultT<AccountGroup>> AddAsync(AccountGroup accountGroup);
         public Task<ResultT<AccountGroup>> UpdateAsync(AccountGroup accountGroup);
-        public Task<ResultT<bool>> ExecuteDeleteAsync(Guid id);
+        public Task<ResultT<bool>> DeleteAsync(Guid id);
+        public Task DeleteAllChildrenOfAsync(Guid id);
     }
 }
