@@ -7,6 +7,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
     {
         public Task<IEnumerable<Classification>> GetAllAsync();
         public Task<ResultT<Classification>> GetAsync(Guid id);
+        public
         //Task<bool> IfExistsAsync(Guid id);
         //public Task<bool> IfExistsAsync(string code);
         //public Task<ResultT<Classification>> AddAsync(Classification classification);

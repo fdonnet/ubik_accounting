@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LanguageExt;
+using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.Classifications.Exceptions;
 using Ubik.Accounting.Api.Models;
@@ -27,13 +28,13 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             return result;
         }
 
-        public async Task<ResultT<Classification>> GetAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, Classification>> GetAsync(Guid id)
         {
             var result = await _context.AccountGroupClassifications.FirstOrDefaultAsync(a => a.Id == id);
 
             return result == null
-                ? new ResultT<Classification>() { IsSuccess = false, Exception = new ClassificationNotFoundException(id) }
-                : new ResultT<Classification>() { IsSuccess = true, Result = result };
+                ? new ClassificationNotFoundException(id)
+                : result;
         }
     }
 }
