@@ -41,9 +41,9 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         public async Task<ActionResult<GetClassificationResult>> Get(Guid id)
         {
             var result = await _serviceManager.ClassificationService.GetAsync(id);
-            return result.IsSuccess
-                ? (ActionResult<GetClassificationResult>)Ok(result.Result.ToGetClassificationResult())
-                : (ActionResult<GetClassificationResult>)new ObjectResult(result.Exception.ToValidationProblemDetails(HttpContext));
+            return result.Match(
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)),
+                            Right: ok => Ok(ok.ToGetClassificationResult()));
         }
 
     }

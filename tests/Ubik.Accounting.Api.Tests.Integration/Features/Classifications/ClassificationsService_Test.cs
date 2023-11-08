@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using NSubstitute.Routing.Handlers;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Classifications.Exceptions;
@@ -38,7 +39,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
 
             //Act
-            var result = (await _serviceManager.ClassificationService.GetAsync(_testClassifications.ClassificationId1)).Result;
+            var result = (await _serviceManager.ClassificationService.GetAsync(_testClassifications.ClassificationId1));
 
             //Assert
             result.Should()
@@ -52,7 +53,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
 
             //Act
-            var result = (await _serviceManager.ClassificationService.GetAsync(Guid.NewGuid())).Exception;
+            var result = (await _serviceManager.ClassificationService.GetAsync(Guid.NewGuid()));
 
             //Assert
             result.Should()
