@@ -17,7 +17,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         private readonly IServiceManager _serviceManager;
         private readonly GetAccountQuery _query;
         private readonly Account _account;
-        private readonly ResultT<Account> _result;
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
 
@@ -31,10 +30,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             };
 
             _account = new Account() { Code = "TEST", Label = "Test", CurrencyId = Guid.NewGuid() };
-
-            _result = new ResultT<Account>() { IsSuccess = true, Result = _account };
-
-            _serviceManager.AccountService.GetAsync(_query.Id).Returns(_result);
+            _serviceManager.AccountService.GetAsync(_query.Id).Returns(_account);
         }
 
         public async Task InitializeAsync()

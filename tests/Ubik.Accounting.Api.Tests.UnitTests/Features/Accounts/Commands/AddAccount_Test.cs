@@ -38,7 +38,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             };
 
             _account = _command.ToAccount();
-            _serviceManager.AccountService.AddAsync(Arg.Any<Account>()).Returns(new ResultT<Account> { Result = _account, IsSuccess = true }); ;
+            _serviceManager.AccountService.AddAsync(Arg.Any<Account>()).Returns(_account); ;
             _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
             _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(true);
         }

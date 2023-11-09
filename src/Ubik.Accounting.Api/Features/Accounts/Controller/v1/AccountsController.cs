@@ -46,9 +46,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         public async Task<ActionResult<GetAccountResult>> Get(Guid id)
         {
             var result = await _serviceManager.AccountService.GetAsync(id);
-            return result.IsSuccess
-                ? (ActionResult<GetAccountResult>)Ok(result.Result.ToGetAccountResult())
-                : (ActionResult<GetAccountResult>)new ObjectResult(result.Exception.ToValidationProblemDetails(HttpContext));
+
+            return result.Match(
+                Right: r => Ok(r.ToGetAccountResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]

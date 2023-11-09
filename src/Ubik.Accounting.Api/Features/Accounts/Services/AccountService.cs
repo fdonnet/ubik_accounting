@@ -24,13 +24,13 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             return accounts;
         }
 
-        public async Task<ResultT<Account>> GetAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, Account>> GetAsync(Guid id)
         {
             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
 
             return account == null
-                ? new ResultT<Account>() {IsSuccess = false, Exception = new AccountNotFoundException(id)}
-                : new ResultT<Account>() {IsSuccess = true, Result = account };
+                ? new AccountNotFoundException(id)
+                : account;
         }
 
         public async Task<bool> IfExistsAsync(string accountCode)
@@ -43,63 +43,61 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             return await _context.Accounts.AnyAsync(a => a.Code == accountCode && a.Id != currentId);
         }
 
-        public async Task<ResultT<Account>> AddAsync(Account account)
+        public async Task<Either<IServiceAndFeatureException, Account>> AddAsync(Account account)
         {
             var accountExists = await IfExistsAsync(account.Code);
             if (accountExists)
-                return new ResultT<Account>() { IsSuccess = false, Exception = new AccountAlreadyExistsException(account.Code) };
+                return new AccountAlreadyExistsException(account.Code);
 
             var curExists = await IfExistsCurrencyAsync(account.CurrencyId);
             if (!curExists)
-                return new ResultT<Account>() { IsSuccess = false, Exception = new AccountCurrencyNotFoundException(account.CurrencyId) };
+                return new AccountCurrencyNotFoundException(account.CurrencyId);
 
             account.Id = NewId.NextGuid();
             await _context.Accounts.AddAsync(account);
             _context.SetAuditAndSpecialFields();
 
-            return new ResultT<Account>() { IsSuccess = true, Result = account };
+            return account;
         }
 
-        public async Task<ResultT<Account>> UpdateAsync(Account account)
+        public async Task<Either<IServiceAndFeatureException, Account>> UpdateAsync(Account account)
         {
             //Check if the account is found
             var accountPresent = await GetAsync(account.Id);
-            if(!accountPresent.IsSuccess)
+            if(!accountPresent.IsLeft)
                 return accountPresent;
 
-            var accountToUpd = accountPresent.Result;
+            var accountToUpd = accountPresent.IfLeft(ac => default!);
 
             //check if the account code already exists in other records
             bool exists = await IfExistsWithDifferentIdAsync(account.Code, account.Id);
             if (exists)
-                return new ResultT<Account>() { IsSuccess = false, Exception = new AccountAlreadyExistsException(account.Code) };
+                return new AccountAlreadyExistsException(account.Code);
 
             //check if the specified currency exists
             var curexists = await IfExistsCurrencyAsync(account.CurrencyId);
             if (!curexists)
-                return new ResultT<Account>() { IsSuccess = false, Exception = new AccountCurrencyNotFoundException(account.CurrencyId) };
+                return new AccountCurrencyNotFoundException(account.CurrencyId);
 
             accountToUpd = account.ToAccount(accountToUpd);
 
             _context.Entry(accountToUpd).State = EntityState.Modified;
             _context.SetAuditAndSpecialFields();
 
-            return new ResultT<Account>() { IsSuccess = true, Result=accountToUpd };
+            return accountToUpd;
         }
 
-        public async Task<ResultT<bool>> ExecuteDeleteAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, bool>> ExecuteDeleteAsync(Guid id)
         {
             var account = await GetAsync(id);
 
-            if(account.IsSuccess)
+            if(account.IsRight)
             {
                 await _context.Accounts.Where(x => x.Id == id).ExecuteDeleteAsync();
-                return new ResultT<bool>() { IsSuccess = true, Result = true };
+                return true;
             }
             else
-            {
-                return new ResultT<bool>() { IsSuccess = false, Exception = new AccountNotFoundException(id) };
-            }
+                return new AccountNotFoundException(id);
         }
 
         public async Task<bool> IfExistsCurrencyAsync(Guid currencyId)

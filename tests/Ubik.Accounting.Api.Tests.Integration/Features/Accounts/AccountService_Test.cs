@@ -24,12 +24,13 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
                 
             //Act
-            var result = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1)).Result;
+            var result = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1)).IfLeft(r=>default!);
 
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<Account>();
+                    .And.BeOfType<Account>()
+                    .And.Match<Account>(a => a.Id == _testValuesForAccounts.AccountId1);
         }
 
         [Theory, MemberData(nameof(GeneratedGuids))]
@@ -38,7 +39,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountService.GetAsync(id)).Exception;
+            var result = (await _serviceManager.AccountService.GetAsync(id)).IfRight(err => default!);
 
             //Assert
             result.Should()
@@ -99,12 +100,13 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountService.AddAsync(account)).Result;
+            var result = (await _serviceManager.AccountService.AddAsync(account)).IfLeft(r=>default!);
 
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<Account>();
+                    .And.BeOfType<Account>()
+                    .And.Match<Account>(a => a.Code == account.Code);
         }
 
         [Theory]
@@ -114,7 +116,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountService.AddAsync(account)).Exception;
+            var result = (await _serviceManager.AccountService.AddAsync(account)).IfRight(err => default!);
 
             //Assert
             result.Should()
@@ -133,7 +135,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountService.AddAsync(account)).Exception;
+            var result = (await _serviceManager.AccountService.AddAsync(account)).IfRight(err => default!);
 
             //Assert
             result.Should()
@@ -153,23 +155,25 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountService.AddAsync(account)).Result;
+            var result = (await _serviceManager.AccountService.AddAsync(account)).IfLeft(r=>default!);
 
             //Assert
-            result.Should().Match<Account>(x => x.ModifiedBy != null && x.ModifiedAt != null);
+            result.Should().Match<Account>(x => x.ModifiedBy != null
+                    && x.ModifiedAt != null
+                    && x.Code == account.Code);
         }
 
         [Fact]
         public async Task Update_UpdatedAccount_Ok()
         {
             //Arrange
-            var account = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1)).Result;
+            var account = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1)).IfLeft(r => default!);
 
             account!.Label = "Modified";
             account.Description = "Modified";
 
             //Act
-            var result = (await _serviceManager.AccountService.UpdateAsync(account)).Result;
+            var result = (await _serviceManager.AccountService.UpdateAsync(account)).IfLeft(r => default!);
 
             //Assert
             result.Should()
@@ -177,7 +181,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                     .And.BeOfType<Account>()
                     .And.Match<Account>(a => 
                         a.Label == "Modified"
-                        && a.Version != account.Version);
+                        && a.Version != account.Version
+                        && a.Id == account.Id);
         }
 
         [Fact]
@@ -190,7 +195,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             account.Description = "Modified";
 
             //Act
-            var result = (await _serviceManager.AccountService.UpdateAsync(account)).Exception;
+            var result = (await _serviceManager.AccountService.UpdateAsync(account)).IfRight(err => default!);
 
             //Assert
             result.Should()
@@ -210,7 +215,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             account.Description = "Modified";
 
             //Act
-            var result = (await _serviceManager.AccountService.UpdateAsync(account)).Exception;
+            var result = (await _serviceManager.AccountService.UpdateAsync(account)).IfRight(err => default!);
 
             //Assert
             result.Should()
@@ -230,7 +235,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             account.Description = "Modified";
 
             //Act
-            var result = (await _serviceManager.AccountService.UpdateAsync(account)).Exception;
+            var result = (await _serviceManager.AccountService.UpdateAsync(account)).IfRight(err=>default!);
 
             //Assert
             result.Should()
@@ -244,19 +249,19 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Update_ModifiedAtFieldUpdated_Ok()
         {
             //Arrange
-            var account = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1)).Result;
+            var account = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1)).IfLeft(r=>default!);
 
             account!.Label = "Modified";
             account.Description = "Modified";
             var modifiedAt = account.ModifiedAt;
 
             //Act
-            var result = (await _serviceManager.AccountService.UpdateAsync(account)).Result;
+            var result = (await _serviceManager.AccountService.UpdateAsync(account)).IfLeft(r=>default!);
 
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.Match<Account>(x => x.ModifiedAt > modifiedAt);
+                    .And.Match<Account>(x => x.ModifiedAt > modifiedAt && x.Id == _testValuesForAccounts.AccountId1);
         }
 
         [Fact]
@@ -266,7 +271,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             
             //Act
             await _serviceManager.AccountService.ExecuteDeleteAsync(_testValuesForAccounts.AccountIdForDel);
-            var exist = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountIdForDel)).IsSuccess;
+            var exist = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountIdForDel)).IsRight;
 
             //Assert
             exist.Should()
@@ -279,7 +284,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountService.ExecuteDeleteAsync(Guid.NewGuid())).Exception;
+            var result = (await _serviceManager.AccountService.ExecuteDeleteAsync(Guid.NewGuid())).IfRight(err => default!);
 
             //Assert
             result.Should()

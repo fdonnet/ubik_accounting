@@ -30,8 +30,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             var account = new Account() { Id = _idToDelete, Code = "test", Label = "test", CurrencyId = Guid.NewGuid() };
 
-            _serviceManager.AccountService.ExecuteDeleteAsync(_idToDelete).Returns(new ResultT<bool> { Result = true, IsSuccess = true });
-            _serviceManager.AccountService.GetAsync(_idToDelete).Returns(new ResultT<Account> { IsSuccess=true, Result=account});
+            _serviceManager.AccountService.ExecuteDeleteAsync(_idToDelete).Returns(true);
+            _serviceManager.AccountService.GetAsync(_idToDelete).Returns(account);
         }
 
         public async Task InitializeAsync()

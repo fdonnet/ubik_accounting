@@ -20,14 +20,14 @@ public class DeleteAccountConsumer : IConsumer<DeleteAccountCommand>
     {
         var res = await _serviceManager.AccountService.ExecuteDeleteAsync(context.Message.Id);
 
-        if(res.IsSuccess)
-        {
-            await _publishEndpoint.Publish(new AccountDeleted { Id = context.Message.Id }, CancellationToken.None);
-            await _serviceManager.SaveAsync();
-            await context.RespondAsync<DeleteAccountResult>(new { Deleted = true });
-        }
-        else
-            await context.RespondAsync(res.Exception);
+        await res.Match(
+            Right: async r =>
+            {
+                await _publishEndpoint.Publish(new AccountDeleted { Id = context.Message.Id }, CancellationToken.None);
+                await _serviceManager.SaveAsync();
+                await context.RespondAsync<DeleteAccountResult>(new { Deleted = true });
+            },
+            Left: async err => await context.RespondAsync(err));
     }
 }
 
