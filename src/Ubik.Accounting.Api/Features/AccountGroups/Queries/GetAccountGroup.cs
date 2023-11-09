@@ -16,10 +16,9 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
         {
             var result = await _serviceManager.AccountGroupService.GetAsync(context.Message.Id);
 
-            if (result.IsSuccess)
-                await context.RespondAsync(result.Result.ToGetAccountGroupResult());
-            else
-                await context.RespondAsync(result.Exception);
+            await result.Match(
+                Right: async res => await context.RespondAsync(res.ToGetAccountGroupResult()),
+                Left: async err => await context.RespondAsync(err));
         }
     }
 }

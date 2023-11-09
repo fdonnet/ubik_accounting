@@ -46,13 +46,13 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
         {
             //Arrange
             var accountGroup = new AccountGroup() { Code = "TEST", Label = "Test" };
-            var result = new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
+            //var result = new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
             var query = new GetAccountGroupQuery()
             {
                 Id = Guid.NewGuid()
             };
 
-            _serviceManager.AccountGroupService.GetAsync(query.Id).Returns(result);
+            _serviceManager.AccountGroupService.GetAsync(query.Id).Returns(accountGroup);
             var client = _harness.GetRequestClient<GetAccountGroupQuery>();
             var consumerHarness = _harness.GetConsumerHarness<GetAccountGroupConsumer>();
 
@@ -120,10 +120,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
                 }
             };
 
-            var result = new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
-
             _serviceManager.AccountGroupService.GetWithChildAccountsAsync(query.AccountGroupId)
-                .Returns(result);
+                .Returns(accountGroup);
 
             var client = _harness.GetRequestClient<GetChildAccountsQuery>();
             var consumerHarness = _harness.GetConsumerHarness<GetChildAccountsConsumer>();

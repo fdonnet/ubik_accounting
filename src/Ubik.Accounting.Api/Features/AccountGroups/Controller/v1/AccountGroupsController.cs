@@ -45,9 +45,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         public async Task<ActionResult<GetAccountGroupResult>> Get(Guid id)
         {
             var result = await _serviceManager.AccountGroupService.GetAsync(id);
-            return result.IsSuccess
-                ? (ActionResult<GetAccountGroupResult>)Ok(result.Result.ToGetAccountGroupResult())
-                : (ActionResult<GetAccountGroupResult>)new ObjectResult(result.Exception.ToValidationProblemDetails(HttpContext));
+
+            return result.Match(
+                Right: ok => Ok(ok.ToGetAccountGroupResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         [Authorize(Roles = "ubik_accounting_accountgroup_read")]
@@ -61,9 +62,9 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         {
             var result = await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(id);
 
-            return result.IsSuccess
-                ? (ActionResult<GetAccountGroupResult>)Ok(result.Result.Accounts!.ToGetChildAccountsResult())
-                : (ActionResult<GetAccountGroupResult>)new ObjectResult(result.Exception.ToValidationProblemDetails(HttpContext));
+            return result.Match(
+                Right: r => Ok(r.Accounts!.ToGetChildAccountsResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]

@@ -32,8 +32,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
                 .Returns(new ResultT<bool> { Result = true, IsSuccess = true });
 
             var accountGroup = new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" };
-            _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns
-                (new ResultT<AccountGroup> { IsSuccess = true, Result = accountGroup });
+            _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(accountGroup);
 
         }
         public async Task InitializeAsync()

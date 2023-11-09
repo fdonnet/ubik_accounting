@@ -22,22 +22,22 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
             var accountGrp = context.Message.ToAccountGroup();
             var res = await _serviceManager.AccountGroupService.UpdateAsync(accountGrp);
 
-            if (res.IsSuccess)
-            {
-                try
+            await res.Match(
+                Right: async r =>
                 {
-                    await _publishEndpoint.Publish(accountGrp.ToAccountGroupUpdated(), CancellationToken.None);
-                    await _serviceManager.SaveAsync();
+                    try
+                    {
+                        await _publishEndpoint.Publish(accountGrp.ToAccountGroupUpdated(), CancellationToken.None);
+                        await _serviceManager.SaveAsync();
 
-                    await context.RespondAsync(res.Result.ToUpdateAccountGroupResult());
-                }
-                catch (UpdateDbConcurrencyException)
-                {
-                    await context.RespondAsync(new AccountGroupUpdateConcurrencyExeception(context.Message.Version));
-                }
-            }
-            else
-                await context.RespondAsync(res.Exception);
+                        await context.RespondAsync(r.ToUpdateAccountGroupResult());
+                    }
+                    catch (UpdateDbConcurrencyException)
+                    {
+                        await context.RespondAsync(new AccountGroupUpdateConcurrencyExeception(context.Message.Version));
+                    }
+                },
+                Left: async err => await context.RespondAsync(err));
         }
     }
 }
