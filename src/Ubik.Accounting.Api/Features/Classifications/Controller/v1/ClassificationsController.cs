@@ -42,8 +42,8 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         {
             var result = await _serviceManager.ClassificationService.GetAsync(id);
             return result.Match(
-                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)),
-                            Right: ok => Ok(ok.ToGetClassificationResult()));
+                            Right: ok => Ok(ok.ToGetClassificationResult()),
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
     }

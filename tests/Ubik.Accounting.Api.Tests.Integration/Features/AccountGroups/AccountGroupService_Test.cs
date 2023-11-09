@@ -200,7 +200,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountGroupService.DeleteAsync(Guid.NewGuid())).Exception;
+            var result = (await _serviceManager.AccountGroupService.DeleteAsync(Guid.NewGuid())).IfRight(err => default!);
 
             //Assert
             result.Should()

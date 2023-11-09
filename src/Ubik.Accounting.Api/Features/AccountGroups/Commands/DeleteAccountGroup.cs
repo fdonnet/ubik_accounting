@@ -20,14 +20,14 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
         {
             var res = await _serviceManager.AccountGroupService.DeleteAsync(context.Message.Id);
 
-            if (res.IsSuccess)
-            {
-                await _publishEndpoint.Publish(new AccountGroupDeleted { Id = context.Message.Id }, CancellationToken.None);
-                await _serviceManager.SaveAsync();
-                await context.RespondAsync<DeleteAccountGroupResult>(new { Deleted = true });
-            }
-            else
-                await context.RespondAsync(res.Exception);
+            await res.Match(
+                Right: async r =>
+                {
+                    await _publishEndpoint.Publish(new AccountGroupDeleted { Id = context.Message.Id }, CancellationToken.None);
+                    await _serviceManager.SaveAsync();
+                    await context.RespondAsync<DeleteAccountGroupResult>(new { Deleted = true });
+                },
+                Left: async err => await context.RespondAsync(err));
         }
     }
 }

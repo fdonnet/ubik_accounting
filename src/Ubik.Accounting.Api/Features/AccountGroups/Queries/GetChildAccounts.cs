@@ -21,11 +21,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
         {
             var result = await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(context.Message.AccountGroupId);
 
-            await result.Match(
-                Right: async r => await context.RespondAsync<GetChildAccountsResults>
-                    (new { ChildAccounts = r.Accounts!.ToGetChildAccountsResult() }),
-
-                Left: async err => await context.RespondAsync(err));
+            await result
+                .Right(async r => await context.RespondAsync<GetChildAccountsResults>
+                    (new { ChildAccounts = r.Accounts!.ToGetChildAccountsResult() }))
+                .Left(async err => await context.RespondAsync(err));
         }
     }
 }

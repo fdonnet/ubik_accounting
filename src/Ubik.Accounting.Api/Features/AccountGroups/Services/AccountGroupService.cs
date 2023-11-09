@@ -38,51 +38,23 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             return accountGroup;
         }
 
-        public async Task<ResultT<bool>> DeleteAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, bool>> DeleteAsync(Guid id)
         {
             var accountGrp = await GetAsync(id);
 
-            var result = await accountGrp.MatchAsync(
-                RightAsync:  async r =>
-                {
-                    using var transaction = _context.Database.BeginTransaction();
-                    await DeleteAllChildrenOfAsync(id);
-                    await _context.AccountGroups.Where(x => x.Id == id).ExecuteDeleteAsync();
+            if(accountGrp.IsRight)
+            {
+                using var transaction = _context.Database.BeginTransaction();
+                await DeleteAllChildrenOfAsync(id);
+                await _context.AccountGroups.Where(x => x.Id == id).ExecuteDeleteAsync();
 
-                    transaction.Commit();
-                    return new ResultT<bool>
-                    {
-                        IsSuccess = true,
-                        Result = true,
-                    };
-                },
-                Left: err => new ResultT<bool>
-                {
-                    IsSuccess = false,
-                    Exception = new AccountGroupNotFoundException(id)
-                });
-
-            return result;
-
-            //if (accountGrp.IsSuccess)
-            //{
-            //    using var transaction = _context.Database.BeginTransaction();
-            //    await DeleteAllChildrenOfAsync(id);
-            //    await _context.AccountGroups.Where(x => x.Id == id).ExecuteDeleteAsync();
-
-            //    transaction.Commit();
-            //    return new ResultT<bool>
-            //    {
-            //        IsSuccess = true,
-            //        Result = true,
-            //    };
-            //}
-            //else
-            //    return new ResultT<bool>
-            //    {
-            //        IsSuccess = false,
-            //        Exception = new AccountGroupNotFoundException(id)
-            //    };
+                transaction.Commit();
+                return true;
+            }
+            else
+            {
+                return new AccountGroupNotFoundException(id);
+            }
         }
 
         public async Task DeleteAllChildrenOfAsync(Guid id)

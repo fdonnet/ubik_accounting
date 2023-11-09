@@ -29,7 +29,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _command = new DeleteAccountGroupCommand() { Id = _idToDelete };
 
             _serviceManager.AccountGroupService.DeleteAsync(_idToDelete)
-                .Returns(new ResultT<bool> { Result = true, IsSuccess = true });
+                .Returns(true);
 
             var accountGroup = new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" };
             _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(accountGroup);
