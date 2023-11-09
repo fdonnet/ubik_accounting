@@ -1,6 +1,6 @@
 ﻿namespace Ubik.Accounting.Api.Features.Classifications.Queries
 {
-    public class GetClassificationNotAttachedAccounts
+    public class GetClassificationAccountsMissing
     {
     }
 }
