@@ -5,7 +5,6 @@ using Ubik.ApiService.Common.Services;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Api.Features;
 using System.Reflection;
-using Serilog;
 using Ubik.Accounting.Api.Data.Init;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;

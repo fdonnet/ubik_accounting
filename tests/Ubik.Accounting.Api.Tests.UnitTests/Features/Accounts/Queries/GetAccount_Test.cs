@@ -8,7 +8,6 @@ using Ubik.Accounting.Api.Features.Accounts.Queries;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
 {

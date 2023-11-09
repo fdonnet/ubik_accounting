@@ -7,7 +7,7 @@ namespace Ubik.Accounting.Contracts.Accounts.Commands
     public record UpdateAccountCommand
     {
         [Required]
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
         [Required]
         [MaxLength(20)]
         public string Code { get; init; } = default!;

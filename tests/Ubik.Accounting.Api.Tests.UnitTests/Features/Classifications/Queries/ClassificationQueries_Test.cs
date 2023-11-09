@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using LanguageExt;
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,11 +6,8 @@ using NSubstitute;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Classifications.Queries;
 using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Contracts.AccountGroups.Queries;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Classifications.Queries;
 using Ubik.Accounting.Contracts.Classifications.Results;
-using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
 {

@@ -2,6 +2,7 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Results;
@@ -84,7 +85,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         public async Task<ActionResult<UpdateAccountResult>> Update(Guid id, 
             UpdateAccountCommand command, IRequestClient<UpdateAccountCommand> client)
         {
-            command.Id = id;
+            if (command.Id != id)
+                return new ObjectResult(new AccountIdNotMatchForUpdateException(id, command.Id)
+                    .ToValidationProblemDetails(HttpContext));
 
             var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureException>(command);
 

@@ -10,7 +10,6 @@ using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Events;
 using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands

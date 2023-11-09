@@ -1,5 +1,4 @@
 ﻿using LanguageExt;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 

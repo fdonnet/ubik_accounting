@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using MassTransit.DependencyInjection.Registration;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;

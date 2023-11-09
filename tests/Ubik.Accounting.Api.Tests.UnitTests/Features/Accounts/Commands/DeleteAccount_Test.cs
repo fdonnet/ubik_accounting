@@ -2,7 +2,6 @@
 using Ubik.Accounting.Api.Models;
 using NSubstitute;
 using FluentAssertions;
-using Ubik.ApiService.Common.Exceptions;
 using MassTransit;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using MassTransit.Testing;

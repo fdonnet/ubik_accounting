@@ -6,6 +6,7 @@ using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using MassTransit;
+using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
 {
@@ -99,7 +100,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         public async Task<ActionResult<UpdateAccountGroupResult>> Update(Guid id,
             UpdateAccountGroupCommand command, IRequestClient<UpdateAccountGroupCommand> client)
         {
-            command.Id = id;
+            if (command.Id != id)
+                return new ObjectResult(new AccountGroupIdNotMatchForUpdateException(id, command.Id)
+                    .ToValidationProblemDetails(HttpContext));
+            
 
             var (result, error) = await client.GetResponse<UpdateAccountGroupResult, IServiceAndFeatureException>(command);
 

@@ -9,7 +9,6 @@ using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Events;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
 {

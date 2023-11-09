@@ -2,7 +2,6 @@
 using Ubik.Accounting.Api.Models;
 using NSubstitute;
 using FluentAssertions;
-using Ubik.ApiService.Common.Exceptions;
 using MassTransit.Testing;
 using Ubik.Accounting.Contracts.AccountGroups.Queries;
 using Microsoft.Extensions.DependencyInjection;
