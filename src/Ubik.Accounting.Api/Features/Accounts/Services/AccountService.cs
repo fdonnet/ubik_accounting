@@ -64,7 +64,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         {
             //Check if the account is found
             var accountPresent = await GetAsync(account.Id);
-            if(!accountPresent.IsLeft)
+            if(accountPresent.IsLeft)
                 return accountPresent;
 
             var accountToUpd = accountPresent.IfLeft(ac => default!);
