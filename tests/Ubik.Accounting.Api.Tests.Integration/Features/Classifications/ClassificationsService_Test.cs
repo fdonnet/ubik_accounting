@@ -39,12 +39,13 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
 
             //Act
-            var result = (await _serviceManager.ClassificationService.GetAsync(_testClassifications.ClassificationId1));
+            var result = (await _serviceManager.ClassificationService.GetAsync(_testClassifications.ClassificationId1)).IfLeft(x => default!);
 
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<Classification>();
+                    .And.BeOfType<Classification>()
+                    .And.Match<Classification>(c => c.Id == _testClassifications.ClassificationId1);
         }
 
         [Fact]
@@ -53,7 +54,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
 
             //Act
-            var result = (await _serviceManager.ClassificationService.GetAsync(Guid.NewGuid()));
+            var response = (await _serviceManager.ClassificationService.GetAsync(Guid.NewGuid()));
+
+            var result = response.IfRight(x=> default!);
 
             //Assert
             result.Should()

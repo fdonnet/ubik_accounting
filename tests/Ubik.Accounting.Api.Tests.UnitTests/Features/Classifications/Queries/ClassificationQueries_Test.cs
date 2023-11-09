@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using LanguageExt;
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -71,12 +72,12 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
         {
             //Arrange
             var fake = new Classification() { Code = "TEST", Label = "Test" };
-            var result = new ResultT<Classification>() { IsSuccess = true, Result = fake };
+            //var result = new ResultT<Classification>() { IsSuccess = true, Result = fake };
             var query = new GetClassificationQuery()
             {
                 Id = Guid.NewGuid()
             };
-            _serviceManager.ClassificationService.GetAsync(query.Id).Returns(result);
+            _serviceManager.ClassificationService.GetAsync(query.Id).Returns(fake);
             var client = _harness.GetRequestClient<GetClassificationQuery>();
             var consumerHarness = _harness.GetConsumerHarness<GetClassificationConsumer>();
 

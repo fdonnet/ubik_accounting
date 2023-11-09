@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Filters;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Contracts.Classifications.Queries;
 
 namespace Ubik.Accounting.Api
 {
@@ -81,6 +82,8 @@ namespace Ubik.Accounting.Api
                 config.AddRequestClient<AddAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountGroupCommand>();
                 config.AddRequestClient<UpdateAccountGroupCommand>();
+
+                config.AddRequestClient<GetClassificationQuery>();
             });
 
 
