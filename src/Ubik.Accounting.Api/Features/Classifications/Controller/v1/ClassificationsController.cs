@@ -44,6 +44,11 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
+        /// <summary>
+        /// Get all accounts attached to an account group in the classification
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = "ubik_accounting_classification_read")]
         [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet("{id}/Accounts")]
@@ -56,6 +61,26 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
             var result = await _serviceManager.ClassificationService.GetClassificationAccountsAsync(id);
             return result.Match(
                             Right: ok => Ok(ok.ToGetClassificationAccountsResult()),
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
+        /// <summary>
+        /// Get all accounts not attached to an account group in the classification
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "ubik_accounting_classification_read")]
+        [Authorize(Roles = "ubik_accounting_account_read")]
+        [HttpGet("{id}/MissingAccounts")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<GetClassificationResult>> GetMissingAccounts(Guid id)
+        {
+            var result = await _serviceManager.ClassificationService.GetClassificationAccountsMissingAsync(id);
+            return result.Match(
+                            Right: ok => Ok(ok.ToGetClassificationAccountsMissingResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

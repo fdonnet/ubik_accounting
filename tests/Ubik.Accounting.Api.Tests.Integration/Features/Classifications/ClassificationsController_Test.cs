@@ -112,13 +112,28 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Act
             var response = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}");
             var responseAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}/Accounts");
+            var responseMissingAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}/MissingAccounts");
 
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
             var resultAccounts = await responseAccounts.Content.ReadFromJsonAsync<CustomProblemDetails>();
+            var resultMissingAccounts = await responseMissingAccounts.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            responseAccounts.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            responseMissingAccounts.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
             result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+
+            resultAccounts.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+
+            resultMissingAccounts.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
@@ -142,6 +157,26 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             result.Should()
                 .NotBeNull()
                 .And.AllBeOfType<GetClassificationAccountsResult>(); ;
+        }
+
+        [Fact]
+        public async Task GetMissingAccounts_Accounts_Ok()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/MissingAccounts");
+            var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetClassificationAccountsMissingResult>>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.AllBeOfType<GetClassificationAccountsMissingResult>(); ;
         }
     }
 }
