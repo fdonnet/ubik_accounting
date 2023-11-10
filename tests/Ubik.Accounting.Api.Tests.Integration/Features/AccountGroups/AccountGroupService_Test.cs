@@ -3,6 +3,7 @@ using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Api.Tests.Integration.Fake;
 using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
@@ -13,11 +14,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         private readonly BaseValuesForClassifications _testClassifications;
         private readonly IServiceManager _serviceManager;
 
+
         public AccountGroupService_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testAccountGroupValues = new BaseValuesForAccountGroups();
             _testClassifications = new BaseValuesForClassifications();
-            _serviceManager = new ServiceManager(DbContext);
+            _serviceManager = new ServiceManager(DbContext, new FakeUserService());
         }
 
         [Fact]

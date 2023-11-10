@@ -3,6 +3,7 @@ using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Classifications.Exceptions;
 using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Api.Tests.Integration.Fake;
 using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
@@ -15,7 +16,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
         public ClassificationsService_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testClassifications = new BaseValuesForClassifications();
-            _serviceManager = new ServiceManager(DbContext);
+            _serviceManager = new ServiceManager(DbContext, new FakeUserService());
         }
 
         [Fact]
@@ -63,6 +64,36 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
            .And.BeOfType<ClassificationNotFoundException>()
            .And.Match<ClassificationNotFoundException>(a =>
                a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+        }
+
+        [Fact]
+        public async Task GetAccounts_Accounts_Ok()
+        {
+            //Arrange
+
+            //Act
+            var result = await _serviceManager.ClassificationService.GetClassificationAccountsAsync(_testClassifications.ClassificationId1);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.NotBeEmpty()
+                    .And.AllBeOfType<Account>();
+        }
+
+        [Fact]
+        public async Task GetAccountsMissing_Accounts_Ok()
+        {
+            //Arrange
+
+            //Act
+            var result = await _serviceManager.ClassificationService.GetClassificationAccountsMissingAsync(_testClassifications.ClassificationId1);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.NotBeEmpty()
+                    .And.AllBeOfType<Account>();
         }
     }
 }

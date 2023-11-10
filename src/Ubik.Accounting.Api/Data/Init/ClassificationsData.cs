@@ -7,7 +7,7 @@ namespace Ubik.Accounting.Api.Data.Init
     {
         internal static void Load(AccountingContext context)
         {
-            if (!context.AccountGroupClassifications.Any())
+            if (!context.Classifications.Any())
             {
                 var baseValuesGeneral = new BaseValuesGeneral();
                 var baseValuesForTenants = new BaseValuesForTenants();
@@ -45,7 +45,7 @@ namespace Ubik.Accounting.Api.Data.Init
 
                 foreach (Classification cl in accountGroupClassifications)
                 {
-                    context.AccountGroupClassifications.Add(cl);
+                    context.Classifications.Add(cl);
                 }
                 context.SaveChanges();
             }

@@ -22,7 +22,7 @@ namespace Ubik.Accounting.Api.Data
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountGroup> AccountGroups { get; set; }
         public DbSet<AccountAccountGroup> AccountsAccountGroups { get; set; }
-        public DbSet<Classification> AccountGroupClassifications { get; set; }
+        public DbSet<Classification> Classifications { get; set; }
         public DbSet<Currency> Currencies { get; set; }
 
 

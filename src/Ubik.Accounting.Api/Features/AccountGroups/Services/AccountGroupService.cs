@@ -161,7 +161,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 
         public async Task<bool> IfClassificationExists(Guid accountGroupClassificationId)
         {
-            return await _context.AccountGroupClassifications.AnyAsync(a => a.Id == accountGroupClassificationId);
+            return await _context.Classifications.AnyAsync(a => a.Id == accountGroupClassificationId);
         }
 
         private async Task<Either<IServiceAndFeatureException, AccountGroup>> ValidateRelationsAsync(AccountGroup accountGroup)

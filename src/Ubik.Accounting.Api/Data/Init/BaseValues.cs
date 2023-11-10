@@ -4,6 +4,7 @@
     {
         public Guid AccountId1 { get; } = Guid.Parse("7777f11f-20dd-4888-88f8-428e59bbc537");
         public Guid AccountId2 { get; } = Guid.Parse("9524f11f-20dd-4888-88f8-428e59bbc229");
+        public Guid AccountId3 { get; } = Guid.Parse("9524f11f-20dd-4888-88f8-428e59bbc230");
         public Guid AccountIdForDel { get; } = Guid.Parse("9524f11f-20dd-4888-88f8-428e59bbc300");
         public string AccountCode1 { get; } = "1020";
     }
