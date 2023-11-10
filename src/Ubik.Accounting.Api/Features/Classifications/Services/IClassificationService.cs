@@ -11,7 +11,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         public Task<Either<IServiceAndFeatureException, Classification>> GetAsync(Guid id);
         public Task<Either<IServiceAndFeatureException, IList<Account>>> GetClassificationAccountsAsync(Guid id);
         public Task<Either<IServiceAndFeatureException, IList<Account>>> GetClassificationAccountsMissingAsync(Guid id);
-        public Task<Either<IServiceAndFeatureException, ClassificationStatus>> GetClassificationStatus(Guid id);
+        public Task<Either<IServiceAndFeatureException, ClassificationStatus>> GetClassificationStatusAsync(Guid id);
 
         //Task<bool> IfExistsAsync(Guid id);
         //public Task<bool> IfExistsAsync(string code);

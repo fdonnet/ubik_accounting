@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
+using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Mappers
@@ -26,6 +27,16 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
                 Label = current.Label,
                 Description = current.Description,
                 Version = current.Version
+            };
+        }
+
+        public static GetClassificationStatusResult ToGetClassificationStatusResult(this ClassificationStatus current)
+        {
+            return new GetClassificationStatusResult()
+            {
+                Id = current.Id,
+                IsReady = current.IsReady,
+                MissingAccounts = current.MissingAccounts.ToGetClassificationAccountsMissingResult()
             };
         }
 

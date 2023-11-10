@@ -7,6 +7,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco
         public Guid Id { get; init; }
         public bool IsReady { get; init; }
 
-        public IEnumerable<Account> MissingAccounts = default!;
+        public IEnumerable<Account> MissingAccounts { get; init; } = default!;
     }
 }

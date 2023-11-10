@@ -109,7 +109,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             return (await con.QueryAsync<Account>(sql, p)).ToList();
         }
 
-        public async Task<Either<IServiceAndFeatureException, ClassificationStatus>> GetClassificationStatus(Guid id)
+        public async Task<Either<IServiceAndFeatureException, ClassificationStatus>> GetClassificationStatusAsync(Guid id)
         {
             var missingAccount = await GetClassificationAccountsMissingAsync(id);
 

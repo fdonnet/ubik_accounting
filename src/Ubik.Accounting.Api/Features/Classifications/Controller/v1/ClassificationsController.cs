@@ -56,7 +56,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<GetClassificationResult>> GetAccounts(Guid id)
+        public async Task<ActionResult<GetClassificationAccountsResult>> GetAccounts(Guid id)
         {
             var result = await _serviceManager.ClassificationService.GetClassificationAccountsAsync(id);
             return result.Match(
@@ -76,11 +76,31 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<GetClassificationResult>> GetMissingAccounts(Guid id)
+        public async Task<ActionResult<GetClassificationAccountsMissingResult>> GetMissingAccounts(Guid id)
         {
             var result = await _serviceManager.ClassificationService.GetClassificationAccountsMissingAsync(id);
             return result.Match(
                             Right: ok => Ok(ok.ToGetClassificationAccountsMissingResult()),
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
+        /// <summary>
+        /// Get the status of a classification (ready to be used or incomplete = missing accounts)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "ubik_accounting_classification_read")]
+        [Authorize(Roles = "ubik_accounting_account_read")]
+        [HttpGet("{id}/Status")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<GetClassificationStatusResult>> GetStatus(Guid id)
+        {
+            var result = await _serviceManager.ClassificationService.GetClassificationStatusAsync(id);
+            return result.Match(
+                            Right: ok => Ok(ok.ToGetClassificationStatusResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

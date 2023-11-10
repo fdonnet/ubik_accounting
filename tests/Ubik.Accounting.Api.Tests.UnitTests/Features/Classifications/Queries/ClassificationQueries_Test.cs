@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Classifications.Queries;
+using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Classifications.Queries;
 using Ubik.Accounting.Contracts.Classifications.Results;
@@ -38,6 +39,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
                     x.AddConsumer<GetClassificationConsumer>();
                     x.AddConsumer<GetClassificationAccountsConsumer>();
                     x.AddConsumer<GetClassificationAccountsMissingConsumer>();
+                    x.AddConsumer<GetClassificationStatusConsumer>();
 
                 }).BuildServiceProvider(true);
 
@@ -152,6 +154,36 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
                 .And.Match<GetClassificationAccountsMissingResults>(a => a.Accounts.Any());
         }
 
+        [Fact]
+        public async Task GetStatus_ClassificationStatus_Ok()
+        {
+            //Arrange
+            var fake = new ClassificationStatus() { Id = NewId.NextGuid(), IsReady = true, MissingAccounts = new Account[]
+            { new Account { Code = "TEST", Label = "TEST", CurrencyId = NewId.NextGuid() } } };
+
+            var query = new GetClassificationStatusQuery()
+            {
+                Id = Guid.NewGuid()
+            };
+            _serviceManager.ClassificationService.GetClassificationStatusAsync(query.Id).Returns(fake);
+            var client = _harness.GetRequestClient<GetClassificationStatusQuery>();
+            var consumerHarness = _harness.GetConsumerHarness<GetClassificationStatusConsumer>();
+
+            //Act
+            var response = await client.GetResponse<GetClassificationStatusResult>(query);
+
+            //Assert
+            var sent = await _harness.Sent.Any<GetClassificationStatusResult>();
+            var consumed = await _harness.Consumed.Any<GetClassificationStatusQuery>();
+            var consumerConsumed = await consumerHarness.Consumed.Any<GetClassificationStatusQuery>();
+
+            sent.Should().Be(true);
+            consumed.Should().Be(true);
+            consumerConsumed.Should().Be(true);
+            response.Message.Should()
+                .BeOfType<GetClassificationStatusResult>()
+                .And.Match<GetClassificationStatusResult>(a => a.IsReady == fake.IsReady);
+        }
 
         public async Task DisposeAsync()
         {

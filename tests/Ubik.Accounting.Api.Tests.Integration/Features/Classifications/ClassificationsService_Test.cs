@@ -106,7 +106,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 
             //Act
             var result = (await _serviceManager.ClassificationService
-                .GetClassificationStatus(_testClassifications.ClassificationId1)).IfLeft(x => default!);
+                .GetClassificationStatusAsync(_testClassifications.ClassificationId1)).IfLeft(x => default!);
 
             //Assert
             result.Should()

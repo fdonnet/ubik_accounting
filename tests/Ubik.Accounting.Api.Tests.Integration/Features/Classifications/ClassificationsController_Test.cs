@@ -30,12 +30,16 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}");
             var responseGetAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Accounts");
+            var responseGetMissingAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/MissingAccounts");
+            var responseGetStatus = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Status");
 
 
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseGet.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseGetAccounts.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            responseGetMissingAccounts.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            responseGetStatus.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
@@ -51,12 +55,16 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}");
             var responseGetAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Accounts");
+            var responseGetMissingAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/MissingAccounts");
+            var responseGetStatus = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Status");
 
 
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseGet.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseGetAccounts.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responseGetMissingAccounts.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responseGetStatus.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
@@ -113,15 +121,18 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var response = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}");
             var responseAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}/Accounts");
             var responseMissingAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}/MissingAccounts");
+            var responseStatus = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}/Status");
 
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
             var resultAccounts = await responseAccounts.Content.ReadFromJsonAsync<CustomProblemDetails>();
             var resultMissingAccounts = await responseMissingAccounts.Content.ReadFromJsonAsync<CustomProblemDetails>();
+            var resultStatus = await responseStatus.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             responseAccounts.StatusCode.Should().Be(HttpStatusCode.NotFound);
             responseMissingAccounts.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            responseStatus.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
             result.Should()
                 .NotBeNull()
@@ -134,6 +145,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
 
             resultMissingAccounts.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+
+            resultStatus.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
@@ -177,6 +193,27 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             result.Should()
                 .NotBeNull()
                 .And.AllBeOfType<GetClassificationAccountsMissingResult>(); ;
+        }
+
+        [Fact]
+        public async Task GetStatus_ClassificationStatus_Ok()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Status");
+            var result = await response.Content.ReadFromJsonAsync<GetClassificationStatusResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<GetClassificationStatusResult>()
+                .And.Match<GetClassificationStatusResult>(x => x.IsReady == false);
         }
     }
 }
