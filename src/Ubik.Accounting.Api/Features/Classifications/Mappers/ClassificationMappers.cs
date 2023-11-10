@@ -28,5 +28,20 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
                 Version = current.Version
             };
         }
+
+        public static IEnumerable<GetClassificationAccountsResult> ToGetClassificationAccountsResult(this IEnumerable<Account> current)
+        {
+            return current.Select(x => new GetClassificationAccountsResult()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Label = x.Label,
+                Category = x.Category,
+                Domain = x.Domain,
+                Description = x.Description,
+                CurrencyId = x.CurrencyId,
+                Version = x.Version
+            });
+        }
     }
 }

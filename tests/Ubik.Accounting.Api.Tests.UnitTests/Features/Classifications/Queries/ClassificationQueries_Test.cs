@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Google.Protobuf.WellKnownTypes;
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
                     x.AddScoped<IServiceManager>(sm => _serviceManager);
                     x.AddConsumer<GetAllClassificationsConsumer>();
                     x.AddConsumer<GetClassificationConsumer>();
+                    x.AddConsumer<GetClassificationAccountsConsumer>();
 
                 }).BuildServiceProvider(true);
 
@@ -68,7 +70,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
         {
             //Arrange
             var fake = new Classification() { Code = "TEST", Label = "Test" };
-            //var result = new ResultT<Classification>() { IsSuccess = true, Result = fake };
             var query = new GetClassificationQuery()
             {
                 Id = Guid.NewGuid()
@@ -91,6 +92,35 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
             response.Message.Should()
                 .BeOfType<GetClassificationResult>()
                 .And.Match<GetClassificationResult>(a => a.Code == fake.Code);
+        }
+
+        [Fact]
+        public async Task GetAccounts_Accounts_Ok()
+        {
+            //Arrange
+            var fake = new Account() { Code = "TEST", Label = "Test", CurrencyId=NewId.NextGuid() };
+            var query = new GetClassificationAccountsQuery()
+            {
+                ClassificationId = Guid.NewGuid()
+            };
+            _serviceManager.ClassificationService.GetClassificationAccountsAsync(query.ClassificationId).Returns(new[] { fake });
+            var client = _harness.GetRequestClient<GetClassificationAccountsQuery>();
+            var consumerHarness = _harness.GetConsumerHarness<GetClassificationAccountsConsumer>();
+
+            //Act
+            var response = await client.GetResponse<GetClassificationAccountsResults>(query);
+
+            //Assert
+            var sent = await _harness.Sent.Any<GetClassificationAccountsResults>();
+            var consumed = await _harness.Consumed.Any<GetClassificationAccountsQuery>();
+            var consumerConsumed = await consumerHarness.Consumed.Any<GetClassificationAccountsQuery>();
+
+            sent.Should().Be(true);
+            consumed.Should().Be(true);
+            consumerConsumed.Should().Be(true);
+            response.Message.Should()
+                .BeOfType<GetClassificationAccountsResults>()
+                .And.Match<GetClassificationAccountsResults>(a => a.Accounts.Any());
         }
 
         public async Task DisposeAsync()
