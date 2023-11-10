@@ -1,10 +1,14 @@
 ﻿using Dapper;
 using LanguageExt;
+using LanguageExt.Common;
+using LanguageExt.SomeHelp;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Reflection.Metadata.Ecma335;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.Classifications.Exceptions;
+using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
@@ -49,8 +53,11 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<Account>> GetClassificationAccountsAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, IList<Account>>> GetClassificationAccountsAsync(Guid id)
         {
+            if ((await GetAsync(id)).IsLeft)
+                return new ClassificationNotFoundException(id);
+
             var p = new DynamicParameters();
             p.Add("@id", id);
             p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
@@ -66,7 +73,8 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 AND c."Id" = @id
                 """;
 
-            return await con.QueryAsync<Account>(sql,p);
+            return (await con.QueryAsync<Account>(sql, p)).ToList();
+            
         }
 
         /// <summary>
@@ -75,8 +83,11 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<Account>> GetClassificationAccountsMissingAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, IList<Account>>> GetClassificationAccountsMissingAsync(Guid id)
         {
+            if ((await GetAsync(id)).IsLeft)
+                return new ClassificationNotFoundException(id);
+
             var p = new DynamicParameters();
             p.Add("@id", id);
             p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
@@ -95,7 +106,36 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 	WHERE c."Id" = @id)
                 """;
 
-            return await con.QueryAsync<Account>(sql, p);
+            return (await con.QueryAsync<Account>(sql, p)).ToList();
+        }
+
+        public async Task<Either<IServiceAndFeatureException, ClassificationStatus>> GetClassificationStatus(Guid id)
+        {
+            var missingAccount = await GetClassificationAccountsMissingAsync(id);
+
+            if(missingAccount.IsLeft)
+                return new ClassificationNotFoundException(id);
+
+            var classificationStatus = missingAccount.Match(
+                Right: c => 
+                {
+                    ClassificationStatus status = c.Any()
+                        ? new ClassificationStatus
+                        {
+                            Id = id,
+                            IsReady = false,
+                            MissingAccounts = c
+                        }
+                        : new ClassificationStatus
+                        {
+                            Id = id,
+                            IsReady = false
+                        };
+                    return status;
+                },
+                Left: err => throw new Exception("Cannot be in left state at this point"));
+
+            return classificationStatus;
         }
     }
 }

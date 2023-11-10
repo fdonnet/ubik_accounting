@@ -2,6 +2,7 @@
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Classifications.Exceptions;
+using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
 using Ubik.ApiService.Common.Exceptions;
@@ -72,7 +73,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
 
             //Act
-            var result = await _serviceManager.ClassificationService.GetClassificationAccountsAsync(_testClassifications.ClassificationId1);
+            var result = (await _serviceManager.ClassificationService
+                .GetClassificationAccountsAsync(_testClassifications.ClassificationId1)).IfLeft(x => default!);
 
             //Assert
             result.Should()
@@ -87,13 +89,29 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
 
             //Act
-            var result = await _serviceManager.ClassificationService.GetClassificationAccountsMissingAsync(_testClassifications.ClassificationId1);
+            var result = (await _serviceManager.ClassificationService
+                .GetClassificationAccountsMissingAsync(_testClassifications.ClassificationId1)).IfLeft(err => default!);
 
             //Assert
             result.Should()
                     .NotBeNull()
                     .And.NotBeEmpty()
                     .And.AllBeOfType<Account>();
+        }
+
+        [Fact]
+        public async Task GetStatus_ClassificationStatus_Ok()
+        {
+            //Arrange
+
+            //Act
+            var result = (await _serviceManager.ClassificationService
+                .GetClassificationStatus(_testClassifications.ClassificationId1)).IfLeft(x => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<ClassificationStatus>();
         }
     }
 }
