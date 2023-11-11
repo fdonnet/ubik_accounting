@@ -44,6 +44,8 @@ namespace Ubik.Accounting.Api
             builder.Services.AddDbContextFactory<AccountingContext>(
                  options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
 
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
             //MessageBroker with masstransit + outbox
             builder.Services.AddMassTransit(config =>
             {

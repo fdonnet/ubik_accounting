@@ -48,7 +48,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
 
         /// <summary>
         /// Dapper to get all the account linked to a classification (Postgres)
-        /// TODO: see if we can do better to remain multi provider => it seems that I hate EF core include and projections.
         /// TODO:change tenant id array to selected
         /// </summary>
         /// <param name="id"></param>
