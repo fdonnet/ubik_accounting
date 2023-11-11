@@ -8,7 +8,7 @@ namespace Ubik.Accounting.Api.Data.Config
     {
         public void Configure(EntityTypeBuilder<Classification> builder)
         {
-            builder.ToTable("Classifications");
+            builder.ToTable("classifications");
 
             builder.Property(a => a.Code)
            .IsRequired()

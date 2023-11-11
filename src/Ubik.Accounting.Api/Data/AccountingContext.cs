@@ -29,7 +29,8 @@ namespace Ubik.Accounting.Api.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
-                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                .UseSnakeCaseNamingConvention();
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

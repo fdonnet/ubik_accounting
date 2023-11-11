@@ -8,7 +8,7 @@ namespace Ubik.Accounting.Api.Data.Config
     {
         public void Configure(EntityTypeBuilder<AccountGroup> builder)
         {
-            builder.ToTable("AccountGroups");
+            builder.ToTable("account_groups");
 
             builder.Property(a => a.Code)
            .IsRequired()

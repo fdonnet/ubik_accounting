@@ -65,12 +65,12 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             var con = _context.Database.GetDbConnection();
             var sql = """
                 SELECT a.*
-                FROM "Classifications" c
-                INNER JOIN "AccountGroups" ag ON c."Id" = ag."AccountGroupClassificationId"
-                INNER JOIN "AccountsAccountGroups" aag on aag."AccountGroupId" = ag."Id"
-                INNER JOIN "Accounts" a ON aag."AccountId" = a."Id"
-                WHERE a."TenantId" = @tenantId 
-                AND c."Id" = @id
+                FROM classifications c
+                INNER JOIN account_groups ag ON c.id = ag.account_group_classification_id
+                INNER JOIN accounts_account_groups aag on aag.account_group_id = ag.id
+                INNER JOIN accounts a ON aag.account_id = a.id
+                WHERE a.tenant_id = @tenantId 
+                AND c.id = @id
                 """;
 
             return (await con.QueryAsync<Account>(sql, p)).ToList();
@@ -78,7 +78,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         }
 
         /// <summary>
-        /// Dapper to get all the account not linked to a specific classification (Postgres)
         /// TODO:change tenant id array to selected
         /// </summary>
         /// <param name="id"></param>
@@ -95,15 +94,15 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             var con = _context.Database.GetDbConnection();
             var sql = """
                 SELECT a1.*
-                FROM "Accounts" a1
-                WHERE a1."TenantId" = @tenantId
-                AND a1."Id" NOT IN (
-                	SELECT a."Id"
-                	FROM "Classifications" c
-                	INNER JOIN "AccountGroups" ag ON c."Id" = ag."AccountGroupClassificationId"
-                	INNER JOIN "AccountsAccountGroups" aag on aag."AccountGroupId" = ag."Id"
-                	INNER JOIN "Accounts" a ON aag."AccountId" = a."Id"
-                	WHERE c."Id" = @id)
+                FROM accounts a1
+                WHERE a1.tenant_id = @tenantId
+                AND a1.id NOT IN (
+                   	SELECT a.id
+                   	FROM classifications c
+                   	INNER JOIN account_groups ag ON c.id = ag.account_group_classification_id
+                   	INNER JOIN accounts_account_groups aag on aag.account_group_id = ag.id
+                   	INNER JOIN accounts a ON aag.account_id = a.id
+                   	WHERE c.id = @id)
                 """;
 
             return (await con.QueryAsync<Account>(sql, p)).ToList();
