@@ -18,7 +18,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Label = x.Label,
                 Description = x.Description,
                 ParentAccountGroupId = x.ParentAccountGroupId,
-                AccountGroupClassificationId = x.AccountGroupClassificationId,
+                AccountGroupClassificationId = x.ClassificationId,
                 Version = x.Version
             });
         }
@@ -54,7 +54,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Label = accountGroup.Label,
                 Description = accountGroup.Description,
                 ParentAccountGroupId = accountGroup.ParentAccountGroupId,
-                AccountGroupClassificationId = accountGroup.AccountGroupClassificationId,
+                AccountGroupClassificationId = accountGroup.ClassificationId,
                 Version = accountGroup.Version
             };
         }
@@ -68,7 +68,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Label = account.Label,
                 Description = account.Description,
                 ParentAccountGroupId = account.ParentAccountGroupId,
-                AccountGroupClassificationId = account.AccountGroupClassificationId,
+                AccountGroupClassificationId = account.ClassificationId,
                 Version = account.Version
             };
         }
@@ -82,7 +82,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Label = addAccountGroupCommand.Label,
                 Description = addAccountGroupCommand.Description,
                 ParentAccountGroupId = addAccountGroupCommand.ParentAccountGroupId,
-                AccountGroupClassificationId = addAccountGroupCommand.AccountGroupClassificationId,
+                ClassificationId = addAccountGroupCommand.AccountGroupClassificationId,
             };
         }
 
@@ -95,7 +95,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Label = updAccountGroupCommand.Label,
                 Description = updAccountGroupCommand.Description,
                 ParentAccountGroupId = updAccountGroupCommand.ParentAccountGroupId,
-                AccountGroupClassificationId = updAccountGroupCommand.AccountGroupClassificationId,
+                ClassificationId = updAccountGroupCommand.AccountGroupClassificationId,
                 Version = updAccountGroupCommand.Version
             };
         }
@@ -109,7 +109,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Label = accountGroup.Label,
                 Description = accountGroup.Description,
                 ParentAccountGroupId = accountGroup.ParentAccountGroupId,
-                AccountGroupClassificationId = accountGroup.AccountGroupClassificationId,
+                AccountGroupClassificationId = accountGroup.ClassificationId,
                 Version = accountGroup.Version
             };
         }
@@ -121,7 +121,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
             accountGroup.Label = forUpd.Label;
             accountGroup.Description = forUpd.Description;
             accountGroup.ParentAccountGroupId = forUpd.ParentAccountGroupId;
-            accountGroup.AccountGroupClassificationId = forUpd.AccountGroupClassificationId;
+            accountGroup.ClassificationId = forUpd.ClassificationId;
             accountGroup.Version = forUpd.Version;
             return accountGroup;
         }
@@ -133,7 +133,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
             accountGroup.Label = updateAccountGroupCommand.Label;
             accountGroup.Description = updateAccountGroupCommand.Description;
             accountGroup.ParentAccountGroupId = updateAccountGroupCommand.ParentAccountGroupId;
-            accountGroup.AccountGroupClassificationId = updateAccountGroupCommand.AccountGroupClassificationId;
+            accountGroup.ClassificationId = updateAccountGroupCommand.AccountGroupClassificationId;
             accountGroup.Version = updateAccountGroupCommand.Version;
             return accountGroup;
         }
@@ -147,7 +147,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Label = accountGroup.Label,
                 Description = accountGroup.Description,
                 ParentAccountGroupId = accountGroup.ParentAccountGroupId,
-                AccountGroupClassificationId = accountGroup.AccountGroupClassificationId,
+                AccountGroupClassificationId = accountGroup.ClassificationId,
                 Version = accountGroup.Version
             };
         }
@@ -161,7 +161,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Label = accountGroup.Label,
                 Description = accountGroup.Description,
                 ParentAccountGroupId = accountGroup.ParentAccountGroupId,
-                AccountGroupClassificationId = accountGroup.AccountGroupClassificationId,
+                AccountGroupClassificationId = accountGroup.ClassificationId,
                 Version = accountGroup.Version
             };
         }

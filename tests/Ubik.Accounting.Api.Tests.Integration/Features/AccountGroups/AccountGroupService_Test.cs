@@ -109,7 +109,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             {
                 Code = "10",
                 Label = "Test",
-                AccountGroupClassificationId = _testClassifications.ClassificationId1
+                ClassificationId = _testClassifications.ClassificationId1
             };
 
             //Act
@@ -154,7 +154,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                 Code = "zzz",
                 Label = "Test",
                 ParentAccountGroupId =null,
-                AccountGroupClassificationId = Guid.NewGuid()
+                ClassificationId = Guid.NewGuid()
             };
 
             //Act
@@ -341,7 +341,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
             accountGroup!.Label = "Modified";
             accountGroup.Description = "Modified";
-            accountGroup.AccountGroupClassificationId = Guid.NewGuid();
+            accountGroup.ClassificationId = Guid.NewGuid();
 
 
             //Act

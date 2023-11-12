@@ -26,7 +26,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Liquidités",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    AccountGroupClassificationId = baseValuesForAccountGroupClassifications.ClassificationId1,
+                    ClassificationId = baseValuesForAccountGroupClassifications.ClassificationId1,
                     ParentAccountGroupId = null,
                     Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
@@ -41,7 +41,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Banques",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    AccountGroupClassificationId = baseValuesForAccountGroupClassifications.ClassificationId1,
+                    ClassificationId = baseValuesForAccountGroupClassifications.ClassificationId1,
                     ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
                     Version =NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
@@ -56,7 +56,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Autres",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    AccountGroupClassificationId = baseValuesForAccountGroupClassifications.ClassificationId2,
+                    ClassificationId = baseValuesForAccountGroupClassifications.ClassificationId2,
                     ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
                     Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
@@ -71,7 +71,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "To be removed Autres actifs",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    AccountGroupClassificationId = baseValuesForAccountGroupClassifications.ClassificationId1,
+                    ClassificationId = baseValuesForAccountGroupClassifications.ClassificationId1,
                     ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
                     Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId

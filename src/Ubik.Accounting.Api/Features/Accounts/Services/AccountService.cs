@@ -104,5 +104,27 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         {
             return await _context.Currencies.AnyAsync(c => c.Id == currencyId);
         }
+
+        //public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> AddToAccountGroupAsync(Guid id, Guid accountGroupId)
+        //{
+        //    var accountPresent = await GetAsync(id);
+        //    if (accountPresent.IsLeft)
+        //        return new AccountNotFoundException(id);
+
+        //    if (!(await IfExistAccountGroupAsync(accountGroupId)))
+        //        return new AccountGroupNotFoundForAccountException(accountGroupId);
+
+
+        //}
+
+        //private async Task<bool> IfExistsInTheClassification(Guid id, Guid classificationId)
+        //{
+
+        //}
+
+        //private async Task<bool> IfExistAccountGroupAsync(Guid accountGroupId)
+        //{
+        //    return  await _context.AccountGroups.AnyAsync(ag => ag.Id == accountGroupId);
+        //}
     }
 }

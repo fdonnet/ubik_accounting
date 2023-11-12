@@ -9,8 +9,8 @@ namespace Ubik.Accounting.Api.Models
         public required string Code { get; set; }
         public required string Label { get; set; }
         public string? Description { get; set; }
-        public Guid AccountGroupClassificationId { get; set; }
-        public Classification? AccountGroupClassification { get; set; }
+        public Guid ClassificationId { get; set; }
+        public Classification? Classification { get; set; }
         public Guid? ParentAccountGroupId { get; set; }
         public AccountGroup? ParentAccountGroup { get; set; }
         public ICollection<AccountGroup>? ChildrenAccountGroups { get; set; }

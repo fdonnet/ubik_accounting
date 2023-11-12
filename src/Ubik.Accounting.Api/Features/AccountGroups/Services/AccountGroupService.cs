@@ -20,10 +20,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
         public async Task<Either<IServiceAndFeatureException, AccountGroup>> AddAsync(AccountGroup accountGroup)
         {
             //Already exists
-            var exist = await IfExistsAsync(accountGroup.Code, accountGroup.AccountGroupClassificationId);
+            var exist = await IfExistsAsync(accountGroup.Code, accountGroup.ClassificationId);
             if (exist)
                 return new AccountGroupAlreadyExistsException(accountGroup.Code,
-                    accountGroup.AccountGroupClassificationId);
+                    accountGroup.ClassificationId);
 
             //Validate dependencies
             var validated = await ValidateRelationsAsync(accountGroup);
@@ -106,7 +106,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
         public async Task<bool> IfExistsAsync(string accountGroupCode, Guid accountGroupClassificationId)
         {
             return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode
-                        && a.AccountGroupClassificationId == accountGroupClassificationId);
+                        && a.ClassificationId == accountGroupClassificationId);
         }
 
         public async Task<bool> HasAnyChildAccountGroups(Guid Id)
@@ -127,7 +127,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
         public async Task<bool> IfExistsWithDifferentIdAsync(string accountGroupCode, Guid accountGroupClassificationId, Guid currentId)
         {
             return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode
-                        && a.AccountGroupClassificationId == accountGroupClassificationId
+                        && a.ClassificationId == accountGroupClassificationId
                         && a.Id != currentId);
 
         }
@@ -143,10 +143,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 
             //Group code already exists in the same classification
             var alreadyExistsWithOtherId = await IfExistsWithDifferentIdAsync(accountGroup.Code,
-                accountGroup.AccountGroupClassificationId, accountGroup.Id);
+                accountGroup.ClassificationId, accountGroup.Id);
 
             if (alreadyExistsWithOtherId)
-                return new AccountGroupAlreadyExistsException(accountGroup.Code, accountGroup.AccountGroupClassificationId);
+                return new AccountGroupAlreadyExistsException(accountGroup.Code, accountGroup.ClassificationId);
 
             //Validate dependencies
             var validated = await ValidateRelationsAsync(accountGroup);
@@ -177,10 +177,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                     return new AccountGroupParentNotFoundException((Guid)accountGroup.ParentAccountGroupId);
             }
 
-            var classificationExists = await IfClassificationExists(accountGroup.AccountGroupClassificationId);
+            var classificationExists = await IfClassificationExists(accountGroup.ClassificationId);
 
             return !classificationExists
-                ? new AccountGroupClassificationNotFound(accountGroup.AccountGroupClassificationId)
+                ? new AccountGroupClassificationNotFound(accountGroup.ClassificationId)
                 :  accountGroup;
         }
     }
