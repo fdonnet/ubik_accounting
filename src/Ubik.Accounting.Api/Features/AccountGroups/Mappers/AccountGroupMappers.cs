@@ -30,10 +30,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Id = x.Id,
                 Code = x.Code,
                 Label = x.Label,
-                Description = x.Description,
                 ParentAccountGroupId = x.ParentAccountGroupId,
-                AccountGroupClassificationId = x.AccountGroupClassificationId,
-                Version = x.Version
             });
         }
 
@@ -44,10 +41,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Id = x.Id,
                 Code = x.Code,
                 Label = x.Label,
-                Description = x.Description,
                 ParentAccountGroupId = x.ParentAccountGroupId,
-                AccountGroupClassificationId = x.AccountGroupClassificationId,
-                Version = x.Version
             });
         }
 
@@ -179,10 +173,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
                 Id = accountGroup.Id,
                 Code = accountGroup.Code,
                 Label = accountGroup.Label,
-                Description = accountGroup.Description,
                 ParentAccountGroupId = accountGroup.ParentAccountGroupId,
-                AccountGroupClassificationId = accountGroup.AccountGroupClassificationId,
-                Version = accountGroup.Version
             };
         }
 
