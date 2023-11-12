@@ -12,9 +12,4 @@ namespace Ubik.Accounting.Contracts.AccountGroups.Events
         public Guid AccountGroupClassificationId { get; init; }
         public Guid Version { get; init; }
     }
-
-    public record AccountGroupsDeleted
-    {
-        public IEnumerable<AccountGroupDeleted> AccountGroups { get; init; } = default!;
-    }
 }
