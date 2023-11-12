@@ -121,8 +121,8 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
 
         /// <summary>
         /// Delete account groups with all children
-        /// Return All the account groups removed
         /// </summary>
+        /// <remarks>Return All the account groups removed</remarks>
         /// <param name="id"></param>
         /// <param name="client"></param>
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]
