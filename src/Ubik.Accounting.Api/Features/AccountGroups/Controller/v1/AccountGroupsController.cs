@@ -119,19 +119,25 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
             }
         }
 
+        /// <summary>
+        /// Delete account groups with all children
+        /// Return All the account groups removed
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="client"></param>
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpDelete("{id}")]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult> Delete(Guid id, IRequestClient<DeleteAccountGroupCommand> client)
+        public async Task<ActionResult<IEnumerable<DeleteAccountGroupResult>>> Delete(Guid id, IRequestClient<DeleteAccountGroupCommand> client)
         {
-            var (result, error) = await client.GetResponse<DeleteAccountGroupResult,
+            var (result, error) = await client.GetResponse<DeleteAccountGroupResults,
             IServiceAndFeatureException>(new DeleteAccountGroupCommand { Id = id });
 
             if (result.IsCompletedSuccessfully)
-                return NoContent();
+                return Ok((await result).Message.AccountGroups);
             else
             {
                 var problem = await error;

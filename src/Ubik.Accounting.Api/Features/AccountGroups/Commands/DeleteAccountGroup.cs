@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Events;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
@@ -23,9 +24,9 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
             await res.Match(
                 Right: async r =>
                 {
-                    await _publishEndpoint.Publish(new AccountGroupDeleted { Id = context.Message.Id }, CancellationToken.None);
+                    await _publishEndpoint.Publish(new AccountGroupsDeleted { AccountGroups = r.ToAccountGroupDeleted() }, CancellationToken.None);
                     await _serviceManager.SaveAsync();
-                    await context.RespondAsync<DeleteAccountGroupResult>(new { Deleted = true });
+                    await context.RespondAsync(new DeleteAccountGroupResults { AccountGroups = r.ToDeleteAccountGroupsResult() });
                 },
                 Left: async err => await context.RespondAsync(err));
         }

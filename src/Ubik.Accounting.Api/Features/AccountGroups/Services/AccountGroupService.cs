@@ -38,18 +38,20 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             return accountGroup;
         }
 
-        public async Task<Either<IServiceAndFeatureException, bool>> DeleteAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, IEnumerable<AccountGroup>>> DeleteAsync(Guid id)
         {
             var accountGrp = await GetAsync(id);
 
             if(accountGrp.IsRight)
             {
                 using var transaction = _context.Database.BeginTransaction();
-                await DeleteAllChildrenOfAsync(id);
+                var deletedAccountGroups = new List<AccountGroup>();
+                await DeleteAllChildrenOfAsync(id, deletedAccountGroups);
                 await _context.AccountGroups.Where(x => x.Id == id).ExecuteDeleteAsync();
+                deletedAccountGroups.Add(accountGrp.IfLeft(x=>default!));
 
                 transaction.Commit();
-                return true;
+                return deletedAccountGroups;
             }
             else
             {
@@ -57,13 +59,14 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             }
         }
 
-        public async Task DeleteAllChildrenOfAsync(Guid id)
+        public async Task DeleteAllChildrenOfAsync(Guid id, List<AccountGroup> deletedAccountGroups)
         {
             var children = await _context.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
 
             foreach(var child in children)
             {
-                await DeleteAllChildrenOfAsync(child.Id);
+                await DeleteAllChildrenOfAsync(child.Id,deletedAccountGroups);
+                deletedAccountGroups.Add(child);    
                 await _context.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
             }
         }

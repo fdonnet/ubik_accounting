@@ -27,10 +27,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _idToDelete = Guid.NewGuid();
             _command = new DeleteAccountGroupCommand() { Id = _idToDelete };
 
-            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete)
-                .Returns(true);
-
             var accountGroup = new AccountGroup() { Id = _idToDelete, Code = "test", Label = "test" };
+            _serviceManager.AccountGroupService.DeleteAsync(_idToDelete)
+                .Returns(new List<AccountGroup> { accountGroup});
+           
             _serviceManager.AccountGroupService.GetAsync(_idToDelete).Returns(accountGroup);
 
         }
@@ -55,10 +55,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             var client = _harness.GetRequestClient<DeleteAccountGroupCommand>();
             var consumerHarness = _harness.GetConsumerHarness<DeleteAccountGroupConsumer>();
             //Act
-            var response = await client.GetResponse<DeleteAccountGroupResult>(_command);
+            var response = await client.GetResponse<DeleteAccountGroupResults>(_command);
 
             //Assert
-            var sent = await _harness.Sent.Any<DeleteAccountGroupResult>();
+            var sent = await _harness.Sent.Any<DeleteAccountGroupResults>();
             var consumed = await _harness.Consumed.Any<DeleteAccountGroupCommand>();
             var consumerConsumed = await consumerHarness.Consumed.Any<DeleteAccountGroupCommand>();
 
@@ -66,8 +66,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
             response.Message.Should()
-                .BeOfType<DeleteAccountGroupResult>()
-                .And.Match<DeleteAccountGroupResult>(a => a.Deleted == true);
+                .BeOfType<DeleteAccountGroupResults>()
+                .And.Match<DeleteAccountGroupResults>(a => a.AccountGroups != null);
         }
 
         [Fact]
@@ -77,10 +77,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             var client = _harness.GetRequestClient<DeleteAccountGroupCommand>();
 
             //Act
-            await client.GetResponse<DeleteAccountGroupResult>(_command);
+            await client.GetResponse<DeleteAccountGroupResults>(_command);
 
             //Assert
-            var sent = await _harness.Published.Any<AccountGroupDeleted>();
+            var sent = await _harness.Published.Any<AccountGroupsDeleted>();
 
             sent.Should().Be(true);
         }

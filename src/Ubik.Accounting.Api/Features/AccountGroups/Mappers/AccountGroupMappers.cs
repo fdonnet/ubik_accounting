@@ -23,6 +23,34 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
             });
         }
 
+        public static IEnumerable<DeleteAccountGroupResult> ToDeleteAccountGroupsResult(this IEnumerable<AccountGroup> accountGroups)
+        {
+            return accountGroups.Select(x => new DeleteAccountGroupResult()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Label = x.Label,
+                Description = x.Description,
+                ParentAccountGroupId = x.ParentAccountGroupId,
+                AccountGroupClassificationId = x.AccountGroupClassificationId,
+                Version = x.Version
+            });
+        }
+
+        public static IEnumerable<AccountGroupDeleted> ToAccountGroupDeleted(this IEnumerable<AccountGroup> accountGroups)
+        {
+            return accountGroups.Select(x => new AccountGroupDeleted()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Label = x.Label,
+                Description = x.Description,
+                ParentAccountGroupId = x.ParentAccountGroupId,
+                AccountGroupClassificationId = x.AccountGroupClassificationId,
+                Version = x.Version
+            });
+        }
+
         public static GetAccountGroupResult ToGetAccountGroupResult(this AccountGroup accountGroup)
         {
             return new GetAccountGroupResult()

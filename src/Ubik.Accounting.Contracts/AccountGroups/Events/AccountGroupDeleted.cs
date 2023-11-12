@@ -1,4 +1,6 @@
-﻿namespace Ubik.Accounting.Contracts.AccountGroups.Events
+﻿using Ubik.Accounting.Contracts.AccountGroups.Results;
+
+namespace Ubik.Accounting.Contracts.AccountGroups.Events
 {
     public record AccountGroupDeleted
     {
@@ -9,5 +11,10 @@
         public Guid? ParentAccountGroupId { get; init; }
         public Guid AccountGroupClassificationId { get; init; }
         public Guid Version { get; init; }
+    }
+
+    public record AccountGroupsDeleted
+    {
+        public IEnumerable<AccountGroupDeleted> AccountGroups { get; init; } = default!;
     }
 }

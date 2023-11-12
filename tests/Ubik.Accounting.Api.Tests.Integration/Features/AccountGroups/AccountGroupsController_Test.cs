@@ -646,9 +646,14 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
             //Act
             var response = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupIdForDel}");
+            var result = await response.Content.ReadFromJsonAsync<IEnumerable<DeleteAccountGroupResult>>();
 
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.AllBeOfType<DeleteAccountGroupResult>(); ;
+
         }
 
         [Fact]
