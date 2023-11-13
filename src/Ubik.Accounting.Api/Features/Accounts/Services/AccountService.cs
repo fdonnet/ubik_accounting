@@ -110,7 +110,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             return await _context.Currencies.AnyAsync(c => c.Id == currencyId);
         }
 
-        public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> AddToAccountGroupAsync(Guid id, Guid accountGroupId)
+        public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> AddInAccountGroupAsync(Guid id, Guid accountGroupId)
         {
             var accountPresent = await GetAsync(id);
             if (accountPresent.IsLeft)
@@ -131,6 +131,20 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
 
             await _context.AccountsAccountGroups.AddAsync(accountAccountGroup);
             return accountAccountGroup;
+        }
+
+        public async Task<Either<IServiceAndFeatureException, bool>> RemoveFromAccountGroupAsync(Guid id, Guid accountGroupId)
+        {
+            var accountAccountGroup = await _context.AccountsAccountGroups.FirstOrDefaultAsync(aag =>
+                aag.AccountId == id
+                && aag.AccountGroupId == accountGroupId);
+
+            if (accountAccountGroup == null)
+                return new AccountNotExistsInAccountGroup(id, accountGroupId);
+
+            _context.Entry(accountAccountGroup).State = EntityState.Deleted;
+
+            return true;
         }
 
         private async Task<bool> IfExistsInTheClassification(Guid id, Guid accountGroupId)
@@ -161,5 +175,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         {
             return await _context.AccountGroups.AnyAsync(ag => ag.Id == accountGroupId);
         }
+
+
     }
 }

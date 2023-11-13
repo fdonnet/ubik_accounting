@@ -18,7 +18,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
         {
             var msg = context.Message;
 
-            var result = await _serviceManager.AccountService.AddToAccountGroupAsync(msg.AccountId,msg.AccountGroupId);
+            var result = await _serviceManager.AccountService.AddInAccountGroupAsync(msg.AccountId,msg.AccountGroupId);
 
             await result.Match(
                 Right: async r =>

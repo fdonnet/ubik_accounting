@@ -29,7 +29,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                AccountId = NewId.NextGuid()
             };
 
-            _serviceManager.AccountService.AddToAccountGroupAsync(_command.AccountId,_command.AccountGroupId)
+            _serviceManager.AccountService.AddInAccountGroupAsync(_command.AccountId,_command.AccountGroupId)
                 .Returns(new AccountAccountGroup { AccountGroupId = _command.AccountGroupId,
                                                    AccountId = _command.AccountId }); ;
         }
