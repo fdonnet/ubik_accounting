@@ -124,6 +124,13 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
             }
         }
 
+        /// <summary>
+        /// Attach an account group to the account (one per classification)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="accountGroupId"></param>
+        /// <param name="client"></param>
+        /// <returns></returns>
         [Authorize(Roles = "ubik_accounting_account_write")]
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpPut("{id}/AccountGroups/{accountGroupId}")]
@@ -170,6 +177,13 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
             }
         }
 
+        /// <summary>
+        /// Remove an account group from the account (detach)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="accountGroupId"></param>
+        /// <param name="client"></param>
+        /// <returns></returns>
         [Authorize(Roles = "ubik_accounting_account_write")]
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpDelete("{id}/AccountGroups/{accountGroupId}")]

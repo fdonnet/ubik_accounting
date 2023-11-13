@@ -3,6 +3,7 @@ using MassTransit;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
+using Ubik.Accounting.Api.Features.Accounts.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
 using Ubik.ApiService.Common.Exceptions;
@@ -37,6 +38,21 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                     .And.Match<Account>(a => a.Id == _testValuesForAccounts.AccountId1);
         }
 
+        [Fact]
+        public async Task GetAccountGroups_AccountGroupsClassification_Ok()
+        {
+            //Arrange
+
+            //Act
+            var result = (await _serviceManager.AccountService.GetAccountGroupsAsync(_testValuesForAccounts.AccountId1)).IfLeft(r => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.AllBeOfType<AccountGroupClassification>()
+                    .And.Match<IEnumerable<AccountGroupClassification>>(a => a.Any());
+        }
+
         [Theory, MemberData(nameof(GeneratedGuids))]
         public async Task Get_AccountNotFoundException_IdNotExists(Guid id)
         {
@@ -46,6 +62,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var result = (await _serviceManager.AccountService.GetAsync(id)).IfRight(err => default!);
             var addToAccountGroup = (await _serviceManager.AccountService
                 .AddInAccountGroupAsync(id, NewId.NextGuid())).IfRight(err => default!);
+            var getAccountGroups = (await _serviceManager.AccountService
+                .GetAccountGroupsAsync(NewId.NextGuid())).IfRight(err => default!);
 
             //Assert
             result.Should()
@@ -55,6 +73,13 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                         a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
 
             addToAccountGroup.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountNotFoundException>()
+                    .And.Match<AccountNotFoundException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+
+
+            getAccountGroups.Should()
                     .NotBeNull()
                     .And.BeOfType<AccountNotFoundException>()
                     .And.Match<AccountNotFoundException>(a =>
