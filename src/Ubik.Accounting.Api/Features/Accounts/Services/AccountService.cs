@@ -133,7 +133,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             return accountAccountGroup;
         }
 
-        public async Task<Either<IServiceAndFeatureException, bool>> RemoveFromAccountGroupAsync(Guid id, Guid accountGroupId)
+        public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> DeleteFromAccountGroupAsync(Guid id, Guid accountGroupId)
         {
             var accountAccountGroup = await _context.AccountsAccountGroups.FirstOrDefaultAsync(aag =>
                 aag.AccountId == id
@@ -144,7 +144,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
 
             _context.Entry(accountAccountGroup).State = EntityState.Deleted;
 
-            return true;
+            return accountAccountGroup;
         }
 
         private async Task<bool> IfExistsInTheClassification(Guid id, Guid accountGroupId)

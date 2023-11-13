@@ -148,9 +148,27 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
-        public static AddAccountInAccountGroupResult ToAddAccountToAccountGroupResult(this AccountAccountGroup accountAccountGroup)
+        public static AccountDeletedInAccountGroup ToAccountDeletedInAccountGroup(this AccountAccountGroup accountAccountGroup)
+        {
+            return new AccountDeletedInAccountGroup
+            {
+                AccountId = accountAccountGroup.AccountId,
+                AccountGroupId = accountAccountGroup.AccountGroupId
+            };
+        }
+
+        public static AddAccountInAccountGroupResult ToAddAccountInAccountGroupResult(this AccountAccountGroup accountAccountGroup)
         {
             return new AddAccountInAccountGroupResult
+            {
+                AccountId = accountAccountGroup.AccountId,
+                AccountGroupId = accountAccountGroup.AccountGroupId
+            };
+        }
+
+        public static DeleteAccountInAccountGroupResult ToDeleteAccountInAccountGroupResult(this AccountAccountGroup accountAccountGroup)
+        {
+            return new DeleteAccountInAccountGroupResult
             {
                 AccountId = accountAccountGroup.AccountId,
                 AccountGroupId = accountAccountGroup.AccountGroupId

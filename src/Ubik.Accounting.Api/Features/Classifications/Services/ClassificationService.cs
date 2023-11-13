@@ -65,7 +65,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             var sql = """
                 SELECT a.*
                 FROM classifications c
-                INNER JOIN account_groups ag ON c.id = ag.account_group_classification_id
+                INNER JOIN account_groups ag ON c.id = ag.classification_id
                 INNER JOIN accounts_account_groups aag on aag.account_group_id = ag.id
                 INNER JOIN accounts a ON aag.account_id = a.id
                 WHERE a.tenant_id = @tenantId 
@@ -98,7 +98,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 AND a1.id NOT IN (
                    	SELECT a.id
                    	FROM classifications c
-                   	INNER JOIN account_groups ag ON c.id = ag.account_group_classification_id
+                   	INNER JOIN account_groups ag ON c.id = ag.classification_id
                    	INNER JOIN accounts_account_groups aag on aag.account_group_id = ag.id
                    	INNER JOIN accounts a ON aag.account_id = a.id
                    	WHERE c.id = @id)

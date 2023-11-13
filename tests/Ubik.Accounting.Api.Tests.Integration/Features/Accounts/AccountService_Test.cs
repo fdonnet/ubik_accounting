@@ -15,20 +15,20 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
         private readonly IServiceManager _serviceManager;
 
-        public AccountService_Test(IntegrationTestWebAppFactory factory) : base(factory) 
+        public AccountService_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testValuesForAccounts = new BaseValuesForAccounts();
             _testValuesForAccountGroups = new BaseValuesForAccountGroups();
-           _serviceManager =new ServiceManager(DbContext,new FakeUserService());
+            _serviceManager = new ServiceManager(DbContext, new FakeUserService());
         }
 
         [Fact]
         public async Task Get_Account_Ok()
         {
             //Arrange
-                
+
             //Act
-            var result = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1)).IfLeft(r=>default!);
+            var result = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1)).IfLeft(r => default!);
 
             //Assert
             result.Should()
@@ -112,7 +112,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountService.AddAsync(account)).IfLeft(r=>default!);
+            var result = (await _serviceManager.AccountService.AddAsync(account)).IfLeft(r => default!);
 
             //Assert
             result.Should()
@@ -167,7 +167,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountService.AddAsync(account)).IfLeft(r=>default!);
+            var result = (await _serviceManager.AccountService.AddAsync(account)).IfLeft(r => default!);
 
             //Assert
             result.Should().Match<Account>(x => x.ModifiedBy != null
@@ -191,7 +191,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should()
                     .NotBeNull()
                     .And.BeOfType<Account>()
-                    .And.Match<Account>(a => 
+                    .And.Match<Account>(a =>
                         a.Label == "Modified"
                         && a.Version != account.Version
                         && a.Id == account.Id);
@@ -201,7 +201,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Update_AccountNotFoundException_AccountIdNotFound()
         {
             //Arrange
-            var account = new Account { Id = Guid.NewGuid(), Code="TEST",Label="TEST", CurrencyId=Guid.NewGuid()};
+            var account = new Account { Id = Guid.NewGuid(), Code = "TEST", Label = "TEST", CurrencyId = Guid.NewGuid() };
 
             account!.Label = "Modified";
             account.Description = "Modified";
@@ -247,7 +247,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             account.Description = "Modified";
 
             //Act
-            var result = (await _serviceManager.AccountService.UpdateAsync(account)).IfRight(err=>default!);
+            var result = (await _serviceManager.AccountService.UpdateAsync(account)).IfRight(err => default!);
 
             //Assert
             result.Should()
@@ -261,14 +261,14 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Update_ModifiedAtFieldUpdated_Ok()
         {
             //Arrange
-            var account = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1)).IfLeft(r=>default!);
+            var account = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountId1)).IfLeft(r => default!);
 
             account!.Label = "Modified";
             account.Description = "Modified";
             var modifiedAt = account.ModifiedAt;
 
             //Act
-            var result = (await _serviceManager.AccountService.UpdateAsync(account)).IfLeft(r=>default!);
+            var result = (await _serviceManager.AccountService.UpdateAsync(account)).IfLeft(r => default!);
 
             //Assert
             result.Should()
@@ -280,7 +280,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Delete_True_Ok()
         {
             //Arrange
-            
+
             //Act
             await _serviceManager.AccountService.ExecuteDeleteAsync(_testValuesForAccounts.AccountIdForDel);
             var exist = (await _serviceManager.AccountService.GetAsync(_testValuesForAccounts.AccountIdForDel)).IsRight;
@@ -324,8 +324,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                         a.AccountGroupId == _testValuesForAccountGroups.AccountGroupId2
                         && a.AccountId == _testValuesForAccounts.AccountId2);
 
-            //TODO: clean
-            
+            //Clean
+            _ = await _serviceManager.AccountService.DeleteFromAccountGroupAsync(_testValuesForAccounts.AccountId2,
+                 _testValuesForAccountGroups.AccountGroupId2);
         }
 
 
@@ -365,7 +366,46 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                         a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
 
+        [Fact]
+        public async Task DeleteInAccountGroup_AccountAccountGroup_Ok()
+        {
+            //Arrange
 
+            //Act
+            var result = (await _serviceManager.AccountService
+                .DeleteFromAccountGroupAsync(_testValuesForAccounts.AccountId1,
+                _testValuesForAccountGroups.AccountGroupId1)).IfLeft(r => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountAccountGroup>()
+                    .And.Match<AccountAccountGroup>(a =>
+                        a.AccountGroupId == _testValuesForAccountGroups.AccountGroupId1
+                        && a.AccountId == _testValuesForAccounts.AccountId1);
+
+            //Clean
+            _ = await _serviceManager.AccountService.AddInAccountGroupAsync(_testValuesForAccounts.AccountId1,
+                 _testValuesForAccountGroups.AccountGroupId1);
+        }
+
+        [Fact]
+        public async Task DeleteInAccountGroup_AccountAlreadyExistsInClassificationException_AccountAlreadyAttached()
+        {
+            //Arrange
+
+            //Act
+            var result = (await _serviceManager.AccountService
+                .DeleteFromAccountGroupAsync(NewId.NextGuid(),
+                NewId.NextGuid())).IfRight(r => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountNotExistsInAccountGroup> ()
+                    .And.Match<AccountNotExistsInAccountGroup>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+        }
 
         public static IEnumerable<object[]> GeneratedGuids
         {
