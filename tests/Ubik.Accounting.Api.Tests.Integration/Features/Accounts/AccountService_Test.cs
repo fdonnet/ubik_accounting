@@ -314,19 +314,15 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Act
             var result = (await _serviceManager.AccountService
                 .AddInAccountGroupAsync(_testValuesForAccounts.AccountId2,
-                _testValuesForAccountGroups.AccountGroupId2)).IfLeft(r => default!);
+                _testValuesForAccountGroups.AccountGroupId1)).IfLeft(r => default!);
 
             //Assert
             result.Should()
                     .NotBeNull()
                     .And.BeOfType<AccountAccountGroup>()
                     .And.Match<AccountAccountGroup>(a =>
-                        a.AccountGroupId == _testValuesForAccountGroups.AccountGroupId2
+                        a.AccountGroupId == _testValuesForAccountGroups.AccountGroupId1
                         && a.AccountId == _testValuesForAccounts.AccountId2);
-
-            //Clean
-            _ = await _serviceManager.AccountService.DeleteFromAccountGroupAsync(_testValuesForAccounts.AccountId2,
-                 _testValuesForAccountGroups.AccountGroupId2);
         }
 
 
@@ -373,20 +369,16 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Act
             var result = (await _serviceManager.AccountService
-                .DeleteFromAccountGroupAsync(_testValuesForAccounts.AccountId1,
-                _testValuesForAccountGroups.AccountGroupId1)).IfLeft(r => default!);
+                .DeleteFromAccountGroupAsync(_testValuesForAccounts.AccountId3,
+                _testValuesForAccountGroups.AccountGroupId2)).IfLeft(r => default!);
 
             //Assert
             result.Should()
                     .NotBeNull()
                     .And.BeOfType<AccountAccountGroup>()
                     .And.Match<AccountAccountGroup>(a =>
-                        a.AccountGroupId == _testValuesForAccountGroups.AccountGroupId1
-                        && a.AccountId == _testValuesForAccounts.AccountId1);
-
-            //Clean
-            _ = await _serviceManager.AccountService.AddInAccountGroupAsync(_testValuesForAccounts.AccountId1,
-                 _testValuesForAccountGroups.AccountGroupId1);
+                        a.AccountGroupId == _testValuesForAccountGroups.AccountGroupId2
+                        && a.AccountId == _testValuesForAccounts.AccountId3);
         }
 
         [Fact]
@@ -402,7 +394,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotExistsInAccountGroup> ()
+                    .And.BeOfType<AccountNotExistsInAccountGroup>()
                     .And.Match<AccountNotExistsInAccountGroup>(a =>
                         a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }

@@ -168,7 +168,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 						   	WHERE ag1.id = @accountGroupId)
                 """;
 
-            return (await con.QueryFirstOrDefaultAsync<Account>(sql, p)) == null ? false : true;
+            return (await con.QueryFirstOrDefaultAsync<Account>(sql, p)) != null;
         }
 
         private async Task<bool> IfExistAccountGroupAsync(Guid accountGroupId)
