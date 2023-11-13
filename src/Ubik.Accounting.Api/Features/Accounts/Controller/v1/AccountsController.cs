@@ -53,6 +53,27 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
+        /// <summary>
+        /// Account groups attached to this account (one account group per classification)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "ubik_accounting_account_read")]
+        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
+        [HttpGet("{id}/AccountGroups")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<IEnumerable<GetAccountGroupClassificationResult>>> GetAccountGroups(Guid id)
+        {
+            var result = await _serviceManager.AccountService.GetAccountGroupsAsync(id);
+
+            return result.Match(
+                Right: r => Ok(r.ToGetAccountGroupClassificationResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
         [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpPost]
         [ProducesResponseType(201)]
@@ -111,7 +132,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<UpdateAccountResult>> AddInAccountGroup(Guid id,
+        public async Task<ActionResult<AddAccountInAccountGroupResult>> AddInAccountGroup(Guid id,
             Guid accountGroupId, IRequestClient<AddAccountInAccountGroupCommand> client)
         {
             var (result, error) = await client.GetResponse<AddAccountInAccountGroupResult

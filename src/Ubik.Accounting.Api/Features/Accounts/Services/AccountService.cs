@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
+using Ubik.Accounting.Api.Features.Accounts.Queries.CustomPoco;
 using Ubik.Accounting.Api.Features.Classifications.Exceptions;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Exceptions;
@@ -176,6 +177,33 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             return await _context.AccountGroups.AnyAsync(ag => ag.Id == accountGroupId);
         }
 
+        public async Task<Either<IServiceAndFeatureException, IList<AccountGroupClassification>>> GetAccountGroupsAsync(Guid id)
+        {
+            var accountPresent = await GetAsync(id);
+            if (accountPresent.IsLeft)
+                return new AccountNotFoundException(id);
 
+            var p = new DynamicParameters();
+            p.Add("@id", id);
+            p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
+
+            var con = _context.Database.GetDbConnection();
+
+            var sql = """
+                SELECT ag.id
+                , ag.code
+                , ag.label
+                , c.id as classification_id
+                , c.code as classification_code
+                , c.label as classification_label
+                FROM account_groups ag
+                INNER JOIN classifications c ON ag.classification_id = c.id
+                INNER JOIN accounts_account_groups aag ON aag.account_group_id = ag.id
+                WHERE ag.tenant_id = @tenantId
+                AND aag.account_id = @id
+                """;
+
+            return (await con.QueryAsync<AccountGroupClassification>(sql, p)).ToList();
+        }
     }
 }
