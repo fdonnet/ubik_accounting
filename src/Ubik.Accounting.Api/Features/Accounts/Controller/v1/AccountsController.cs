@@ -104,6 +104,32 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]
+        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
+        [HttpPut("{id}/AccountGroups/{accountGroupId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 409)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<UpdateAccountResult>> AddInAccountGroup(Guid id,
+            Guid accountGroupId, IRequestClient<AddAccountInAccountGroupCommand> client)
+        {
+            var (result, error) = await client.GetResponse<AddAccountInAccountGroupResult
+                , IServiceAndFeatureException>(new AddAccountInAccountGroupCommand { AccountId = id, AccountGroupId=accountGroupId});
+
+            if (result.IsCompletedSuccessfully)
+            {
+                var accountAccountGroup = (await result).Message;
+                return Ok(accountAccountGroup);
+            }
+            else
+            {
+                var problem = await error;
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
+            }
+        }
+
+        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpDelete("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]

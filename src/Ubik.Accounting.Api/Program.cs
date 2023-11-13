@@ -137,7 +137,7 @@ namespace Ubik.Accounting.Api
                 var services = scope.ServiceProvider;
 
                 var context = services.GetRequiredService<AccountingContext>();
-                //context.Database.EnsureDeleted();
+                context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
 
                 var initDb = new DbInitializer();
