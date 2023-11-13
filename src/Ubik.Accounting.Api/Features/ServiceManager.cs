@@ -24,7 +24,7 @@ namespace Ubik.Accounting.Api.Features
         {
             get
             {
-                _accountService ??= new AccountService(_context);
+                _accountService ??= new AccountService(_context,_userService);
                 return _accountService;
             }
         }

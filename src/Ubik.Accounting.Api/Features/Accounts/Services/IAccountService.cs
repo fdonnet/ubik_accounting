@@ -14,7 +14,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         public Task<Either<IServiceAndFeatureException, Account>> UpdateAsync(Account account);
         public Task<Either<IServiceAndFeatureException, bool>> ExecuteDeleteAsync(Guid id);
         public Task<bool> IfExistsCurrencyAsync(Guid currencyId);
-        //public Task<Either<IServiceAndFeatureException, AccountAccountGroup>> AddToAccountGroupAsync(Guid id, Guid accountGroupId);
-
+        public Task<Either<IServiceAndFeatureException, AccountAccountGroup>> AddToAccountGroupAsync(Guid id, Guid accountGroupId);
     }
 }

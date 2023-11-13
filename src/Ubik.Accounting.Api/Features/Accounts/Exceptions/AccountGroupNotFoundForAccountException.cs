@@ -9,7 +9,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
 
         public AccountGroupNotFoundForAccountException(Guid idNotFound)
         {
-            ErrorType = ServiceAndFeatureExceptionType.NotFound;
+            ErrorType = ServiceAndFeatureExceptionType.BadParams;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "ACCOUNTGROUP_NOT_FOUND",

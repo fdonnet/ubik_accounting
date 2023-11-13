@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using MassTransit;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
@@ -11,11 +12,13 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
     public class AccountService_Test : BaseIntegrationTest
     {
         private readonly BaseValuesForAccounts _testValuesForAccounts;
+        private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
         private readonly IServiceManager _serviceManager;
 
         public AccountService_Test(IntegrationTestWebAppFactory factory) : base(factory) 
         {
             _testValuesForAccounts = new BaseValuesForAccounts();
+            _testValuesForAccountGroups = new BaseValuesForAccountGroups();
            _serviceManager =new ServiceManager(DbContext,new FakeUserService());
         }
 
@@ -41,9 +44,17 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Act
             var result = (await _serviceManager.AccountService.GetAsync(id)).IfRight(err => default!);
+            var addToAccountGroup = (await _serviceManager.AccountService
+                .AddToAccountGroupAsync(id, NewId.NextGuid())).IfRight(err => default!);
 
             //Assert
             result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountNotFoundException>()
+                    .And.Match<AccountNotFoundException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+
+            addToAccountGroup.Should()
                     .NotBeNull()
                     .And.BeOfType<AccountNotFoundException>()
                     .And.Match<AccountNotFoundException>(a =>
@@ -294,6 +305,63 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                      .And.Match<AccountNotFoundException>(a =>
                          a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }
+
+        [Fact]
+        public async Task AddInAccountGroup_AccountAccountGroup_Ok()
+        {
+            //Arrange
+
+            //Act
+            var result = (await _serviceManager.AccountService
+                .AddToAccountGroupAsync(_testValuesForAccounts.AccountId2,
+                _testValuesForAccountGroups.AccountGroupId2)).IfLeft(r => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountAccountGroup>()
+                    .And.Match<AccountAccountGroup>(a =>
+                        a.AccountGroupId == _testValuesForAccountGroups.AccountGroupId2
+                        && a.AccountId == _testValuesForAccounts.AccountId2);
+        }
+
+
+        [Fact]
+        public async Task AddInAccountGroup_AccountGroupNotFoundForAccountException_AccountGroupIdNotFound()
+        {
+            //Arrange
+
+            //Act
+            var result = (await _serviceManager.AccountService
+                .AddToAccountGroupAsync(_testValuesForAccounts.AccountId2,
+               Guid.NewGuid())).IfRight(r => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountGroupNotFoundForAccountException>()
+                    .And.Match<AccountGroupNotFoundForAccountException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+        }
+
+        [Fact]
+        public async Task AddInAccountGroup_AccountAlreadyExistsInClassificationException_AccountAlreadyAttached()
+        {
+            //Arrange
+
+            //Act
+            var result = (await _serviceManager.AccountService
+                .AddToAccountGroupAsync(_testValuesForAccounts.AccountId1,
+                _testValuesForAccountGroups.AccountGroupId2)).IfRight(r => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<AccountAlreadyExistsInClassificationException>()
+                    .And.Match<AccountAlreadyExistsInClassificationException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+        }
+
 
 
         public static IEnumerable<object[]> GeneratedGuids
