@@ -161,6 +161,26 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
+        public async Task GetAccountGroups_AccountGroupsClassification_Ok()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}/AccountGroups");
+            var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetAccountGroupClassificationResult>>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.AllBeOfType<GetAccountGroupClassificationResult>();
+        }
+
+        [Fact]
         public async Task Get_ProblemDetails_IdNotFound()
         {
             //Arrange
@@ -171,11 +191,19 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Act
             var response = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}");
+            var responseAccountGroups = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}/AccountGroups");
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+            var resultAccountGroups = await responseAccountGroups.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            responseAccountGroups.StatusCode.Should().Be(HttpStatusCode.NotFound);
             result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
+
+            resultAccountGroups.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
