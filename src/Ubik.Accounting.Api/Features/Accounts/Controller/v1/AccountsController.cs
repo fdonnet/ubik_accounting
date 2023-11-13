@@ -148,5 +148,26 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
                 return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
             }
         }
+
+        [Authorize(Roles = "ubik_accounting_account_write")]
+        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
+        [HttpDelete("{id}/AccountGroups/{accountGroupId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult> DeleteFromAccountGroup(Guid id, Guid accountGroupId, IRequestClient<DeleteAccountInAccountGroupCommand> client)
+        {
+            var (result, error) = await client.GetResponse<DeleteAccountInAccountGroupResult,
+                IServiceAndFeatureException>(new DeleteAccountInAccountGroupCommand { AccountId = id,  AccountGroupId=accountGroupId });
+
+            if (result.IsCompletedSuccessfully)
+                return NoContent();
+            else
+            {
+                var problem = await error;
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
+            }
+        }
     }
 }

@@ -12,14 +12,15 @@ using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 {
-    public class AddAccountInAccountGroup_Test : IAsyncLifetime
+    public class AccountCommands_Test : IAsyncLifetime
     {
         private readonly IServiceManager _serviceManager;
         private readonly AddAccountInAccountGroupCommand _command;
+        private readonly DeleteAccountInAccountGroupCommand _commandDel;
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
 
-        public AddAccountInAccountGroup_Test()
+        public AccountCommands_Test()
         {
             _serviceManager = Substitute.For<IServiceManager>();
 
@@ -29,9 +30,22 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                AccountId = NewId.NextGuid()
             };
 
+            _commandDel = new DeleteAccountInAccountGroupCommand()
+            {
+                AccountGroupId = NewId.NextGuid(),
+                AccountId = NewId.NextGuid()
+            };
+
             _serviceManager.AccountService.AddInAccountGroupAsync(_command.AccountId,_command.AccountGroupId)
                 .Returns(new AccountAccountGroup { AccountGroupId = _command.AccountGroupId,
-                                                   AccountId = _command.AccountId }); ;
+                                                   AccountId = _command.AccountId });
+
+            _serviceManager.AccountService.DeleteFromAccountGroupAsync(_commandDel.AccountId, _commandDel.AccountGroupId)
+                .Returns(new AccountAccountGroup
+                {
+                    AccountGroupId = _commandDel.AccountGroupId,
+                    AccountId = _commandDel.AccountId
+                });
         }
 
         public async Task InitializeAsync()
@@ -41,6 +55,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                 {
                     x.AddScoped<IServiceManager>(sm => _serviceManager);
                     x.AddConsumer<AddAccountInAccountGroupConsumer>();
+                    x.AddConsumer<DeleteAccountInAccountGroupConsumer>();
 
                 }).BuildServiceProvider(true);
 
@@ -80,6 +95,43 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             //Assert
             var sent = await _harness.Published.Any<AccountAddedInAccountGroup>();
+
+            sent.Should().Be(true);
+        }
+
+        [Fact]
+        public async Task DeleteInAccountGroup_AccountAccountGroup_Ok()
+        {
+            //Arrange
+            var client = _harness.GetRequestClient<DeleteAccountInAccountGroupCommand>();
+            var consumerHarness = _harness.GetConsumerHarness<DeleteAccountInAccountGroupConsumer>();
+            //Act
+            var response = await client.GetResponse<DeleteAccountInAccountGroupResult>(_commandDel);
+
+            //Assert
+            var sent = await _harness.Sent.Any<DeleteAccountInAccountGroupResult>();
+            var consumed = await _harness.Consumed.Any<DeleteAccountInAccountGroupCommand>();
+            var consumerConsumed = await consumerHarness.Consumed.Any<DeleteAccountInAccountGroupCommand>();
+
+            sent.Should().Be(true);
+            consumed.Should().Be(true);
+            consumerConsumed.Should().Be(true);
+            response.Message.Should()
+                .BeOfType<DeleteAccountInAccountGroupResult>()
+                .And.Match<DeleteAccountInAccountGroupResult>(a => a.AccountId == _commandDel.AccountId);
+        }
+
+        [Fact]
+        public async Task DeleteInAccountGroup_AccountDeletedInAccountGroup_OkAccountDeletedFromAccountGroupPublished()
+        {
+            //Arrange
+            var client = _harness.GetRequestClient<DeleteAccountInAccountGroupCommand>();
+
+            //Act
+            await client.GetResponse<DeleteAccountInAccountGroupResult>(_commandDel);
+
+            //Assert
+            var sent = await _harness.Published.Any<AccountDeletedInAccountGroup>();
 
             sent.Should().Be(true);
         }
