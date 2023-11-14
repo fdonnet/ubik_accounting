@@ -69,5 +69,16 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
                 Version = x.Version
             });
         }
+
+        public static Classification ToClassification(this Classification forUpd, Classification classification)
+        {
+            classification.Id = forUpd.Id;
+            classification.Code = forUpd.Code;
+            classification.Label = forUpd.Label;
+            classification.Description = forUpd.Description;
+            classification.Version = forUpd.Version;
+          
+            return classification;
+        }
     }
 }

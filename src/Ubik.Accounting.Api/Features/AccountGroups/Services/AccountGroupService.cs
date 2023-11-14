@@ -59,7 +59,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             }
         }
 
-        public async Task DeleteAllChildrenOfAsync(Guid id, List<AccountGroup> deletedAccountGroups)
+        private async Task DeleteAllChildrenOfAsync(Guid id, List<AccountGroup> deletedAccountGroups)
         {
             var children = await _context.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
 
