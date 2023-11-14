@@ -57,26 +57,29 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         /// <returns></returns>
         public async Task<Either<IServiceAndFeatureException, IEnumerable<Account>>> GetClassificationAccountsAsync(Guid id)
         {
-            if ((await GetAsync(id)).IsLeft)
-                return new ClassificationNotFoundException(id);
+            //Get the classification and if exists, map the accounts
+            var accounts = (await GetAsync(id))
+                .MapAsync(a => 
+                {
+                    var p = new DynamicParameters();
+                    p.Add("@id", id);
+                    p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
 
-            var p = new DynamicParameters();
-            p.Add("@id", id);
-            p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
+                    var con = _context.Database.GetDbConnection();
+                    var sql = """
+                        SELECT a.*
+                        FROM classifications c
+                        INNER JOIN account_groups ag ON c.id = ag.classification_id
+                        INNER JOIN accounts_account_groups aag on aag.account_group_id = ag.id
+                        INNER JOIN accounts a ON aag.account_id = a.id
+                        WHERE a.tenant_id = @tenantId 
+                        AND c.id = @id
+                        """;
 
-            var con = _context.Database.GetDbConnection();
-            var sql = """
-                SELECT a.*
-                FROM classifications c
-                INNER JOIN account_groups ag ON c.id = ag.classification_id
-                INNER JOIN accounts_account_groups aag on aag.account_group_id = ag.id
-                INNER JOIN accounts a ON aag.account_id = a.id
-                WHERE a.tenant_id = @tenantId 
-                AND c.id = @id
-                """;
+                    return con.QueryAsync<Account>(sql, p);
+                });
 
-            return Prelude.Right((await con.QueryAsync<Account>(sql, p)));
-
+            return await accounts;
         }
 
         /// <summary>
@@ -112,31 +115,23 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
 
         public async Task<Either<IServiceAndFeatureException, ClassificationStatus>> GetClassificationStatusAsync(Guid id)
         {
-            var missingAccount = await GetClassificationAccountsMissingAsync(id);
-
-            if (missingAccount.IsLeft)
-                return new ClassificationNotFoundException(id);
-
-            var classificationStatus = missingAccount.Match(
-                Right: c =>
-                {
-                    ClassificationStatus status = c.Any()
-                        ? new ClassificationStatus
-                        {
-                            Id = id,
-                            IsReady = false,
-                            MissingAccounts = c
-                        }
-                        : new ClassificationStatus
-                        {
-                            Id = id,
-                            IsReady = false
-                        };
-                    return status;
-                },
-                Left: err => throw new Exception("Cannot be in left state at this point"));
-
-            return classificationStatus;
+            return (await GetClassificationAccountsMissingAsync(id))
+                   .Map(c =>
+                   {
+                       ClassificationStatus status = c.Any()
+                           ? new ClassificationStatus
+                           {
+                               Id = id,
+                               IsReady = false,
+                               MissingAccounts = c
+                           }
+                           : new ClassificationStatus
+                           {
+                               Id = id,
+                               IsReady = true
+                           };
+                       return status;
+                   });
         }
 
         public async Task<bool> IfExistsAsync(string code)
@@ -170,7 +165,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 return testPresent;
 
             var toUpdate = testPresent.IfLeft(err => default!);
-
+         
             //Classification code already exists with other id
             if (await IfExistsWithDifferentIdAsync(classification.Code, classification.Id))
                 return new ClassificationAlreadyExistsException(classification.Code);
@@ -191,7 +186,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             if (classification.IsRight)
             {
                 using var transaction = _context.Database.BeginTransaction();
-                
+
                 //Clean all account groups structure
                 var firstLvlAccountGroups = await GetFirstLvlAccountGroups(id);
                 var deletedAccountGroups = new List<AccountGroup>();
