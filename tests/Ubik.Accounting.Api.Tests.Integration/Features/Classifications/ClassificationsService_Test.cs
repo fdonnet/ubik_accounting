@@ -10,7 +10,7 @@ using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 {
-    public  class ClassificationsService_Test : BaseIntegrationTest
+    public class ClassificationsService_Test : BaseIntegrationTest
     {
         private readonly BaseValuesForClassifications _testClassifications;
         private readonly IServiceManager _serviceManager;
@@ -56,12 +56,15 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
 
             //Act
-            var response = (await _serviceManager.ClassificationService.GetAsync(Guid.NewGuid()));
-            var forUpd = (await _serviceManager.ClassificationService.UpdateAsync(
-                new Classification { Id= Guid.NewGuid(), Code="test",Label="test"}));
+            var response = await _serviceManager.ClassificationService.GetAsync(Guid.NewGuid());
+            var forUpd = await _serviceManager.ClassificationService.UpdateAsync(
+                new Classification { Id = Guid.NewGuid(), Code = "test", Label = "test" });
 
-            var result = response.IfRight(x=> default!);
+            var forDel = await _serviceManager.ClassificationService.DeleteAsync(Guid.NewGuid());
+
+            var result = response.IfRight(x => default!);
             var resultForUpd = forUpd.IfRight(x => default!);
+            var resultForDel = forDel.IfRight(x => default!);
 
             //Assert
             result.Should()
@@ -71,6 +74,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
                a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
 
             resultForUpd.Should()
+            .NotBeNull()
+            .And.BeOfType<ClassificationNotFoundException>()
+            .And.Match<ClassificationNotFoundException>(a =>
+            a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+
+            resultForDel.Should()
             .NotBeNull()
             .And.BeOfType<ClassificationNotFoundException>()
             .And.Match<ClassificationNotFoundException>(a =>
@@ -208,6 +217,20 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
                     .And.BeOfType<ClassificationAlreadyExistsException>()
                     .And.Match<ClassificationAlreadyExistsException>(a =>
                         a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+        }
+
+        [Fact]
+        public async Task Delete_True_Ok()
+        {
+            //Arrange
+
+            //Act
+            await _serviceManager.AccountGroupService.DeleteAsync(_testClassifications.ClassificationIdForDel);
+            var exist = (await _serviceManager.AccountGroupService.GetAsync(_testClassifications.ClassificationIdForDel)).IsRight;
+
+            //Assert
+            exist.Should()
+                .BeFalse();
         }
     }
 }
