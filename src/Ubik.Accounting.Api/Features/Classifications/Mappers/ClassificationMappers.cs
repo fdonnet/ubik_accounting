@@ -1,5 +1,11 @@
-﻿using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
+﻿using MassTransit;
+using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Contracts.AccountGroups.Events;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
+using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.Accounting.Contracts.Classifications.Events;
 using Ubik.Accounting.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Mappers
@@ -80,5 +86,40 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
           
             return classification;
         }
+
+        public static Classification ToClassification(this AddClassificationCommand addClassificationCommand)
+        {
+            return new Classification()
+            {
+                Id = NewId.NextGuid(),
+                Code = addClassificationCommand.Code,
+                Label = addClassificationCommand.Label,
+                Description = addClassificationCommand.Description
+            };
+        }
+
+        public static ClassificationAdded ToClassificationAdded(this Classification classification)
+        {
+            return new ClassificationAdded
+            {
+                Id = classification.Id,
+                Code = classification.Code,
+                Label = classification.Label,
+                Description = classification.Description,
+                Version = classification.Version
+            };
+        }
+        public static AddClassificationResult ToAddClassificationResult(this Classification classification)
+        {
+            return new AddClassificationResult()
+            {
+                Id = classification.Id,
+                Code = classification.Code,
+                Label = classification.Label,
+                Description = classification.Description,
+                Version = classification.Version
+            };
+        }
+
     }
 }

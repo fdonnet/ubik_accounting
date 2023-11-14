@@ -1,7 +1,11 @@
 ﻿using Asp.Versioning;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.Api.Features.Classifications.Mappers;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
+using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Exceptions;
 
@@ -102,6 +106,28 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
             return result.Match(
                             Right: ok => Ok(ok.ToGetClassificationStatusResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
+        [Authorize(Roles = "ubik_accounting_classification_write")]
+        [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 409)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<AddClassificationResult>> Add(AddClassificationCommand command, IRequestClient<AddClassificationCommand> client)
+        {
+            var (result, error) = await client.GetResponse<AddClassificationResult, IServiceAndFeatureException>(command);
+
+            if (result.IsCompletedSuccessfully)
+            {
+                var ok = (await result).Message;
+                return CreatedAtAction(nameof(Get), new { id = ok.Id }, ok);
+            }
+            else
+            {
+                var problem = await error;
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
+            }
         }
 
     }

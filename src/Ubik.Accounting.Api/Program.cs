@@ -16,6 +16,7 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Filters;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Classifications.Queries;
+using Ubik.Accounting.Contracts.Classifications.Commands;
 
 namespace Ubik.Accounting.Api
 {
@@ -75,18 +76,17 @@ namespace Ubik.Accounting.Api
                 //Add all consumers
                 config.AddConsumers(Assembly.GetExecutingAssembly());
 
-                //Add clients
+                //Add commands clients
                 config.AddRequestClient<AddAccountCommand>();
                 config.AddRequestClient<AddAccountInAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountInAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountCommand>();
                 config.AddRequestClient<UpdateAccountCommand>();
-
                 config.AddRequestClient<AddAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountGroupCommand>();
                 config.AddRequestClient<UpdateAccountGroupCommand>();
+                config.AddRequestClient<AddClassificationCommand>();    
 
-                config.AddRequestClient<GetClassificationQuery>();
             });
 
 
