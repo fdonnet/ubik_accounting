@@ -89,28 +89,32 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         /// <returns></returns>
         public async Task<Either<IServiceAndFeatureException, IEnumerable<Account>>> GetClassificationAccountsMissingAsync(Guid id)
         {
-            if ((await GetAsync(id)).IsLeft)
-                return new ClassificationNotFoundException(id);
+            //Get the classification and if exists, return all missing accounts
+            var accounts = (await GetAsync(id))
+                .MapAsync(a =>
+                {
+                    var p = new DynamicParameters();
+                    p.Add("@id", id);
+                    p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
 
-            var p = new DynamicParameters();
-            p.Add("@id", id);
-            p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
+                    var con = _context.Database.GetDbConnection();
+                    var sql = """
+                        SELECT a1.*
+                        FROM accounts a1
+                        WHERE a1.tenant_id = @tenantId
+                        AND a1.id NOT IN (
+                            SELECT a.id
+                            FROM classifications c
+                            INNER JOIN account_groups ag ON c.id = ag.classification_id
+                            INNER JOIN accounts_account_groups aag on aag.account_group_id = ag.id
+                            INNER JOIN accounts a ON aag.account_id = a.id
+                            WHERE c.id = @id)
+                        """;
 
-            var con = _context.Database.GetDbConnection();
-            var sql = """
-                SELECT a1.*
-                FROM accounts a1
-                WHERE a1.tenant_id = @tenantId
-                AND a1.id NOT IN (
-                   	SELECT a.id
-                   	FROM classifications c
-                   	INNER JOIN account_groups ag ON c.id = ag.classification_id
-                   	INNER JOIN accounts_account_groups aag on aag.account_group_id = ag.id
-                   	INNER JOIN accounts a ON aag.account_id = a.id
-                   	WHERE c.id = @id)
-                """;
+                    return  con.QueryAsync<Account>(sql, p);
+                });
 
-            return Prelude.Right(await con.QueryAsync<Account>(sql, p));
+            return await accounts;
         }
 
         public async Task<Either<IServiceAndFeatureException, ClassificationStatus>> GetClassificationStatusAsync(Guid id)
