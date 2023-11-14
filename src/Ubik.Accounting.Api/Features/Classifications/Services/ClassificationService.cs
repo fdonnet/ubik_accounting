@@ -52,7 +52,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<Either<IServiceAndFeatureException, IList<Account>>> GetClassificationAccountsAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, IEnumerable<Account>>> GetClassificationAccountsAsync(Guid id)
         {
             if ((await GetAsync(id)).IsLeft)
                 return new ClassificationNotFoundException(id);
@@ -72,7 +72,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 AND c.id = @id
                 """;
 
-            return (await con.QueryAsync<Account>(sql, p)).ToList();
+            return Prelude.Right((await con.QueryAsync<Account>(sql, p)));
             
         }
 
@@ -81,7 +81,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<Either<IServiceAndFeatureException, IList<Account>>> GetClassificationAccountsMissingAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, IEnumerable<Account>>> GetClassificationAccountsMissingAsync(Guid id)
         {
             if ((await GetAsync(id)).IsLeft)
                 return new ClassificationNotFoundException(id);
@@ -104,7 +104,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                    	WHERE c.id = @id)
                 """;
 
-            return (await con.QueryAsync<Account>(sql, p)).ToList();
+            return Prelude.Right(await con.QueryAsync<Account>(sql, p));
         }
 
         public async Task<Either<IServiceAndFeatureException, ClassificationStatus>> GetClassificationStatusAsync(Guid id)

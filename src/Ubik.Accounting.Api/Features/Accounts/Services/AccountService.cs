@@ -177,7 +177,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             return await _context.AccountGroups.AnyAsync(ag => ag.Id == accountGroupId);
         }
 
-        public async Task<Either<IServiceAndFeatureException, IList<AccountGroupClassification>>> GetAccountGroupsAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, IEnumerable<AccountGroupClassification>>> GetAccountGroupsAsync(Guid id)
         {
             var accountPresent = await GetAsync(id);
             if (accountPresent.IsLeft)
@@ -203,7 +203,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 AND aag.account_id = @id
                 """;
 
-            return (await con.QueryAsync<AccountGroupClassification>(sql, p)).ToList();
+            return Prelude.Right(await con.QueryAsync<AccountGroupClassification>(sql, p));
         }
     }
 }

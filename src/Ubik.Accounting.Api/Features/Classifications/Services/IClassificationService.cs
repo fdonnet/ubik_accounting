@@ -9,11 +9,10 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
     {
         public Task<IEnumerable<Classification>> GetAllAsync();
         public Task<Either<IServiceAndFeatureException, Classification>> GetAsync(Guid id);
-        public Task<Either<IServiceAndFeatureException, IList<Account>>> GetClassificationAccountsAsync(Guid id);
-        public Task<Either<IServiceAndFeatureException, IList<Account>>> GetClassificationAccountsMissingAsync(Guid id);
+        public Task<Either<IServiceAndFeatureException, IEnumerable<Account>>> GetClassificationAccountsAsync(Guid id);
+        public Task<Either<IServiceAndFeatureException, IEnumerable<Account>>> GetClassificationAccountsMissingAsync(Guid id);
         public Task<Either<IServiceAndFeatureException, ClassificationStatus>> GetClassificationStatusAsync(Guid id);
-
-        //Task<bool> IfExistsAsync(Guid id);
+        //public Task<bool> IfExistsAsync(Guid id);
         //public Task<bool> IfExistsAsync(string code);
         //public Task<ResultT<Classification>> AddAsync(Classification classification);
         //public Task<ResultT<Classification>> UpdateAsync(Classification classification);
