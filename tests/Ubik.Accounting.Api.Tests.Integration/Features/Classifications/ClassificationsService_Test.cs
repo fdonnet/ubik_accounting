@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
+using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
 using Ubik.Accounting.Api.Features.Classifications.Exceptions;
 using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
@@ -56,8 +57,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 
             //Act
             var response = (await _serviceManager.ClassificationService.GetAsync(Guid.NewGuid()));
+            var forUpd = (await _serviceManager.ClassificationService.UpdateAsync(
+                new Classification { Id= Guid.NewGuid(), Code="test",Label="test"}));
 
             var result = response.IfRight(x=> default!);
+            var resultForUpd = forUpd.IfRight(x => default!);
 
             //Assert
             result.Should()
@@ -65,6 +69,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
            .And.BeOfType<ClassificationNotFoundException>()
            .And.Match<ClassificationNotFoundException>(a =>
                a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+
+            resultForUpd.Should()
+            .NotBeNull()
+            .And.BeOfType<ClassificationNotFoundException>()
+            .And.Match<ClassificationNotFoundException>(a =>
+            a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }
 
         [Fact]
@@ -112,6 +122,92 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             result.Should()
                     .NotBeNull()
                     .And.BeOfType<ClassificationStatus>();
+        }
+
+        [Fact]
+        public async Task Add_Classification_Ok()
+        {
+            //Arrange
+            var classification = new Classification
+            {
+                Code = "Test",
+                Label = "Test",
+            };
+
+            //Act
+            var result = (await _serviceManager.ClassificationService.AddAsync(classification)).IfLeft(err => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<Classification>()
+                    .And.Match<Classification>(c => c.Code == classification.Code);
+        }
+
+        [Fact]
+        public async Task Add_ClassificationAlreadyExistsException_ClassificationCodeAlreadyExists()
+        {
+            //Arrange
+            var classification = new Classification
+            {
+                Code = "SWISSPLAN",
+                Label = "Test"
+            };
+
+            //Act
+            var result = (await _serviceManager.ClassificationService.AddAsync(classification)).IfRight(a => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<ClassificationAlreadyExistsException>()
+                    .And.Match<ClassificationAlreadyExistsException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+        }
+
+        [Fact]
+        public async Task Update_UpdatedClassification_Ok()
+        {
+            //Arrange
+            var classification = (await _serviceManager.ClassificationService
+                .GetAsync(_testClassifications.ClassificationId2)).IfLeft(c => default!);
+
+            classification!.Label = "Modified";
+            classification.Description = "Modified";
+
+            //Act
+            var result = (await _serviceManager.ClassificationService.UpdateAsync(classification)).IfLeft(r => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<Classification>()
+                    .And.Match<Classification>(x =>
+                        x.Label == "Modified"
+                        && x.Version != classification.Version
+                        && x.Id == classification.Id);
+        }
+
+        [Fact]
+        public async Task Update_ClassificationAlreadyExistsException_ClassificationCodeAlreadyExists()
+        {
+            //Arrange
+            var classification = (await _serviceManager.ClassificationService
+                .GetAsync(_testClassifications.ClassificationId2)).IfLeft(c => default!);
+
+            classification!.Label = "Modified";
+            classification.Description = "Modified";
+            classification.Code = "SWISSPLAN";
+
+            //Act
+            var result = (await _serviceManager.ClassificationService.UpdateAsync(classification)).IfRight(r => default!);
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.BeOfType<ClassificationAlreadyExistsException>()
+                    .And.Match<ClassificationAlreadyExistsException>(a =>
+                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
         }
     }
 }

@@ -4,7 +4,7 @@ using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Accounting.Api.Data.Config
 {
-    public class ClassificationConfiguration : IEntityTypeConfiguration<Classification>
+    public class ClassificationConfiguration : IEntityTypeConfiguration<Classification> 
     {
         public void Configure(EntityTypeBuilder<Classification> builder)
         {

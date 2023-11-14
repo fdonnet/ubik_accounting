@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Ubik.DB.Common;
 
 namespace Ubik.Accounting.Api.Models
 {
-    public class Classification
+    public class Classification : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
     {
         public Guid Id { get; set; }
         public required string Code { get; set; }
