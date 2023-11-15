@@ -14,12 +14,16 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
     {
         private readonly BaseValuesForAccounts _testValuesForAccounts;
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
+        private readonly BaseValuesForCurrencies _testValuesForCurrencies;
+
         private readonly IServiceManager _serviceManager;
 
         public AccountService_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testValuesForAccounts = new BaseValuesForAccounts();
             _testValuesForAccountGroups = new BaseValuesForAccountGroups();
+            _testValuesForCurrencies = new BaseValuesForCurrencies();
+
             _serviceManager = new ServiceManager(DbContext, new FakeUserService());
         }
 
@@ -44,7 +48,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Arrange
 
             //Act
-            var result = (await _serviceManager.AccountService.GetAccountGroupsAsync(_testValuesForAccounts.AccountId1)).IfLeft(r => default!);
+            var result = (await _serviceManager.AccountService.GetAccountGroupsWithClassificationInfoAsync(_testValuesForAccounts.AccountId1)).IfLeft(r => default!);
 
             //Assert
             result.Should()
@@ -63,7 +67,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var addToAccountGroup = (await _serviceManager.AccountService
                 .AddInAccountGroupAsync(id, NewId.NextGuid())).IfRight(err => default!);
             var getAccountGroups = (await _serviceManager.AccountService
-                .GetAccountGroupsAsync(NewId.NextGuid())).IfRight(err => default!);
+                .GetAccountGroupsWithClassificationInfoAsync(NewId.NextGuid())).IfRight(err => default!);
 
             //Assert
             result.Should()
@@ -86,19 +90,19 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                         a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }
 
-        [Theory]
-        [InlineData("1020", true)]
-        [InlineData("ZZZZZZZXX", false)]
-        public async Task IfExist_TrueOrFalse_Ok(string accountCode, bool resultNeeded)
-        {
-            //Arrange
+        //[Theory]
+        //[InlineData("1020", true)]
+        //[InlineData("ZZZZZZZXX", false)]
+        //public async Task IfExist_TrueOrFalse_Ok(string accountCode, bool resultNeeded)
+        //{
+        //    //Arrange
 
-            //Act
-            var result = await _serviceManager.AccountService.IfExistsAsync(accountCode);
+        //    //Act
+        //    var result = await _serviceManager.AccountService.ValidateIfNotAlreadyExists(accountCode);
 
-            //Assert
-            result.Should().Be(resultNeeded);
-        }
+        //    //Assert
+        //    result.Should().Be(resultNeeded);
+        //}
 
         //[Theory]
         //[InlineData("1020", "7777f11f-20dd-4888-88f8-428e59bbc535", true)]
@@ -226,7 +230,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Update_AccountNotFoundException_AccountIdNotFound()
         {
             //Arrange
-            var account = new Account { Id = Guid.NewGuid(), Code = "TEST", Label = "TEST", CurrencyId = Guid.NewGuid() };
+            var account = new Account { Id = Guid.NewGuid(), Code = "TEST", Label = "TEST", CurrencyId =_testValuesForCurrencies.CurrencyId1 };
 
             account!.Label = "Modified";
             account.Description = "Modified";
@@ -419,8 +423,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotExistsInAccountGroup>()
-                    .And.Match<AccountNotExistsInAccountGroup>(a =>
+                    .And.BeOfType<AccountNotExistsInAccountGroupException>()
+                    .And.Match<AccountNotExistsInAccountGroupException>(a =>
                         a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }
 

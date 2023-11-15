@@ -67,7 +67,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<GetAccountGroupClassificationResult>>> GetAccountGroups(Guid id)
         {
-            var result = await _serviceManager.AccountService.GetAccountGroupsAsync(id);
+            var result = await _serviceManager.AccountService.GetAccountGroupsWithClassificationInfoAsync(id);
 
             return result.Match(
                 Right: r => Ok(r.ToGetAccountGroupClassificationResult()),

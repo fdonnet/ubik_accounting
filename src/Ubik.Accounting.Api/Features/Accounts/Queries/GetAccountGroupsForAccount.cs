@@ -17,7 +17,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
         }
         public async Task Consume(ConsumeContext<GetAccountGroupsForAccountQuery> context)
         {
-            var result = await _serviceManager.AccountService.GetAccountGroupsAsync(context.Message.AccountId);
+            var result = await _serviceManager.AccountService.GetAccountGroupsWithClassificationInfoAsync(context.Message.AccountId);
 
             await result.Match(
                 Right: async r => {

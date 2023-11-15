@@ -2,12 +2,12 @@
 
 namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
 {
-    public class AccountNotExistsInAccountGroup : IServiceAndFeatureException
+    public class AccountNotExistsInAccountGroupException : IServiceAndFeatureException
     {
         public ServiceAndFeatureExceptionType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountNotExistsInAccountGroup(Guid id, Guid accountGroupId)
+        public AccountNotExistsInAccountGroupException(Guid id, Guid accountGroupId)
         {
             ErrorType = ServiceAndFeatureExceptionType.NotFound;
             CustomErrors = new List<CustomError>() { new CustomError()

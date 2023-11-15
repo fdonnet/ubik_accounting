@@ -9,14 +9,17 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
     {
         public Task<IEnumerable<Account>> GetAllAsync();
         public Task<Either<IServiceAndFeatureException,Account>> GetAsync(Guid id);
-        public Task<Either<IServiceAndFeatureException, IEnumerable<AccountGroupClassification>>> GetAccountGroupsAsync(Guid id);
-        public Task<bool> IfExistsAsync(string accountCode);
-        public Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsWithOtherId(Account account, string newCode);
         public Task<Either<IServiceAndFeatureException, Account>> AddAsync(Account account);
         public Task<Either<IServiceAndFeatureException, Account>> UpdateAsync(Account account);
         public Task<Either<IServiceAndFeatureException, bool>> ExecuteDeleteAsync(Guid id);
-        public Task<Either<IServiceAndFeatureException, Account>> ValidateIfExistsCurrencyAsync(Account account, Guid newCurrencyId);
+        public Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsAsync(Account account);
+        public Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Account account);
+        public Task<Either<IServiceAndFeatureException, Account>> ValidateIfCurrencyExistsAsync(Account account);
         public Task<Either<IServiceAndFeatureException, AccountAccountGroup>> AddInAccountGroupAsync(Guid id, Guid accountGroupId);
         public Task<Either<IServiceAndFeatureException, AccountAccountGroup>> DeleteFromAccountGroupAsync(Guid id, Guid accountGroupId);
+        public Task<Either<IServiceAndFeatureException, AccountAccountGroup>> GetExistingAccountGroupRelationAsync(Guid id, Guid accountGroupId);
+        public Task<Either<IServiceAndFeatureException, AccountAccountGroup>> ValidateIfNotExistsInTheClassificationAsync(AccountAccountGroup accountAccountGroup);
+        public Task<Either<IServiceAndFeatureException, AccountAccountGroup>> ValidateIfExistsAccountGroupIdAsync(AccountAccountGroup accountAccountGroup);
+        public Task<Either<IServiceAndFeatureException, IEnumerable<AccountGroupClassification>>> GetAccountGroupsWithClassificationInfoAsync(Guid id);
     }
 }

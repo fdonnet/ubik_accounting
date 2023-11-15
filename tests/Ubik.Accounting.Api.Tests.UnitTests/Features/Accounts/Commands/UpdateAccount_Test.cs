@@ -39,8 +39,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _account = _command.ToAccount(_account);
 
             _serviceManager.AccountService.UpdateAsync(Arg.Any<Account>()).Returns(_account);
-            _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(false);
-            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(true);
+            _serviceManager.AccountService.ValidateIfNotAlreadyExistsWithOtherIdAsync(_command.ToAccount()).Returns(_command.ToAccount());
+            _serviceManager.AccountService.ValidateIfCurrencyExistsAsync(_command.ToAccount()).Returns(_command.ToAccount());
             _serviceManager.AccountService.GetAsync(_command.Id).Returns(_account);
         }
 

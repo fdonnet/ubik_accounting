@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using LanguageExt;
+using LanguageExt.ClassInstances.Pred;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
@@ -40,42 +41,41 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 : account;
         }
 
-        public async Task<bool> IfExistsAsync(string accountCode)
+        public async Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsAsync(Account account)
         {
-            return await _context.Accounts.AnyAsync(a => a.Code == accountCode);
+            var exists = await _context.Accounts.AnyAsync(a => a.Code == account.Code);
+            return exists
+                ? new AccountAlreadyExistsException(account.Code)
+                : account;
         }
 
-        public async Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsWithOtherId(Account account, string newCode)
+        public async Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Account account)
         {
-            var exists = await _context.Accounts.AnyAsync(a => a.Code == newCode && a.Id != account.Id);
+            var exists = await _context.Accounts.AnyAsync(a => a.Code == account.Code && a.Id != account.Id);
 
             return exists
-                ? new AccountAlreadyExistsException(newCode)
+                ? new AccountAlreadyExistsException(account.Code)
                 : account;
         }
 
         public async Task<Either<IServiceAndFeatureException, Account>> AddAsync(Account account)
         {
-            //var accountExists = await IfExistsAsync(account.Code);
-            //if (accountExists)
-            //    return new AccountAlreadyExistsException(account.Code);
-
-            //var curExists = await IfExistsCurrencyAsync(account.CurrencyId);
-            //if (!curExists)
-            //    return new AccountCurrencyNotFoundException(account.CurrencyId);
-
-            //account.Id = NewId.NextGuid();
-            //await _context.Accounts.AddAsync(account);
-            //_context.SetAuditAndSpecialFields();
-
-            return account;
+            return await ValidateIfNotAlreadyExistsAsync(account).ToAsync()
+                .Bind(ac => ValidateIfCurrencyExistsAsync(ac).ToAsync()
+                .MapAsync(async ac =>
+                {
+                    ac.Id = NewId.NextGuid();
+                    await _context.Accounts.AddAsync(ac);
+                    _context.SetAuditAndSpecialFields();
+                    return ac;
+                }));
         }
 
         public async Task<Either<IServiceAndFeatureException, Account>> UpdateAsync(Account account)
         {
-            var updateAccount = await GetAsync(account.Id).ToAsync()
-                .Bind(ac => ValidateIfNotAlreadyExistsWithOtherId(ac, account.Code).ToAsync())
-                .Bind(ac => ValidateIfExistsCurrencyAsync(ac, account.CurrencyId).ToAsync())
+            return await ValidateIfNotAlreadyExistsWithOtherIdAsync(account).ToAsync()
+                .Bind(ac => ValidateIfCurrencyExistsAsync(ac).ToAsync())
+                .Bind(ac => GetAsync(ac.Id).ToAsync())
                 .Map(ac =>
                 {
                     ac = account.ToAccount(ac);
@@ -84,42 +84,28 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
 
                     return ac;
                 });
-
-            return updateAccount;
         }
 
         public async Task<Either<IServiceAndFeatureException, bool>> ExecuteDeleteAsync(Guid id)
         {
-            var account = await GetAsync(id);
-
-            if(account.IsRight)
-            {
-                await _context.Accounts.Where(x => x.Id == id).ExecuteDeleteAsync();
-                return true;
-            }
-            else
-                return new AccountNotFoundException(id);
+            return await GetAsync(id).ToAsync()
+                .MapAsync(async ac =>
+                {
+                    await _context.Accounts.Where(x => x.Id == id).ExecuteDeleteAsync();
+                    return true;
+                });
         }
 
-        public async Task<Either<IServiceAndFeatureException, Account>> ValidateIfExistsCurrencyAsync(Account account, Guid newCurrencyId)
+        public async Task<Either<IServiceAndFeatureException, Account>> ValidateIfCurrencyExistsAsync(Account account)
         {
-            return await _context.Currencies.AnyAsync(c => c.Id == newCurrencyId)
+            return await _context.Currencies.AnyAsync(c => c.Id == account.CurrencyId)
                 ? account
-                : new AccountCurrencyNotFoundException(newCurrencyId);
+                : new AccountCurrencyNotFoundException(account.CurrencyId);
         }
 
         public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> AddInAccountGroupAsync(Guid id, Guid accountGroupId)
         {
-            var accountPresent = await GetAsync(id);
-            if (accountPresent.IsLeft)
-                return new AccountNotFoundException(id);
-
-            if (!(await IfExistAccountGroupAsync(accountGroupId)))
-                return new AccountGroupNotFoundForAccountException(accountGroupId);
-
-            if (await IfExistsInTheClassification(id, accountGroupId))
-                return new AccountAlreadyExistsInClassificationException(id, accountGroupId);
-
+            //Create new relation
             var accountAccountGroup = new AccountAccountGroup
             {
                 Id = NewId.NextGuid(),
@@ -127,29 +113,44 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 AccountId = id
             };
 
-            await _context.AccountsAccountGroups.AddAsync(accountAccountGroup);
-            return accountAccountGroup;
+            //Validate and insert
+            return await GetAsync(id).ToAsync()
+                .Bind(a => ValidateIfExistsAccountGroupIdAsync(accountAccountGroup).ToAsync())
+                .Bind(aag => ValidateIfNotExistsInTheClassificationAsync(aag).ToAsync())
+                .MapAsync(async aag =>
+                {
+                    await _context.AccountsAccountGroups.AddAsync(aag);
+                    return aag;
+                });
         }
 
         public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> DeleteFromAccountGroupAsync(Guid id, Guid accountGroupId)
+        {
+            return await GetExistingAccountGroupRelationAsync(id, accountGroupId).ToAsync()
+                .Map(aag =>
+                {
+                    _context.Entry(aag).State = EntityState.Deleted;
+                    return aag;
+                });
+        }
+
+        public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> GetExistingAccountGroupRelationAsync(Guid id, Guid accountGroupId)
         {
             var accountAccountGroup = await _context.AccountsAccountGroups.FirstOrDefaultAsync(aag =>
                 aag.AccountId == id
                 && aag.AccountGroupId == accountGroupId);
 
             if (accountAccountGroup == null)
-                return new AccountNotExistsInAccountGroup(id, accountGroupId);
-
-            _context.Entry(accountAccountGroup).State = EntityState.Deleted;
-
-            return accountAccountGroup;
+                return new AccountNotExistsInAccountGroupException(id, accountGroupId);
+            else
+                return accountAccountGroup;
         }
 
-        private async Task<bool> IfExistsInTheClassification(Guid id, Guid accountGroupId)
+        public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> ValidateIfNotExistsInTheClassificationAsync(AccountAccountGroup accountAccountGroup)
         {
             var p = new DynamicParameters();
-            p.Add("@id", id);
-            p.Add("@accountGroupId", accountGroupId);
+            p.Add("@id", accountAccountGroup.AccountId);
+            p.Add("@accountGroupId", accountAccountGroup.AccountGroupId);
             p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
 
             var con = _context.Database.GetDbConnection();
@@ -166,27 +167,31 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 						   	WHERE ag1.id = @accountGroupId)
                 """;
 
-            return (await con.QueryFirstOrDefaultAsync<Account>(sql, p)) != null;
+            return (await con.QueryFirstOrDefaultAsync<Account>(sql, p)) != null
+                ? new AccountAlreadyExistsInClassificationException(accountAccountGroup.AccountId, accountAccountGroup.AccountGroupId)
+                : accountAccountGroup;
+                
         }
 
-        private async Task<bool> IfExistAccountGroupAsync(Guid accountGroupId)
+        public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> ValidateIfExistsAccountGroupIdAsync(AccountAccountGroup accountAccountGroup)
         {
-            return await _context.AccountGroups.AnyAsync(ag => ag.Id == accountGroupId);
+            return await _context.AccountGroups.AnyAsync(ag => ag.Id == accountAccountGroup.AccountGroupId)
+                ? accountAccountGroup
+                : new AccountGroupNotFoundForAccountException(accountAccountGroup.AccountGroupId);
         }
 
-        public async Task<Either<IServiceAndFeatureException, IEnumerable<AccountGroupClassification>>> GetAccountGroupsAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureException, IEnumerable<AccountGroupClassification>>> GetAccountGroupsWithClassificationInfoAsync(Guid id)
         {
-            var accountPresent = await GetAsync(id);
-            if (accountPresent.IsLeft)
-                return new AccountNotFoundException(id);
+            return await GetAsync(id).ToAsync()
+                .MapAsync(async ac =>
+                {
+                    var p = new DynamicParameters();
+                    p.Add("@id", id);
+                    p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
 
-            var p = new DynamicParameters();
-            p.Add("@id", id);
-            p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
+                    var con = _context.Database.GetDbConnection();
 
-            var con = _context.Database.GetDbConnection();
-
-            var sql = """
+                    var sql = """
                 SELECT ag.id
                 , ag.code
                 , ag.label
@@ -200,7 +205,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 AND aag.account_id = @id
                 """;
 
-            return Prelude.Right(await con.QueryAsync<AccountGroupClassification>(sql, p));
+                    return await con.QueryAsync<AccountGroupClassification>(sql, p);
+                });
         }
     }
 }

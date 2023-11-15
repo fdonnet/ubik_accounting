@@ -37,7 +37,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
 
             _account = new Account() { Code = "TEST", Label = "Test", CurrencyId = Guid.NewGuid() };
             _serviceManager.AccountService.GetAsync(_query.Id).Returns(_account);
-            _serviceManager.AccountService.GetAccountGroupsAsync(_queryAccountGroups.AccountId).Returns(new List<AccountGroupClassification>
+            _serviceManager.AccountService.GetAccountGroupsWithClassificationInfoAsync(_queryAccountGroups.AccountId).Returns(new List<AccountGroupClassification>
             {
                 new AccountGroupClassification{ClassificationCode="TEst",ClassificationId=Guid.NewGuid()},
             });
