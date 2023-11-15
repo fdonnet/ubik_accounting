@@ -36,7 +36,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
 
             _accountGroup = _command.ToAccountGroup();
             _serviceManager.AccountGroupService.AddAsync(Arg.Any<AccountGroup>()).Returns(_accountGroup);
-            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code,_command.AccountGroupClassificationId).Returns(false);
         }
 
         public async Task InitializeAsync()

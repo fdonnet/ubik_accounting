@@ -211,38 +211,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                          a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
         }
 
-        [Theory]
-        [InlineData("102", "1524f188-20dd-4888-88f8-428e59bbc22a", true)]
-        [InlineData("102", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
-        public async Task IfExist_TrueOrFalse_Ok(string accountGroupCode
-            , Guid accountGroupClassificationId, bool resultNeeded)
-        {
-            //Arrange
-
-            //Act
-            var result = await _serviceManager.AccountGroupService.IfExistsAsync(accountGroupCode, accountGroupClassificationId);
-
-            //Assert
-            result.Should().Be(resultNeeded);
-        }
-
-        [Theory]
-        [InlineData("102", "1524f188-20dd-4888-88f8-428e59bbc22a", "7777f11f-20dd-4888-88f8-428e59bbc535", true)]
-        [InlineData("102", "7777f11f-20dd-4888-88f8-428e59bbc535", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
-        public async Task IfExistWithDifferentId_TrueorFalse_Ok(string accountGroupCode,
-            Guid accountGroupClassificationId, Guid currentGuid, bool resultNeeded)
-
-        {
-            //Arrange
-
-            //Act
-            var result = await _serviceManager.AccountGroupService
-                .IfExistsWithDifferentIdAsync(accountGroupCode, accountGroupClassificationId, currentGuid);
-
-            //Assert
-            result.Should().Be(resultNeeded);
-        }
-
         [Fact]
         public async Task Update_ModifiedAtFieldUpdated_Ok()
         {
@@ -377,16 +345,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
                     .And.BeOfType<AccountGroupAlreadyExistsException>()
                     .And.Match<AccountGroupAlreadyExistsException>(a =>
                         a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
-        }
-
-        [Theory]
-        [InlineData("1524f188-20dd-4888-88f8-428e59bbc22a", true)]
-        [InlineData("7777f11f-20dd-4888-88f8-428e59bbc535", false)]
-        public async Task IfExistsClassification_TrueOrFalse_Ok(Guid classificationId, bool result)
-        {
-            var exist = await _serviceManager.AccountGroupService.IfClassificationExists(classificationId);
-
-            exist.Should().Be(result);
         }
 
         [Theory]

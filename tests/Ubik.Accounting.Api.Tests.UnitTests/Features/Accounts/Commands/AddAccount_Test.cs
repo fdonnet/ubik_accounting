@@ -38,8 +38,6 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
 
             _account = _command.ToAccount();
             _serviceManager.AccountService.AddAsync(Arg.Any<Account>()).Returns(_account); ;
-            _serviceManager.AccountService.ValidateIfNotAlreadyExistsAsync(_command.ToAccount()).Returns(_command.ToAccount());
-            _serviceManager.AccountService.ValidateIfCurrencyExistsAsync(_command.ToAccount()).Returns(_command.ToAccount());
         }
 
         public async Task InitializeAsync()

@@ -140,10 +140,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 aag.AccountId == id
                 && aag.AccountGroupId == accountGroupId);
 
-            if (accountAccountGroup == null)
-                return new AccountNotExistsInAccountGroupException(id, accountGroupId);
-            else
-                return accountAccountGroup;
+            return accountAccountGroup == null ? (Either<IServiceAndFeatureException, AccountAccountGroup>)new AccountNotExistsInAccountGroupException(id, accountGroupId) : (Either<IServiceAndFeatureException, AccountAccountGroup>)accountAccountGroup;
         }
 
         private async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> ValidateIfNotExistsInTheClassificationAsync(AccountAccountGroup accountAccountGroup)
