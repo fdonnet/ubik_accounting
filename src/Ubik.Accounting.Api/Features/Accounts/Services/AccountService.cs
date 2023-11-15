@@ -41,7 +41,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 : account;
         }
 
-        public async Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsAsync(Account account)
+        private async Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsAsync(Account account)
         {
             var exists = await _context.Accounts.AnyAsync(a => a.Code == account.Code);
             return exists
@@ -49,7 +49,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 : account;
         }
 
-        public async Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Account account)
+        private async Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Account account)
         {
             var exists = await _context.Accounts.AnyAsync(a => a.Code == account.Code && a.Id != account.Id);
 
@@ -96,7 +96,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 });
         }
 
-        public async Task<Either<IServiceAndFeatureException, Account>> ValidateIfCurrencyExistsAsync(Account account)
+        private async Task<Either<IServiceAndFeatureException, Account>> ValidateIfCurrencyExistsAsync(Account account)
         {
             return await _context.Currencies.AnyAsync(c => c.Id == account.CurrencyId)
                 ? account
@@ -134,7 +134,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 });
         }
 
-        public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> GetExistingAccountGroupRelationAsync(Guid id, Guid accountGroupId)
+        private async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> GetExistingAccountGroupRelationAsync(Guid id, Guid accountGroupId)
         {
             var accountAccountGroup = await _context.AccountsAccountGroups.FirstOrDefaultAsync(aag =>
                 aag.AccountId == id
@@ -146,7 +146,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 return accountAccountGroup;
         }
 
-        public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> ValidateIfNotExistsInTheClassificationAsync(AccountAccountGroup accountAccountGroup)
+        private async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> ValidateIfNotExistsInTheClassificationAsync(AccountAccountGroup accountAccountGroup)
         {
             var p = new DynamicParameters();
             p.Add("@id", accountAccountGroup.AccountId);
@@ -173,7 +173,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 
         }
 
-        public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> ValidateIfExistsAccountGroupIdAsync(AccountAccountGroup accountAccountGroup)
+        private async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> ValidateIfExistsAccountGroupIdAsync(AccountAccountGroup accountAccountGroup)
         {
             return await _context.AccountGroups.AnyAsync(ag => ag.Id == accountAccountGroup.AccountGroupId)
                 ? accountAccountGroup
