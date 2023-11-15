@@ -11,11 +11,11 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         public Task<Either<IServiceAndFeatureException,Account>> GetAsync(Guid id);
         public Task<Either<IServiceAndFeatureException, IEnumerable<AccountGroupClassification>>> GetAccountGroupsAsync(Guid id);
         public Task<bool> IfExistsAsync(string accountCode);
-        public Task<bool> IfExistsWithDifferentIdAsync(string accountCode, Guid currentId);
+        public Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsWithOtherId(Account account, string newCode);
         public Task<Either<IServiceAndFeatureException, Account>> AddAsync(Account account);
         public Task<Either<IServiceAndFeatureException, Account>> UpdateAsync(Account account);
         public Task<Either<IServiceAndFeatureException, bool>> ExecuteDeleteAsync(Guid id);
-        public Task<bool> IfExistsCurrencyAsync(Guid currencyId);
+        public Task<Either<IServiceAndFeatureException, Account>> ValidateIfExistsCurrencyAsync(Account account, Guid newCurrencyId);
         public Task<Either<IServiceAndFeatureException, AccountAccountGroup>> AddInAccountGroupAsync(Guid id, Guid accountGroupId);
         public Task<Either<IServiceAndFeatureException, AccountAccountGroup>> DeleteFromAccountGroupAsync(Guid id, Guid accountGroupId);
     }

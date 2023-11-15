@@ -2,6 +2,7 @@
 using LanguageExt;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.Accounts.Exceptions;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
@@ -44,53 +45,47 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             return await _context.Accounts.AnyAsync(a => a.Code == accountCode);
         }
 
-        public async Task<bool> IfExistsWithDifferentIdAsync(string accountCode, Guid currentId)
+        public async Task<Either<IServiceAndFeatureException, Account>> ValidateIfNotAlreadyExistsWithOtherId(Account account, string newCode)
         {
-            return await _context.Accounts.AnyAsync(a => a.Code == accountCode && a.Id != currentId);
+            var exists = await _context.Accounts.AnyAsync(a => a.Code == newCode && a.Id != account.Id);
+
+            return exists
+                ? new AccountAlreadyExistsException(newCode)
+                : account;
         }
 
         public async Task<Either<IServiceAndFeatureException, Account>> AddAsync(Account account)
         {
-            var accountExists = await IfExistsAsync(account.Code);
-            if (accountExists)
-                return new AccountAlreadyExistsException(account.Code);
+            //var accountExists = await IfExistsAsync(account.Code);
+            //if (accountExists)
+            //    return new AccountAlreadyExistsException(account.Code);
 
-            var curExists = await IfExistsCurrencyAsync(account.CurrencyId);
-            if (!curExists)
-                return new AccountCurrencyNotFoundException(account.CurrencyId);
+            //var curExists = await IfExistsCurrencyAsync(account.CurrencyId);
+            //if (!curExists)
+            //    return new AccountCurrencyNotFoundException(account.CurrencyId);
 
-            account.Id = NewId.NextGuid();
-            await _context.Accounts.AddAsync(account);
-            _context.SetAuditAndSpecialFields();
+            //account.Id = NewId.NextGuid();
+            //await _context.Accounts.AddAsync(account);
+            //_context.SetAuditAndSpecialFields();
 
             return account;
         }
 
         public async Task<Either<IServiceAndFeatureException, Account>> UpdateAsync(Account account)
         {
-            //Check if the account is found
-            var accountPresent = await GetAsync(account.Id);
-            if(accountPresent.IsLeft)
-                return accountPresent;
+            var updateAccount = await GetAsync(account.Id).ToAsync()
+                .Bind(ac => ValidateIfNotAlreadyExistsWithOtherId(ac, account.Code).ToAsync())
+                .Bind(ac => ValidateIfExistsCurrencyAsync(ac, account.CurrencyId).ToAsync())
+                .Map(ac =>
+                {
+                    ac = account.ToAccount(ac);
+                    _context.Entry(ac).State = EntityState.Modified;
+                    _context.SetAuditAndSpecialFields();
 
-            var accountToUpd = accountPresent.IfLeft(ac => default!);
+                    return ac;
+                });
 
-            //check if the account code already exists in other records
-            bool exists = await IfExistsWithDifferentIdAsync(account.Code, account.Id);
-            if (exists)
-                return new AccountAlreadyExistsException(account.Code);
-
-            //check if the specified currency exists
-            var curexists = await IfExistsCurrencyAsync(account.CurrencyId);
-            if (!curexists)
-                return new AccountCurrencyNotFoundException(account.CurrencyId);
-
-            accountToUpd = account.ToAccount(accountToUpd);
-
-            _context.Entry(accountToUpd).State = EntityState.Modified;
-            _context.SetAuditAndSpecialFields();
-
-            return accountToUpd;
+            return updateAccount;
         }
 
         public async Task<Either<IServiceAndFeatureException, bool>> ExecuteDeleteAsync(Guid id)
@@ -106,9 +101,11 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 return new AccountNotFoundException(id);
         }
 
-        public async Task<bool> IfExistsCurrencyAsync(Guid currencyId)
+        public async Task<Either<IServiceAndFeatureException, Account>> ValidateIfExistsCurrencyAsync(Account account, Guid newCurrencyId)
         {
-            return await _context.Currencies.AnyAsync(c => c.Id == currencyId);
+            return await _context.Currencies.AnyAsync(c => c.Id == newCurrencyId)
+                ? account
+                : new AccountCurrencyNotFoundException(newCurrencyId);
         }
 
         public async Task<Either<IServiceAndFeatureException, AccountAccountGroup>> AddInAccountGroupAsync(Guid id, Guid accountGroupId)

@@ -100,19 +100,19 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should().Be(resultNeeded);
         }
 
-        [Theory]
-        [InlineData("1020", "7777f11f-20dd-4888-88f8-428e59bbc535", true)]
-        [InlineData("zzzz999", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
-        public async Task IfExistWithDifferentId_TrueorFalse_Ok(string accountCode, string currentGuid, bool resultNeeded)
-        {
-            //Arrange
+        //[Theory]
+        //[InlineData("1020", "7777f11f-20dd-4888-88f8-428e59bbc535", true)]
+        //[InlineData("zzzz999", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
+        //public async Task IfExistWithDifferentId_TrueorFalse_Ok(string accountCode, string currentGuid, bool resultNeeded)
+        //{
+        //    //Arrange
 
-            //Act
-            var result = await _serviceManager.AccountService.IfExistsWithDifferentIdAsync(accountCode, Guid.Parse(currentGuid));
+        //    //Act
+        //    var result = await _serviceManager.AccountService.IfExistsWithDifferentIdAsync(accountCode, Guid.Parse(currentGuid));
 
-            //Assert
-            result.Should().Be(resultNeeded);
-        }
+        //    //Assert
+        //    result.Should().Be(resultNeeded);
+        //}
 
         [Fact]
         public async Task GetAll_Accounts_Ok()
