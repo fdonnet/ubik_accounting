@@ -11,8 +11,8 @@
 	<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.1.0" />
 	<PackageReference Include="FluentValidation" Version="11.8.0" />
 	<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0" />
-	<PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.1.1" />
-	<PackageReference Include="MassTransit.RabbitMQ" Version="8.1.1" />
+	<PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.1.2" />
+	<PackageReference Include="MassTransit.RabbitMQ" Version="8.1.2" />
 	<PackageReference Include="MediatR" Version="12.1.1" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.13" />
 	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
