@@ -24,10 +24,6 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
             _serviceManager = serviceManager;
         }
 
-        /// <summary>
-        /// Get all account groups
-        /// </summary>
-        /// <returns></returns>
         [Authorize(Roles = "ubik_accounting_accountgroup_read")]
         [HttpGet]
         [ProducesResponseType(200)]
