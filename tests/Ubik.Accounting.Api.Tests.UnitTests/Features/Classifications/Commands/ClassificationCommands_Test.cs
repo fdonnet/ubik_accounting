@@ -31,6 +31,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Commands
                 {
                     x.AddScoped<IServiceManager>(sm => _serviceManager);
                     x.AddConsumer<AddClassificationConsumer>();
+                    x.AddConsumer<UpdateClassificationConsumer>();
 
                 }).BuildServiceProvider(true);
 
@@ -74,6 +75,45 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Commands
 
             //Assert
             var sent = await _harness.Published.Any<ClassificationAdded>();
+
+            sent.Should().Be(true);
+        }
+
+        [Fact]
+        public async Task Update_Classification_Ok()
+        {
+            //Arrange
+            _serviceManager.ClassificationService.UpdateAsync(Arg.Any<Classification>()).Returns(new Classification { Code = "TEST", Label = "Test" });
+            var client = _harness.GetRequestClient<UpdateClassificationCommand>();
+            var consumerHarness = _harness.GetConsumerHarness<UpdateClassificationConsumer>();
+
+            //Act
+            var response = await client.GetResponse<UpdateClassificationResult>(new UpdateClassificationCommand { Code = "TEST", Label = "TEST" });
+
+            //Assert
+            var sent = await _harness.Sent.Any<UpdateClassificationResult>();
+            var consumed = await _harness.Consumed.Any<UpdateClassificationCommand>();
+            var consumerConsumed = await consumerHarness.Consumed.Any<UpdateClassificationCommand>();
+
+            sent.Should().Be(true);
+            consumed.Should().Be(true);
+            consumerConsumed.Should().Be(true);
+            response.Message.Should()
+                .BeOfType<UpdateClassificationResult>()
+                .And.Match<UpdateClassificationResult>(a => a.Code == "TEST");
+        }
+        [Fact]
+        public async Task Update_Classification_OkClassificationUpdatedPublished()
+        {
+            //Arrange
+            _serviceManager.ClassificationService.UpdateAsync(Arg.Any<Classification>()).Returns(new Classification { Code = "TEST", Label = "Test" });
+            var client = _harness.GetRequestClient<UpdateClassificationCommand>();
+
+            //Act
+            await client.GetResponse<UpdateClassificationResult>(new UpdateClassificationCommand { Code = "TEST", Label = "TEST" });
+
+            //Assert
+            var sent = await _harness.Published.Any<ClassificationUpdated>();
 
             sent.Should().Be(true);
         }

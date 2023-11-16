@@ -94,6 +94,17 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
                 Description = addClassificationCommand.Description
             };
         }
+        public static Classification ToClassification(this UpdateClassificationCommand updateClassificationCommand)
+        {
+            return new Classification()
+            {
+                Id = updateClassificationCommand.Id,
+                Code = updateClassificationCommand.Code,
+                Label = updateClassificationCommand.Label,
+                Description = updateClassificationCommand.Description,
+                Version = updateClassificationCommand.Version
+            };
+        }
 
         public static ClassificationAdded ToClassificationAdded(this Classification classification)
         {
@@ -106,9 +117,34 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
                 Version = classification.Version
             };
         }
+
+        public static ClassificationUpdated ToClassificationUpdated(this Classification classification)
+        {
+            return new ClassificationUpdated
+            {
+                Id = classification.Id,
+                Code = classification.Code,
+                Label = classification.Label,
+                Description = classification.Description,
+                Version = classification.Version
+            };
+        }
+
         public static AddClassificationResult ToAddClassificationResult(this Classification classification)
         {
             return new AddClassificationResult()
+            {
+                Id = classification.Id,
+                Code = classification.Code,
+                Label = classification.Label,
+                Description = classification.Description,
+                Version = classification.Version
+            };
+        }
+
+        public static UpdateClassificationResult ToUpdateClassificationResult(this Classification classification)
+        {
+            return new UpdateClassificationResult()
             {
                 Id = classification.Id,
                 Code = classification.Code,
