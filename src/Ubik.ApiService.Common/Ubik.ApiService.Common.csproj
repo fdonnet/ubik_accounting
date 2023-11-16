@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -14,8 +14,8 @@
 	<PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.1.2" />
 	<PackageReference Include="MassTransit.RabbitMQ" Version="8.1.2" />
 	<PackageReference Include="MediatR" Version="12.1.1" />
-	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.13" />
-	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
 	<PackageReference Include="OpenTelemetry" Version="1.7.0-alpha.1" />
 	<PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.7.0-alpha.1" />
 	<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.7.0-alpha.1" />
