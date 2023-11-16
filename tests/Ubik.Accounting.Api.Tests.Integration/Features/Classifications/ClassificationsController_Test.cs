@@ -9,6 +9,9 @@ using Ubik.ApiService.Common.Exceptions;
 using System.Text;
 using System.Text.Json;
 using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
+using Ubik.Accounting.Api.Models;
+using MassTransit;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 {
@@ -34,6 +37,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var responsePost = await httpClient.PostAsync(_baseUrlForV1,
                 new StringContent("test", Encoding.UTF8, "application/json"));
 
+            var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId2}",
+                new StringContent("test", Encoding.UTF8, "application/json"));
+
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}");
             var responseGetAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Accounts");
             var responseGetMissingAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/MissingAccounts");
@@ -43,6 +49,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responsePost.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            responsePut.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseGet.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseGetAccounts.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseGetMissingAccounts.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -63,6 +70,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var responsePost = await httpClient.PostAsync(_baseUrlForV1,
                 new StringContent("test", Encoding.UTF8, "application/json"));
 
+            var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId2}",
+                new StringContent("test", Encoding.UTF8, "application/json"));
+
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}");
             var responseGetAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Accounts");
             var responseGetMissingAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/MissingAccounts");
@@ -72,6 +82,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responsePost.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responsePut.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseGet.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseGetAccounts.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseGetMissingAccounts.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -89,12 +100,14 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 
             //Act
             var responsePost = await httpClient.PostAsync(_baseUrlForV1, new StringContent("test", Encoding.UTF8, "application/json"));
-            //var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}", new StringContent("test", Encoding.UTF8, "application/json"));
+            var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId2}",
+                new StringContent("test", Encoding.UTF8, "application/json"));
+
             //var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}");
 
             //Assert
             responsePost.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-            //responsePut.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responsePut.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             //responseDel.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
@@ -145,7 +158,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
 
-            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
@@ -154,16 +167,30 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var responseMissingAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}/MissingAccounts");
             var responseStatus = await httpClient.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}/Status");
 
+            var fake = new UpdateClassificationCommand
+            {
+                Id = Guid.NewGuid(),
+                Label = "Test",
+                Code ="TEST"
+            };
+
+            var putClassificationJson = JsonSerializer.Serialize(fake);
+            var putContent = new StringContent(putClassificationJson.ToString(), Encoding.UTF8, "application/json");
+
+            var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{fake.Id}", putContent);
+
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
             var resultAccounts = await responseAccounts.Content.ReadFromJsonAsync<CustomProblemDetails>();
             var resultMissingAccounts = await responseMissingAccounts.Content.ReadFromJsonAsync<CustomProblemDetails>();
             var resultStatus = await responseStatus.Content.ReadFromJsonAsync<CustomProblemDetails>();
+            var resultPut = await responsePut.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             responseAccounts.StatusCode.Should().Be(HttpStatusCode.NotFound);
             responseMissingAccounts.StatusCode.Should().Be(HttpStatusCode.NotFound);
             responseStatus.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            responsePut.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
             result.Should()
                 .NotBeNull()
@@ -181,6 +208,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
 
             resultStatus.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+
+            resultPut.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
@@ -300,6 +332,115 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_ALREADY_EXISTS");
+        }
+
+
+        [Fact]
+        public async Task Put_Classification_Ok()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId2}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetClassificationResult>();
+
+            var fake = new Classification { 
+                Version = resultGet!.Version,
+                Id = resultGet.Id,
+                Code = "Modified",
+                Label = "Modified"
+            };
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId2}", content);
+            var result = await response.Content.ReadFromJsonAsync<UpdateClassificationResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<UpdateClassificationResult>()
+                .And.Match<UpdateClassificationResult>(x =>
+                    x.Code == fake.Code
+                    && x.Label == fake.Label
+                    && x.Description == fake.Description
+                    && x.Version != fake.Version);
+        }
+
+        [Fact]
+        public async Task Put_ProblemDetails_ClassificationAlreadyExists()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId2}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetClassificationResult>();
+
+            var fake = new Classification
+            {
+                Version = resultGet!.Version,
+                Id = resultGet.Id,
+                Code = _testValuesForClassifications.ClassificationCode1,
+                Label = "Modified"
+            };
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId2}", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_ALREADY_EXISTS");
+        }
+
+        [Fact]
+        public async Task Put_ProblemDetails_IdsNotMatch()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId2}");
+            var resultGet = await responseGet.Content.ReadFromJsonAsync<GetClassificationResult>();
+
+            var fake = new Classification
+            {
+                Version = resultGet!.Version,
+                Id = resultGet.Id,
+                Code = "Modified",
+                Label = "Modified"
+            };
+
+            var postAccountJson = JsonSerializer.Serialize(fake);
+            var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}", content);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_UPDATE_IDS_NOT_MATCH");
         }
     }
 }

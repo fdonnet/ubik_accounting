@@ -2,7 +2,11 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Ubik.Accounting.Api.Features.AccountGroups.Errors;
+using Ubik.Accounting.Api.Features.Classifications.Errors;
 using Ubik.Accounting.Api.Features.Classifications.Mappers;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Errors;
@@ -121,6 +125,35 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
             {
                 var ok = (await result).Message;
                 return CreatedAtAction(nameof(Get), new { id = ok.Id }, ok);
+            }
+            else
+            {
+                var problem = await error;
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
+            }
+        }
+
+        [Authorize(Roles = "ubik_accounting_classification_write")]
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 409)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<UpdateClassificationResult>> Update(Guid id,
+            UpdateClassificationCommand command, IRequestClient<UpdateClassificationCommand> client)
+        {
+            if (command.Id != id)
+                return new ObjectResult(new ClassificationIdNotMatchForUpdError(id, command.Id)
+                    .ToValidationProblemDetails(HttpContext));
+
+
+            var (result, error) = await client.GetResponse<UpdateClassificationResult, IServiceAndFeatureError>(command);
+
+            if (result.IsCompletedSuccessfully)
+            {
+                var updated = (await result).Message;
+                return Ok(updated);
             }
             else
             {
