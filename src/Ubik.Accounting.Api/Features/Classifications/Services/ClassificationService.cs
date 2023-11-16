@@ -3,6 +3,7 @@ using LanguageExt;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
+using Ubik.Accounting.Api.Features.AccountGroups.Errors;
 using Ubik.Accounting.Api.Features.Classifications.Errors;
 using Ubik.Accounting.Api.Features.Classifications.Mappers;
 using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
@@ -20,11 +21,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         {
             _context = ctx;
             _userService = userService;
-        }
-
-        public async Task<bool> IfExistsAsync(Guid id)
-        {
-            return await _context.Classifications.AnyAsync(a => a.Id == id);
         }
 
         public async Task<IEnumerable<Classification>> GetAllAsync()
@@ -132,80 +128,66 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                    });
         }
 
-        public async Task<bool> IfExistsAsync(string code)
-        {
-            return await _context.Classifications.AnyAsync(a => a.Code == code);
-        }
-
-        public async Task<bool> IfExistsWithDifferentIdAsync(string code, Guid currentId)
-        {
-            return await _context.Classifications.AnyAsync(a => a.Code == code && a.Id != currentId);
-        }
-
         public async Task<Either<IServiceAndFeatureError, Classification>> AddAsync(Classification classification)
         {
-            var exist = await IfExistsAsync(classification.Code);
-            if (exist)
-                return new ClassificationAlreadyExistsError(classification.Code);
+            return await ValidateIfNotAlreadyExistsAsync(classification).ToAsync()
+                .MapAsync(async c =>
+                {
+                    c.Id = NewId.NextGuid();
+                    await _context.Classifications.AddAsync(c);
+                    _context.SetAuditAndSpecialFields();
 
-            classification.Id = NewId.NextGuid();
-            await _context.Classifications.AddAsync(classification);
-            _context.SetAuditAndSpecialFields();
-
-            return classification;
+                    return c;
+                });
         }
 
         public async Task<Either<IServiceAndFeatureError, Classification>> UpdateAsync(Classification classification)
         {
-            //Is found
-            var testPresent = await GetAsync(classification.Id);
-            if (testPresent.IsLeft)
-                return testPresent;
+            return await GetAsync(classification.Id).ToAsync()
+                .Map(c => c = classification.ToClassification(c))
+                .Bind(c => ValidateIfNotAlreadyExistsWithOtherIdAsync(c).ToAsync())
+                .Map(c =>
+                {
+                    _context.Entry(c).State = EntityState.Modified;
+                    _context.SetAuditAndSpecialFields();
 
-            var toUpdate = testPresent.IfLeft(err => default!);
-         
-            //Classification code already exists with other id
-            if (await IfExistsWithDifferentIdAsync(classification.Code, classification.Id))
-                return new ClassificationAlreadyExistsError(classification.Code);
-
-            //Save
-            toUpdate = classification.ToClassification(toUpdate);
-
-            _context.Entry(toUpdate).State = EntityState.Modified;
-            _context.SetAuditAndSpecialFields();
-
-            return toUpdate;
+                    return c;
+                });
         }
 
-        public async Task<Either<IServiceAndFeatureError, IEnumerable<AccountGroup>>> DeleteAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id)
         {
-            var classification = await GetAsync(id);
-
-            if (classification.IsRight)
-            {
-                using var transaction = _context.Database.BeginTransaction();
-
-                //Clean all account groups structure
-                var firstLvlAccountGroups = await GetFirstLvlAccountGroups(id);
-                var deletedAccountGroups = new List<AccountGroup>();
-
-                foreach (var ag in firstLvlAccountGroups)
+            return await GetAsync(id).ToAsync()
+                .MapAsync(async c =>
                 {
-                    deletedAccountGroups.Add(ag);
-                    await DeleteAllChildrenAccountGroupsAsync(id, deletedAccountGroups);
-                    await _context.AccountGroups.Where(x => x.Id == ag.Id).ExecuteDeleteAsync();
-                }
+                    using var transaction = _context.Database.BeginTransaction();
 
-                //Delete classification
-                await _context.Classifications.Where(x => x.Id == id).ExecuteDeleteAsync();
+                    //Clean all account groups structure
+                    var firstLvlAccountGroups = await GetFirstLvlAccountGroups(id);
+                    var deletedAccountGroups = new List<AccountGroup>();
 
-                transaction.Commit();
-                return deletedAccountGroups;
-            }
-            else
-            {
-                return new ClassificationNotFoundError(id);
-            }
+                    foreach (var ag in firstLvlAccountGroups)
+                    {
+                        deletedAccountGroups.Add(ag);
+                        await DeleteAllChildrenAccountGroupsAsync(id, deletedAccountGroups);
+                        await _context.AccountGroups.Where(x => x.Id == ag.Id).ExecuteDeleteAsync();
+                    }
+
+                    //Delete classification
+                    await _context.Classifications.Where(x => x.Id == id).ExecuteDeleteAsync();
+
+                    transaction.Commit();
+                    return deletedAccountGroups;
+                });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Classification>> ValidateIfNotAlreadyExistsAsync(Classification classification)
+        {
+            var exists = await _context.Classifications.AnyAsync(a => a.Code == classification.Code);
+
+            return exists
+                ? new ClassificationAlreadyExistsError(classification.Code)
+                : classification;
         }
 
         private async Task<IEnumerable<AccountGroup>> GetFirstLvlAccountGroups(Guid classificationId)
@@ -225,6 +207,15 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 deletedAccountGroups.Add(child);
                 await _context.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
             }
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Classification>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Classification classification)
+        {
+            var exists = await _context.Classifications.AnyAsync(a => a.Code == classification.Code && a.Id != classification.Id);
+
+            return exists
+                ? new ClassificationAlreadyExistsError(classification.Code)
+                : classification;
         }
     }
 }

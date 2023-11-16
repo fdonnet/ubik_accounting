@@ -12,10 +12,8 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         public Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationAccountsAsync(Guid id);
         public Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationAccountsMissingAsync(Guid id);
         public Task<Either<IServiceAndFeatureError, ClassificationStatus>> GetClassificationStatusAsync(Guid id);
-        public Task<bool> IfExistsAsync(string accountCode);
-        public Task<bool> IfExistsWithDifferentIdAsync(string accountCode, Guid currentId);
         public Task<Either<IServiceAndFeatureError, Classification>> AddAsync(Classification classification);
         public Task<Either<IServiceAndFeatureError, Classification>> UpdateAsync(Classification classification);
-        public Task<Either<IServiceAndFeatureError, IEnumerable<AccountGroup>>> DeleteAsync(Guid id);
+        public Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id);
     }
 }
