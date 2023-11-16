@@ -8,7 +8,7 @@ using MassTransit.Testing;
 using Ubik.ApiService.Common.Filters;
 using Ubik.ApiService.Common.Services;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
-using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
@@ -89,15 +89,15 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var client = _harness.GetRequestClient<GetAccountQuery>();
 
             //Act
-            var (result, error) = await client.GetResponse<GetAccountResult, IServiceAndFeatureException>(new GetAccountQuery { Id = Guid.NewGuid() });
+            var (result, error) = await client.GetResponse<GetAccountResult, IServiceAndFeatureError>(new GetAccountQuery { Id = Guid.NewGuid() });
 
             var prob = await error;
 
             //Assert
             prob.Message.Should()
-                .BeAssignableTo<IServiceAndFeatureException>()
-                .And.Match<IServiceAndFeatureException>(a =>
-                    a.ErrorType == ServiceAndFeatureExceptionType.NotFound
+                .BeAssignableTo<IServiceAndFeatureError>()
+                .And.Match<IServiceAndFeatureError>(a =>
+                    a.ErrorType == ServiceAndFeatureErrorType.NotFound
                     && a.CustomErrors[0].ErrorCode == "ACCOUNT_NOT_FOUND");
         }
          

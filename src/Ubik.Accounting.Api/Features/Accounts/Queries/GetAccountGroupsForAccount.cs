@@ -1,7 +1,5 @@
 ﻿using MassTransit;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
-using Ubik.Accounting.Api.Features.Accounts.Queries.CustomPoco;
-using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Queries;
 using Ubik.Accounting.Contracts.Accounts.Results;
 

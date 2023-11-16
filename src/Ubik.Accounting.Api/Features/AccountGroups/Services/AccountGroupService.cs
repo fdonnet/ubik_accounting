@@ -2,12 +2,10 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
+using Ubik.Accounting.Api.Features.AccountGroups.Errors;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
-using Ubik.Accounting.Api.Features.Accounts.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
@@ -19,7 +17,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             _context = ctx;
 
         }
-        public async Task<Either<IServiceAndFeatureException, AccountGroup>> AddAsync(AccountGroup accountGroup)
+        public async Task<Either<IServiceAndFeatureError, AccountGroup>> AddAsync(AccountGroup accountGroup)
         {
             return await ValidateIfNotAlreadyExistsAsync(accountGroup).ToAsync()
                 .Bind(ac => ValidateIfParentAccountGroupExists(ac).ToAsync())
@@ -34,7 +32,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                 });
         }
 
-        public async Task<Either<IServiceAndFeatureException, List<AccountGroup>>> DeleteAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id)
         {
             return await GetAsync(id).ToAsync()
                 .MapAsync(async ag =>
@@ -50,12 +48,12 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                 });
         }
 
-        public async Task<Either<IServiceAndFeatureException, AccountGroup>> GetAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, AccountGroup>> GetAsync(Guid id)
         {
             var accountGroup = await _context.AccountGroups.FirstOrDefaultAsync(a => a.Id == id);
 
             return accountGroup == null
-                ? new AccountGroupNotFoundException(id)
+                ? new AccountGroupNotFoundError(id)
                 : accountGroup;
         }
 
@@ -66,7 +64,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             return accountGroups;
         }
 
-        public async Task<Either<IServiceAndFeatureException, AccountGroup>> GetWithChildAccountsAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, AccountGroup>> GetWithChildAccountsAsync(Guid id)
         {
             var accountGroup = await _context.AccountGroups
                                     .Include(a => a.Accounts)
@@ -75,14 +73,14 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 
 
             if (accountGroup is null)
-                return new AccountGroupNotFoundException(id);
+                return new AccountGroupNotFoundError(id);
 
             accountGroup.Accounts ??= new List<Account>();
 
             return accountGroup;
         }
 
-        public async Task<Either<IServiceAndFeatureException, AccountGroup>> UpdateAsync(AccountGroup accountGroup)
+        public async Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateAsync(AccountGroup accountGroup)
         {
             return await GetAsync(accountGroup.Id).ToAsync()
                 .Map(ag => ag = accountGroup.ToAccountGroup(ag))
@@ -98,20 +96,20 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                 });
         }
 
-        private async Task<Either<IServiceAndFeatureException, AccountGroup>> ValidateIfParentAccountGroupExists(AccountGroup accountGroup)
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfParentAccountGroupExists(AccountGroup accountGroup)
         {
             return accountGroup.ParentAccountGroupId != null
                 ? await _context.AccountGroups.AnyAsync(a => a.Id == (Guid)accountGroup.ParentAccountGroupId)
                     ? accountGroup
-                    : new AccountGroupParentNotFoundException((Guid)accountGroup.ParentAccountGroupId)
-                : (Either<IServiceAndFeatureException, AccountGroup>)accountGroup;
+                    : new AccountGroupParentNotFoundError((Guid)accountGroup.ParentAccountGroupId)
+                : (Either<IServiceAndFeatureError, AccountGroup>)accountGroup;
         }
 
-        private async Task<Either<IServiceAndFeatureException, AccountGroup>> ValidateIfClassificationExists(AccountGroup accountGroup)
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfClassificationExists(AccountGroup accountGroup)
         {
             return await _context.Classifications.AnyAsync(a => a.Id == accountGroup.ClassificationId)
                 ? accountGroup
-                : new AccountGroupClassificationNotFound(accountGroup.ClassificationId);
+                : new AccountGroupClassificationNotFoundError(accountGroup.ClassificationId);
         }
 
         private async Task DeleteAllChildrenOfAsync(Guid id, List<AccountGroup> deletedAccountGroups)
@@ -126,24 +124,24 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             }
         }
 
-        private async Task<Either<IServiceAndFeatureException, AccountGroup>> ValidateIfNotAlreadyExistsAsync(AccountGroup accountGroup)
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfNotAlreadyExistsAsync(AccountGroup accountGroup)
         {
             var exists = await _context.AccountGroups.AnyAsync(a => a.Code == accountGroup.Code
                         && a.ClassificationId == accountGroup.ClassificationId);
 
             return exists
-                ? new AccountGroupAlreadyExistsException(accountGroup.Code, accountGroup.ClassificationId)
+                ? new AccountGroupAlreadyExistsError(accountGroup.Code, accountGroup.ClassificationId)
                 : accountGroup;
         }
 
-        private async Task<Either<IServiceAndFeatureException, AccountGroup>> ValidateIfNotAlreadyExistsWithOtherIdAsync(AccountGroup accountGroup)
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfNotAlreadyExistsWithOtherIdAsync(AccountGroup accountGroup)
         {
             var exists = await _context.AccountGroups.AnyAsync(a => a.Code == accountGroup.Code
                         && a.ClassificationId == accountGroup.ClassificationId
                         && a.Id != accountGroup.Id);
 
             return exists
-                ? new AccountGroupAlreadyExistsException(accountGroup.Code, accountGroup.ClassificationId)
+                ? new AccountGroupAlreadyExistsError(accountGroup.Code, accountGroup.ClassificationId)
                 : accountGroup;
         }
     }

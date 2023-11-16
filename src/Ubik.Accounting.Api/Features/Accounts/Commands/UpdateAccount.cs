@@ -1,5 +1,5 @@
 ﻿using MassTransit;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
+using Ubik.Accounting.Api.Features.Accounts.Errors;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Exceptions;
@@ -34,7 +34,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
                     }
                     catch (UpdateDbConcurrencyException)
                     {
-                        await context.RespondAsync(new AccountUpdateConcurrencyExeception(context.Message.Version));
+                        await context.RespondAsync(new AccountUpdateConcurrencyError(context.Message.Version));
                     }
                 },
                 Left: async err => await context.RespondAsync(err));

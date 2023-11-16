@@ -6,7 +6,7 @@ using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
 using Ubik.Accounting.Contracts.Classifications.Queries;
 using Ubik.Accounting.Contracts.Classifications.Results;
-using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Filters;
 using Ubik.ApiService.Common.Services;
 
@@ -87,15 +87,15 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var client = _harness.GetRequestClient<GetClassificationQuery>();
 
             //Act
-            var (result, error) = await client.GetResponse<GetClassificationResult, IServiceAndFeatureException>(new GetClassificationQuery { Id = Guid.NewGuid() });
+            var (result, error) = await client.GetResponse<GetClassificationResult, IServiceAndFeatureError>(new GetClassificationQuery { Id = Guid.NewGuid() });
 
             var prob = await error;
 
             //Assert
             prob.Message.Should()
-                .BeAssignableTo<IServiceAndFeatureException>()
-                .And.Match<IServiceAndFeatureException>(a =>
-                    a.ErrorType == ServiceAndFeatureExceptionType.NotFound
+                .BeAssignableTo<IServiceAndFeatureError>()
+                .And.Match<IServiceAndFeatureError>(a =>
+                    a.ErrorType == ServiceAndFeatureErrorType.NotFound
                     && a.CustomErrors[0].ErrorCode == "CLASSIFICATION_NOT_FOUND");
         }
 

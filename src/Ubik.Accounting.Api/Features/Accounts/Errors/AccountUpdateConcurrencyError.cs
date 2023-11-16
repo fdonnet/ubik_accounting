@@ -1,16 +1,16 @@
-﻿using Ubik.ApiService.Common.Exceptions;
+﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
+namespace Ubik.Accounting.Api.Features.Accounts.Errors
 {
-    public record AccountUpdateConcurrencyExeception : IServiceAndFeatureException
+    public record AccountUpdateConcurrencyError : IServiceAndFeatureError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; }
+        public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountUpdateConcurrencyExeception(Guid version)
+        public AccountUpdateConcurrencyError(Guid version)
         {
 
-            ErrorType = ServiceAndFeatureExceptionType.Conflict;
+            ErrorType = ServiceAndFeatureErrorType.Conflict;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "ACCOUNT_UPDATE_CONCURRENCY",

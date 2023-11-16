@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Google.Protobuf.WellKnownTypes;
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,12 +1,11 @@
 ﻿using FluentAssertions;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
-using Ubik.Accounting.Api.Features.Classifications.Exceptions;
+using Ubik.Accounting.Api.Features.Classifications.Errors;
 using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
-using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 {
@@ -69,21 +68,21 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Assert
             result.Should()
            .NotBeNull()
-           .And.BeOfType<ClassificationNotFoundException>()
-           .And.Match<ClassificationNotFoundException>(a =>
-               a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+           .And.BeOfType<ClassificationNotFoundError>()
+           .And.Match<ClassificationNotFoundError>(a =>
+               a.ErrorType == ServiceAndFeatureErrorType.NotFound);
 
             resultForUpd.Should()
             .NotBeNull()
-            .And.BeOfType<ClassificationNotFoundException>()
-            .And.Match<ClassificationNotFoundException>(a =>
-            a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+            .And.BeOfType<ClassificationNotFoundError>()
+            .And.Match<ClassificationNotFoundError>(a =>
+            a.ErrorType == ServiceAndFeatureErrorType.NotFound);
 
             resultForDel.Should()
             .NotBeNull()
-            .And.BeOfType<ClassificationNotFoundException>()
-            .And.Match<ClassificationNotFoundException>(a =>
-            a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+            .And.BeOfType<ClassificationNotFoundError>()
+            .And.Match<ClassificationNotFoundError>(a =>
+            a.ErrorType == ServiceAndFeatureErrorType.NotFound);
         }
 
         [Fact]
@@ -169,9 +168,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<ClassificationAlreadyExistsException>()
-                    .And.Match<ClassificationAlreadyExistsException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+                    .And.BeOfType<ClassificationAlreadyExistsError>()
+                    .And.Match<ClassificationAlreadyExistsError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
         }
 
         [Fact]
@@ -214,9 +213,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<ClassificationAlreadyExistsException>()
-                    .And.Match<ClassificationAlreadyExistsException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+                    .And.BeOfType<ClassificationAlreadyExistsError>()
+                    .And.Match<ClassificationAlreadyExistsError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
         }
 
         [Fact]

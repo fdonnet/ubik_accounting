@@ -1,16 +1,16 @@
-﻿using Ubik.ApiService.Common.Exceptions;
+﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Features.Classifications.Exceptions
+namespace Ubik.Accounting.Api.Features.Classifications.Errors
 {
-    public record ClassificationNotFoundException : IServiceAndFeatureException
+    public record ClassificationNotFoundError : IServiceAndFeatureError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; }
+        public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public ClassificationNotFoundException(Guid id)
+        public ClassificationNotFoundError(Guid id)
         {
 
-            ErrorType = ServiceAndFeatureExceptionType.NotFound;
+            ErrorType = ServiceAndFeatureErrorType.NotFound;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "CLASSIFICATION_NOT_FOUND",

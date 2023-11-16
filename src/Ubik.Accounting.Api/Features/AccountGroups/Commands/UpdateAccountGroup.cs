@@ -2,7 +2,7 @@
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
+using Ubik.Accounting.Api.Features.AccountGroups.Errors;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 {
@@ -34,7 +34,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
                     }
                     catch (UpdateDbConcurrencyException)
                     {
-                        await context.RespondAsync(new AccountGroupUpdateConcurrencyExeception(context.Message.Version));
+                        await context.RespondAsync(new AccountGroupUpdateConcurrencyError(context.Message.Version));
                     }
                 },
                 Left: async err => await context.RespondAsync(err));

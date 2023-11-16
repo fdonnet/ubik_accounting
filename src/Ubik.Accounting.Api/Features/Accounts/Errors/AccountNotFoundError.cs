@@ -1,15 +1,15 @@
-﻿using Ubik.ApiService.Common.Exceptions;
+﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
+namespace Ubik.Accounting.Api.Features.Accounts.Errors
 {
-    public record AccountNotFoundException : IServiceAndFeatureException
+    public record AccountNotFoundError : IServiceAndFeatureError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; }
+        public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountNotFoundException(Guid idNotFound)
+        public AccountNotFoundError(Guid idNotFound)
         {
-            ErrorType = ServiceAndFeatureExceptionType.NotFound;
+            ErrorType = ServiceAndFeatureErrorType.NotFound;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "ACCOUNT_NOT_FOUND",

@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
+using Ubik.Accounting.Api.Features.AccountGroups.Errors;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
-using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 {
@@ -62,9 +62,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
            .NotBeNull()
-           .And.BeOfType<AccountGroupNotFoundException>()
-           .And.Match<AccountGroupNotFoundException>(a =>
-               a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+           .And.BeOfType<AccountGroupNotFoundError>()
+           .And.Match<AccountGroupNotFoundError>(a =>
+               a.ErrorType == ServiceAndFeatureErrorType.NotFound);
         }
 
         [Fact]
@@ -118,9 +118,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupAlreadyExistsException>()
-                    .And.Match<AccountGroupAlreadyExistsException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+                    .And.BeOfType<AccountGroupAlreadyExistsError>()
+                    .And.Match<AccountGroupAlreadyExistsError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
         }
 
         [Fact]
@@ -140,9 +140,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupParentNotFoundException>()
-                    .And.Match<AccountGroupParentNotFoundException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+                    .And.BeOfType<AccountGroupParentNotFoundError>()
+                    .And.Match<AccountGroupParentNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
         }
 
         [Fact]
@@ -163,9 +163,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupClassificationNotFound>()
-                    .And.Match<AccountGroupClassificationNotFound>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+                    .And.BeOfType<AccountGroupClassificationNotFoundError>()
+                    .And.Match<AccountGroupClassificationNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
         }
 
         [Theory]
@@ -206,9 +206,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                      .NotBeNull()
-                     .And.BeOfType<AccountGroupNotFoundException>()
-                     .And.Match<AccountGroupNotFoundException>(a =>
-                         a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+                     .And.BeOfType<AccountGroupNotFoundError>()
+                     .And.Match<AccountGroupNotFoundError>(a =>
+                         a.ErrorType == ServiceAndFeatureErrorType.NotFound);
         }
 
         [Fact]
@@ -272,9 +272,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupNotFoundException>()
-                    .And.Match<AccountGroupNotFoundException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+                    .And.BeOfType<AccountGroupNotFoundError>()
+                    .And.Match<AccountGroupNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
         }
 
         [Fact]
@@ -295,9 +295,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupParentNotFoundException>()
-                    .And.Match<AccountGroupParentNotFoundException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+                    .And.BeOfType<AccountGroupParentNotFoundError>()
+                    .And.Match<AccountGroupParentNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
         }
 
         [Fact]
@@ -318,9 +318,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupClassificationNotFound>()
-                    .And.Match<AccountGroupClassificationNotFound>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+                    .And.BeOfType<AccountGroupClassificationNotFoundError>()
+                    .And.Match<AccountGroupClassificationNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
         }
 
 
@@ -342,9 +342,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupAlreadyExistsException>()
-                    .And.Match<AccountGroupAlreadyExistsException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+                    .And.BeOfType<AccountGroupAlreadyExistsError>()
+                    .And.Match<AccountGroupAlreadyExistsError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
         }
 
         public static IEnumerable<object[]> GeneratedGuids

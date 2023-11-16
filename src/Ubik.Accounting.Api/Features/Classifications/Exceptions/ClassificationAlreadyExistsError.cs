@@ -1,16 +1,16 @@
-﻿using Ubik.ApiService.Common.Exceptions;
+﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Features.Classifications.Exceptions
+namespace Ubik.Accounting.Api.Features.Classifications.Errors
 {
-    public class ClassificationAlreadyExistsException : IServiceAndFeatureException
+    public class ClassificationAlreadyExistsError : IServiceAndFeatureError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; }
+        public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public ClassificationAlreadyExistsException(string code)
+        public ClassificationAlreadyExistsError(string code)
         {
 
-            ErrorType = ServiceAndFeatureExceptionType.Conflict;
+            ErrorType = ServiceAndFeatureErrorType.Conflict;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "CLASSIFICATION_ALREADY_EXISTS",

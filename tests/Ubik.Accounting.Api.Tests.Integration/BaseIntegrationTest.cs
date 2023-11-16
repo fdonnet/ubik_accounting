@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ubik.Accounting.Api.Data;
-using Ubik.Accounting.Api.Features;
-using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Tests.Integration
 {

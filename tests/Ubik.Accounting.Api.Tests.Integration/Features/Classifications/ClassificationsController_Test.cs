@@ -7,9 +7,7 @@ using System.Net.Http.Json;
 using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Exceptions;
 using System.Text;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
 using System.Text.Json;
-using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications

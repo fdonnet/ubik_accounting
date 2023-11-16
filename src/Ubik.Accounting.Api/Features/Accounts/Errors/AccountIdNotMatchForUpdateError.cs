@@ -1,16 +1,16 @@
-﻿using Ubik.ApiService.Common.Exceptions;
+﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
+namespace Ubik.Accounting.Api.Features.Accounts.Errors
 {
-    public class AccountIdNotMatchForUpdateException : IServiceAndFeatureException
+    public class AccountIdNotMatchForUpdateError : IServiceAndFeatureError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; }
+        public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountIdNotMatchForUpdateException(Guid idFromQuery, Guid idFromCommand)
+        public AccountIdNotMatchForUpdateError(Guid idFromQuery, Guid idFromCommand)
         {
 
-            ErrorType = ServiceAndFeatureExceptionType.BadParams;
+            ErrorType = ServiceAndFeatureErrorType.BadParams;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "ACCOUNT_UPDATE_IDS_NOT_MATCH",

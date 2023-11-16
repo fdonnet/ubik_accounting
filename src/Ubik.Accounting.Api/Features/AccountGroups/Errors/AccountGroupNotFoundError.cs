@@ -1,15 +1,15 @@
-﻿using Ubik.ApiService.Common.Exceptions;
+﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
+namespace Ubik.Accounting.Api.Features.AccountGroups.Errors
 {
-    public record AccountGroupNotFoundForAccountException : IServiceAndFeatureException
+    public record AccountGroupNotFoundError : IServiceAndFeatureError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; }
+        public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountGroupNotFoundForAccountException(Guid idNotFound)
+        public AccountGroupNotFoundError(Guid idNotFound)
         {
-            ErrorType = ServiceAndFeatureExceptionType.BadParams;
+            ErrorType = ServiceAndFeatureErrorType.NotFound;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "ACCOUNTGROUP_NOT_FOUND",

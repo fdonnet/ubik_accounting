@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using Ubik.Accounting.Api.Features.Classifications.Mappers;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Commands

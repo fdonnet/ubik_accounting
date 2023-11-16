@@ -1,6 +1,6 @@
-﻿namespace Ubik.ApiService.Common.Exceptions
+﻿namespace Ubik.ApiService.Common.Errors
 {
-    public enum ServiceAndFeatureExceptionType
+    public enum ServiceAndFeatureErrorType
     {
         NotFound = 404,
         BadParams = 400,
@@ -16,9 +16,9 @@
         public string? ErrorValueDetails { get; set; }
     }
 
-    public interface IServiceAndFeatureException
+    public interface IServiceAndFeatureError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; } 
+        public ServiceAndFeatureErrorType ErrorType { get; } 
         public List<CustomError> CustomErrors { get; }
     }
 }

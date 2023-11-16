@@ -1,9 +1,6 @@
 ﻿using MassTransit;
 using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
-using Ubik.Accounting.Contracts.AccountGroups.Events;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.Classifications.Events;
 using Ubik.Accounting.Contracts.Classifications.Results;

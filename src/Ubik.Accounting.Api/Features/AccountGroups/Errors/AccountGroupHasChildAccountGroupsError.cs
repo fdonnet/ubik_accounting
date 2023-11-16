@@ -1,16 +1,16 @@
-﻿using Ubik.ApiService.Common.Exceptions;
+﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Features.AccountGroups.Exceptions
+namespace Ubik.Accounting.Api.Features.AccountGroups.Errors
 {
-    public record AccountGroupHasChildAccountGroupsException : IServiceAndFeatureException
+    public record AccountGroupHasChildAccountGroupsError : IServiceAndFeatureError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; }
+        public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountGroupHasChildAccountGroupsException(Guid id)
+        public AccountGroupHasChildAccountGroupsError(Guid id)
         {
 
-            ErrorType = ServiceAndFeatureExceptionType.Conflict;
+            ErrorType = ServiceAndFeatureErrorType.Conflict;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "ACCOUNTGROUP_HAS_CHILD_ACCOUNTGROUPS",

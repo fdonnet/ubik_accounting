@@ -6,7 +6,8 @@ using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using MassTransit;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
+using Ubik.Accounting.Api.Features.AccountGroups.Errors;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
 {
@@ -76,7 +77,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AddAccountGroupResult>> Add(AddAccountGroupCommand command, IRequestClient<AddAccountGroupCommand> client)
         {
-            var (result, error) = await client.GetResponse<AddAccountGroupResult, IServiceAndFeatureException>(command);
+            var (result, error) = await client.GetResponse<AddAccountGroupResult, IServiceAndFeatureError>(command);
 
             if (result.IsCompletedSuccessfully)
             {
@@ -101,11 +102,11 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
             UpdateAccountGroupCommand command, IRequestClient<UpdateAccountGroupCommand> client)
         {
             if (command.Id != id)
-                return new ObjectResult(new AccountGroupIdNotMatchForUpdateException(id, command.Id)
+                return new ObjectResult(new AccountGroupIdNotMatchForUpdateError(id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
             
 
-            var (result, error) = await client.GetResponse<UpdateAccountGroupResult, IServiceAndFeatureException>(command);
+            var (result, error) = await client.GetResponse<UpdateAccountGroupResult, IServiceAndFeatureError>(command);
 
             if (result.IsCompletedSuccessfully)
             {
@@ -134,7 +135,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         public async Task<ActionResult<IEnumerable<DeleteAccountGroupResult>>> Delete(Guid id, IRequestClient<DeleteAccountGroupCommand> client)
         {
             var (result, error) = await client.GetResponse<DeleteAccountGroupResults,
-            IServiceAndFeatureException>(new DeleteAccountGroupCommand { Id = id });
+            IServiceAndFeatureError>(new DeleteAccountGroupCommand { Id = id });
 
             if (result.IsCompletedSuccessfully)
                 return Ok((await result).Message.AccountGroups);

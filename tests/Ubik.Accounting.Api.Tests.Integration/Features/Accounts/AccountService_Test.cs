@@ -2,11 +2,11 @@
 using MassTransit;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
+using Ubik.Accounting.Api.Features.Accounts.Errors;
 using Ubik.Accounting.Api.Features.Accounts.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
-using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 {
@@ -72,22 +72,22 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotFoundException>()
-                    .And.Match<AccountNotFoundException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+                    .And.BeOfType<AccountNotFoundError>()
+                    .And.Match<AccountNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
 
             addToAccountGroup.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotFoundException>()
-                    .And.Match<AccountNotFoundException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+                    .And.BeOfType<AccountNotFoundError>()
+                    .And.Match<AccountNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
 
 
             getAccountGroups.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotFoundException>()
-                    .And.Match<AccountNotFoundException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+                    .And.BeOfType<AccountNotFoundError>()
+                    .And.Match<AccountNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
         }
 
         //[Theory]
@@ -162,9 +162,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountAlreadyExistsException>()
-                    .And.Match<AccountAlreadyExistsException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+                    .And.BeOfType<AccountAlreadyExistsError>()
+                    .And.Match<AccountAlreadyExistsError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
         }
 
         [Theory]
@@ -181,9 +181,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountCurrencyNotFoundException>()
-                    .And.Match<AccountCurrencyNotFoundException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+                    .And.BeOfType<AccountCurrencyNotFoundError>()
+                    .And.Match<AccountCurrencyNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
         }
 
 
@@ -241,9 +241,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotFoundException>()
-                    .And.Match<AccountNotFoundException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+                    .And.BeOfType<AccountNotFoundError>()
+                    .And.Match<AccountNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
         }
 
         [Fact]
@@ -261,9 +261,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountAlreadyExistsException>()
-                    .And.Match<AccountAlreadyExistsException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+                    .And.BeOfType<AccountAlreadyExistsError>()
+                    .And.Match<AccountAlreadyExistsError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
         }
 
         [Fact]
@@ -281,9 +281,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountCurrencyNotFoundException>()
-                    .And.Match<AccountCurrencyNotFoundException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+                    .And.BeOfType<AccountCurrencyNotFoundError>()
+                    .And.Match<AccountCurrencyNotFoundError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
         }
 
         [Fact]
@@ -330,9 +330,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                      .NotBeNull()
-                     .And.BeOfType<AccountNotFoundException>()
-                     .And.Match<AccountNotFoundException>(a =>
-                         a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+                     .And.BeOfType<AccountNotFoundError>()
+                     .And.Match<AccountNotFoundError>(a =>
+                         a.ErrorType == ServiceAndFeatureErrorType.NotFound);
         }
 
         [Fact]
@@ -368,9 +368,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupNotFoundForAccountException>()
-                    .And.Match<AccountGroupNotFoundForAccountException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.BadParams);
+                    .And.BeOfType<AccountGroupNotFoundForAccountError>()
+                    .And.Match<AccountGroupNotFoundForAccountError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
         }
 
         [Fact]
@@ -386,9 +386,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountAlreadyExistsInClassificationException>()
-                    .And.Match<AccountAlreadyExistsInClassificationException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.Conflict);
+                    .And.BeOfType<AccountAlreadyExistsInClassificationError>()
+                    .And.Match<AccountAlreadyExistsInClassificationError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
         }
 
         [Fact]
@@ -423,9 +423,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotExistsInAccountGroupException>()
-                    .And.Match<AccountNotExistsInAccountGroupException>(a =>
-                        a.ErrorType == ServiceAndFeatureExceptionType.NotFound);
+                    .And.BeOfType<AccountNotExistsInAccountGroupError>()
+                    .And.Match<AccountNotExistsInAccountGroupError>(a =>
+                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
         }
 
         public static IEnumerable<object[]> GeneratedGuids

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data.Config;
 using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
 using Ubik.DB.Common.Extensions;

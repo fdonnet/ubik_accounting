@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
+using Ubik.ApiService.Common.Errors;
+using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.ApiService.Common.Exceptions
 {
@@ -25,7 +27,7 @@ namespace Ubik.ApiService.Common.Exceptions
                     {
                         context.Response.ContentType = "application/json";
 
-                        if (contextFeature.Error is IServiceAndFeatureException managedException)
+                        if (contextFeature.Error is IServiceAndFeatureError managedException)
                         {
                             //Managed excpetion
                             context.Response.StatusCode = (int)managedException.ErrorType;

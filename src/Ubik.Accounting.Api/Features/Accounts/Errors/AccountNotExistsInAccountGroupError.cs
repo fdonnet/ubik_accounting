@@ -1,15 +1,15 @@
-﻿using Ubik.ApiService.Common.Exceptions;
+﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Features.Accounts.Exceptions
+namespace Ubik.Accounting.Api.Features.Accounts.Errors
 {
-    public class AccountNotExistsInAccountGroupException : IServiceAndFeatureException
+    public class AccountNotExistsInAccountGroupError : IServiceAndFeatureError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; }
+        public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountNotExistsInAccountGroupException(Guid id, Guid accountGroupId)
+        public AccountNotExistsInAccountGroupError(Guid id, Guid accountGroupId)
         {
-            ErrorType = ServiceAndFeatureExceptionType.NotFound;
+            ErrorType = ServiceAndFeatureErrorType.NotFound;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "ACCOUNT_NOT_EXISTS_IN_ACCOUNTGROUP",

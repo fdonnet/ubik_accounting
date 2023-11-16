@@ -1,16 +1,16 @@
-﻿using Ubik.ApiService.Common.Exceptions;
+﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Features.AccountGroups.Exceptions
+namespace Ubik.Accounting.Api.Features.AccountGroups.Errors
 {
-    public record AccountGroupParentNotFoundException : IServiceAndFeatureException
+    public record AccountGroupParentNotFoundError : IServiceAndFeatureError
     {
-        public ServiceAndFeatureExceptionType ErrorType { get; init; }
+        public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountGroupParentNotFoundException(Guid parentAccountGroupId)
+        public AccountGroupParentNotFoundError(Guid parentAccountGroupId)
         {
 
-            ErrorType = ServiceAndFeatureExceptionType.BadParams;
+            ErrorType = ServiceAndFeatureErrorType.BadParams;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "PARENT_ACCOUNTGROUP_NOTFOUND",

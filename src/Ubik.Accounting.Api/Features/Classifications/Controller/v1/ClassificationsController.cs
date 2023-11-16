@@ -3,10 +3,9 @@ using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.Api.Features.Classifications.Mappers;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.Classifications.Results;
+using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
@@ -116,7 +115,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AddClassificationResult>> Add(AddClassificationCommand command, IRequestClient<AddClassificationCommand> client)
         {
-            var (result, error) = await client.GetResponse<AddClassificationResult, IServiceAndFeatureException>(command);
+            var (result, error) = await client.GetResponse<AddClassificationResult, IServiceAndFeatureError>(command);
 
             if (result.IsCompletedSuccessfully)
             {

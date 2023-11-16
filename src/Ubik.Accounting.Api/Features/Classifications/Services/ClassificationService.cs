@@ -1,19 +1,13 @@
 ﻿using Dapper;
 using LanguageExt;
-using LanguageExt.Common;
-using LanguageExt.SomeHelp;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Reflection.Metadata.Ecma335;
 using Ubik.Accounting.Api.Data;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
-using Ubik.Accounting.Api.Features.Classifications.Exceptions;
+using Ubik.Accounting.Api.Features.Classifications.Errors;
 using Ubik.Accounting.Api.Features.Classifications.Mappers;
 using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Services
@@ -40,12 +34,12 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             return result;
         }
 
-        public async Task<Either<IServiceAndFeatureException, Classification>> GetAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, Classification>> GetAsync(Guid id)
         {
             var result = await _context.Classifications.FirstOrDefaultAsync(a => a.Id == id);
 
             return result == null
-                ? new ClassificationNotFoundException(id)
+                ? new ClassificationNotFoundError(id)
                 : result;
         }
 
@@ -55,7 +49,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<Either<IServiceAndFeatureException, IEnumerable<Account>>> GetClassificationAccountsAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationAccountsAsync(Guid id)
         {
             //Get the classification and if exists, map the accounts
             var accounts = (await GetAsync(id))
@@ -87,7 +81,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<Either<IServiceAndFeatureException, IEnumerable<Account>>> GetClassificationAccountsMissingAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationAccountsMissingAsync(Guid id)
         {
             //Get the classification and if exists, return all missing accounts
             var accounts = (await GetAsync(id))
@@ -117,7 +111,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             return await accounts;
         }
 
-        public async Task<Either<IServiceAndFeatureException, ClassificationStatus>> GetClassificationStatusAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, ClassificationStatus>> GetClassificationStatusAsync(Guid id)
         {
             return (await GetClassificationAccountsMissingAsync(id))
                    .Map(c =>
@@ -148,11 +142,11 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             return await _context.Classifications.AnyAsync(a => a.Code == code && a.Id != currentId);
         }
 
-        public async Task<Either<IServiceAndFeatureException, Classification>> AddAsync(Classification classification)
+        public async Task<Either<IServiceAndFeatureError, Classification>> AddAsync(Classification classification)
         {
             var exist = await IfExistsAsync(classification.Code);
             if (exist)
-                return new ClassificationAlreadyExistsException(classification.Code);
+                return new ClassificationAlreadyExistsError(classification.Code);
 
             classification.Id = NewId.NextGuid();
             await _context.Classifications.AddAsync(classification);
@@ -161,7 +155,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             return classification;
         }
 
-        public async Task<Either<IServiceAndFeatureException, Classification>> UpdateAsync(Classification classification)
+        public async Task<Either<IServiceAndFeatureError, Classification>> UpdateAsync(Classification classification)
         {
             //Is found
             var testPresent = await GetAsync(classification.Id);
@@ -172,7 +166,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
          
             //Classification code already exists with other id
             if (await IfExistsWithDifferentIdAsync(classification.Code, classification.Id))
-                return new ClassificationAlreadyExistsException(classification.Code);
+                return new ClassificationAlreadyExistsError(classification.Code);
 
             //Save
             toUpdate = classification.ToClassification(toUpdate);
@@ -183,7 +177,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             return toUpdate;
         }
 
-        public async Task<Either<IServiceAndFeatureException, IEnumerable<AccountGroup>>> DeleteAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, IEnumerable<AccountGroup>>> DeleteAsync(Guid id)
         {
             var classification = await GetAsync(id);
 
@@ -210,7 +204,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             }
             else
             {
-                return new ClassificationNotFoundException(id);
+                return new ClassificationNotFoundError(id);
             }
         }
 

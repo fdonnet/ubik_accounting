@@ -1,6 +1,4 @@
-﻿using Ubik.Accounting.Contracts.AccountGroups.Results;
-
-namespace Ubik.Accounting.Contracts.AccountGroups.Events
+﻿namespace Ubik.Accounting.Contracts.AccountGroups.Events
 {
     public record AccountGroupDeleted
     {

@@ -2,10 +2,11 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
+using Ubik.Accounting.Api.Features.Accounts.Errors;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Results;
+using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
@@ -82,7 +83,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AddAccountResult>> Add(AddAccountCommand command, IRequestClient<AddAccountCommand> client)
         {
-            var (result,error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureException>(command);
+            var (result,error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureError>(command);
 
             if (result.IsCompletedSuccessfully)
             {
@@ -107,10 +108,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
             UpdateAccountCommand command, IRequestClient<UpdateAccountCommand> client)
         {
             if (command.Id != id)
-                return new ObjectResult(new AccountIdNotMatchForUpdateException(id, command.Id)
+                return new ObjectResult(new AccountIdNotMatchForUpdateError(id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
-            var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureException>(command);
+            var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureError>(command);
 
             if (result.IsCompletedSuccessfully)
             {
@@ -143,7 +144,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
             Guid accountGroupId, IRequestClient<AddAccountInAccountGroupCommand> client)
         {
             var (result, error) = await client.GetResponse<AddAccountInAccountGroupResult
-                , IServiceAndFeatureException>(new AddAccountInAccountGroupCommand { AccountId = id, AccountGroupId=accountGroupId});
+                , IServiceAndFeatureError>(new AddAccountInAccountGroupCommand { AccountId = id, AccountGroupId=accountGroupId});
 
             if (result.IsCompletedSuccessfully)
             {
@@ -166,7 +167,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         public async Task<ActionResult> Delete(Guid id, IRequestClient<DeleteAccountCommand> client)
         {
             var (result, error) = await client.GetResponse<DeleteAccountResult, 
-                IServiceAndFeatureException>(new DeleteAccountCommand { Id = id});
+                IServiceAndFeatureError>(new DeleteAccountCommand { Id = id});
 
             if (result.IsCompletedSuccessfully)
                 return NoContent();
@@ -194,7 +195,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         public async Task<ActionResult> DeleteFromAccountGroup(Guid id, Guid accountGroupId, IRequestClient<DeleteAccountInAccountGroupCommand> client)
         {
             var (result, error) = await client.GetResponse<DeleteAccountInAccountGroupResult,
-                IServiceAndFeatureException>(new DeleteAccountInAccountGroupCommand { AccountId = id,  AccountGroupId=accountGroupId });
+                IServiceAndFeatureError>(new DeleteAccountInAccountGroupCommand { AccountId = id,  AccountGroupId=accountGroupId });
 
             if (result.IsCompletedSuccessfully)
                 return NoContent();
