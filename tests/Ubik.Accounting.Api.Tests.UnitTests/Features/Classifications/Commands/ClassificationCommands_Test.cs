@@ -32,6 +32,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Commands
                     x.AddScoped<IServiceManager>(sm => _serviceManager);
                     x.AddConsumer<AddClassificationConsumer>();
                     x.AddConsumer<UpdateClassificationConsumer>();
+                    x.AddConsumer<DeleteClassificationConsumer>();
 
                 }).BuildServiceProvider(true);
 
@@ -114,6 +115,46 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Commands
 
             //Assert
             var sent = await _harness.Published.Any<ClassificationUpdated>();
+
+            sent.Should().Be(true);
+        }
+
+        [Fact]
+        public async Task Delete_Classification_Ok()
+        {
+            //Arrange
+            _serviceManager.ClassificationService.DeleteAsync(Arg.Any<Guid>()).Returns(new List<AccountGroup>());
+            var client = _harness.GetRequestClient<DeleteClassificationCommand>();
+            var consumerHarness = _harness.GetConsumerHarness<DeleteClassificationConsumer>();
+
+            //Act
+            var testId = Guid.NewGuid();
+            var response = await client.GetResponse<DeleteClassificationResult>(new DeleteClassificationCommand { Id= testId });
+
+            //Assert
+            var sent = await _harness.Sent.Any<DeleteClassificationResult>();
+            var consumed = await _harness.Consumed.Any<DeleteClassificationCommand>();
+            var consumerConsumed = await consumerHarness.Consumed.Any<DeleteClassificationCommand>();
+
+            sent.Should().Be(true);
+            consumed.Should().Be(true);
+            consumerConsumed.Should().Be(true);
+            response.Message.Should()
+                .BeOfType<DeleteClassificationResult>()
+                .And.Match<DeleteClassificationResult>(a => a.Id == testId);
+        }
+        [Fact]
+        public async Task Delete_Classification_OkClassificationDeletedPublished()
+        {
+            //Arrange
+            _serviceManager.ClassificationService.DeleteAsync(Arg.Any<Guid>()).Returns(new List<AccountGroup>());
+            var client = _harness.GetRequestClient<DeleteClassificationCommand>();
+
+            //Act
+            await client.GetResponse<DeleteClassificationResult>(new DeleteClassificationCommand { Id=Guid.NewGuid() });
+
+            //Assert
+            var sent = await _harness.Published.Any<ClassificationDeleted>();
 
             sent.Should().Be(true);
         }

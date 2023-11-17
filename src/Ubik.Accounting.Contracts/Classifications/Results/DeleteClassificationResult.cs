@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
+
+namespace Ubik.Accounting.Contracts.Classifications.Results
+{
+    public record DeleteClassificationResult
+    {
+        public Guid Id { get; init; }
+        public IEnumerable<DeleteAccountGroupResult> DeletedAccountGroups { get; init; } = [];
+    }
+}
