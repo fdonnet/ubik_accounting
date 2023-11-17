@@ -1,0 +1,12 @@
+﻿@page
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Authorization
+@attribute [IgnoreAntiforgeryToken]
+@functions {
+    public async Task OnPost()
+    {
+        await HttpContext.SignOutAsync("Keycloack", new AuthenticationProperties { RedirectUri = "/" });
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    }
+}

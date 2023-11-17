@@ -1,13 +1,6 @@
 ﻿@page "/"
-@using Ubik.Accounting.WebApp.Security
-@inject UserService UserService
-
-
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
-
-
-<h1>Hello, @(UserService.GetUser().Identity?.Name ?? "world")!</h1>
 
 Welcome to your new app.
