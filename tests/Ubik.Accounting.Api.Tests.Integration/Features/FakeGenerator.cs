@@ -100,7 +100,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Code = a.Finance.Account().ToString(),
                      Label = a.Finance.AccountName().ClampLength(1, 100),
                      Description = a.Lorem.Paragraphs().ClampLength(1, 700),
-                     AccountGroupClassificationId = testData.ClassificationId1
+                     ClassificationId = testData.ClassificationId1
                  }).Generate(numTests);
         }
     }

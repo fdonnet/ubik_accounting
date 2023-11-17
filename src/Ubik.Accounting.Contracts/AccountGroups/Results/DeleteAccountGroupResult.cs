@@ -2,6 +2,9 @@
 {
     public record DeleteAccountGroupResult
     {
-        public bool Deleted { get; init; }
+        public Guid Id { get; init; }
+        public string Code { get; init; } = default!;
+        public string Label { get; init; } = default!;
+        public Guid? ParentAccountGroupId { get; init; }
     }
 }

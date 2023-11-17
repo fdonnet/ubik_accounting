@@ -1,18 +1,19 @@
-﻿using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Exceptions;
+﻿using LanguageExt;
+using Ubik.Accounting.Api.Features.Accounts.Queries.CustomPoco;
+using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Services
 {
     public interface IAccountService
     {
         public Task<IEnumerable<Account>> GetAllAsync();
-        public Task<ResultT<Account>> GetAsync(Guid id);
-        public Task<bool> IfExistsAsync(string accountCode);
-        public Task<bool> IfExistsWithDifferentIdAsync(string accountCode, Guid currentId);
-        public Task<ResultT<Account>> AddAsync(Account account);
-        public Task<ResultT<Account>> UpdateAsync(Account account);
-        public Task<ResultT<bool>> ExecuteDeleteAsync(Guid id);
-        public Task<bool> IfExistsCurrencyAsync(Guid currencyId);
-
+        public Task<Either<IServiceAndFeatureError,Account>> GetAsync(Guid id);
+        public Task<Either<IServiceAndFeatureError, Account>> AddAsync(Account account);
+        public Task<Either<IServiceAndFeatureError, Account>> UpdateAsync(Account account);
+        public Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id);
+        public Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddInAccountGroupAsync(Guid id, Guid accountGroupId);
+        public Task<Either<IServiceAndFeatureError, AccountAccountGroup>> DeleteFromAccountGroupAsync(Guid id, Guid accountGroupId);
+        public Task<Either<IServiceAndFeatureError, IEnumerable<AccountGroupClassification>>> GetAccountGroupsWithClassificationInfoAsync(Guid id);
     }
 }

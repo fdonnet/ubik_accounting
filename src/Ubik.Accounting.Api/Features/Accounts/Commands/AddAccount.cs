@@ -20,15 +20,15 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
 
             var result = await _serviceManager.AccountService.AddAsync(account);
 
-            if(result.IsSuccess)
-            {
-                //Store and publish AccountAdded event
-                await _publishEndpoint.Publish(result.Result.ToAccountAdded(), CancellationToken.None);
-                await _serviceManager.SaveAsync();
-                await context.RespondAsync(result.Result.ToAddAccountResult());
-            }
-            else
-                await context.RespondAsync(result.Exception);
+            await result.Match(
+                Right: async r =>
+                {
+                    //Store and publish AccountAdded event
+                    await _publishEndpoint.Publish(r.ToAccountAdded(), CancellationToken.None);
+                    await _serviceManager.SaveAsync();
+                    await context.RespondAsync(r.ToAddAccountResult());
+                },
+                Left: async err => await context.RespondAsync(err));
         }
     }
 }

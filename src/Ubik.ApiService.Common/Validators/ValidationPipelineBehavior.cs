@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.ApiService.Common.Validators
 {

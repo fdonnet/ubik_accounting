@@ -3,7 +3,6 @@ using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using FluentAssertions;
-using Ubik.ApiService.Common.Exceptions;
 using MassTransit;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using MassTransit.Testing;
@@ -39,10 +38,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             _account = new Account() { Code = "1800", Label = "1000", CurrencyId=Guid.NewGuid() };
             _account = _command.ToAccount(_account);
 
-            _serviceManager.AccountService.UpdateAsync(Arg.Any<Account>()).Returns(new ResultT<Account> { Result = _account, IsSuccess = true });
-            _serviceManager.AccountService.IfExistsWithDifferentIdAsync(_command.Code, _command.Id).Returns(false);
-            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(true);
-            _serviceManager.AccountService.GetAsync(_command.Id).Returns(new ResultT<Account> { Result = _account, IsSuccess = true });
+            _serviceManager.AccountService.UpdateAsync(Arg.Any<Account>()).Returns(_account);
         }
 
         public async Task InitializeAsync()

@@ -2,34 +2,31 @@
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data.Config;
 using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
 using Ubik.DB.Common.Extensions;
 
 namespace Ubik.Accounting.Api.Data
 {
-    public class AccountingContext : DbContext
+    public class AccountingContext(DbContextOptions<AccountingContext> options
+        , ICurrentUserService userService) : DbContext(options)
     {
-        private readonly ICurrentUserService _currentUserService;
-        private readonly Guid _tenantId;
-        public AccountingContext(DbContextOptions<AccountingContext> options, ICurrentUserService userService)
-            : base(options)
-        {
-            _currentUserService = userService;
-            _tenantId = userService.CurrentUser.TenantIds[0];
-        }
+        private readonly ICurrentUserService _currentUserService = userService;
+        private readonly Guid _tenantId = userService.CurrentUser.TenantIds[0];
 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountGroup> AccountGroups { get; set; }
         public DbSet<AccountAccountGroup> AccountsAccountGroups { get; set; }
-        public DbSet<Classification> AccountGroupClassifications { get; set; }
+        public DbSet<Classification> Classifications { get; set; }
         public DbSet<Currency> Currencies { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
-                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                .UseSnakeCaseNamingConvention();
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -48,7 +45,7 @@ namespace Ubik.Accounting.Api.Data
                 };
                 var conflict = new UpdateDbConcurrencyException()
                 {
-                    CustomErrors = new List<CustomError> { err }
+                    CustomErrors = [err]
                 };
 
                 throw conflict;

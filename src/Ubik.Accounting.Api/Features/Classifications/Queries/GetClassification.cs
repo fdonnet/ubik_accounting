@@ -16,10 +16,9 @@ namespace Ubik.Accounting.Api.Features.Classifications.Queries
         {
             var result = await _serviceManager.ClassificationService.GetAsync(context.Message.Id);
 
-            if (result.IsSuccess)
-                await context.RespondAsync(result.Result.ToGetClassificationResult());
-            else
-                await context.RespondAsync(result.Exception);
+            await result.Match(
+                Right: async ok => await context.RespondAsync(ok.ToGetClassificationResult()),
+                Left: async err => await context.RespondAsync(err));
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Ubik.Accounting.Api.Models
+﻿using Ubik.DB.Common;
+
+namespace Ubik.Accounting.Api.Models
 {
-    public class AccountAccountGroup
+    public class AccountAccountGroup : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
     {
         public Guid Id { get; set; }
         public Guid AccountId { get; set; }

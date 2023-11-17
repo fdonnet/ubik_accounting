@@ -53,6 +53,23 @@ namespace Ubik.Accounting.Api.Data.Init
 
                     new Account
                     {
+                        Id= baseValuesForAccounts.AccountId3,
+                        Code = "1031",
+                        CurrencyId = baseValuesForCurrencies.CurrencyId2,
+                        CreatedBy= baseValuesForUsers.UserId1,
+                        CreatedAt = baseValuesGeneral.GenerationTime,
+                        Label = "Banque 3",
+                        Description = "In another classification",
+                        Category = AccountCategory.General,
+                        Domain = AccountDomain.Asset,
+                        ModifiedBy= baseValuesForUsers.UserId1,
+                        ModifiedAt = baseValuesGeneral.GenerationTime,
+                        TenantId= baseValuesForTenants.TenantId,
+                        Version = NewId.NextGuid()
+                    },
+
+                    new Account
+                    {
                         Id= baseValuesForAccounts.AccountIdForDel,
                         Code = "2030",
                         CurrencyId = baseValuesForCurrencies.CurrencyId1,

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Ubik.Accounting.Contracts.Classifications.Queries
 {
     public record GetClassificationQuery
     {
+        [Required]
         public Guid Id { get; init; }
     }
 }

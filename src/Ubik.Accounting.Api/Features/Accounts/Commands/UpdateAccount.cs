@@ -1,5 +1,5 @@
 ﻿using MassTransit;
-using Ubik.Accounting.Api.Features.Accounts.Exceptions;
+using Ubik.Accounting.Api.Features.Accounts.Errors;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Exceptions;
@@ -22,22 +22,22 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
             var account = context.Message.ToAccount();
             var res = await _serviceManager.AccountService.UpdateAsync(account);
 
-            if(res.IsSuccess)
-            {
-                try
+            await res.Match(
+                Right: async r =>
                 {
-                    await _publishEndpoint.Publish(account.ToAccountUpdated(), CancellationToken.None);
-                    await _serviceManager.SaveAsync();
+                    try
+                    {
+                        await _publishEndpoint.Publish(account.ToAccountUpdated(), CancellationToken.None);
+                        await _serviceManager.SaveAsync();
 
-                    await context.RespondAsync(res.Result.ToUpdateAccountResult());
-                }
-                catch (UpdateDbConcurrencyException)
-                {
-                    await context.RespondAsync(new AccountUpdateConcurrencyExeception(context.Message.Version));
-                }
-            }
-            else
-                await context.RespondAsync(res.Exception);
+                        await context.RespondAsync(r.ToUpdateAccountResult());
+                    }
+                    catch (UpdateDbConcurrencyException)
+                    {
+                        await context.RespondAsync(new AccountUpdateConcurrencyError(context.Message.Version));
+                    }
+                },
+                Left: async err => await context.RespondAsync(err));
         }
     }
 }

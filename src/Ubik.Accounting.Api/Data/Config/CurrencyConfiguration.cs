@@ -8,7 +8,7 @@ namespace Ubik.Accounting.Api.Data.Config
     {
         public void Configure(EntityTypeBuilder<Currency> builder)
         {
-            builder.ToTable("Currencies");
+            builder.ToTable("currencies");
 
             builder.Property(a => a.IsoCode)
                 .IsRequired()

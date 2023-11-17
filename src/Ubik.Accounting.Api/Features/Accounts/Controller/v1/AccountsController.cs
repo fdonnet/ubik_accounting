@@ -2,9 +2,11 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Ubik.Accounting.Api.Features.Accounts.Errors;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Results;
+using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
@@ -46,9 +48,31 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         public async Task<ActionResult<GetAccountResult>> Get(Guid id)
         {
             var result = await _serviceManager.AccountService.GetAsync(id);
-            return result.IsSuccess
-                ? (ActionResult<GetAccountResult>)Ok(result.Result.ToGetAccountResult())
-                : (ActionResult<GetAccountResult>)new ObjectResult(result.Exception.ToValidationProblemDetails(HttpContext));
+
+            return result.Match(
+                Right: r => Ok(r.ToGetAccountResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
+        /// <summary>
+        /// Account groups attached to this account (one account group per classification)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "ubik_accounting_account_read")]
+        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
+        [HttpGet("{id}/AccountGroups")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<IEnumerable<GetAccountGroupClassificationResult>>> GetAccountGroups(Guid id)
+        {
+            var result = await _serviceManager.AccountService.GetAccountGroupsWithClassificationInfoAsync(id);
+
+            return result.Match(
+                Right: r => Ok(r.ToGetAccountGroupClassificationResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]
@@ -59,7 +83,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AddAccountResult>> Add(AddAccountCommand command, IRequestClient<AddAccountCommand> client)
         {
-            var (result,error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureException>(command);
+            var (result,error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureError>(command);
 
             if (result.IsCompletedSuccessfully)
             {
@@ -83,14 +107,49 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         public async Task<ActionResult<UpdateAccountResult>> Update(Guid id, 
             UpdateAccountCommand command, IRequestClient<UpdateAccountCommand> client)
         {
-            command.Id = id;
+            if (command.Id != id)
+                return new ObjectResult(new AccountIdNotMatchForUpdateError(id, command.Id)
+                    .ToValidationProblemDetails(HttpContext));
 
-            var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureException>(command);
+            var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureError>(command);
 
             if (result.IsCompletedSuccessfully)
             {
                 var updatedAccount = (await result).Message;
                 return Ok(updatedAccount);
+            }
+            else
+            {
+                var problem = await error;
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
+            }
+        }
+
+        /// <summary>
+        /// Attach an account group to the account (one per classification)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="accountGroupId"></param>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "ubik_accounting_account_write")]
+        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
+        [HttpPut("{id}/AccountGroups/{accountGroupId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 409)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<AddAccountInAccountGroupResult>> AddInAccountGroup(Guid id,
+            Guid accountGroupId, IRequestClient<AddAccountInAccountGroupCommand> client)
+        {
+            var (result, error) = await client.GetResponse<AddAccountInAccountGroupResult
+                , IServiceAndFeatureError>(new AddAccountInAccountGroupCommand { AccountId = id, AccountGroupId=accountGroupId});
+
+            if (result.IsCompletedSuccessfully)
+            {
+                var accountAccountGroup = (await result).Message;
+                return Ok(accountAccountGroup);
             }
             else
             {
@@ -108,7 +167,35 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         public async Task<ActionResult> Delete(Guid id, IRequestClient<DeleteAccountCommand> client)
         {
             var (result, error) = await client.GetResponse<DeleteAccountResult, 
-                IServiceAndFeatureException>(new DeleteAccountCommand { Id = id});
+                IServiceAndFeatureError>(new DeleteAccountCommand { Id = id});
+
+            if (result.IsCompletedSuccessfully)
+                return NoContent();
+            else
+            {
+                var problem = await error;
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
+            }
+        }
+
+        /// <summary>
+        /// Remove an account group from the account (detach)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="accountGroupId"></param>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "ubik_accounting_account_write")]
+        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
+        [HttpDelete("{id}/AccountGroups/{accountGroupId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult> DeleteFromAccountGroup(Guid id, Guid accountGroupId, IRequestClient<DeleteAccountInAccountGroupCommand> client)
+        {
+            var (result, error) = await client.GetResponse<DeleteAccountInAccountGroupResult,
+                IServiceAndFeatureError>(new DeleteAccountInAccountGroupCommand { AccountId = id,  AccountGroupId=accountGroupId });
 
             if (result.IsCompletedSuccessfully)
                 return NoContent();

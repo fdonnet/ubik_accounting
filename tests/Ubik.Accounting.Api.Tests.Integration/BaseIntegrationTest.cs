@@ -10,6 +10,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
         private readonly IServiceScope _scope;
         public readonly AccountingContext DbContext;
         public IntegrationTestWebAppFactory Factory { get; }
+       
 
         protected BaseIntegrationTest(IntegrationTestWebAppFactory factory)
         {
@@ -18,6 +19,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
 
             DbContext = _scope.ServiceProvider
                 .GetRequiredService<AccountingContext>();
+           
         }
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize

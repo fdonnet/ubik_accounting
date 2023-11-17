@@ -21,15 +21,15 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 
             var result = await _serviceManager.AccountGroupService.AddAsync(account);
 
-            if (result.IsSuccess)
-            {
-                //Store and publish AccountGroupAdded event
-                await _publishEndpoint.Publish(result.Result.ToAccountGroupAdded(), CancellationToken.None);
-                await _serviceManager.SaveAsync();
-                await context.RespondAsync(result.Result.ToAddAccountGroupResult());
-            }
-            else
-                await context.RespondAsync(result.Exception);
+            await result.Match(
+                Right: async r =>
+                {
+                    //Store and publish AccountGroupAdded event
+                    await _publishEndpoint.Publish(r.ToAccountGroupAdded(), CancellationToken.None);
+                    await _serviceManager.SaveAsync();
+                    await context.RespondAsync(r.ToAddAccountGroupResult());
+                },
+                Left: async err => await context.RespondAsync(err));
         }
     }
 }

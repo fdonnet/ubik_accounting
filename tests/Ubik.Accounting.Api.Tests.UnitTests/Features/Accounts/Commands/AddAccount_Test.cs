@@ -10,7 +10,6 @@ using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Events;
 using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.DB.Enums;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
@@ -38,9 +37,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             };
 
             _account = _command.ToAccount();
-            _serviceManager.AccountService.AddAsync(Arg.Any<Account>()).Returns(new ResultT<Account> { Result = _account, IsSuccess = true }); ;
-            _serviceManager.AccountService.IfExistsAsync(_command.Code).Returns(false);
-            _serviceManager.AccountService.IfExistsCurrencyAsync(_command.CurrencyId).Returns(true);
+            _serviceManager.AccountService.AddAsync(Arg.Any<Account>()).Returns(_account); ;
         }
 
         public async Task InitializeAsync()

@@ -1,16 +1,19 @@
-﻿using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Exceptions;
+﻿using LanguageExt;
+using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
+using Ubik.Accounting.Api.Models;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Services
 {
     public interface IClassificationService
     {
         public Task<IEnumerable<Classification>> GetAllAsync();
-        public Task<ResultT<Classification>> GetAsync(Guid id);
-        //Task<bool> IfExistsAsync(Guid id);
-        //public Task<bool> IfExistsAsync(string code);
-        //public Task<ResultT<Classification>> AddAsync(Classification classification);
-        //public Task<ResultT<Classification>> UpdateAsync(Classification classification);
-        //public Task<ResultT<bool>> ExecuteDeleteAsync(Guid id);
+        public Task<Either<IServiceAndFeatureError, Classification>> GetAsync(Guid id);
+        public Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationAccountsAsync(Guid id);
+        public Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationAccountsMissingAsync(Guid id);
+        public Task<Either<IServiceAndFeatureError, ClassificationStatus>> GetClassificationStatusAsync(Guid id);
+        public Task<Either<IServiceAndFeatureError, Classification>> AddAsync(Classification classification);
+        public Task<Either<IServiceAndFeatureError, Classification>> UpdateAsync(Classification classification);
+        public Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id);
     }
 }

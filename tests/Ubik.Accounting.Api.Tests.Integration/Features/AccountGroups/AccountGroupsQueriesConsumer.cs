@@ -6,7 +6,7 @@ using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
 using Ubik.Accounting.Contracts.AccountGroups.Queries;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Filters;
 using Ubik.ApiService.Common.Services;
 
@@ -75,7 +75,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
             //Act
             var result = await client.GetResponse<GetChildAccountsResults>(new GetChildAccountsQuery 
-            { AccountGroupId = _testValuesForAccountGroups.AccountGroupId1 });
+            { AccountGroupId = _testValuesForAccountGroups.AccountGroupId2 });
 
             //Assert
             result.Message.Should()
@@ -105,15 +105,15 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var client = _harness.GetRequestClient<GetAccountGroupQuery>();
 
             //Act
-            var (result, error) = await client.GetResponse<GetAccountGroupResult, IServiceAndFeatureException>(new GetAccountGroupQuery { Id = Guid.NewGuid() });
+            var (result, error) = await client.GetResponse<GetAccountGroupResult, IServiceAndFeatureError>(new GetAccountGroupQuery { Id = Guid.NewGuid() });
 
             var prob = await error;
 
             //Assert
             prob.Message.Should()
-                .BeAssignableTo<IServiceAndFeatureException>()
-                .And.Match<IServiceAndFeatureException>(a =>
-                    a.ErrorType == ServiceAndFeatureExceptionType.NotFound
+                .BeAssignableTo<IServiceAndFeatureError>()
+                .And.Match<IServiceAndFeatureError>(a =>
+                    a.ErrorType == ServiceAndFeatureErrorType.NotFound
                     && a.CustomErrors[0].ErrorCode == "ACCOUNTGROUP_NOT_FOUND");
         }
 

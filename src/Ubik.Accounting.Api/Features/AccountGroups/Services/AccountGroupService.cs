@@ -1,10 +1,11 @@
-﻿using MassTransit;
+﻿using LanguageExt;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
-using Ubik.Accounting.Api.Features.AccountGroups.Exceptions;
+using Ubik.Accounting.Api.Features.AccountGroups.Errors;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
@@ -16,75 +17,44 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             _context = ctx;
 
         }
-        public async Task<ResultT<AccountGroup>> AddAsync(AccountGroup accountGroup)
+        public async Task<Either<IServiceAndFeatureError, AccountGroup>> AddAsync(AccountGroup accountGroup)
         {
-            //Already exists
-            var exist = await IfExistsAsync(accountGroup.Code, accountGroup.AccountGroupClassificationId);
-            if (exist)
-                return new ResultT<AccountGroup>
+            return await ValidateIfNotAlreadyExistsAsync(accountGroup).ToAsync()
+                .Bind(ac => ValidateIfParentAccountGroupExists(ac).ToAsync())
+                .Bind(ac => ValidateIfClassificationExists(ac).ToAsync())
+                .MapAsync(async ac =>
                 {
-                    IsSuccess = false,
-                    Exception = new AccountGroupAlreadyExistsException(
-                            accountGroup.Code, accountGroup.AccountGroupClassificationId)
-                };
+                    ac.Id = NewId.NextGuid();
+                    await _context.AccountGroups.AddAsync(ac);
+                    _context.SetAuditAndSpecialFields();
 
-            //Validate dependencies
-            var validated = await ValidateRelationsAsync(accountGroup);
-
-            if (!validated.IsSuccess)
-                return validated;
-
-
-            accountGroup.Id = NewId.NextGuid();
-            await _context.AccountGroups.AddAsync(accountGroup);
-            _context.SetAuditAndSpecialFields();
-
-            return new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
+                    return ac;
+                });
         }
 
-        public async Task<ResultT<bool>> DeleteAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id)
         {
-            var accountGrp = await GetAsync(id);
-
-            if (accountGrp.IsSuccess)
-            {
-                using var transaction = _context.Database.BeginTransaction();
-                await DeleteAllChildrenOfAsync(id);
-                await _context.AccountGroups.Where(x => x.Id == id).ExecuteDeleteAsync();
-
-                transaction.Commit();
-                return new ResultT<bool>
+            return await GetAsync(id).ToAsync()
+                .MapAsync(async ag =>
                 {
-                    IsSuccess = true,
-                    Result = true,
-                };
-            }
-            else
-                return new ResultT<bool>
-                {
-                    IsSuccess = false,
-                    Exception = new AccountGroupNotFoundException(id)
-                };
+                    using var transaction = _context.Database.BeginTransaction();
+                    var deletedAccountGroups = new List<AccountGroup>();
+                    await DeleteAllChildrenOfAsync(id, deletedAccountGroups);
+                    await _context.AccountGroups.Where(x => x.Id == id).ExecuteDeleteAsync();
+                    deletedAccountGroups.Add(ag);
+
+                    transaction.Commit();
+                    return deletedAccountGroups;
+                });
         }
 
-        public async Task DeleteAllChildrenOfAsync(Guid id)
-        {
-            var children = await _context.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
-
-            foreach(var child in children)
-            {
-                await DeleteAllChildrenOfAsync(child.Id);
-                await _context.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
-            }
-        }
-
-        public async Task<ResultT<AccountGroup>> GetAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, AccountGroup>> GetAsync(Guid id)
         {
             var accountGroup = await _context.AccountGroups.FirstOrDefaultAsync(a => a.Id == id);
 
             return accountGroup == null
-                ? new ResultT<AccountGroup>() { IsSuccess = false, Exception = new AccountGroupNotFoundException(id) }
-                : new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
+                ? new AccountGroupNotFoundError(id)
+                : accountGroup;
         }
 
         public async Task<IEnumerable<AccountGroup>> GetAllAsync()
@@ -94,115 +64,85 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             return accountGroups;
         }
 
-        public async Task<ResultT<AccountGroup>> GetWithChildAccountsAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, AccountGroup>> GetWithChildAccountsAsync(Guid id)
         {
             var accountGroup = await _context.AccountGroups
                                     .Include(a => a.Accounts)
                                     .FirstOrDefaultAsync(g => g.Id == id);
 
+
+
             if (accountGroup is null)
-                return new ResultT<AccountGroup>() { IsSuccess = false, Exception = new AccountGroupNotFoundException(id) };
+                return new AccountGroupNotFoundError(id);
 
             accountGroup.Accounts ??= new List<Account>();
 
-            return new ResultT<AccountGroup>() { IsSuccess = true, Result = accountGroup };
+            return accountGroup;
         }
 
-        public async Task<bool> IfExistsAsync(string accountGroupCode, Guid accountGroupClassificationId)
+        public async Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateAsync(AccountGroup accountGroup)
         {
-            return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode
-                        && a.AccountGroupClassificationId == accountGroupClassificationId);
-        }
-
-        public async Task<bool> HasAnyChildAccountGroups(Guid Id)
-        {
-            return await _context.AccountGroups.AnyAsync(a => a.ParentAccountGroupId == Id);
-        }
-
-        public async Task<bool> HasAnyChildAccounts(Guid Id)
-        {
-            return await _context.AccountsAccountGroups.AnyAsync(a => a.AccountGroupId == Id);
-        }
-
-        public async Task<bool> IfExistsAsync(Guid accountGroupId)
-        {
-            return await _context.AccountGroups.AnyAsync(a => a.Id == accountGroupId);
-        }
-
-        public async Task<bool> IfExistsWithDifferentIdAsync(string accountGroupCode, Guid accountGroupClassificationId, Guid currentId)
-        {
-            return await _context.AccountGroups.AnyAsync(a => a.Code == accountGroupCode
-                        && a.AccountGroupClassificationId == accountGroupClassificationId
-                        && a.Id != currentId);
-
-        }
-
-        public async Task<ResultT<AccountGroup>> UpdateAsync(AccountGroup accountGroup)
-        {
-            //Is found
-            var present = await GetAsync(accountGroup.Id);
-            if (!present.IsSuccess)
-                return present;
-
-            var toUpdate = present.Result;
-
-            //Group code already exists in the same classification
-            var alreadyExistsWithOtherId = await IfExistsWithDifferentIdAsync(accountGroup.Code,
-                accountGroup.AccountGroupClassificationId, accountGroup.Id);
-
-            if (alreadyExistsWithOtherId)
-                return new ResultT<AccountGroup>
+            return await GetAsync(accountGroup.Id).ToAsync()
+                .Map(ag => ag = accountGroup.ToAccountGroup(ag))
+                .Bind(ag => ValidateIfNotAlreadyExistsWithOtherIdAsync(ag).ToAsync())
+                .Bind(ag => ValidateIfParentAccountGroupExists(ag).ToAsync())
+                .Bind(ag => ValidateIfClassificationExists(ag).ToAsync())
+                .Map(ag =>
                 {
-                    IsSuccess = false,
-                    Exception = new AccountGroupAlreadyExistsException(accountGroup.Code, accountGroup.AccountGroupClassificationId)
-                };
+                    _context.Entry(ag).State = EntityState.Modified;
+                    _context.SetAuditAndSpecialFields();
 
-            //Validate dependencies
-            var validated = await ValidateRelationsAsync(accountGroup);
-            if (!validated.IsSuccess)
-                return validated;
-
-            //Save
-            toUpdate = accountGroup.ToAccountGroup(toUpdate);
-
-            _context.Entry(toUpdate).State = EntityState.Modified;
-            _context.SetAuditAndSpecialFields();
-
-            return new ResultT<AccountGroup> { IsSuccess = true, Result = toUpdate };
+                    return ag;
+                });
         }
 
-        public async Task<bool> IfClassificationExists(Guid accountGroupClassificationId)
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfParentAccountGroupExists(AccountGroup accountGroup)
         {
-            return await _context.AccountGroupClassifications.AnyAsync(a => a.Id == accountGroupClassificationId);
+            return accountGroup.ParentAccountGroupId != null
+                ? await _context.AccountGroups.AnyAsync(a => a.Id == (Guid)accountGroup.ParentAccountGroupId)
+                    ? accountGroup
+                    : new AccountGroupParentNotFoundError((Guid)accountGroup.ParentAccountGroupId)
+                : (Either<IServiceAndFeatureError, AccountGroup>)accountGroup;
         }
 
-        private async Task<ResultT<AccountGroup>> ValidateRelationsAsync(AccountGroup accountGroup)
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfClassificationExists(AccountGroup accountGroup)
         {
-            if (accountGroup.ParentAccountGroupId != null)
+            return await _context.Classifications.AnyAsync(a => a.Id == accountGroup.ClassificationId)
+                ? accountGroup
+                : new AccountGroupClassificationNotFoundError(accountGroup.ClassificationId);
+        }
+
+        private async Task DeleteAllChildrenOfAsync(Guid id, List<AccountGroup> deletedAccountGroups)
+        {
+            var children = await _context.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
+
+            foreach (var child in children)
             {
-                var parentAccountExists = await IfExistsAsync((Guid)accountGroup.ParentAccountGroupId);
-
-                if (!parentAccountExists)
-                    return new ResultT<AccountGroup>
-                    {
-                        IsSuccess = false,
-                        Exception = new AccountGroupParentNotFoundException((Guid)accountGroup.ParentAccountGroupId)
-                    };
+                await DeleteAllChildrenOfAsync(child.Id, deletedAccountGroups);
+                deletedAccountGroups.Add(child);
+                await _context.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
             }
+        }
 
-            var classificationExists = await IfClassificationExists(accountGroup.AccountGroupClassificationId);
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfNotAlreadyExistsAsync(AccountGroup accountGroup)
+        {
+            var exists = await _context.AccountGroups.AnyAsync(a => a.Code == accountGroup.Code
+                        && a.ClassificationId == accountGroup.ClassificationId);
 
-            return !classificationExists
-                ? new ResultT<AccountGroup>
-                {
-                    IsSuccess = false,
-                    Exception = new AccountGroupClassificationNotFound(accountGroup.AccountGroupClassificationId)
-                }
-                : new ResultT<AccountGroup>
-                {
-                    IsSuccess = true,
-                    Result = accountGroup
-                };
+            return exists
+                ? new AccountGroupAlreadyExistsError(accountGroup.Code, accountGroup.ClassificationId)
+                : accountGroup;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfNotAlreadyExistsWithOtherIdAsync(AccountGroup accountGroup)
+        {
+            var exists = await _context.AccountGroups.AnyAsync(a => a.Code == accountGroup.Code
+                        && a.ClassificationId == accountGroup.ClassificationId
+                        && a.Id != accountGroup.Id);
+
+            return exists
+                ? new AccountGroupAlreadyExistsError(accountGroup.Code, accountGroup.ClassificationId)
+                : accountGroup;
         }
     }
 }

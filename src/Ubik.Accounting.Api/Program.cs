@@ -5,7 +5,6 @@ using Ubik.ApiService.Common.Services;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Api.Features;
 using System.Reflection;
-using Serilog;
 using Ubik.Accounting.Api.Data.Init;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
@@ -16,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Filters;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Contracts.Classifications.Commands;
 
 namespace Ubik.Accounting.Api
 {
@@ -27,7 +27,7 @@ namespace Ubik.Accounting.Api
 
             //Log
             //TODO: Begin to log usefull things
-            builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+            //builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
             //Options
             var authOptions = new AuthServerOptions();
@@ -43,6 +43,8 @@ namespace Ubik.Accounting.Api
             //DB
             builder.Services.AddDbContextFactory<AccountingContext>(
                  options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
+
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             //MessageBroker with masstransit + outbox
             builder.Services.AddMassTransit(config =>
@@ -73,14 +75,18 @@ namespace Ubik.Accounting.Api
                 //Add all consumers
                 config.AddConsumers(Assembly.GetExecutingAssembly());
 
-                //Add clients
+                //Add commands clients
                 config.AddRequestClient<AddAccountCommand>();
+                config.AddRequestClient<AddAccountInAccountGroupCommand>();
+                config.AddRequestClient<DeleteAccountInAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountCommand>();
                 config.AddRequestClient<UpdateAccountCommand>();
-
                 config.AddRequestClient<AddAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountGroupCommand>();
                 config.AddRequestClient<UpdateAccountGroupCommand>();
+                config.AddRequestClient<AddClassificationCommand>();
+                config.AddRequestClient<UpdateClassificationCommand>();
+
             });
 
 
@@ -89,6 +95,9 @@ namespace Ubik.Accounting.Api
 
             //Cors
             builder.Services.AddCustomCors();
+
+            //Tracing and metrics
+            builder.Services.AddTracingAndMetrics();
 
             //Swagger config
             var xmlPath = Path.Combine(AppContext.BaseDirectory, 
@@ -115,7 +124,8 @@ namespace Ubik.Accounting.Api
             //Build the app
             var app = builder.Build();
 
-            app.UseSerilogRequestLogging();
+            app.MapPrometheusScrapingEndpoint();
+            //app.UseSerilogRequestLogging();
             app.UseExceptionHandler(app.Logger, app.Environment);
 
             if (app.Environment.IsDevelopment())
@@ -136,7 +146,7 @@ namespace Ubik.Accounting.Api
                 initDb.Initialize(context);
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
 

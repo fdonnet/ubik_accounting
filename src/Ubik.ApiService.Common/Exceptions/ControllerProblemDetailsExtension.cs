@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.ApiService.Common.Exceptions
 {
     public static class ControllerProblemDetailsExtension
     {
-        public static CustomProblemDetails ToValidationProblemDetails(this IServiceAndFeatureException ex, HttpContext httpContext)
+        public static CustomProblemDetails ToValidationProblemDetails(this IServiceAndFeatureError ex, HttpContext httpContext)
         {
             var problemDetailErrors = ex.CustomErrors.Select(e => new ProblemDetailError()
             {
@@ -18,22 +19,22 @@ namespace Ubik.ApiService.Common.Exceptions
 
             switch (ex.ErrorType)
             {
-                case ServiceAndFeatureExceptionType.Conflict:
+                case ServiceAndFeatureErrorType.Conflict:
                     error.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.8";
                     error.Status = 409;
                     error.Title = "Resource conflict";
                     break;
-                case ServiceAndFeatureExceptionType.NotFound:
+                case ServiceAndFeatureErrorType.NotFound:
                     error.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4";
                     error.Status = 404;
                     error.Title = "Resource not found";
                     break;
-                case ServiceAndFeatureExceptionType.NotAuthorized:
+                case ServiceAndFeatureErrorType.NotAuthorized:
                     error.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3";
                     error.Status = 403;
                     error.Title = "Resource not authorized";
                     break;
-                case ServiceAndFeatureExceptionType.NotAuthentified:
+                case ServiceAndFeatureErrorType.NotAuthentified:
                     error.Type = "https://tools.ietf.org/html/rfc7235#section-3.1";
                     error.Status = 401;
                     error.Title = "No valid authentication detected";

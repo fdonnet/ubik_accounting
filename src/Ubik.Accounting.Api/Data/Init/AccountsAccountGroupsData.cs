@@ -32,8 +32,8 @@ namespace Ubik.Accounting.Api.Data.Init
                 new AccountAccountGroup
                 {
                     Id = NewId.NextGuid(),
-                    AccountGroupId = baseValuesForAccountGroups.AccountGroupId1,
-                    AccountId= baseValuesForAccounts.AccountId2,
+                    AccountGroupId = baseValuesForAccountGroups.AccountGroupId2,
+                    AccountId= baseValuesForAccounts.AccountId3,
                     CreatedBy = baseValuesForUsers.UserId1,
                     CreatedAt = baseValuesGeneral.GenerationTime,
                     ModifiedBy = baseValuesForUsers.UserId1,
@@ -41,7 +41,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                 },
-                                new AccountAccountGroup
+                new AccountAccountGroup
                 {
                     Id = NewId.NextGuid(),
                     AccountGroupId = baseValuesForAccountGroups.AccountGroupId2,

@@ -3,7 +3,6 @@ using Ubik.Accounting.Api.Models;
 using NSubstitute;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using FluentAssertions;
-using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,15 +40,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             _accountGroup = _command.ToAccountGroup(_accountGroup);
 
             _serviceManager.AccountGroupService.UpdateAsync(Arg.Any<AccountGroup>())
-                .Returns(new ResultT<AccountGroup> { Result = _accountGroup, IsSuccess = true });
+                .Returns(_accountGroup);
 
-            _serviceManager.AccountGroupService
-                .IfExistsWithDifferentIdAsync(_command.Code, _command.AccountGroupClassificationId, _command.Id).Returns(false);
-
-            _serviceManager.AccountGroupService.GetAsync(_command.Id)
-                .Returns(new ResultT<AccountGroup> { Result = _accountGroup, IsSuccess = true });
-
-            _serviceManager.AccountGroupService.IfExistsAsync((Guid)_command.ParentAccountGroupId).Returns(true);
         }
 
         public async Task InitializeAsync()

@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using Ubik.Accounting.Api.Features.Accounts.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Events;
@@ -21,6 +22,19 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 CurrencyId = account.CurrencyId,
                 Version = account.Version
             };
+        }
+
+        public static IEnumerable<GetAccountGroupClassificationResult> ToGetAccountGroupClassificationResult(this IEnumerable<AccountGroupClassification> accountGroupClassification)
+        {
+            return accountGroupClassification.Select(x => new GetAccountGroupClassificationResult()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Label = x.Label,
+                ClassificationId = x.ClassificationId,
+                ClassificationCode = x.ClassificationCode,
+                CLassificationLabel = x.ClassificationLabel
+            });
         }
 
         public static UpdateAccountResult ToUpdateAccountResult(this Account account)
@@ -136,6 +150,42 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Id = account.Id,
                 TenantId = account.TenantId,
                 CurrencyId = account.CurrencyId
+            };
+        }
+
+        public static AccountAddedInAccountGroup ToAccountAddedInAccountGroup(this AccountAccountGroup accountAccountGroup)
+        {
+            return new AccountAddedInAccountGroup
+            {
+               AccountId = accountAccountGroup.AccountId,
+               AccountGroupId = accountAccountGroup.AccountGroupId
+            };
+        }
+
+        public static AccountDeletedInAccountGroup ToAccountDeletedInAccountGroup(this AccountAccountGroup accountAccountGroup)
+        {
+            return new AccountDeletedInAccountGroup
+            {
+                AccountId = accountAccountGroup.AccountId,
+                AccountGroupId = accountAccountGroup.AccountGroupId
+            };
+        }
+
+        public static AddAccountInAccountGroupResult ToAddAccountInAccountGroupResult(this AccountAccountGroup accountAccountGroup)
+        {
+            return new AddAccountInAccountGroupResult
+            {
+                AccountId = accountAccountGroup.AccountId,
+                AccountGroupId = accountAccountGroup.AccountGroupId
+            };
+        }
+
+        public static DeleteAccountInAccountGroupResult ToDeleteAccountInAccountGroupResult(this AccountAccountGroup accountAccountGroup)
+        {
+            return new DeleteAccountInAccountGroupResult
+            {
+                AccountId = accountAccountGroup.AccountId,
+                AccountGroupId = accountAccountGroup.AccountGroupId
             };
         }
 

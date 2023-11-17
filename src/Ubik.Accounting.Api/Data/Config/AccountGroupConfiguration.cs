@@ -8,7 +8,7 @@ namespace Ubik.Accounting.Api.Data.Config
     {
         public void Configure(EntityTypeBuilder<AccountGroup> builder)
         {
-            builder.ToTable("AccountGroups");
+            builder.ToTable("account_groups");
 
             builder.Property(a => a.Code)
            .IsRequired()
@@ -33,7 +33,7 @@ namespace Ubik.Accounting.Api.Data.Config
             builder.Property(a => a.CreatedBy)
                 .IsRequired();
 
-            builder.HasIndex(a => new { a.Code, a.AccountGroupClassificationId })
+            builder.HasIndex(a => new { a.Code, a.ClassificationId })
             .IsUnique();
 
             builder.HasIndex(a => a.TenantId);
@@ -45,9 +45,9 @@ namespace Ubik.Accounting.Api.Data.Config
                 .IsRequired(false);
 
             builder
-                .HasOne(a => a.AccountGroupClassification)
+                .HasOne(a => a.Classification)
                 .WithMany(g => g.OwnedAccountGroups)
-                .HasForeignKey(b => b.AccountGroupClassificationId).OnDelete(DeleteBehavior.Cascade)
+                .HasForeignKey(b => b.ClassificationId).OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
             builder

@@ -20,10 +20,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Queries
         {
             var result = await _serviceManager.AccountService.GetAsync(context.Message.Id);
 
-            if (result.IsSuccess) 
-                await context.RespondAsync(result.Result.ToGetAccountResult());
-            else
-                await context.RespondAsync(result.Exception);
+            await result.Match(
+                Right: async r => await context.RespondAsync(r.ToGetAccountResult()),
+                Left: async err => await context.RespondAsync(err));
         }
     }
 }

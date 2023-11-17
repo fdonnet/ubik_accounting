@@ -10,7 +10,6 @@ using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Events;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
 {
@@ -36,8 +35,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Commands
             };
 
             _accountGroup = _command.ToAccountGroup();
-            _serviceManager.AccountGroupService.AddAsync(Arg.Any<AccountGroup>()).Returns(new ResultT<AccountGroup> { Result = _accountGroup, IsSuccess = true });
-            _serviceManager.AccountGroupService.IfExistsAsync(_command.Code,_command.AccountGroupClassificationId).Returns(false);
+            _serviceManager.AccountGroupService.AddAsync(Arg.Any<AccountGroup>()).Returns(_accountGroup);
         }
 
         public async Task InitializeAsync()
