@@ -75,7 +75,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 
             //Act
             var result = await client.GetResponse<GetChildAccountsResults>(new GetChildAccountsQuery 
-            { AccountGroupId = _testValuesForAccountGroups.AccountGroupId1 });
+            { AccountGroupId = _testValuesForAccountGroups.AccountGroupId2 });
 
             //Assert
             result.Message.Should()
