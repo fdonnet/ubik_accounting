@@ -162,5 +162,31 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
             }
         }
 
+        /// <summary>
+        /// Delete classification and all the linked account groups
+        /// </summary>
+        /// <remarks>Return All the account groups removed</remarks>
+        /// <param name="id"></param>
+        /// <param name="client"></param>
+        [Authorize(Roles = "ubik_accounting_classification_write")]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<DeleteClassificationResult>> Delete(Guid id, IRequestClient<DeleteClassificationCommand> client)
+        {
+            var (result, error) = await client.GetResponse<DeleteClassificationResult,
+            IServiceAndFeatureError>(new DeleteClassificationCommand { Id = id });
+
+            if (result.IsCompletedSuccessfully)
+                return Ok((await result).Message);
+            else
+            {
+                var problem = await error;
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
+            }
+        }
+
     }
 }

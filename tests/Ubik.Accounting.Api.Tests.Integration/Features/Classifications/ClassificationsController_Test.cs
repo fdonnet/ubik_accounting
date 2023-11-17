@@ -44,6 +44,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var responseGetAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Accounts");
             var responseGetMissingAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/MissingAccounts");
             var responseGetStatus = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Status");
+            var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationIdForDel}");
 
 
             //Assert
@@ -54,6 +55,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             responseGetAccounts.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseGetMissingAccounts.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseGetStatus.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            responseDel.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
@@ -77,6 +79,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var responseGetAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Accounts");
             var responseGetMissingAccounts = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/MissingAccounts");
             var responseGetStatus = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId1}/Status");
+            var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationIdForDel}");
 
 
             //Assert
@@ -87,6 +90,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             responseGetAccounts.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseGetMissingAccounts.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseGetStatus.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responseDel.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
@@ -102,13 +106,13 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var responsePost = await httpClient.PostAsync(_baseUrlForV1, new StringContent("test", Encoding.UTF8, "application/json"));
             var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId2}",
                 new StringContent("test", Encoding.UTF8, "application/json"));
+            var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationIdForDel}");
 
-            //var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupId1}");
 
             //Assert
             responsePost.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responsePut.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-            //responseDel.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responseDel.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
@@ -179,11 +183,14 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 
             var responsePut = await httpClient.PutAsync($"{_baseUrlForV1}/{fake.Id}", putContent);
 
+            var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationIdForDel}");
+
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
             var resultAccounts = await responseAccounts.Content.ReadFromJsonAsync<CustomProblemDetails>();
             var resultMissingAccounts = await responseMissingAccounts.Content.ReadFromJsonAsync<CustomProblemDetails>();
             var resultStatus = await responseStatus.Content.ReadFromJsonAsync<CustomProblemDetails>();
             var resultPut = await responsePut.Content.ReadFromJsonAsync<CustomProblemDetails>();
+            var resultDel = await responseDel.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -191,6 +198,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             responseMissingAccounts.StatusCode.Should().Be(HttpStatusCode.NotFound);
             responseStatus.StatusCode.Should().Be(HttpStatusCode.NotFound);
             responsePut.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            responseDel.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
 
             result.Should()
                 .NotBeNull()
@@ -213,6 +222,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
 
             resultPut.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+
+            resultDel.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
@@ -441,6 +455,27 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_UPDATE_IDS_NOT_MATCH");
+        }
+
+        [Fact]
+        public async Task Del_DeleteClassificationResult_Ok()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadWrite();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId3}");
+            var result = await response.Content.ReadFromJsonAsync<DeleteClassificationResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<DeleteClassificationResult>(); ;
+
         }
     }
 }

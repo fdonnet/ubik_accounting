@@ -636,7 +636,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         }
 
         [Fact]
-        public async Task Del_NoContent_Ok()
+        public async Task Del_AccoundGroupResult_Ok()
         {
             //Arrange
             var httpClient = Factory.CreateDefaultClient();

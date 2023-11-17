@@ -75,6 +75,21 @@ namespace Ubik.Accounting.Api.Data.Init
                     ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
                     Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
+                },
+                new AccountGroup
+                {
+                    Id = baseValuesForAccountGroups.AccountGroupIdForDelWithClass,
+                    CreatedBy = baseValuesForUsers.UserId1,
+                    CreatedAt = baseValuesGeneral.GenerationTime,
+                    Code = "104444",
+                    Description = "Autres actifs for removal",
+                    Label = "To be removed Autres actifs",
+                    ModifiedBy = baseValuesForUsers.UserId1,
+                    ModifiedAt = baseValuesGeneral.GenerationTime,
+                    ClassificationId = baseValuesForAccountGroupClassifications.ClassificationId3,
+                    ParentAccountGroupId = null,
+                    Version = NewId.NextGuid(),
+                    TenantId = baseValuesForTenants.TenantId
                 }
 
                             };

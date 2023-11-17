@@ -40,6 +40,19 @@ namespace Ubik.Accounting.Api.Data.Init
                     ModifiedAt = baseValuesGeneral.GenerationTime,
                     Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
+                    },
+                    new Classification
+                    {
+                    Id = baseValuesForAccountGroupClassifications.ClassificationId3,
+                    CreatedBy = baseValuesForUsers.UserId1,
+                    CreatedAt = baseValuesGeneral.GenerationTime,
+                    Code = "SWISSPLAN3",
+                    Description = "Plan comptable suisse2",
+                    Label = "Test",
+                    ModifiedBy = baseValuesForUsers.UserId1,
+                    ModifiedAt = baseValuesGeneral.GenerationTime,
+                    Version = NewId.NextGuid(),
+                    TenantId = baseValuesForTenants.TenantId
                     }
                 };
 
