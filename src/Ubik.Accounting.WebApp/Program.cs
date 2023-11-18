@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.StaticFiles.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System.Security.Claims;
 using Ubik.Accounting.WebApp.Components;
 using Ubik.Accounting.WebApp.Security;
 using Ubik.ApiService.Common.Configure.Options;
@@ -22,6 +23,12 @@ builder.Services.AddRazorPages();
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
 
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.CheckConsentNeeded = _ => false;
+    options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -29,7 +36,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
     .AddCookie()
-    .AddOpenIdConnect("Keycloack", options =>
+    .AddOpenIdConnect(options =>
     {
         {
             options.Authority = authOptions.Authority;
@@ -38,12 +45,10 @@ builder.Services.AddAuthentication(options =>
             options.ClientId = "ubik_accounting_clientapp";
             options.ResponseType = "code";
             options.SaveTokens = true;
-            //options.GetClaimsFromUserInfoEndpoint = true;
+            options.GetClaimsFromUserInfoEndpoint = true;
             options.Scope.Clear();
             options.Scope.Add("openid");
-            options.Scope.Add("profile");
-            options.Scope.Add("email");
-            options.Scope.Add("role");
+            
             //TODO: change for prod
             options.RequireHttpsMetadata = false;
 
@@ -56,29 +61,36 @@ builder.Services.AddAuthentication(options =>
 
             options.Events = new OpenIdConnectEvents
             {
-                OnRedirectToIdentityProviderForSignOut = (context) =>
-                {
-                    var logoutUri = $"http://localhost:8080/realms/ubik/protocol/openid-connect/logout";
+                //OnRedirectToIdentityProviderForSignOut = (context) =>
+                //{
+                //    var logoutUri = $"http://localhost:8080/realms/ubik/protocol/openid-connect/logout";
 
-                    var postLogoutUri = context.Properties.RedirectUri;
-                    if (!string.IsNullOrEmpty(postLogoutUri))
-                    {
-                        if (postLogoutUri.StartsWith("/"))
-                        {
-                            var request = context.Request;
-                            postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
-                        }
-                        logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
-                    }
+                //    var postLogoutUri = context.Properties.RedirectUri;
+                //    if (!string.IsNullOrEmpty(postLogoutUri))
+                //    {
+                //        if (postLogoutUri.StartsWith("/"))
+                //        {
+                //            var request = context.Request;
+                //            postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
+                //        }
+                //        logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
+                //    }
 
-                    context.Response.Redirect(logoutUri);
-                    context.HandleResponse();
+                //    context.Response.Redirect(logoutUri);
+                //    context.HandleResponse();
 
-                    return Task.CompletedTask;
-                }
+                //    return Task.CompletedTask;
+                //},
+                //OnUserInformationReceived = context =>
+                //{
+
+                //    return Task.CompletedTask;
+                //}
             };
         }
     });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<TokenProvider>();
 builder.Services.AddHttpClient();
@@ -98,7 +110,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
-app.MapRazorPages();
 app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -107,6 +118,9 @@ app.UseAuthorization();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-
+app.MapRazorPages();
 
 app.Run();
+
+
+
