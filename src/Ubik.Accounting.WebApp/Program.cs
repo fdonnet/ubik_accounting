@@ -48,7 +48,8 @@ builder.Services.AddAuthentication(options =>
             options.GetClaimsFromUserInfoEndpoint = true;
             options.Scope.Clear();
             options.Scope.Add("openid");
-            
+            options.Scope.Add("offline_access");
+
             //TODO: change for prod
             options.RequireHttpsMetadata = false;
 
@@ -61,31 +62,7 @@ builder.Services.AddAuthentication(options =>
 
             options.Events = new OpenIdConnectEvents
             {
-                //OnRedirectToIdentityProviderForSignOut = (context) =>
-                //{
-                //    var logoutUri = $"http://localhost:8080/realms/ubik/protocol/openid-connect/logout";
 
-                //    var postLogoutUri = context.Properties.RedirectUri;
-                //    if (!string.IsNullOrEmpty(postLogoutUri))
-                //    {
-                //        if (postLogoutUri.StartsWith("/"))
-                //        {
-                //            var request = context.Request;
-                //            postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
-                //        }
-                //        logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
-                //    }
-
-                //    context.Response.Redirect(logoutUri);
-                //    context.HandleResponse();
-
-                //    return Task.CompletedTask;
-                //},
-                //OnUserInformationReceived = context =>
-                //{
-
-                //    return Task.CompletedTask;
-                //}
             };
         }
     });

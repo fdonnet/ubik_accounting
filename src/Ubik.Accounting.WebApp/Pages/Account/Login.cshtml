@@ -9,22 +9,5 @@
             {
                 RedirectUri = redirectUri ?? "/"
             });
-        // return Challenge(new AuthenticationProperties() { RedirectUri = returnUrl }, "Keycloack");
     }
-
-    // public ChallengeResult OnGetAsyc(string returnUrl = "/")
-    // {
-    //     return Challenge(new AuthenticationProperties() { RedirectUri = returnUrl }, OpenIdConnectDefaults.AuthenticationScheme);
-    // }
-    // public IActionResult OnGetAsync(string returnUrl = "/")
-    // {
-    //     string provider = "Keycloack";
-    //     // Request a redirect to the external login provider.
-    //     var authenticationProperties = new AuthenticationProperties
-    //         {
-    //             RedirectUri = returnUrl
-    //         };
-    //     return new ChallengeResult(provider, authenticationProperties);
-    // }
-
 }
