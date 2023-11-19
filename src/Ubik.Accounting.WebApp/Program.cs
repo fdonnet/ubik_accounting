@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.StaticFiles.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
@@ -69,8 +71,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<TokenProvider>();
-builder.Services.AddHttpClient();
+//builder.Services.AddScoped<TokenProvider>();
+builder.Services.AddScoped<UserService>();
+builder.Services.TryAddEnumerable(
+    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
+
+
+CircuitServicesServiceCollectionExtensions.AddCircuitServicesAccessor(builder.Services);
+builder.Services.AddTransient<AuthenticationStateHandler>();
+builder.Services.AddHttpClient("HttpMessageHandler")
+    .AddHttpMessageHandler<AuthenticationStateHandler>();
+
 builder.Services.AddCascadingAuthenticationState();
 
 
@@ -90,6 +101,7 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<UserServiceMiddleware>();
 
 
 app.MapRazorComponents<App>()

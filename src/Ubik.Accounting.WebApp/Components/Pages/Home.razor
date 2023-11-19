@@ -1,10 +1,24 @@
 ﻿@page "/"
+@using Ubik.Accounting.WebApp.Security
+@inject UserService UserService;
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Hello, @(UserService.GetUser().Identity?.Name ?? "world")!</h1>
 
 Welcome to your new app.
+@claims
 
+@code {
+    private string claims = string.Empty;
+    private string token = string.Empty;
 
+    protected override void OnInitialized()
+    {
+        foreach(var claim in UserService.GetUser().Claims)
+        {
+            claims = claims + claim.Type + ": " + claim.Value + Environment.NewLine;
+        }
+    }
+}
 
