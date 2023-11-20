@@ -1,4 +1,5 @@
 ﻿@page "/counter"
+@using Microsoft.AspNetCore.Authorization
 @using Ubik.Accounting.Contracts.Accounts.Results
 @using Ubik.Accounting.WebApp.ApiClients
 @using Ubik.Accounting.WebApp.Security
@@ -6,25 +7,27 @@
 @inject AccountingApiClient Client;
 @* @rendermode InteractiveServer
  *@
-<PageTitle>Counter</PageTitle>
+@attribute [Authorize]
 
-<h1>Counter</h1>
+    <PageTitle>Counter</PageTitle>
 
-<p role="status">Current count: @currentCount</p>
+    <h1>Counter</h1>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    <p role="status">Current count: @currentCount</p>
 
-@if (_accounts != null)
-{
-    <ul>
-        @foreach (var account in _accounts)
-        {
-            <li>
-                @account
-            </li>
-        }
-    </ul>
-}
+    <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+    @if (_accounts != null)
+    {
+        <ul>
+            @foreach (var account in _accounts)
+            {
+                <li>
+                    @account
+                </li>
+            }
+        </ul>
+    }
 
 @code {
     private int currentCount = 0;
