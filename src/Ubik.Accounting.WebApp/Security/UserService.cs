@@ -18,6 +18,7 @@ namespace Ubik.Accounting.WebApp.Security
 
         public TokenProvider GetToken()
         {
+
             return _token;
         }
 
