@@ -1,6 +1,11 @@
 ﻿@page "/counter"
-@rendermode InteractiveServer
-
+@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.WebApp.ApiClients
+@using Ubik.Accounting.WebApp.Security
+@inject UserService UserService;
+@inject AccountingApiClient Client;
+@* @rendermode InteractiveServer
+ *@
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
@@ -9,6 +14,18 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+@if (_accounts != null)
+{
+    <ul>
+        @foreach (var account in _accounts)
+        {
+            <li>
+                @account
+            </li>
+        }
+    </ul>
+}
+
 @code {
     private int currentCount = 0;
 
@@ -16,4 +33,19 @@
     {
         currentCount++;
     }
+    private string claims = string.Empty;
+    private string token = string.Empty;
+    private IEnumerable<GetAccountResult>? _accounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        foreach (var claim in UserService.GetUser().Claims)
+        {
+            claims = claims + claim.Type + ": " + claim.Value + Environment.NewLine;
+        }
+
+        _accounts = await Client.GetAllAccounts();
+
+    }
+
 }

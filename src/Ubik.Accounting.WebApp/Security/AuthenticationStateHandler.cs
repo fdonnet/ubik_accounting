@@ -2,22 +2,28 @@
 
 namespace Ubik.Accounting.WebApp.Security
 {
-    public class AuthenticationStateHandler(
-        CircuitServicesAccessor circuitServicesAccessor) : DelegatingHandler
+    public class AuthenticationStateHandler : DelegatingHandler
     {
-        readonly CircuitServicesAccessor circuitServicesAccessor = circuitServicesAccessor;
+        private readonly CircuitServicesAccessor _circuitServicesAccessor;
+
+
+        public AuthenticationStateHandler(CircuitServicesAccessor circuitServicesAccessor)
+        {
+            _circuitServicesAccessor = circuitServicesAccessor;
+        }
 
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var authStateProvider = circuitServicesAccessor.Services!
-                .GetRequiredService<AuthenticationStateProvider>();
-            var authState = await authStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
+            var userService = _circuitServicesAccessor.Services!
+                .GetRequiredService<UserService>();
+            //var authState = await authStateProvider.GetAuthenticationStateAsync();
+            //var user = authState.User;
+            var user = userService.GetUser();
 
             if (user.Identity is not null && user.Identity.IsAuthenticated)
             {
-                request.Headers.Add("Authorization", $"Bearer ");
+                request.Headers.Add("Authorization", $"Bearer {userService.GetToken().AccessToken}");
             }
 
             return await base.SendAsync(request, cancellationToken);

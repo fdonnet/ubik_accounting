@@ -10,9 +10,11 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
+using Ubik.Accounting.WebApp.ApiClients;
 using Ubik.Accounting.WebApp.Components;
 using Ubik.Accounting.WebApp.Security;
 using Ubik.ApiService.Common.Configure.Options;
+using static Ubik.Accounting.WebApp.Security.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,28 +66,41 @@ builder.Services.AddAuthentication(options =>
 
             options.Events = new OpenIdConnectEvents
             {
-
+                OnRedirectToIdentityProvider = context => {
+                    context.ProtocolMessage.SetParameter("audience", "https://my/api");
+                    return Task.CompletedTask;
+                }
             };
         }
     });
 
 builder.Services.AddAuthorization();
 
-//builder.Services.AddScoped<TokenProvider>();
 builder.Services.AddScoped<UserService>();
-builder.Services.TryAddEnumerable(
-    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
+//builder.Services.TryAddEnumerable(
+//    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
 
-CircuitServicesServiceCollectionExtensions.AddCircuitServicesAccessor(builder.Services);
-builder.Services.AddTransient<AuthenticationStateHandler>();
-builder.Services.AddHttpClient("HttpMessageHandler")
-    .AddHttpMessageHandler<AuthenticationStateHandler>();
+//CircuitServicesServiceCollectionExtensions.AddCircuitServicesAccessor(builder.Services);
+//builder.Services.AddTransient<AuthenticationStateHandler>();
+//builder.Services.AddHttpClient("ClientWithAuth", options =>
+//{
+//    options.BaseAddress = new Uri("https://localhost:7289/api/v1/");
+//})
+//    .AddHttpMessageHandler<AuthenticationStateHandler>();
+
+
 
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddHttpClient<AccountingApiClient>(options =>
+{
+    options.BaseAddress = new Uri("https://localhost:7289/api/v1/");
+});
+//builder.Services.AddScoped<AccountingApiClient>();
 
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

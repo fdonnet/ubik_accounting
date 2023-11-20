@@ -1,4 +1,7 @@
-﻿@using Ubik.Accounting.WebApp.Components.Layout
+﻿@using Microsoft.AspNetCore.Authentication;
+@using Ubik.Accounting.WebApp.Security
+@inject UserService UserService;
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,6 +22,21 @@
 </body>
 
 </html>
+
+@code {
+    // [CascadingParameter]
+    // public HttpContext? HttpContext { get; set; }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     var accessToken = await HttpContext!.GetTokenAsync("access_token");
+    //     var refreshToken = await HttpContext!.GetTokenAsync("refresh_token");
+    //     UserService.SetToken(new TokenProvider { AccessToken = accessToken, RefreshToken = refreshToken });
+
+    //     //return base.OnInitializedAsync();
+    // }
+}
+
 
 
 

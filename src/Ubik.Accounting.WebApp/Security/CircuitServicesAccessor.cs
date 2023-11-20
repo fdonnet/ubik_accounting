@@ -29,6 +29,18 @@ namespace Ubik.Accounting.WebApp.Security
                 circuitServicesAccessor.Services = null;
             };
         }
+
+        public override async Task OnCircuitOpenedAsync(Circuit circuit, CancellationToken cancellationToken)
+        {
+            await base.OnCircuitOpenedAsync(circuit, cancellationToken);
+            circuitServicesAccessor.Services = services;
+        }
+
+        public override async Task OnCircuitClosedAsync(Circuit circuit, CancellationToken cancellationToken)
+        {
+            await base.OnCircuitClosedAsync(circuit, cancellationToken);
+            circuitServicesAccessor.Services = null;
+        }
     }
 
     public static class CircuitServicesServiceCollectionExtensions

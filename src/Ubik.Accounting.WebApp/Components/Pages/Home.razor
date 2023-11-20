@@ -1,6 +1,9 @@
 ﻿@page "/"
+@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.WebApp.ApiClients
 @using Ubik.Accounting.WebApp.Security
 @inject UserService UserService;
+@inject AccountingApiClient Client;
 
 <PageTitle>Home</PageTitle>
 
@@ -9,16 +12,23 @@
 Welcome to your new app.
 @claims
 
+
+
+
 @code {
     private string claims = string.Empty;
     private string token = string.Empty;
+    private IEnumerable<GetAccountResult>? _accounts;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         foreach(var claim in UserService.GetUser().Claims)
         {
             claims = claims + claim.Type + ": " + claim.Value + Environment.NewLine;
         }
+
+         //_accounts = await Client.GetAllAccounts();
+
     }
 }
 

@@ -8,7 +8,7 @@ namespace Ubik.Accounting.WebApp.Security
     public class UserService
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
-        private string _token = string.Empty;
+        private TokenProvider _token = default!;
 
 
         public ClaimsPrincipal GetUser()
@@ -16,7 +16,7 @@ namespace Ubik.Accounting.WebApp.Security
             return _currentUser;
         }
 
-        public string GetToken()
+        public TokenProvider GetToken()
         {
             return _token;
         }
@@ -29,7 +29,7 @@ namespace Ubik.Accounting.WebApp.Security
             }
         }
 
-        internal void SetToken(string token)
+        internal void SetToken(TokenProvider token)
         {
             if (_token != token)
             {
@@ -75,7 +75,6 @@ namespace Ubik.Accounting.WebApp.Security
             {
                 var state = await authenticationStateProvider.GetAuthenticationStateAsync();
                 userService.SetUser(state.User);
-                userService.SetToken(await authenticationStateProvider.GetT("access_token"));
             }
 
             public void Dispose()
