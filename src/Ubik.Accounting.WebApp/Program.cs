@@ -147,7 +147,7 @@ builder.Services.AddAuthentication(options =>
             //    }
             //};
 
-            options.CallbackPath = new PathString("/callback");
+            //options.CallbackPath = new PathString("/callback");
         }
     });
 
