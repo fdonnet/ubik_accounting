@@ -1,0 +1,78 @@
+﻿@page "/counter"
+@using Microsoft.AspNetCore.Authorization
+
+@rendermode InteractiveAuto
+@inject IHttpClientFactory Factory
+@attribute [Authorize]
+@attribute [StreamRendering]
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="SayHello">SayHello</button>
+<p role="status">Say: @say</p>
+
+<form @onsubmit="HandleSubmit" style="margin-top: 500px" data-enhance>
+    <input type="text" class="form-control" @bind="text">
+
+    <div class="col-xs-12">
+        <div class="center-block">
+            <button type="submit" class="btn btn-default">Enviar</button>
+        </div>
+    </div>
+</form>
+
+@if (isSaving)
+{
+    <span>Saving...</span>
+}
+else
+{
+    <span>@text</span>
+}
+
+@code {
+    private int currentCount = 0;
+    private string say = string.Empty;
+
+    [SupplyParameterFromForm]
+    public string? text { get; set; }
+
+    private bool isSaving = false;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private async Task SayHello()
+    {
+        var client = Factory.CreateClient("WebApp");
+        say = await client.GetStringAsync("/Hello");
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    private async void HandleSubmit()
+    {
+
+        isSaving = true;
+        await Task.Delay(2000);
+
+        isSaving = false;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+        }
+    }
+}

@@ -15,9 +15,8 @@ namespace Ubik.Accounting.WebApp.Security
             //var expiryAt = await context.GetTokenAsync("expires_at");
 
             var expiryAt = await context.GetTokenAsync("expires_at");
-            DateTimeOffset refreshAt;
 
-            if (!DateTimeOffset.TryParse(expiryAt, out refreshAt)
+            if (!DateTimeOffset.TryParse(expiryAt, out DateTimeOffset refreshAt)
                 || refreshAt < DateTimeOffset.UtcNow
                 || string.IsNullOrWhiteSpace(refreshToken))
             {

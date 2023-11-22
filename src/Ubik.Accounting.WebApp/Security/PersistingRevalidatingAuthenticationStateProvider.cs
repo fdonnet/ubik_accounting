@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Web;
+using Ubik.Accounting.WebApp.Shared.Security;
 
 namespace Ubik.Accounting.WebApp.Security
 {
@@ -44,14 +45,9 @@ namespace Ubik.Accounting.WebApp.Security
             return ValidateSecurityStampAsync(authenticationState.User);
         }
 
-        private bool ValidateSecurityStampAsync(ClaimsPrincipal principal)
+        private static bool ValidateSecurityStampAsync(ClaimsPrincipal principal)
         {
-            if (principal.Identity?.IsAuthenticated is false)
-            {
-                return false;
-            }
-
-            return true;
+            return principal.Identity?.IsAuthenticated is not false;
         }
 
         private void OnAuthenticationStateChanged(Task<AuthenticationState> authenticationStateTask)
