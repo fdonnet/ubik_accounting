@@ -10,6 +10,7 @@
     <PackageReference Include="IdentityModel" Version="6.2.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -19,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ubik.Accounting.Contracts\Ubik.Accounting.Contracts.csproj" />
+    <ProjectReference Include="..\Ubik.Accounting.WebApp.Client\Ubik.Accounting.WebApp.Client.csproj" />
   </ItemGroup>
 
 </Project>

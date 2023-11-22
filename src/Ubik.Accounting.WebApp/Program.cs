@@ -18,14 +18,20 @@ using Ubik.ApiService.Common.Configure.Options;
 using System.Net.Http;
 using static Ubik.Accounting.WebApp.Security.UserService;
 using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddRazorPages();
+builder.Services.AddCascadingAuthenticationState();
+//builder.Services.AddScoped<AuthenticationStateProvider, UserService>();
+
 
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
@@ -151,9 +157,11 @@ builder.Services.AddAuthentication(options =>
         }
     });
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<UserService>();
+//builder.Services.AddScoped<UserService>();
 //builder.Services.TryAddEnumerable(
 //    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
@@ -168,11 +176,10 @@ builder.Services.AddScoped<UserService>();
 
 
 
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddHttpClient<AccountingApiClient>(options =>
-{
-    options.BaseAddress = new Uri("https://localhost:7289/api/v1/");
-});
+//builder.Services.AddHttpClient<AccountingApiClient>(options =>
+//{
+//    options.BaseAddress = new Uri("https://localhost:7289/api/v1/");
+//});
 //builder.Services.AddScoped<AccountingApiClient>();
 
 
@@ -186,6 +193,11 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+else
+{
+
+    app.UseWebAssemblyDebugging();
+}
 
 app.UseHttpsRedirection();
 
@@ -193,13 +205,28 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<UserServiceMiddleware>();
+//app.UseMiddleware<UserServiceMiddleware>();
+
+app.MapGet("/Account/Login", async (HttpContext httpContext, string? returnUrl) =>
+{
+    await httpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
+    {
+        RedirectUri = returnUrl ?? "/"
+    });
+});
+
+app.MapPost("/Account/Logout", async (HttpContext httpContext, string returnUrl = "/") =>
+{
+    await httpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
+    await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+});
 
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode();
 
-app.MapRazorPages();
+//app.MapRazorPages();
 
 app.Run();
 

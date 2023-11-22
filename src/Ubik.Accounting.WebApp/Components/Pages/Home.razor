@@ -7,7 +7,7 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, @(UserService.GetUser().Identity?.Name ?? "world")!</h1>
+@* <h1>Hello, @(UserService.GetUser().Identity?.Name ?? "world")!</h1> *@
 
 Welcome to your new app.
 @claims
@@ -22,10 +22,10 @@ Welcome to your new app.
 
     protected override async Task OnInitializedAsync()
     {
-        foreach(var claim in UserService.GetUser().Claims)
-        {
-            claims = claims + claim.Type + ": " + claim.Value + Environment.NewLine;
-        }
+        // foreach(var claim in UserService.GetUser().Claims)
+        // {
+        //     claims = claims + claim.Type + ": " + claim.Value + Environment.NewLine;
+        // }
 
          //_accounts = await Client.GetAllAccounts();
 
