@@ -35,27 +35,28 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddControllers();
-
 builder.Services.AddCascadingAuthenticationState();
-//builder.Services.AddScoped<AuthenticationStateProvider, UserService>();
 
-
-var authOptions = new AuthServerOptions();
-builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
-
+//Cache
 builder.Services.AddScoped<TokenCacheService>();
 builder.Services.AddDistributedMemoryCache();
 
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    options.CheckConsentNeeded = _ => false;
-    options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
-});
 
+//builder.Services.Configure<CookiePolicyOptions>(options =>
+//{
+//    options.CheckConsentNeeded = _ => false;
+//    options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
+//});
+
+//TODO: put that in a lib project Auth
+//TODO: this is very dependant to distributed cache (if no cache => no site, see if it's bad)
+var authOptions = new AuthServerOptions();
+builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
 builder.Services.AddAuthentication(options =>
 {
-    //options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -65,10 +66,6 @@ builder.Services.AddAuthentication(options =>
         options.ExpireTimeSpan = TimeSpan.FromDays(1);
         options.Events = new CookieAuthenticationEvents
         {
-            // this event is fired everytime the cookie has been validated by the cookie middleware,
-            // so basically during every authenticated request
-            // the decryption of the cookie has already happened so we have access to the user claims
-            // and cookie properties - expiration, etc..
             OnValidatePrincipal = async x =>
             {
                 // since our cookie lifetime is based on the access token one,
@@ -83,23 +80,15 @@ builder.Services.AddAuthentication(options =>
 
                 if (timeElapsed > timeRemaining)
                 {
-
-                    //var accessTokenClaim = identity.FindFirst("access_token");
-                    //var refreshTokenClaim = identity.FindFirst("refresh_token");
-
                     if (actualToken == null)
                         return;
-                       
-                    // if we have to refresh, grab the refresh token from the claims, and request
-                    // new access token and refresh token
-                    //var refreshToken = refreshTokenClaim.Value;
 
-                        //Refresh
+                    //Refresh from OpenId endpoint
                     var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
                     {
                         Address = authOptions.TokenUrl,
-                        ClientId = "ubik_accounting_clientapp",
-                        ClientSecret = "iVw3c2Qs762cGMRcLTKJbeiaweeZhrge",
+                        ClientId = authOptions.ClientId,
+                        ClientSecret = authOptions.ClientSecret,
                         RefreshToken = actualToken.RefreshToken,
                         GrantType = "refresh_token",
 
@@ -107,16 +96,6 @@ builder.Services.AddAuthentication(options =>
 
                     if (!response.IsError)
                     {
-                        // everything went right, remove old tokens and add new ones
-                        //identity.RemoveClaim(accessTokenClaim);
-                        //identity.RemoveClaim(refreshTokenClaim);
-
-                        //identity.AddClaims(new[]
-                        //{
-                        //                new Claim("access_token", response.AccessToken),
-                        //                new Claim("refresh_token", response.RefreshToken)
-                        //            });
-
                         await cache.SetUserTokenAsync(new TokenCacheEntry
                         {
                             UserId = identity.Name!,
@@ -158,30 +137,7 @@ builder.Services.AddAuthentication(options =>
 
             options.Events = new OpenIdConnectEvents
             {
-                // that event is called after the OIDC middleware received the auhorisation code,
-                // redeemed it for an access token and a refresh token,
-                // and validated the identity token
-                //OnTokenValidated = x =>
-                //{
-                //    // store both access and refresh token in the claims - hence in the cookie
-                //    var identity = (ClaimsIdentity)x.Principal.Identity;
-                //    identity.AddClaims(new[]
-                //    {
-                //                new Claim("access_token", x.TokenEndpointResponse.AccessToken),
-                //                new Claim("refresh_token", x.TokenEndpointResponse.RefreshToken)
-                //            });
-
-                //    // so that we don't issue a session cookie but one with a fixed expiration
-                //    x.Properties.IsPersistent = true;
-
-                //    // align expiration of the cookie with expiration of the
-                //    // access token
-                //    var accessToken = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken);
-                //    x.Properties.ExpiresUtc = accessToken.ValidTo;
-                //    //x.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(3);
-
-                //    return Task.CompletedTask;
-                //}
+                //Store token in cache
                 OnTokenValidated = async x =>
                 {
                     var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
@@ -198,43 +154,26 @@ builder.Services.AddAuthentication(options =>
                     await cache.SetUserTokenAsync(token);
                 }
             };
-
-            //options.CallbackPath = new PathString("/callback");
         }
     });
 
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddAuthorization();
+
+//User service with circuit
+builder.Services.AddScoped<UserService>();
+builder.Services.TryAddEnumerable(
+    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
+CircuitServicesServiceCollectionExtensions.AddCircuitServicesAccessor(builder.Services);
+
+
+//Http client (the base one for the webassembly component and other typed for external apis
 builder.Services
     .AddTransient<CookieHandler>()
     .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
 
-//builder.Services.AddHttpClient<IAccountingApiClientAccountingApiClient>();
-
-builder.Services.AddAuthorization();
-
-builder.Services.AddScoped<UserService>();
-builder.Services.TryAddEnumerable(
-    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
-
-
-//builder.Services.AddTransient<AuthenticationStateHandler>();
 builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
-//.AddHttpMessageHandler<AuthenticationStateHandler>();
-
-CircuitServicesServiceCollectionExtensions.AddCircuitServicesAccessor(builder.Services);
-
-//builder.Services.AddHttpClient("ClientWithAuth", options =>
-//{
-//    options.BaseAddress = new Uri("https://localhost:7289/api/v1/");
-//})
-//    .AddHttpMessageHandler<AuthenticationStateHandler>();
-
-
-//builder.Services.AddScoped<AccountingApiClient>();
-
 
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -245,7 +184,6 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
-
     app.UseWebAssemblyDebugging();
 }
 
@@ -256,22 +194,6 @@ app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<UserServiceMiddleware>();
-//app.MapGet("/Account/Login", async (HttpContext httpContext, string? returnUrl) =>
-//{
-//    await httpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
-//    {
-//        RedirectUri = returnUrl ?? "/"
-//    });
-//});
-
-//app.MapPost("/Account/Logout", async (HttpContext httpContext, string returnUrl = "/") =>
-//{
-//    await httpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
-//    await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-//});
-
-//app.MapGet("/Hello", (HttpContext httpContext) => Results.Ok("Hi!"))
-//   .RequireAuthorization();
 
 app.MapControllers();
 
@@ -279,8 +201,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Counter).Assembly);
-
-//app.MapRazorPages();
 
 app.Run();
 
