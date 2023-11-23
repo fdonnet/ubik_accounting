@@ -17,13 +17,13 @@ namespace Ubik.Accounting.WebApp.Security
         {
             var userService = _circuitServicesAccessor.Services!
                 .GetRequiredService<UserService>();
-            //var authState = await authStateProvider.GetAuthenticationStateAsync();
+           // var authState = await authStateProvider.GetAuthenticationStateAsync();
             //var user = authState.User;
             var user = userService.GetUser();
 
             if (user.Identity is not null && user.Identity.IsAuthenticated)
             {
-                request.Headers.Add("Authorization", $"Bearer {userService.GetToken().AccessToken}");
+                request.Headers.Add("Authorization", $"Bearer {await userService.GetTokenAsync()}");
             }
 
             return await base.SendAsync(request, cancellationToken);

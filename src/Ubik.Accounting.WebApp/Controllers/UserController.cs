@@ -13,7 +13,7 @@ namespace Ubik.Accounting.WebApp.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        [HttpGet("/Login")]
+        [HttpGet("/Account/Login")]
         public async Task Login(string returnUrl = "/")
         {
             await HttpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
@@ -22,7 +22,7 @@ namespace Ubik.Accounting.WebApp.Controllers
             });
         }
 
-        [HttpPost("/Logout")]
+        [HttpPost("/Account/Logout")]
         public async Task Logout(string returnUrl = "/")
         {
             await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });

@@ -50,6 +50,7 @@ namespace Ubik.Accounting.WebApp.Security
         {
             services.AddScoped<CircuitServicesAccessor>();
             services.AddScoped<CircuitHandler, ServicesAccessorCircuitHandler>();
+            services.AddScoped<UserService>();
 
             return services;
         }

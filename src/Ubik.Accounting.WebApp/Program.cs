@@ -23,6 +23,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Ubik.Accounting.WebApp.Client.Pages;
 using Ubik.Accounting.Webapp.Shared.Security;
+using IdentityModel;
+using System.Security.Principal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,23 +77,24 @@ builder.Services.AddAuthentication(options =>
                 var timeElapsed = now.Subtract(x.Properties.IssuedUtc!.Value);
                 var timeRemaining = x.Properties.ExpiresUtc!.Value.Subtract(now);
 
+                var identity = (ClaimsIdentity)x.Principal!.Identity!;
+                var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
+                var actualToken = await cache.GetUserTokenAsync(identity.Name!);
+
                 if (timeElapsed > timeRemaining)
                 {
-                    var identity = (ClaimsIdentity)x.Principal!.Identity!;
+
                     //var accessTokenClaim = identity.FindFirst("access_token");
                     //var refreshTokenClaim = identity.FindFirst("refresh_token");
 
-                    var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
-                    var actualToken = await cache.GetUserToken(identity.Name!);
-
-
                     if (actualToken == null)
                         return;
+                       
                     // if we have to refresh, grab the refresh token from the claims, and request
                     // new access token and refresh token
                     //var refreshToken = refreshTokenClaim.Value;
 
-                    //Refresh
+                        //Refresh
                     var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
                     {
                         Address = authOptions.TokenUrl,
@@ -112,7 +117,7 @@ builder.Services.AddAuthentication(options =>
                         //                new Claim("refresh_token", response.RefreshToken)
                         //            });
 
-                        await cache.SetUserToken(new TokenCacheEntry
+                        await cache.SetUserTokenAsync(new TokenCacheEntry
                         {
                             UserId = identity.Name!,
                             RefreshToken = response.RefreshToken!,
@@ -188,9 +193,9 @@ builder.Services.AddAuthentication(options =>
                         ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo
                     };
                     x.Properties!.IsPersistent = true;
-                    x.Properties.ExpiresUtc = token.ExpiresUtc;
+                    x.Properties.ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo;
 
-                    await cache.SetUserToken(token);
+                    await cache.SetUserTokenAsync(token);
                 }
             };
 
@@ -203,17 +208,21 @@ builder.Services
     .AddTransient<CookieHandler>()
     .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
 
-builder.Services.AddHttpClient<AccountingApiClient>();
+//builder.Services.AddHttpClient<IAccountingApiClientAccountingApiClient>();
 
 builder.Services.AddAuthorization();
 
-//builder.Services.AddScoped<UserService>();
-//builder.Services.TryAddEnumerable(
-//    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
+builder.Services.AddScoped<UserService>();
+builder.Services.TryAddEnumerable(
+    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
 
-//CircuitServicesServiceCollectionExtensions.AddCircuitServicesAccessor(builder.Services);
 //builder.Services.AddTransient<AuthenticationStateHandler>();
+builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
+//.AddHttpMessageHandler<AuthenticationStateHandler>();
+
+CircuitServicesServiceCollectionExtensions.AddCircuitServicesAccessor(builder.Services);
+
 //builder.Services.AddHttpClient("ClientWithAuth", options =>
 //{
 //    options.BaseAddress = new Uri("https://localhost:7289/api/v1/");
@@ -221,11 +230,6 @@ builder.Services.AddAuthorization();
 //    .AddHttpMessageHandler<AuthenticationStateHandler>();
 
 
-
-//builder.Services.AddHttpClient<AccountingApiClient>(options =>
-//{
-//    options.BaseAddress = new Uri("https://localhost:7289/api/v1/");
-//});
 //builder.Services.AddScoped<AccountingApiClient>();
 
 
@@ -251,8 +255,7 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
-//app.UseMiddleware<UserServiceMiddleware>();
-
+app.UseMiddleware<UserServiceMiddleware>();
 //app.MapGet("/Account/Login", async (HttpContext httpContext, string? returnUrl) =>
 //{
 //    await httpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties

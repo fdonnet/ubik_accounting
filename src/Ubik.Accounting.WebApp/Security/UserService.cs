@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
@@ -8,18 +9,22 @@ namespace Ubik.Accounting.WebApp.Security
     public class UserService
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
-        private TokenProvider _token = default!;
+        //private TokenProvider _token = default!;
+        private TokenCacheService _cache;
 
+        public UserService(TokenCacheService cache)
+        {
+            _cache = cache;
+        }
 
         public ClaimsPrincipal GetUser()
         {
             return _currentUser;
         }
 
-        public TokenProvider GetToken()
+        public async Task<string> GetTokenAsync()
         {
-
-            return _token;
+            return (await _cache.GetUserTokenAsync(_currentUser.Identity?.Name))?.AccessToken ?? string.Empty;
         }
 
         internal void SetUser(ClaimsPrincipal user)
@@ -30,20 +35,18 @@ namespace Ubik.Accounting.WebApp.Security
             }
         }
 
-        internal void SetToken(TokenProvider token)
+        internal sealed class UserCircuitHandler : CircuitHandler, IDisposable
         {
-            if (_token != token)
-            {
-                _token = token;
-            }
-        }
+            private readonly AuthenticationStateProvider authenticationStateProvider;
+            private readonly UserService userService;
 
-        internal sealed class UserCircuitHandler(
-            AuthenticationStateProvider authenticationStateProvider,
-            UserService userService) : CircuitHandler, IDisposable
-        {
-            private readonly AuthenticationStateProvider authenticationStateProvider = authenticationStateProvider;
-            private readonly UserService userService = userService;
+            public UserCircuitHandler(
+                AuthenticationStateProvider authenticationStateProvider,
+                UserService userService)
+            {
+                this.authenticationStateProvider = authenticationStateProvider;
+                this.userService = userService;
+            }
 
             public override Task OnCircuitOpenedAsync(Circuit circuit,
                 CancellationToken cancellationToken)

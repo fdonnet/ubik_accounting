@@ -1,34 +1,32 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Http
 @using Ubik.Accounting.Contracts.Accounts.Results
 @using Ubik.Accounting.WebApp.ApiClients
 @using Ubik.Accounting.WebApp.Security
 @* @inject UserService UserService; *@
 @* @inject AccountingApiClient Client; *@
+@inject IAccountingApiClient client
+@attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
 
 @* <h1>Hello, @(UserService.GetUser().Identity?.Name ?? "world")!</h1> *@
 
 Welcome to your new app.
-@claims
-
-
-
+<ul>
+    @foreach (var a in _accounts)
+    {
+        <li>@a</li>
+    }
+</ul>
 
 @code {
-    private string claims = string.Empty;
-    private string token = string.Empty;
-    private IEnumerable<GetAccountResult>? _accounts;
+    private IEnumerable<GetAccountResult> _accounts = [];
 
     protected override async Task OnInitializedAsync()
     {
-        // foreach(var claim in UserService.GetUser().Claims)
-        // {
-        //     claims = claims + claim.Type + ": " + claim.Value + Environment.NewLine;
-        // }
-
-         //_accounts = await Client.GetAllAccounts();
-
+        _accounts = await client.GetAllAccountsAsync();
     }
 }
 
