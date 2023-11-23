@@ -53,6 +53,7 @@ builder.Services.AddDistributedMemoryCache();
 
 //TODO: put that in a lib project Auth
 //TODO: this is very dependant to distributed cache (if no cache => no site, see if it's bad)
+//TODO: do better and use UserId in cache
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
 builder.Services.AddAuthentication(options =>
@@ -76,7 +77,7 @@ builder.Services.AddAuthentication(options =>
 
                 var identity = (ClaimsIdentity)x.Principal!.Identity!;
                 var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
-                var actualToken = await cache.GetUserTokenAsync(identity.Name!);
+                var actualToken = await cache.GetUserTokenAsync(identity.Name);
 
                 if (timeElapsed > timeRemaining)
                 {
@@ -118,8 +119,8 @@ builder.Services.AddAuthentication(options =>
         {
             options.Authority = authOptions.Authority;
             options.MetadataAddress = authOptions.MetadataAddress;
-            options.ClientSecret = "iVw3c2Qs762cGMRcLTKJbeiaweeZhrge";
-            options.ClientId = "ubik_accounting_clientapp";
+            options.ClientSecret = authOptions.ClientSecret;
+            options.ClientId = authOptions.ClientId;
             options.ResponseType = "code";
             options.SaveTokens = true;
             options.GetClaimsFromUserInfoEndpoint = true;
@@ -163,7 +164,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<UserService>();
 builder.Services.TryAddEnumerable(
     ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
-CircuitServicesServiceCollectionExtensions.AddCircuitServicesAccessor(builder.Services);
+//CircuitServicesServiceCollectionExtensions.AddCircuitServicesAccessor(builder.Services);
 
 
 //Http client (the base one for the webassembly component and other typed for external apis

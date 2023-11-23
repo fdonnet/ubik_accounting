@@ -9,7 +9,6 @@ namespace Ubik.Accounting.WebApp.Security
     public class UserService
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
-        //private TokenProvider _token = default!;
         private TokenCacheService _cache;
 
         public UserService(TokenCacheService cache)

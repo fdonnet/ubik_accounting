@@ -35,7 +35,7 @@ namespace Ubik.Accounting.WebApp.Security
             _subscription = state.RegisterOnPersisting(OnPersistingAsync, RenderMode.InteractiveWebAssembly);
         }
 
-        protected override TimeSpan RevalidationInterval => TimeSpan.FromSeconds(10);
+        protected override TimeSpan RevalidationInterval => TimeSpan.FromMinutes(30);
 
         protected override async Task<bool> ValidateAuthenticationStateAsync(
             AuthenticationState authenticationState, CancellationToken cancellationToken)
