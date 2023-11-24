@@ -4,8 +4,7 @@
 @using Ubik.Accounting.Contracts.Accounts.Results
 @using Ubik.Accounting.WebApp.ApiClients
 @using Ubik.Accounting.WebApp.Security
-@* @inject UserService UserService; *@
-@* @inject AccountingApiClient Client; *@
+@inject UserService UserService;
 @inject IAccountingApiClient client
 @attribute [Authorize]
 
@@ -21,9 +20,16 @@ Welcome to your new app.
     }
 </ul>
 
+<ul>
+    @foreach (var c in UserService.GetUser().Claims)
+    {
+        <li>@c.Type         @c.Value</li>
+    }
+</ul>
+
 @code {
     private IEnumerable<GetAccountResult> _accounts = [];
-
+    
     protected override async Task OnInitializedAsync()
     {
         _accounts = await client.GetAllAccountsAsync();

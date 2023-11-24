@@ -69,6 +69,7 @@ builder.Services.AddAuthentication(options =>
                 var timeRemaining = x.Properties.ExpiresUtc!.Value.Subtract(now);
 
                 var identity = (ClaimsIdentity)x.Principal!.Identity!;
+                var userId = x.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
                 var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
                 var actualToken = await cache.GetUserTokenAsync(identity.Name);
 
@@ -92,7 +93,7 @@ builder.Services.AddAuthentication(options =>
                     {
                         await cache.SetUserTokenAsync(new TokenCacheEntry
                         {
-                            UserId = identity.Name!,
+                            UserId = userId,
                             RefreshToken = response.RefreshToken!,
                             AccessToken = response.AccessToken!,
                             ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo
@@ -137,7 +138,7 @@ builder.Services.AddAuthentication(options =>
                     var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
                     var token = new TokenCacheEntry
                     {
-                        UserId = x.Principal!.Identity!.Name!,
+                        UserId = x.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value,
                         AccessToken = x.TokenEndpointResponse!.AccessToken,
                         RefreshToken = x.TokenEndpointResponse.RefreshToken,
                         ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo
@@ -146,7 +147,8 @@ builder.Services.AddAuthentication(options =>
                     x.Properties.ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo;
 
                     await cache.SetUserTokenAsync(token);
-                }
+                },
+                
             };
         }
     });
