@@ -1,16 +1,16 @@
 ﻿@page "/auth"
-@using Microsoft.AspNetCore.Authorization
 @using Ubik.Accounting.Contracts.Accounts.Results
 @using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.WebApp.Client.Components.Accounts
 
 @attribute [Authorize]
 @inject IHttpClientFactory Factory
 @inject IRenderContext RenderContext
 @inject IClientContactFacade ClientContacts
 @* @rendermode _rendermode *@
-@* @rendermode InteractiveAuto *@
 @rendermode InteractiveAuto
-@attribute [StreamRendering]
+
+@* @attribute [StreamRendering] *@
 
 
 <PageTitle>Auth</PageTitle>
@@ -31,6 +31,8 @@
 <button class="btn btn-primary" @onclick="SayHello">SayHello</button>
 <p role="status">Say: @say</p>
 
+<AccoutsList ></AccoutsList>
+
 @code {
     private static IComponentRenderMode _rendermode = new InteractiveAutoRenderMode(prerender: false);
     private IEnumerable<GetAllAccountsResult> _accounts = [];
@@ -50,7 +52,7 @@
             await authenticationState;
             // var client = Factory.CreateClient("WebApp");
             // _accounts = await client.GetFromJsonAsync<IEnumerable<GetAllAccountsResult>>("/Accountslist") ?? [];
-            _accounts = await ClientContacts.GetAllAccountsAsync();
+            //_accounts = await ClientContacts.GetAllAccountsAsync();
             // if (isAuthenticated == true)
             // {
             //     // @if (RenderContext.IsClient)

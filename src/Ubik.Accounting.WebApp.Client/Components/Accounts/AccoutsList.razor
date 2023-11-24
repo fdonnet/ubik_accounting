@@ -1,0 +1,90 @@
+﻿@implements IDisposable
+@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.Webapp.Shared.Facades
+@inject IClientContactFacade ClientContacts
+@inject PersistentComponentState ApplicationState
+@rendermode InteractiveAuto
+@attribute [Authorize]
+<h3>AccoutsList</h3>
+
+@if (_accounts != null)
+{
+    <ul>
+        @foreach (var a in _accounts)
+        {
+            <li>@a</li>
+        }
+    </ul>
+}
+else
+{
+    <span>Loading...</span>
+}
+
+<button class="btn btn-primary" @onclick="SayHello">SayHello</button>
+
+
+@code {
+    private IEnumerable<GetAllAccountsResult>? _accounts;
+    private PersistingComponentStateSubscription persistingSubscription;
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        persistingSubscription =
+            ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (authenticationState is not null)
+        {
+            await authenticationState;
+            if (!ApplicationState.TryTakeFromJson<IEnumerable<GetAllAccountsResult>>(
+                "TEST", out var restored))
+            {
+                _accounts = await ClientContacts.GetAllAccountsAsync();
+            }
+            else
+            {
+                _accounts = restored!;
+            }
+
+
+            // var client = Factory.CreateClient("WebApp");
+            // _accounts = await client.GetFromJsonAsync<IEnumerable<GetAllAccountsResult>>("/Accountslist") ?? [];
+            //_accounts = await ClientContacts.GetAllAccountsAsync();
+            // if (isAuthenticated == true)
+            // {
+            //     // @if (RenderContext.IsClient)
+            //     // {
+            //     //     var client = Factory.CreateClient("WebApp");
+            //     //     var test = await client.GetStringAsync("/Hello");
+            //     // }
+            //     // else
+            //     // {
+            //     //     // Render me only on Server. No HTTP calls.
+            //     // }
+            //     //_accounts = await ClientContacts.GetAllAccountsAsync();
+            //     //StateHasChanged();
+            // }
+        }
+    }
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson("TEST", _accounts);
+
+        return Task.CompletedTask;
+    }
+    private async Task SayHello()
+    {
+        _accounts = (await ClientContacts.GetAllAccountsAsync()).Where(a=>a.Code=="1020");
+        //StateHasChanged();
+    }
+
+
+    void IDisposable.Dispose()
+    {
+        persistingSubscription.Dispose();
+    }
+
+}

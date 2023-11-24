@@ -17,9 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Contracts",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.WebApp", "..\Ubik.Accounting.WebApp\Ubik.Accounting.WebApp.csproj", "{49287A03-F87B-4CD9-B967-B1E205743B64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Accounting.WebApp.Client", "..\Ubik.Accounting.WebApp.Client\Ubik.Accounting.WebApp.Client.csproj", "{8C2B2D6D-3B92-4FB4-B794-F0A889A7A91D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.WebApp.Client", "..\Ubik.Accounting.WebApp.Client\Ubik.Accounting.WebApp.Client.csproj", "{8C2B2D6D-3B92-4FB4-B794-F0A889A7A91D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Accounting.Webapp.Shared", "..\Ubik.Accounting.Webapp.Shared\Ubik.Accounting.Webapp.Shared.csproj", "{742D3CF1-3470-4347-8902-4E57B0ABF2C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Webapp.Shared", "..\Ubik.Accounting.Webapp.Shared\Ubik.Accounting.Webapp.Shared.csproj", "{742D3CF1-3470-4347-8902-4E57B0ABF2C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
