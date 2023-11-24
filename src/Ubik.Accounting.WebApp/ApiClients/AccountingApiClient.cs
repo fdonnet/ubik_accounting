@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Net.Http.Headers;
-using Ubik.Accounting.Contracts.Accounts.Results;
+﻿using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.WebApp.Security;
 
 namespace Ubik.Accounting.WebApp.ApiClients
@@ -17,10 +15,10 @@ namespace Ubik.Accounting.WebApp.ApiClients
             _user = user;
         }
 
-        public async Task<IEnumerable<GetAccountResult>> GetAllAccountsAsync()
+        public async Task<IEnumerable<GetAllAccountsResult>> GetAllAccountsAsync()
         {
             await SetSecruityHeaderAsync();
-            return await _client.GetFromJsonAsync<IEnumerable<GetAccountResult>>("Accounts") ?? [];
+            return await _client.GetFromJsonAsync<IEnumerable<GetAllAccountsResult>>("Accounts") ?? [];
         }
 
         private async Task SetSecruityHeaderAsync()
@@ -32,6 +30,6 @@ namespace Ubik.Accounting.WebApp.ApiClients
 
     public interface IAccountingApiClient
     {
-        public Task<IEnumerable<GetAccountResult>> GetAllAccountsAsync();
+        public Task<IEnumerable<GetAllAccountsResult>> GetAllAccountsAsync();
     }
 }

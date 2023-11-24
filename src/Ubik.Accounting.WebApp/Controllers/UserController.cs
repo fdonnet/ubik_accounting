@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Ubik.Accounting.Contracts.Classifications.Results;
-using Ubik.ApiService.Common.Exceptions;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -23,7 +18,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [HttpPost("/Account/Logout")]
-        public async Task Logout(string returnUrl = "/")
+        public async Task Logout()
         {
             await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

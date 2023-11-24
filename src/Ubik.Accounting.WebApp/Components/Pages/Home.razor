@@ -28,11 +28,11 @@ Welcome to your new app.
 </ul>
 
 @code {
-    private IEnumerable<GetAccountResult> _accounts = [];
+    private IEnumerable<GetAllAccountsResult> _accounts = [];
     
     protected override async Task OnInitializedAsync()
     {
-        _accounts = await client.GetAllAccountsAsync();
+        _accounts = await client.GetAllAccountsAsync() ?? [];
     }
 }
 

@@ -1,22 +1,13 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json.Linq;
-using System.Text;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Ubik.Accounting.WebApp.Security
 {
-    public class TokenCacheService
+    public class TokenCacheService(IDistributedCache cache)
     {
-        private readonly IDistributedCache _cache;
-        public TokenCacheService(IDistributedCache cache)
-        {
-            _cache = cache;
-        }
-
-        private static JsonSerializerOptions _serializerOptions = new JsonSerializerOptions
+        private readonly IDistributedCache _cache = cache;
+        private static readonly JsonSerializerOptions _serializerOptions = new()
         {
             PropertyNamingPolicy = null,
             WriteIndented = true,

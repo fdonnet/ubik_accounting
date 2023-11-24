@@ -1,32 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.StaticFiles.Infrastructure;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Ubik.Accounting.WebApp.ApiClients;
 using Ubik.Accounting.WebApp.Components;
 using Ubik.Accounting.WebApp.Security;
-using Ubik.ApiService.Common.Configure.Options;
-using System.Net.Http;
 using static Ubik.Accounting.WebApp.Security.UserService;
 using IdentityModel.Client;
-using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Components.Authorization;
 using Ubik.Accounting.WebApp.Client.Pages;
 using Ubik.Accounting.Webapp.Shared.Security;
-using IdentityModel;
-using System.Security.Principal;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.AspNetCore.Components;
+using Ubik.ApiService.Common.Configure.Options;
+using Ubik.Accounting.WebApp.Render;
+using Ubik.Accounting.Webapp.Shared.Render;
+using Ubik.Accounting.WebApp.Facades;
+using Ubik.Accounting.Webapp.Shared.Facades;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,13 +58,12 @@ builder.Services.AddAuthentication(options =>
                 var timeElapsed = now.Subtract(x.Properties.IssuedUtc!.Value);
                 var timeRemaining = x.Properties.ExpiresUtc!.Value.Subtract(now);
 
-                var identity = (ClaimsIdentity)x.Principal!.Identity!;
-                var userId = x.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-                var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
-                var actualToken = await cache.GetUserTokenAsync(identity.Name);
-
                 if (timeElapsed > timeRemaining)
                 {
+                    var userId = x.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+                    var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
+                    var actualToken = await cache.GetUserTokenAsync(userId);
+
                     if (actualToken == null)
                         return;
 
@@ -154,11 +143,15 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddSingleton<IRenderContext, ServerRenderContext>();
+builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
 //User service with circuit
 builder.Services.AddScoped<UserService>();
 builder.Services.TryAddEnumerable(
     ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
+
+builder.Services.AddScoped<IClientContactFacade, ClientContactFacade>();
 
 //Http client (the base one for the webassembly component and other typed for external apis
 builder.Services

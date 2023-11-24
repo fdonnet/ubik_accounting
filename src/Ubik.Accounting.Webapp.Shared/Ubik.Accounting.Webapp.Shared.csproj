@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Ubik.Accounting.Contracts\Ubik.Accounting.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,9 +1,8 @@
-﻿using MediatR;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Ubik.Accounting.Contracts.AccountGroups.Commands
 {
-    public record DeleteAccountGroupCommand : IRequest<bool>
+    public record DeleteAccountGroupCommand
     {
         [Required]
         public Guid Id { get; init; }

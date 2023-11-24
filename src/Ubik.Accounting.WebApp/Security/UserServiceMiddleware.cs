@@ -1,15 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-
-namespace Ubik.Accounting.WebApp.Security
+﻿namespace Ubik.Accounting.WebApp.Security
 {
-    public class UserServiceMiddleware
+    public class UserServiceMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate next;
-
-        public UserServiceMiddleware(RequestDelegate next)
-        {
-            this.next = next ?? throw new ArgumentNullException(nameof(next));
-        }
+        private readonly RequestDelegate next = next ?? throw new ArgumentNullException(nameof(next));
 
         public async Task InvokeAsync(HttpContext context, UserService service)
         {

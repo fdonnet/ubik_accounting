@@ -1,20 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
 namespace Ubik.Accounting.WebApp.Security
 {
-    public class UserService
+    public class UserService(TokenCacheService cache)
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
-        private TokenCacheService _cache;
-
-        public UserService(TokenCacheService cache)
-        {
-            _cache = cache;
-        }
+        private readonly TokenCacheService _cache = cache;
 
         public ClaimsPrincipal GetUser()
         {
@@ -34,18 +27,12 @@ namespace Ubik.Accounting.WebApp.Security
             }
         }
 
-        internal sealed class UserCircuitHandler : CircuitHandler, IDisposable
+        internal sealed class UserCircuitHandler(
+            AuthenticationStateProvider authenticationStateProvider,
+            UserService userService) : CircuitHandler, IDisposable
         {
-            private readonly AuthenticationStateProvider authenticationStateProvider;
-            private readonly UserService userService;
-
-            public UserCircuitHandler(
-                AuthenticationStateProvider authenticationStateProvider,
-                UserService userService)
-            {
-                this.authenticationStateProvider = authenticationStateProvider;
-                this.userService = userService;
-            }
+            private readonly AuthenticationStateProvider authenticationStateProvider = authenticationStateProvider;
+            private readonly UserService userService = userService;
 
             public override Task OnCircuitOpenedAsync(Circuit circuit,
                 CancellationToken cancellationToken)

@@ -68,14 +68,14 @@ namespace Ubik.Accounting.WebApp.Security
             if (principal.Identity?.IsAuthenticated == true)
             {
                 var userId = principal.FindFirst(_options.ClaimsIdentity.UserIdClaimType)?.Value;
-                var email = principal.FindFirst("email")?.Value;
+                var name = principal.FindFirst("name")?.Value;
 
-                if (userId != null && email != null)
+                if (userId != null && name != null)
                 {
                     _state.PersistAsJson(nameof(UserInfo), new UserInfo
                     {
                         UserId = userId,
-                        Email = email,
+                        Name = name,
                     });
                 }
             }
