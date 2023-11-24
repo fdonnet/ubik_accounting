@@ -6,7 +6,7 @@
 @attribute [Authorize]
 @inject IHttpClientFactory Factory
 @inject IRenderContext RenderContext
-@inject IClientContactFacade ClientContacts
+@inject IAccountingApiClient ClientContacts
 @* @rendermode _rendermode *@
 @rendermode InteractiveAuto
 
@@ -28,9 +28,9 @@
     }
 </ul>
 
-<button class="btn btn-primary" @onclick="SayHello">SayHello</button>
+@* <button class="btn btn-primary" @onclick="SayHello">SayHello</button>
 <p role="status">Say: @say</p>
-
+ *@
 <AccoutsList></AccoutsList>
 
 @code {
@@ -42,32 +42,32 @@
 
     private async Task SayHello()
     {
-        _accounts = await ClientContacts.GetAllAccountsAsync();
+        //_accounts = await ClientContacts.GetAllAccountsAsync();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        if (authenticationState is not null)
-        {
-            await authenticationState;
-            // var client = Factory.CreateClient("WebApp");
-            // _accounts = await client.GetFromJsonAsync<IEnumerable<GetAllAccountsResult>>("/Accountslist") ?? [];
-            //_accounts = await ClientContacts.GetAllAccountsAsync();
-            // if (isAuthenticated == true)
-            // {
-            //     // @if (RenderContext.IsClient)
-            //     // {
-            //     //     var client = Factory.CreateClient("WebApp");
-            //     //     var test = await client.GetStringAsync("/Hello");
-            //     // }
-            //     // else
-            //     // {
-            //     //     // Render me only on Server. No HTTP calls.
-            //     // }
-            //     //_accounts = await ClientContacts.GetAllAccountsAsync();
-            //     //StateHasChanged();
-            // }
-        }
+        // if (authenticationState is not null)
+        // {
+        //     await authenticationState;
+        //     // var client = Factory.CreateClient("WebApp");
+        //     // _accounts = await client.GetFromJsonAsync<IEnumerable<GetAllAccountsResult>>("/Accountslist") ?? [];
+        //     //_accounts = await ClientContacts.GetAllAccountsAsync();
+        //     // if (isAuthenticated == true)
+        //     // {
+        //     //     // @if (RenderContext.IsClient)
+        //     //     // {
+        //     //     //     var client = Factory.CreateClient("WebApp");
+        //     //     //     var test = await client.GetStringAsync("/Hello");
+        //     //     // }
+        //     //     // else
+        //     //     // {
+        //     //     //     // Render me only on Server. No HTTP calls.
+        //     //     // }
+        //     //     //_accounts = await ClientContacts.GetAllAccountsAsync();
+        //     //     //StateHasChanged();
+        //     // }
+        // }
     }
 
     protected override async Task OnParametersSetAsync()

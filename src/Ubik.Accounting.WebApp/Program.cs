@@ -14,7 +14,6 @@ using Ubik.Accounting.Webapp.Shared.Security;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.Accounting.WebApp.Render;
 using Ubik.Accounting.Webapp.Shared.Render;
-using Ubik.Accounting.WebApp.Facades;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Microsoft.AspNetCore.Components.Authorization;
 using Ubik.Accounting.WebApp.Client.Components.Accounts;
@@ -152,7 +151,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.TryAddEnumerable(
     ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
-builder.Services.AddScoped<IClientContactFacade, ClientContactFacade>();
+//builder.Services.AddScoped<IClientContactFacade, ClientContactFacade>();
 
 //Http client (the base one for the webassembly component and other typed for external apis
 builder.Services

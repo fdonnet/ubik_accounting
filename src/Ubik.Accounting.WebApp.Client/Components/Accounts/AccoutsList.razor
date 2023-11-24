@@ -1,9 +1,9 @@
 ﻿@implements IDisposable
 @using Ubik.Accounting.Contracts.Accounts.Results
 @using Ubik.Accounting.Webapp.Shared.Facades
-@inject IClientContactFacade ClientContacts
+@inject IAccountingApiClient Client
 @inject PersistentComponentState ApplicationState
-@* @rendermode InteractiveAuto *@
+
 @* @rendermode _rendermode
  *@
 
@@ -25,11 +25,12 @@ else
 }
 
 <button class="btn btn-primary" @onclick="SayHello">SayHello</button>
-
+@_error
 
 @code {
     private IEnumerable<GetAllAccountsResult>? _accounts;
-     // private static IComponentRenderMode _rendermode = new InteractiveAutoRenderMode(prerender: false);
+    private string? _error;
+    // private static IComponentRenderMode _rendermode = new InteractiveAutoRenderMode(prerender: false);
     private PersistingComponentStateSubscription persistingSubscription;
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
@@ -47,7 +48,7 @@ else
                 "TEST", out var restored))
             {
                 await Task.Delay(2000);
-                _accounts = await ClientContacts.GetAllAccountsAsync();
+                await SayHello();
             }
             else
             {
@@ -82,7 +83,20 @@ else
     }
     private async Task SayHello()
     {
-        _accounts = (await ClientContacts.GetAllAccountsAsync()).Where(a=>a.Code=="1020");
+        var response = await Client.GetAllAccountsAsync();
+
+        if(response.IsSuccessStatusCode)
+        {
+            _accounts = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>();
+        }
+        else
+        {
+            //TODO: IMPLEMENT ERROR HANDLING for PROBLEM DETAILS (and global exception handler)
+            _error = response.StatusCode.ToString();
+
+        }
+
+        
         //StateHasChanged();
     }
 

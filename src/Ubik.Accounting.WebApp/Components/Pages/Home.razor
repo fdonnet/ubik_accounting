@@ -5,7 +5,7 @@
 @using Ubik.Accounting.WebApp.ApiClients
 @using Ubik.Accounting.WebApp.Security
 @inject UserService UserService;
-@inject IAccountingApiClient client
+@inject IAccountingApiClient Client
 @attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
@@ -32,7 +32,7 @@ Welcome to your new app.
     
     protected override async Task OnInitializedAsync()
     {
-        _accounts = await client.GetAllAccountsAsync() ?? [];
+        //_accounts = await Client.GetAllAccountsAsync();
     }
 }
 

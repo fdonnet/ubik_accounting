@@ -17,6 +17,6 @@ builder.Services
     .AddTransient<CookieHandler>()
     .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
 
-builder.Services.AddScoped<IClientContactFacade, HttpClientContactFacade>();
+builder.Services.AddScoped<IAccountingApiClient, HttpApiAccountingFacade>();
 
 await builder.Build().RunAsync();

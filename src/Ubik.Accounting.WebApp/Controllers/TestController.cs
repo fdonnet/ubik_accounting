@@ -8,9 +8,9 @@ namespace Ubik.Accounting.WebApp.Controllers
 {
     [Authorize]
     [ApiController]
-    public class TestController(IClientContactFacade client) : ControllerBase
+    public class TestController(IAccountingApiClient client) : ControllerBase
     {
-        readonly IClientContactFacade client = client;
+        readonly IAccountingApiClient client = client;
 
         [HttpGet("/Hello")]
         public async Task<ActionResult> Hello()
@@ -20,7 +20,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [HttpGet("/Accountslist")]
-        public async Task<IEnumerable<GetAllAccountsResult>> AccountList()
+        public async Task<HttpResponseMessage> AccountList()
         {
             return await client.GetAllAccountsAsync();
         }
