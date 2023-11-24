@@ -10,7 +10,7 @@
 @* @rendermode _rendermode *@
 @rendermode InteractiveAuto
 
-@* @attribute [StreamRendering] *@
+ @attribute [StreamRendering] 
 
 
 <PageTitle>Auth</PageTitle>
@@ -31,7 +31,7 @@
 <button class="btn btn-primary" @onclick="SayHello">SayHello</button>
 <p role="status">Say: @say</p>
 
-<AccoutsList ></AccoutsList>
+<AccoutsList></AccoutsList>
 
 @code {
     private static IComponentRenderMode _rendermode = new InteractiveAutoRenderMode(prerender: false);

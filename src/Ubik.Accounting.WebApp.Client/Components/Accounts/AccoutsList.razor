@@ -3,7 +3,10 @@
 @using Ubik.Accounting.Webapp.Shared.Facades
 @inject IClientContactFacade ClientContacts
 @inject PersistentComponentState ApplicationState
-@rendermode InteractiveAuto
+@* @rendermode InteractiveAuto *@
+@* @rendermode _rendermode
+ *@
+
 @attribute [Authorize]
 <h3>AccoutsList</h3>
 
@@ -26,6 +29,7 @@ else
 
 @code {
     private IEnumerable<GetAllAccountsResult>? _accounts;
+     // private static IComponentRenderMode _rendermode = new InteractiveAutoRenderMode(prerender: false);
     private PersistingComponentStateSubscription persistingSubscription;
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
@@ -42,6 +46,7 @@ else
             if (!ApplicationState.TryTakeFromJson<IEnumerable<GetAllAccountsResult>>(
                 "TEST", out var restored))
             {
+                await Task.Delay(2000);
                 _accounts = await ClientContacts.GetAllAccountsAsync();
             }
             else
