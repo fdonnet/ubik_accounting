@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Ubik.Accounting.Webapp.Shared\Ubik.Accounting.Webapp.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\css\" />
+  </ItemGroup>
+
 </Project>
