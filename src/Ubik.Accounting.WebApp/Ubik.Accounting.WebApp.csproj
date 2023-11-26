@@ -30,5 +30,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\css\" />
+    <Folder Include="wwwroot\NewFolder\" />
   </ItemGroup>
 </Project>
