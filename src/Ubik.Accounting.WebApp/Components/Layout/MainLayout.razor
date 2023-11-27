@@ -4,12 +4,12 @@
 <Header />
 
 
-<div class="page">
-    <div class="sidebar">
+<div class="flex">
+    <div class="sm:w-[260px] bg-gradient-to-br hidden sm:block from-gray-800 to-gray-900 h-screen sticky">
+        <NavMenu />
     </div>
-
-    <main>
-        <article class="content px-4">
+    <main class="py-2 px-4">
+        <article>
             @Body
         </article>
     </main>
