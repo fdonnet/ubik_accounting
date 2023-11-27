@@ -186,7 +186,7 @@ app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(Auth).Assembly);
+    .AddAdditionalAssemblies(typeof(ManageAccounts).Assembly);
 //.AddAdditionalAssemblies(typeof(AccoutsList).Assembly)
 //.AddAdditionalAssemblies(typeof(Auth).Assembly);
 

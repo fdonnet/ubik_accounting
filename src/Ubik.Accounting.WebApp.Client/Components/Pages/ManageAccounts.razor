@@ -1,4 +1,4 @@
-﻿@page "/auth"
+﻿@page "/manageaccounts"
 @using Ubik.Accounting.Contracts.Accounts.Results
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Accounts
@@ -12,7 +12,7 @@
 
  @attribute [StreamRendering] 
 
- <PageScript Src="./layout.js" />
+<PageScript Src="./js/theme-switcher.js" />
 <PageTitle>Auth</PageTitle>
 
 <h1>You are authenticated</h1>
@@ -31,7 +31,7 @@
 @* <button class="btn btn-primary" @onclick="SayHello">SayHello</button>
 <p role="status">Say: @say</p>
  *@
-<AccoutsList></AccoutsList>
+<Accounts></Accounts>
 
 @code {
     private static IComponentRenderMode _rendermode = new InteractiveAutoRenderMode(prerender: false);
