@@ -2,7 +2,8 @@
 module.exports = {
   content: [
     './**/*.html',
-    './**/*.razor'
+    './**/*.razor',
+    '../Ubik.Accounting.WebApp.Client/**/*.razor'
   ],
   mode: 'jit',
   theme: {
