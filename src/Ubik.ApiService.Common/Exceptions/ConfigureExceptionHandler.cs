@@ -16,6 +16,10 @@ namespace Ubik.ApiService.Common.Exceptions
         //This exception handler is only used for unmanaged exceptions or exceptions that has been thrown.
         //Other exception (managed) are not thrown, we use a TResult patern to trap them (better perf)
         //This will only return 500 status code (unmanaged here)
+        private static readonly JsonSerializerOptions serializeOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
         public static void UseExceptionHandler(this IApplicationBuilder app, ILogger log, IHostEnvironment env)
         {
             app.UseExceptionHandler(appError =>
@@ -41,7 +45,7 @@ namespace Ubik.ApiService.Common.Exceptions
                             var problemDetails = managedException.ToValidationProblemDetails(context);
 
                             await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails,
-                                    new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }));
+                                   serializeOptions));
                         }
                         else
                         {
@@ -53,7 +57,7 @@ namespace Ubik.ApiService.Common.Exceptions
 
                             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                            var problemDetail = new CustomProblemDetails(new ProblemDetailError[] {new ProblemDetailError()
+                            var problemDetail = new CustomProblemDetails(new ProblemDetailError[] {new()
                                                         {
                                                             Code = "UNMANAGED_ERROR",
                                                             FriendlyMsg = "Unmanaged exception occurs, see detail field when available.",
@@ -74,7 +78,7 @@ namespace Ubik.ApiService.Common.Exceptions
                             }
 
                             await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetail,
-                                    new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }));
+                                    serializeOptions));
 
                         }
                     }

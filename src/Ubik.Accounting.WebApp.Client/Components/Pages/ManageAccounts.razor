@@ -1,12 +1,6 @@
 ﻿@page "/manageaccounts"
-@using Ubik.Accounting.Contracts.Accounts.Results
-@using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Accounts
-
 @attribute [Authorize]
-@inject IHttpClientFactory Factory
-@inject IRenderContext RenderContext
-@inject IAccountingApiClient ClientContacts
 @rendermode InteractiveAuto
 
 <PageScript Src="./js/theme-switcher.js" />
@@ -16,12 +10,3 @@
 <p class="mb-5">See the classification section if you want to define how the accounts are structured.</p>
 <Accounts></Accounts>
 
-@code {
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        
-    }
-}

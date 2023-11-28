@@ -1,25 +1,12 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.Extensions.Http
-@using Ubik.Accounting.Contracts.Accounts.Results
-@using Ubik.Accounting.WebApp.ApiClients
 @using Ubik.Accounting.WebApp.Security
 @inject UserService UserService;
-@inject IAccountingApiClient Client
 @attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
 <PageScript Src="./js/theme-switcher.js" />
 
-@* <h1>Hello, @(UserService.GetUser().Identity?.Name ?? "world")!</h1> *@
-
 Welcome to your new app.
-<ul>
-    @foreach (var a in _accounts)
-    {
-        <li>@a</li>
-    }
-</ul>
 
 <ul>
     @foreach (var c in UserService.GetUser().Claims)
@@ -28,12 +15,5 @@ Welcome to your new app.
     }
 </ul>
 
-@code {
-    private IEnumerable<GetAllAccountsResult> _accounts = [];
-    
-    protected override async Task OnInitializedAsync()
-    {
-        //_accounts = await Client.GetAllAccountsAsync();
-    }
-}
+
 

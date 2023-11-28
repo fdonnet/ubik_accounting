@@ -19,14 +19,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class AccountsController : ControllerBase
+    public class AccountsController(IServiceManager serviceManager) : ControllerBase
     {
-        private readonly IServiceManager _serviceManager;
-
-        public AccountsController(IServiceManager serviceManager)
-        {
-            _serviceManager = serviceManager;
-        }
+        private readonly IServiceManager _serviceManager = serviceManager;
 
         [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet]
