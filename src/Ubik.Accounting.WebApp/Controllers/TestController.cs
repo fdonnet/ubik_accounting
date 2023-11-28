@@ -19,7 +19,7 @@ namespace Ubik.Accounting.WebApp.Controllers
             return Ok("Hi!");
         }
 
-        [HttpGet("/Accountslist")]
+        [HttpGet("/GetAllAccounts")]
         public async Task<HttpResponseMessage> AccountList()
         {
             return await client.GetAllAccountsAsync();

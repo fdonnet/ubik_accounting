@@ -7,83 +7,22 @@
 @inject IHttpClientFactory Factory
 @inject IRenderContext RenderContext
 @inject IAccountingApiClient ClientContacts
-@* @rendermode _rendermode *@
-@rendermode InteractiveServer
-
- @attribute [StreamRendering] 
+@rendermode InteractiveAuto
+@attribute [StreamRendering] 
 
 <PageScript Src="./js/theme-switcher.js" />
-<PageTitle>Auth</PageTitle>
-
-<h1>You are authenticated</h1>
-
-<AuthorizeView>
-    Hello @context.User.Identity?.Name!
-</AuthorizeView>
-
-<ul>
-    @foreach (var a in _accounts)
-    {
-        <li>@a</li>
-    }
-</ul>
-
-@* <button class="btn btn-primary" @onclick="SayHello">SayHello</button>
-<p role="status">Say: @say</p>
- *@
+<PageTitle>Manage accounts</PageTitle>
+<h1>Manage booking accounts</h1>
+<p class="mb-2">Manage the accounts used by your accounting system.</p>
+<p class="mb-5">See the classification section if you want to define how the accounts are structured.</p>
 <Accounts></Accounts>
 
 @code {
-    private static IComponentRenderMode _rendermode = new InteractiveAutoRenderMode(prerender: false);
-    private IEnumerable<GetAllAccountsResult> _accounts = [];
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
-    private string say = string.Empty;
-
-    private async Task SayHello()
-    {
-        //_accounts = await ClientContacts.GetAllAccountsAsync();
-    }
 
     protected override async Task OnInitializedAsync()
     {
-        // if (authenticationState is not null)
-        // {
-        //     await authenticationState;
-        //     // var client = Factory.CreateClient("WebApp");
-        //     // _accounts = await client.GetFromJsonAsync<IEnumerable<GetAllAccountsResult>>("/Accountslist") ?? [];
-        //     //_accounts = await ClientContacts.GetAllAccountsAsync();
-        //     // if (isAuthenticated == true)
-        //     // {
-        //     //     // @if (RenderContext.IsClient)
-        //     //     // {
-        //     //     //     var client = Factory.CreateClient("WebApp");
-        //     //     //     var test = await client.GetStringAsync("/Hello");
-        //     //     // }
-        //     //     // else
-        //     //     // {
-        //     //     //     // Render me only on Server. No HTTP calls.
-        //     //     // }
-        //     //     //_accounts = await ClientContacts.GetAllAccountsAsync();
-        //     //     //StateHasChanged();
-        //     // }
-        // }
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        //_accounts = await ClientContacts.GetAllAccountsAsync();
-    }
-
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     if(firstRender)
-    //         _accounts = await ClientContacts.GetAllAccountsAsync();
-    // }
-
-    private async Task Test()
-    {
-        var client = Factory.CreateClient("WebApp");
-        var test = await client.GetStringAsync("/Hello");
+        
     }
 }

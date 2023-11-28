@@ -8,9 +8,9 @@
  *@
 
 @attribute [Authorize]
-<h3>AccoutsList</h3>
 
-<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+<button type="button" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add</button>
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -21,7 +21,19 @@
                     Label
                 </th>
                 <th scope="col" class="px-6 py-3">
+                    Category
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Domain
+                </th>
+                <th scope="col" class="px-6 py-3">
                     Description
+                </th>
+                <th scope="col" class="px-6 py-3">
+
+                </th>
+                <th scope="col" class="py-4 py-3">
+
                 </th>
             </tr>
         </thead>
@@ -38,7 +50,19 @@
                             @a.Label
                         </td>
                         <td class="px-6 py-4">
+                            @a.Category
+                        </td>
+                        <td class="px-6 py-4">
+                            @a.Domain
+                        </td>
+                        <td class="px-6 py-4">
                             @a.Description
+                        </td>
+                        <td class="py-4 py-3">
+                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                        </td>
+                        <td class="py-4 py-3">
+                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline pr-4">Delete</a>
                         </td>
                     </tr>
                 }
@@ -53,14 +77,11 @@
     </table>
 </div>
 
-
-<button class="btn btn-primary" @onclick="SayHello">SayHello</button>
 @_error
 
 @code {
     private IEnumerable<GetAllAccountsResult>? _accounts;
     private string? _error;
-    // private static IComponentRenderMode _rendermode = new InteractiveAutoRenderMode(prerender: false);
     private PersistingComponentStateSubscription persistingSubscription;
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
@@ -107,11 +128,11 @@
     }
     private Task PersistData()
     {
-        ApplicationState.PersistAsJson("TEST", _accounts);
-
+        ApplicationState.PersistAsJson("accounting_webapp_accountslist", _accounts);
         return Task.CompletedTask;
     }
-    private async Task SayHello()
+
+    private async Task LoadAccounts()
     {
         var response = await Client.GetAllAccountsAsync();
 
@@ -123,13 +144,11 @@
         {
             //TODO: IMPLEMENT ERROR HANDLING for PROBLEM DETAILS (and global exception handler)
             _error = response.StatusCode.ToString();
-
         }
 
 
         //StateHasChanged();
     }
-
 
     void IDisposable.Dispose()
     {
