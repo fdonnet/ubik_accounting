@@ -3,10 +3,7 @@
 @using Ubik.Accounting.Webapp.Shared.Facades
 @inject IAccountingApiClient Client
 @inject PersistentComponentState ApplicationState
-
-@* @rendermode _rendermode
- *@
-
+@inject IRenderContext RenderContext
 @attribute [Authorize]
 
 <button type="button" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add</button>
@@ -85,6 +82,7 @@
     private PersistingComponentStateSubscription persistingSubscription;
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
+    private bool isLoading = true; // notice we start with loading immediately
 
 
     protected override async Task OnInitializedAsync()
@@ -96,34 +94,14 @@
         {
             await authenticationState;
             if (!ApplicationState.TryTakeFromJson<IEnumerable<GetAllAccountsResult>>(
-                "TEST", out var restored))
+                "accounting_webapp_accountslist", out var restored))
             {
-                await Task.Delay(2000);
-                await SayHello();
+                await LoadAccounts();
             }
             else
             {
                 _accounts = restored!;
             }
-
-
-            // var client = Factory.CreateClient("WebApp");
-            // _accounts = await client.GetFromJsonAsync<IEnumerable<GetAllAccountsResult>>("/Accountslist") ?? [];
-            //_accounts = await ClientContacts.GetAllAccountsAsync();
-            // if (isAuthenticated == true)
-            // {
-            //     // @if (RenderContext.IsClient)
-            //     // {
-            //     //     var client = Factory.CreateClient("WebApp");
-            //     //     var test = await client.GetStringAsync("/Hello");
-            //     // }
-            //     // else
-            //     // {
-            //     //     // Render me only on Server. No HTTP calls.
-            //     // }
-            //     //_accounts = await ClientContacts.GetAllAccountsAsync();
-            //     //StateHasChanged();
-            // }
         }
     }
     private Task PersistData()
@@ -145,9 +123,6 @@
             //TODO: IMPLEMENT ERROR HANDLING for PROBLEM DETAILS (and global exception handler)
             _error = response.StatusCode.ToString();
         }
-
-
-        //StateHasChanged();
     }
 
     void IDisposable.Dispose()
