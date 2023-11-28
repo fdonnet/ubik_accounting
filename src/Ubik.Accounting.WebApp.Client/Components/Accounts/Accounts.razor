@@ -1,8 +1,6 @@
-﻿@implements IDisposable
-@using Ubik.Accounting.Contracts.Accounts.Results
+﻿@using Ubik.Accounting.Contracts.Accounts.Results
 @using Ubik.Accounting.Webapp.Shared.Facades
 @inject IAccountingApiClient Client
-@inject PersistentComponentState ApplicationState
 @inject IRenderContext RenderContext
 @attribute [Authorize]
 
@@ -35,7 +33,7 @@
             </tr>
         </thead>
         <tbody>
-            @if (_accounts != null)
+            @if (!isLoading && _accounts != null)
             {
                 @foreach (var a in _accounts)
                 {
@@ -67,7 +65,7 @@
             else
             {
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <td colspan="3" class="w-full">Loading...</td>
+                    <td colspan="7" class="w-full text-center">Loading...</td>
                 </tr>
             }
         </tbody>
@@ -79,39 +77,33 @@
 @code {
     private IEnumerable<GetAllAccountsResult>? _accounts;
     private string? _error;
-    private PersistingComponentStateSubscription persistingSubscription;
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
-    private bool isLoading = true; // notice we start with loading immediately
+    private bool isLoading = true;
 
 
     protected override async Task OnInitializedAsync()
     {
-        persistingSubscription =
-            ApplicationState.RegisterOnPersisting(PersistData);
+        if (RenderContext.IsPrerendering)
+        {
+            return;
+        }
 
         if (authenticationState is not null)
         {
             await authenticationState;
-            if (!ApplicationState.TryTakeFromJson<IEnumerable<GetAllAccountsResult>>(
-                "accounting_webapp_accountslist", out var restored))
-            {
-                await LoadAccounts();
-            }
-            else
-            {
-                _accounts = restored!;
-            }
+            await LoadAccountsAsync();
         }
     }
-    private Task PersistData()
-    {
-        ApplicationState.PersistAsJson("accounting_webapp_accountslist", _accounts);
-        return Task.CompletedTask;
-    }
+    // private Task PersistData()
+    // {
+    //     ApplicationState.PersistAsJson("accounting_webapp_accountslist", _accounts);
+    //     return Task.CompletedTask;
+    // }
 
-    private async Task LoadAccounts()
+    private async Task LoadAccountsAsync()
     {
+        isLoading = true;
         var response = await Client.GetAllAccountsAsync();
 
         if (response.IsSuccessStatusCode)
@@ -123,11 +115,6 @@
             //TODO: IMPLEMENT ERROR HANDLING for PROBLEM DETAILS (and global exception handler)
             _error = response.StatusCode.ToString();
         }
+        isLoading = false;
     }
-
-    void IDisposable.Dispose()
-    {
-        persistingSubscription.Dispose();
-    }
-
 }
