@@ -18,5 +18,6 @@ builder.Services
     .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
 
 builder.Services.AddScoped<IAccountingApiClient, HttpApiAccountingFacade>();
+builder.Services.AddFluentUIComponents();
 
 await builder.Build().RunAsync();
