@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.FluentUI.AspNetCore.Components;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.Webapp.Shared.Render;
 using Ubik.Accounting.Webapp.Shared.Security;
@@ -18,5 +19,6 @@ builder.Services
     .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
 
 builder.Services.AddScoped<IAccountingApiClient, HttpApiAccountingFacade>();
+builder.Services.AddFluentUIComponents();
 
 await builder.Build().RunAsync();

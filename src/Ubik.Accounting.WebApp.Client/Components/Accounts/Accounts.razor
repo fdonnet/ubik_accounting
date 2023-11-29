@@ -4,6 +4,16 @@
 @inject IRenderContext RenderContext
 @attribute [Authorize]
 
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
+<FluentDataGrid Items="@_accounts" Class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <PropertyColumn Property="@(a => a.Code)" Sortable="true" />
+    <PropertyColumn Property="@(a => a.Label)" Sortable="true" />
+    <PropertyColumn Property="@(a => a.Domain)" Sortable="true" />
+    <PropertyColumn Property="@(a => a.Category)" Sortable="true" />
+    <PropertyColumn Property="@(a => a.Description)" Sortable="true" />
+</FluentDataGrid>
+</div>
+
 <button type="button" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add</button>
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -75,12 +85,11 @@
 @_error
 
 @code {
-    private IEnumerable<GetAllAccountsResult>? _accounts;
+    private IQueryable<GetAllAccountsResult>? _accounts;
     private string? _error;
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
     private bool isLoading = true;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -103,7 +112,8 @@
 
         if (response.IsSuccessStatusCode)
         {
-            _accounts = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>();
+            var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? [];
+            _accounts = result.AsQueryable();
         }
         else
         {
