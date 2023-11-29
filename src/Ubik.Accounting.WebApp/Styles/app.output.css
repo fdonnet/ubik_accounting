@@ -597,10 +597,6 @@ p {
   border-width: 0;
 }
 
-.pointer-events-none {
-  pointer-events: none;
-}
-
 .static {
   position: static;
 }
@@ -629,48 +625,20 @@ p {
   top: 0px;
 }
 
-.start-0 {
-  inset-inline-start: 0px;
-}
-
 .z-10 {
   z-index: 10;
+}
+
+.z-40 {
+  z-index: 40;
 }
 
 .z-50 {
   z-index: 50;
 }
 
-.z-\[60\] {
-  z-index: 60;
-}
-
 .col-span-2 {
   grid-column: span 2 / span 2;
-}
-
-.m-0 {
-  margin: 0px;
-}
-
-.m-10 {
-  margin: 2.5rem;
-}
-
-.m-20 {
-  margin: 5rem;
-}
-
-.m-\[-20\] {
-  margin: -20;
-}
-
-.m-\[-10\] {
-  margin: -10;
-}
-
-.m-\[0\] {
-  margin: 0;
 }
 
 .-ms-1 {
@@ -707,10 +675,6 @@ p {
 
 .mt-1 {
   margin-top: 0.25rem;
-}
-
-.mt-0 {
-  margin-top: 0px;
 }
 
 .block {
@@ -765,14 +729,6 @@ p {
   height: 100vh;
 }
 
-.h-\[calc\(100\%\)\] {
-  height: calc(100%);
-}
-
-.h-full {
-  height: 100%;
-}
-
 .max-h-full {
   max-height: 100%;
 }
@@ -805,13 +761,8 @@ p {
   width: 100%;
 }
 
-.w-screen {
-  width: 100vw;
-}
-
-.w-fit {
-  width: -moz-fit-content;
-  width: fit-content;
+.max-w-full {
+  max-width: 100%;
 }
 
 .max-w-max {
@@ -865,10 +816,6 @@ p {
 
 .overflow-x-hidden {
   overflow-x: hidden;
-}
-
-.overscroll-contain {
-  overscroll-behavior: contain;
 }
 
 .whitespace-nowrap {
@@ -940,28 +887,6 @@ p {
   background-color: rgb(212 212 216 / var(--tw-bg-opacity));
 }
 
-.bg-white\/20 {
-  background-color: rgb(255 255 255 / 0.2);
-}
-
-.bg-amber-300 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(252 211 77 / var(--tw-bg-opacity));
-}
-
-.bg-amber-800 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(146 64 14 / var(--tw-bg-opacity));
-}
-
-.bg-white\/60 {
-  background-color: rgb(255 255 255 / 0.6);
-}
-
-.bg-white\/70 {
-  background-color: rgb(255 255 255 / 0.7);
-}
-
 .fill-current {
   fill: currentColor;
 }
@@ -984,10 +909,6 @@ p {
 
 .p-4 {
   padding: 1rem;
-}
-
-.p-0 {
-  padding: 0px;
 }
 
 .px-1 {
@@ -1124,10 +1045,6 @@ p {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.opacity-0 {
-  opacity: 0;
-}
-
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
@@ -1138,12 +1055,6 @@ p {
   --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
 }
 
 .hover\:bg-blue-800:hover {
@@ -1255,10 +1166,6 @@ p {
   background-color: rgb(17 24 39 / var(--tw-bg-opacity));
 }
 
-:is(.dark .dark\:bg-gray-700\/20) {
-  background-color: rgb(55 65 81 / 0.2);
-}
-
 :is(.dark .dark\:bg-gradient-to-br) {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
@@ -1275,42 +1182,12 @@ p {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-:is(.dark .dark\:from-gray-900\/10) {
-  --tw-gradient-from: rgb(17 24 39 / 0.1) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(17 24 39 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
-:is(.dark .dark\:from-gray-900\/70) {
-  --tw-gradient-from: rgb(17 24 39 / 0.7) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(17 24 39 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
-:is(.dark .dark\:from-gray-900\/60) {
-  --tw-gradient-from: rgb(17 24 39 / 0.6) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(17 24 39 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
 :is(.dark .dark\:to-gray-900) {
   --tw-gradient-to: #111827 var(--tw-gradient-to-position);
 }
 
 :is(.dark .dark\:to-gray-950) {
   --tw-gradient-to: #030712 var(--tw-gradient-to-position);
-}
-
-:is(.dark .dark\:to-gray-950\/10) {
-  --tw-gradient-to: rgb(3 7 18 / 0.1) var(--tw-gradient-to-position);
-}
-
-:is(.dark .dark\:to-gray-950\/70) {
-  --tw-gradient-to: rgb(3 7 18 / 0.7) var(--tw-gradient-to-position);
-}
-
-:is(.dark .dark\:to-gray-950\/60) {
-  --tw-gradient-to: rgb(3 7 18 / 0.6) var(--tw-gradient-to-position);
 }
 
 :is(.dark .dark\:text-blue-400) {
