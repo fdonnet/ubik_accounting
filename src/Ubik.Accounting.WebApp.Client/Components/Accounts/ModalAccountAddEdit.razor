@@ -1,1 +1,26 @@
-﻿
+﻿@inject IJSRuntime JS
+<button type="button" @onclick="ShowDialog" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Show</button>
+<dialog id="@_dialogId">
+    TEST
+</dialog>
+
+@code{
+    private IJSObjectReference? _jsModule = default!;
+    private string _dialogId = "account_modal";
+
+    private async Task ShowDialog()
+    {
+        await _jsModule.InvokeVoidAsync("openDialog",_dialogId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./Components/Accounts/ModalAccountAddEdit.razor.js");
+
+            //await _jsModule.InvokeVoidAsync("DOMCleanup.createObserver");
+        }
+    }
+}
