@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build:css": "tailwindcss -i ./wwwroot/app.css -o ./wwwroot/styles.css --minify"
+    "build:css": "tailwindcss -i ./Styles/app.css -o ./wwwroot/app.css --minify"
   },
   "dependencies": {
     "autoprefixer": "^10.4.16",
