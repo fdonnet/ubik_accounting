@@ -9,6 +9,11 @@ namespace Ubik.Accounting.WebApp.Client.Facades
     {
         private readonly HttpClient http = httpClientFactory.CreateClient("WebApp");
 
+        public async Task<HttpResponseMessage> GetAccountAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await http.GetAsync($"GetAccount/{id}", cancellationToken: cancellationToken);
+        }
+
         public async Task<HttpResponseMessage> GetAllAccountsAsync(CancellationToken cancellationToken = default)
         {
             return await http.GetAsync("GetAllAccounts", cancellationToken: cancellationToken);

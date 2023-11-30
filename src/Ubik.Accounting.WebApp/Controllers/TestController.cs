@@ -25,7 +25,15 @@ namespace Ubik.Accounting.WebApp.Controllers
             var responseMessage = await client.GetAllAccountsAsync();
 
             HttpContext.Response.StatusCode = (int)responseMessage.StatusCode;
-            //CopyResponseHeaders(HttpContext, responseMessage);
+            await responseMessage.Content.CopyToAsync(HttpContext.Response.Body);
+        }
+
+        [HttpGet("/GetAccount/{id}")]
+        public async Task Account(Guid id)
+        {
+            var responseMessage = await client.GetAccountAsync(id);
+
+            HttpContext.Response.StatusCode = (int)responseMessage.StatusCode;
             await responseMessage.Content.CopyToAsync(HttpContext.Response.Body);
         }
     }

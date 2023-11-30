@@ -16,6 +16,12 @@ namespace Ubik.Accounting.WebApp.ApiClients
             _user = user;
         }
 
+        public async Task<HttpResponseMessage> GetAccountAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            return await _client.GetAsync($"Accounts/{id}");
+        }
+
         public async Task<HttpResponseMessage> GetAllAccountsAsync(CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
@@ -25,6 +31,7 @@ namespace Ubik.Accounting.WebApp.ApiClients
         private async Task SetSecruityHeaderAsync()
         {
             var usertoken =  await _user.GetTokenAsync();
+            _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {usertoken}");
         }
     }

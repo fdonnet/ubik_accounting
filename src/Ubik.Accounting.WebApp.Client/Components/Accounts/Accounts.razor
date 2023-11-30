@@ -1,4 +1,5 @@
 ﻿@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.Contracts.Error
 @using Ubik.Accounting.Webapp.Shared.Facades
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
@@ -73,11 +74,15 @@
     </table>
 </div>
 
-@_error
+@if(_error is not null)
+{
+    @_error
+    @_error.Errors[0]
+}
 
 @code {
     private IQueryable<GetAllAccountsResult>? _accounts;
-    private string? _error;
+    private ProblemDetailsContract? _error;
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
     private bool isLoading = true;
@@ -100,16 +105,18 @@
     {
         isLoading = true;
         var response = await Client.GetAllAccountsAsync();
+        var responseAccountTest = await Client.GetAccountAsync(Guid.NewGuid());
 
-        if (response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode && responseAccountTest.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? [];
             _accounts = result.AsQueryable();
+            
         }
         else
         {
             //TODO: IMPLEMENT ERROR HANDLING for PROBLEM DETAILS (and global exception handler)
-            _error = response.StatusCode.ToString();
+            _error = await responseAccountTest.Content.ReadFromJsonAsync<ProblemDetailsContract>();
         }
         isLoading = false;
     }
