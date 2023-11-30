@@ -107,7 +107,7 @@
         var response = await Client.GetAllAccountsAsync();
         var responseAccountTest = await Client.GetAccountAsync(Guid.NewGuid());
 
-        if (response.IsSuccessStatusCode && responseAccountTest.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? [];
             _accounts = result.AsQueryable();

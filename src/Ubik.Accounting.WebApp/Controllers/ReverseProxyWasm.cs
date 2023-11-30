@@ -5,6 +5,7 @@ using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
+using MassTransit;
 
 
 namespace Ubik.Accounting.WebApp.Controllers
@@ -15,26 +16,30 @@ namespace Ubik.Accounting.WebApp.Controllers
     /// <param name="client"></param>
     [Authorize]
     [ApiController]
-    public class TestController(IAccountingApiClient client) : ControllerBase
+    public class ReverseProxyWasmController(IAccountingApiClient client) : ControllerBase
     {
         readonly IAccountingApiClient client = client;
 
         [HttpGet("/GetAllAccounts")]
         public async Task AccountList()
         {
-            var responseMessage = await client.GetAllAccountsAsync();
-
-            HttpContext.Response.StatusCode = (int)responseMessage.StatusCode;
-            await responseMessage.Content.CopyToAsync(HttpContext.Response.Body);
+            var response = await client.GetAllAccountsAsync();
+            await ForwardResponse(response);
         }
 
         [HttpGet("/GetAccount/{id}")]
         public async Task Account(Guid id)
         {
-            var responseMessage = await client.GetAccountAsync(id);
+            var response = await client.GetAccountAsync(id);
+            await ForwardResponse(response);
+        }
 
-            HttpContext.Response.StatusCode = (int)responseMessage.StatusCode;
-            await responseMessage.Content.CopyToAsync(HttpContext.Response.Body);
+        private async Task ForwardResponse(HttpResponseMessage? responseMsg)
+        {
+            if (responseMsg == null) return;
+
+            HttpContext.Response.StatusCode = (int)responseMsg.StatusCode;
+            await responseMsg.Content.CopyToAsync(HttpContext.Response.Body);
         }
     }
 }
