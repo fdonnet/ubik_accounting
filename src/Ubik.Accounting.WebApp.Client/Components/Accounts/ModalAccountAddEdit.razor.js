@@ -6,9 +6,9 @@ export function closeDialog(dialogId) {
   document.getElementById(dialogId).close();
 }
 
-export function clickOutside(dialogId, insideDialogId) {
+export function clickOutside(dialogId) {
   var dialog = document.getElementById(dialogId)
-  var insideDialog = document.getElementById(insideDialogId)
+  
   dialog.addEventListener('click', function (e) {
     console.info(e.target.tagName);
     if (e.target.tagName === 'DIALOG') dialog.close()

@@ -641,6 +641,10 @@ p {
   grid-column: span 2 / span 2;
 }
 
+.float-left {
+  float: left;
+}
+
 .-ms-1 {
   margin-inline-start: -0.25rem;
 }
