@@ -3,9 +3,9 @@
 <dialog id="@_dialogId" @onclose="OnClose" tabindex=" -1" aria-hidden="true" class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-40 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full max-w-full">
     <div class="relative p-4 w-full max-w-md max-h-full z-50">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div id="@_insideDialogId" class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <!-- Modal header -->
-            <div id="inside-modal" class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     Create New Product
                 </h3>
@@ -53,7 +53,8 @@
 
 @code {
     private IJSObjectReference? _jsModule = default!;
-    private string _dialogId = "account_modal";
+    private string _dialogId = $"dialog{Guid.NewGuid().ToString()}";
+    private string _insideDialogId = $"outside-dialog{Guid.NewGuid().ToString()}";
 
 
     private async Task ShowDialog()
@@ -73,7 +74,7 @@
             _jsModule = await JS.InvokeAsync<IJSObjectReference>(
                 "import", "./Components/Accounts/ModalAccountAddEdit.razor.js");
 
-            await _jsModule.InvokeVoidAsync("clickOutside", _dialogId);
+            await _jsModule.InvokeVoidAsync("clickOutside", new[] { _dialogId, _insideDialogId });
 
             //await _jsModule.InvokeVoidAsync("DOMCleanup.createObserver");
         }
