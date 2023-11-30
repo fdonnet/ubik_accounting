@@ -40,7 +40,7 @@ module.exports = {
   content: [
     './**/*.html',
     './**/*.razor',
-    '../Ubik.Accounting.WebApp.Client/**/*.razor'
+    '../Ubik.Accounting.WebApp.Client/Components/**/*.razor'
   ],
   mode: 'jit',
   theme: {

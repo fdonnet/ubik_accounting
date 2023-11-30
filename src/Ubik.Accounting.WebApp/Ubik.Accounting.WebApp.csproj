@@ -37,4 +37,8 @@
   <ItemGroup>
     <None Include="wwwroot\js\theme-switcher.js" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css" />
+  </Target>
 </Project>
