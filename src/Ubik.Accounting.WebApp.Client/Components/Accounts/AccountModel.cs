@@ -8,6 +8,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
     {
         public Guid Id { get; init; }
         [Required]
+        [MinLength(1)]
         [MaxLength(20)]
         public string Code { get; set; } = default!;
         [Required]

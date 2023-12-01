@@ -1,10 +1,13 @@
 ﻿@using Ubik.Accounting.Contracts.Accounts.Enums;
 
-<EditForm Model="@Account" FormName="AddAccount" class="p-4 md:p-5">
+<EditForm Model="@Account" OnSubmit="@Submit" FormName="AddAccount" class="p-4 md:p-5">
     <DataAnnotationsValidator />
     <div class="grid gap-4 mb-4 grid-cols-2">
         <div class="col-span-2">
-            <UbikInputText Id="AccountCode" Label="Code" PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Account.Code"></UbikInputText>
+            <label for="AccountCode" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Code</label>
+            <InputText id="AccountCode" @bind-Value="Account.Code" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></InputText>
+            <p class="mt-2 text-sm text-red-600 dark:text-red-500"><ValidationMessage class="font-medium" For="@(() => Account.Code)"></ValidationMessage></p>
+            @* <UbikInputText Id="AccountCode" Label="Code" PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Account.Label" ValidationFor="()=>Account.Code"></UbikInputText> *@
         </div>
         <div class="col-span-2">
             <UbikInputText Id="AccountLabel" Label="Label" PlaceholderText="Type a label (max 100 char.)" Type="text" @bind-Value="Account.Label"></UbikInputText>
@@ -59,13 +62,10 @@
     [CascadingParameter(Name = "AccountModel")]
     public AccountModel Account { get; set; } = default!;
 
-    // protected override void OnInitialized() => Account ??= new()
-    //     {
-    //         Category = AccountCategory.General,
-    //         Domain = AccountDomain.Asset,
-    //         Label = "Account test",
-    //         Code = "1020",
-    //         Description = "Test description",
-    //     };
+    private void Submit()
+    {
+
+        Console.WriteLine("TEST");
+    }
 
 }
