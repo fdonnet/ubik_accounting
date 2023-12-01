@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 using Ubik.Accounting.Api.Models;
-using Ubik.ApiService.DB.Enums;
+using Ubik.Accounting.Contracts.Accounts.Enums;
 
 namespace Ubik.Accounting.Api.Data.Init
 {

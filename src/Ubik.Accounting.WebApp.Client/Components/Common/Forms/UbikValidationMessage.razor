@@ -1,0 +1,33 @@
+﻿@using System.Linq.Expressions
+
+@typeparam TValue
+@implements IDisposable
+
+@foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+{
+    <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+        <span class="font-medium">@message</span>
+    </p>
+}
+
+@code {
+    [CascadingParameter] private EditContext EditContext { get; set; } = default!;
+
+    [Parameter] public Expression<Func<TValue>> For { get; set; } = default!;
+    [Parameter] public string Class { get; set; } = default!;
+
+    private FieldIdentifier _fieldIdentifier;
+
+    protected override void OnInitialized()
+    {
+        _fieldIdentifier = FieldIdentifier.Create(For);
+        EditContext.OnValidationStateChanged += HandleValidationStateChanged!;
+    }
+
+    private void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args) => StateHasChanged();
+
+    public void Dispose()
+    {
+        EditContext.OnValidationStateChanged -= HandleValidationStateChanged!;
+    }
+}
