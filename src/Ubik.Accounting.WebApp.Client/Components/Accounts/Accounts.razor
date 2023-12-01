@@ -6,10 +6,13 @@
 @inject IRenderContext RenderContext
 @attribute [Authorize]
 
-<UbikModal>
-
+<button type="button" @onclick="ShowDialog" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add</button>
+<CascadingValue Name="AccountModel" Value="@_accountCurrent">
+<UbikModal @ref="_modal" ButtonLabel="Add" DialogTitle="Add an account">
+    <AccountForm></AccountForm>
 </UbikModal>
-<button type="button" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add</button>
+</CascadingValue>
+
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
@@ -38,7 +41,7 @@
             </tr>
         </thead>
         <tbody>
-            @if (!isLoading && _accounts != null)
+            @if (!_isLoading && _accounts != null)
             {
                 @foreach (var a in _accounts)
                 {
@@ -87,8 +90,10 @@
     private IQueryable<GetAllAccountsResult>? _accounts;
     private ProblemDetailsContract? _error;
     [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
-    private bool isLoading = true;
+    private Task<AuthenticationState>? _authenticationState { get; set; }
+    private bool _isLoading = true;
+    private UbikModal _modal = default!;
+    private AccountModel _accountCurrent = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,16 +102,22 @@
             return;
         }
 
-        if (authenticationState is not null)
+        if (_authenticationState is not null)
         {
-            await authenticationState;
+            await _authenticationState;
             await LoadAccountsAsync();
         }
     }
 
+    private async Task ShowDialog()
+    {
+        _accountCurrent = new(){Label="TEST"};
+        await _modal.ShowDialog();
+    }
+
     private async Task LoadAccountsAsync()
     {
-        isLoading = true;
+        _isLoading = true;
         var response = await Client.GetAllAccountsAsync();
         //var responseAccountTest = await Client.GetAccountAsync(Guid.NewGuid());
 
@@ -121,6 +132,6 @@
             //TODO: IMPLEMENT ERROR HANDLING for PROBLEM DETAILS (and global exception handler)
             //_error = await responseAccountTest.Content.ReadFromJsonAsync<ProblemDetailsContract>();
         }
-        isLoading = false;
+        _isLoading = false;
     }
 }
