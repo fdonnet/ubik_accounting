@@ -4,21 +4,13 @@
     <DataAnnotationsValidator />
     <div class="grid gap-4 mb-4 grid-cols-2">
         <div class="col-span-2">
-            <UbikInputText Id="name" Label="Name" PlaceholderText="Type account code" Type="text" @bind-Value="Account.Code"></UbikInputText>
+            <UbikInputText Id="AccountCode" Label="Code" PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Account.Code"></UbikInputText>
         </div>
-        <div class="col-span-2 sm:col-span-1">
-            <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-            <input type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="$2999" required="">
+        <div class="col-span-2">
+            <UbikInputText Id="AccountLabel" Label="Label" PlaceholderText="Type a label (max 100 char.)" Type="text" @bind-Value="Account.Label"></UbikInputText>
         </div>
-        <div class="col-span-2 sm:col-span-1">
-            <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-            <select id="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                <option selected="">Select category</option>
-                <option value="TV">TV/Monitors</option>
-                <option value="PC">PC</option>
-                <option value="GA">Gaming/Console</option>
-                <option value="PH">Phones</option>
-            </select>
+        <div class="col-span-2">
+            <UbikInputTextArea Id="AccountDescription" Label="Description" PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Description"></UbikInputTextArea>
         </div>
         <div class="col-span-2">
             <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
@@ -65,7 +57,6 @@
 
 @code {
     [CascadingParameter(Name = "AccountModel")]
-    // [SupplyParameterFromForm(Name = "AccountModel")]
     public AccountModel Account { get; set; } = default!;
 
     // protected override void OnInitialized() => Account ??= new()

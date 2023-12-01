@@ -1,0 +1,13 @@
+﻿@inherits InputTextArea
+<label for="@Id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">@Label</label>
+<textarea id="@Id" rows="@RowNumber" placeholder="@PlaceholderText" @bind="CurrentValueAsString" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+@code {
+    [Parameter]
+    public string Id { get; set; } = "input";
+    [Parameter]
+    public string Label { get; set; } = "Standard input";
+    [Parameter]
+    public string PlaceholderText { get; set; } = string.Empty;
+    [Parameter]
+    public int RowNumber { get; set; } = 4;
+}
