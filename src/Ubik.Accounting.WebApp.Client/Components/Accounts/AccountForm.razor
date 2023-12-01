@@ -1,6 +1,6 @@
 ﻿@using Ubik.Accounting.Contracts.Accounts.Enums;
 
-<EditForm Model="@Account" OnSubmit="@Submit" FormName="AddAccount" class="p-4 md:p-5">
+<EditForm Model="@Account" OnSubmit="Submit" FormName="AddAccount" class="p-4 md:p-5">
     <DataAnnotationsValidator />
     <div class="grid gap-4 mb-4 grid-cols-2">
         <div class="col-span-2">
@@ -62,10 +62,11 @@
     [CascadingParameter(Name = "AccountModel")]
     public AccountModel Account { get; set; } = default!;
 
-    private void Submit()
+    private void Submit(EditContext editContext)
     {
+        var valid = editContext.Validate();
 
-        Console.WriteLine("TEST");
+        Console.WriteLine(valid.ToString());
     }
 
 }
