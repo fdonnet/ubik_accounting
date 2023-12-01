@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ubik.ApiService.DB.Enums
+namespace Ubik.Accounting.Contracts.Accounts.Enums
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum AccountCategory
