@@ -23,7 +23,7 @@ namespace Ubik.Accounting.WebApp.Security
 
             var toCache = JsonSerializer.SerializeToUtf8Bytes(token, options: _serializerOptions);
 
-            await _cache.SetAsync(token.UserId, toCache, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(3) });
+            await _cache.SetAsync(token.UserId, toCache, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(30) });
         }
 
         public async Task<TokenCacheEntry?> GetUserTokenAsync(string? userId)

@@ -31,14 +31,21 @@ builder.Services.AddControllers();
 builder.Services.AddCascadingAuthenticationState();
 
 //Cache
+var redisOptions = new RedisOptions();
+builder.Configuration.GetSection(RedisOptions.Position).Bind(redisOptions);
 builder.Services.AddScoped<TokenCacheService>();
-builder.Services.AddDistributedMemoryCache();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = redisOptions.ConnectionString;
+});
 
 //TODO: put that in a lib project Auth
 //TODO: this is very dependant to distributed cache (if no cache => no site, see if it's bad)
 //TODO: do better and use UserId in cache
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;

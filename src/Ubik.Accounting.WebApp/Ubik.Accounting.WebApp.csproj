@@ -20,6 +20,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
   </ItemGroup>
 
@@ -44,8 +45,8 @@
 
   <Target Name="UpdateTailwindCSS" BeforeTargets="Compile">
     <Exec Command="npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css" ContinueOnError="true">
-      <Output TaskParameter="ExitCode" PropertyName="ErrorCode"/>
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
     </Exec>
-    <Error Condition="'$(ErrorCode)' != '0'" Text="Error building CSS file"/>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Error building CSS file" />
   </Target>
 </Project>
