@@ -8,15 +8,15 @@
             <InputText id="AccountCode" @bind-Value="Account.Code" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></InputText> *@
             @* <p class="mt-2 text-sm text-red-600 dark:text-red-500"><ValidationMessage class="font-medium" For="@(() => Account.Code)"></ValidationMessage></p> *@
             @* <UbikValidationMessage For="@(() => Account.Code)"></UbikValidationMessage> *@
-            <UbikInputText Id="AccountCode" Label="Code" PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Account.Code"></UbikInputText>
-            <UbikValidationMessage class="font-medium" For="@(()=>Account.Code)"></UbikValidationMessage>
+            <UbikInputText Id="AccountCode" Label="Code" PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Account.Code" For="@(()=>Account.Code)"></UbikInputText>
+            @* <UbikValidationMessage class="font-medium" For="@(()=>Account.Code)"></UbikValidationMessage> *@
         </div>
-        <div class="col-span-2">
+@*         <div class="col-span-2">
             <UbikInputText Id="AccountLabel" Label="Label" PlaceholderText="Type a label (max 100 char.)" Type="text" @bind-Value="Account.Label"></UbikInputText>
         </div>
         <div class="col-span-2">
             <UbikInputTextArea Id="AccountDescription" Label="Description" PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Description"></UbikInputTextArea>
-        </div>
+        </div> *@
         <div class="col-span-2">
             <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
             <textarea id="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write product description here"></textarea>
