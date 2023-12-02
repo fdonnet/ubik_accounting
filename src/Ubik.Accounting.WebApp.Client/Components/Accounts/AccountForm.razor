@@ -12,9 +12,8 @@
         <div class="col-span-2">
             <UbikInputTextArea Id="AccountDescription" Label="Description" PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Description" For="@(()=>Account.Description)"></UbikInputTextArea>
         </div>
-        <div class="col-span-2">
-            <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
-            <textarea id="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write product description here"></textarea>
+        <div class="col-span-1 sm:col-span-2">
+            <UbikInputSelect Id="AccountDomain" Label="Domain" PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Domain" OptionsList="_testKeyValue"></UbikInputSelect>
         </div>
         <div class="col-span-2">
             <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
@@ -58,6 +57,13 @@
 @code {
     [CascadingParameter(Name = "AccountModel")]
     public AccountModel Account { get; set; } = default!;
+
+    private List<KeyValuePair<int, string>> _testKeyValue = new ()
+    {
+        new KeyValuePair<int,string>(1,"Asset"),
+        new KeyValuePair<int, string>(2,"Test1"),
+        new KeyValuePair<int, string>(3,"Test2")
+    };
 
     private void Submit(EditContext editContext)
     {
