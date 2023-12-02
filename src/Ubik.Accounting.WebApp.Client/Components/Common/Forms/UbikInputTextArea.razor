@@ -1,13 +1,60 @@
-﻿@inherits InputTextArea
-<label for="@Id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">@Label</label>
-<textarea id="@Id" rows="@RowNumber" placeholder="@PlaceholderText" @bind="CurrentValueAsString" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+﻿@inherits InputBase<string>
+@using System.Linq.Expressions
+@using System.Diagnostics.CodeAnalysis;
+@typeparam TValue
+@implements IDisposable
+
+@if (EditContext.IsValid(_fieldIdentifier) && !EditContext.GetValidationMessages(_fieldIdentifier).Any())
+{
+    <label for="@Id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">@Label</label>
+    <textarea id="@Id" rows="@RowNumber" placeholder="@PlaceholderText" @bind="CurrentValueAsString" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+}
+else
+{
+    <label for="@Id" class="block mb-2 text-sm font-medium text-red-700 dark:text-red-500">@Label</label>
+    <textarea id="@Id" rows="@RowNumber" placeholder="@PlaceholderText" @bind="CurrentValueAsString" class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"></textarea>
+}
+
+@foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+{
+    <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+        <span class="font-medium">@message</span>
+    </p>
+}
+
 @code {
     [Parameter]
     public string Id { get; set; } = "input";
     [Parameter]
     public string Label { get; set; } = "Standard input";
     [Parameter]
+    public string Type { get; set; } = "text";
+    [Parameter]
     public string PlaceholderText { get; set; } = string.Empty;
     [Parameter]
     public int RowNumber { get; set; } = 4;
+
+    [Parameter] public Expression<Func<TValue>> For { get; set; } = default!;
+
+    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+
+    private FieldIdentifier _fieldIdentifier;
+
+    protected override void OnInitialized()
+    {
+        _fieldIdentifier = FieldIdentifier.Create(For);
+        EditContext.OnValidationStateChanged += HandleValidationStateChanged!;
+    }
+
+    private void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args) => StateHasChanged();
+
+    public void Dispose()
+    {
+        EditContext.OnValidationStateChanged -= HandleValidationStateChanged!;
+    }
 }
