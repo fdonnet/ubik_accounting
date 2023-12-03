@@ -4,15 +4,21 @@
     <DataAnnotationsValidator />
     <div class="grid gap-4 mb-4 grid-cols-2">
         <div class="col-span-2">
-            <UbikInputText Id="AccountCode" Label="Code" PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Account.Code" For="@(()=>Account.Code)"></UbikInputText>
+            <UbikInputText Id="AccountCode" Label="Code"
+                PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Account.Code"
+                ValidationFor="@(()=>Account.Code)"></UbikInputText>
         </div>
         <div class="col-span-2">
-            <UbikInputText Id="AccountLabel" Label="Label" PlaceholderText="Type a label (max 100 char.)" Type="text" @bind-Value="Account.Label" For="@(()=>Account.Label)"></UbikInputText>
+            <UbikInputText Id="AccountLabel" Label="Label"
+                PlaceholderText="Type a label (max 100 char.)" Type="text" @bind-Value="Account.Label"
+                ValidationFor="@(()=>Account.Label)"></UbikInputText>
         </div>
         <div class="col-span-2">
-            <UbikInputTextArea Id="AccountDescription" Label="Description" PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Description" For="@(()=>Account.Description)"></UbikInputTextArea>
+            <UbikInputTextArea Id="AccountDescription" Label="Description"
+                PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Description"
+                ValidationFor="@(()=>Account.Description)"></UbikInputTextArea>
         </div>
-        <div class="col-span-1 sm:col-span-2">
+        <div class="col-span-2 sm:col-span-1">
             <label for="AccountDomain" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Domain</label>
             <InputSelect id="AccountDomain" placeholder="Select a domain" ValueExpression="@(() => Account.Domain)" Value="@Account.Domain" ValueChanged="@((AccountDomain? args) => Account.Domain = args)"
                          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -23,11 +29,13 @@
                 }
             </InputSelect>
             <ValidationMessage For="@(() => Account.Domain)" />
-            @* <UbikInputSelect Id="AccountDomain" Label="Domain" PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Domain" OptionsList="_testKeyValue"></UbikInputSelect> *@
         </div>
-        <div class="col-span-2">
-            <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
-            <textarea id="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write product description here"></textarea>
+        <div class="col-span-2 sm:col-span-1">
+            <UbikInputSelect Id="AccountCategory" TValue="AccountCategory?"
+                ValueExpression="@(() => Account.Category)" Value="@Account.Category"
+                ValueChanged="@((AccountCategory? args) => Account.Category = args)"
+                Label="Category" PlaceholderText="Select a category..."
+                ValidationFor="@(()=>Account.Category)"></UbikInputSelect>
         </div>
         <div class="col-span-2">
             <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
@@ -79,7 +87,9 @@
     {
         var valid = editContext.Validate();
 
-        Console.WriteLine(valid.ToString());
+        Console.WriteLine(Account!.Category);
+        Console.WriteLine(Account!.Code);
+        Console.WriteLine(Account!.Domain);
     }
 
 }

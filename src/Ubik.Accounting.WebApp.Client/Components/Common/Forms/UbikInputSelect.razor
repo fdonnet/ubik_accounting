@@ -1,1 +1,71 @@
-﻿
+﻿@inherits InputSelect<TValue>
+@typeparam TValue
+@using System.Diagnostics.CodeAnalysis
+@using System.Globalization
+@using System.Linq.Expressions
+
+@* Valid state *@
+@if (EditContext.IsValid(_fieldIdentifier) && !EditContext.GetValidationMessages(_fieldIdentifier).Any())
+{
+    <label for="@Id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">@Label</label>
+    <select id="@Id" name="@Id" @bind="CurrentValue" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        <option value="">@PlaceholderText</option>
+        @if (_currentType.IsEnum)
+        {
+            @foreach (var enumValue in Enum.GetValues(_currentType))
+            {
+                <option value="@enumValue">@enumValue</option>
+            }
+        }
+    </select>
+}
+else
+{
+    @* InValid state *@
+    <label for="@Id" class="block mb-2 text-sm font-medium text-red-700 dark:text-red-500">@Label</label>
+    <select id="@Id" name="@Id" @bind="CurrentValue" class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500">
+        <option value="">@PlaceholderText</option>
+        @if (_currentType.IsEnum)
+        {
+            @foreach (var enumValue in Enum.GetValues(_currentType))
+            {
+                <option value="@enumValue">@enumValue</option>
+            }
+        }
+    </select>
+
+    @foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+    {
+        <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+            <span class="font-medium">@message</span>
+        </p>
+    }
+}
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = "SelectInput";
+    [Parameter]
+    public string Label { get; set; } = "Standard select input";
+    [Parameter]
+    public string PlaceholderText { get; set; } = "select something";
+    private Type _currentType = default!;
+    [Parameter] public Expression<Func<TValue>> ValidationFor { get; set; } = default!;
+    private FieldIdentifier _fieldIdentifier;
+
+
+    protected override void OnInitialized()
+    {
+        _currentType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
+        _fieldIdentifier = FieldIdentifier.Create(ValidationFor);
+        EditContext.OnValidationStateChanged += HandleValidationStateChanged!;
+    }
+
+    private void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args) => StateHasChanged();
+
+    public void Dispose()
+    {
+        EditContext.OnValidationStateChanged -= HandleValidationStateChanged!;
+    }
+}

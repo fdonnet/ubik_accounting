@@ -34,7 +34,9 @@ else
     [Parameter]
     public int RowNumber { get; set; } = 4;
 
-    [Parameter] public Expression<Func<TValue>> For { get; set; } = default!;
+    [Parameter] public Expression<Func<TValue>> ValidationFor { get; set; } = default!;
+
+    private FieldIdentifier _fieldIdentifier;
 
     protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
@@ -43,11 +45,9 @@ else
         return true;
     }
 
-    private FieldIdentifier _fieldIdentifier;
-
     protected override void OnInitialized()
     {
-        _fieldIdentifier = FieldIdentifier.Create(For);
+        _fieldIdentifier = FieldIdentifier.Create(ValidationFor);
         EditContext.OnValidationStateChanged += HandleValidationStateChanged!;
     }
 
