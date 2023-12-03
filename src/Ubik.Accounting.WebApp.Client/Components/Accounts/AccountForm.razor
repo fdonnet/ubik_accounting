@@ -14,12 +14,15 @@
         </div>
         <div class="col-span-1 sm:col-span-2">
             <label for="AccountDomain" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Domain</label>
-            <InputSelect id="AccountDomain" placeholder="Select a domain" @bind-Value="Account.Domain" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <InputSelect id="AccountDomain" placeholder="Select a domain" ValueExpression="@(() => Account.Domain)" Value="@Account.Domain" ValueChanged="@((AccountDomain? args) => Account.Domain = args)"
+                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <option value="">Select a domain...</option>
                 @foreach (var domain in Enum.GetValues(typeof(AccountDomain)))
                 {
                     <option value="@domain">@domain</option>
                 }
             </InputSelect>
+            <ValidationMessage For="@(() => Account.Domain)" />
             @* <UbikInputSelect Id="AccountDomain" Label="Domain" PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Domain" OptionsList="_testKeyValue"></UbikInputSelect> *@
         </div>
         <div class="col-span-2">
@@ -65,7 +68,7 @@
     [CascadingParameter(Name = "AccountModel")]
     public AccountModel? Account { get; set; } = null;
 
-    private List<KeyValuePair<int, string>> _testKeyValue = new ()
+    private List<KeyValuePair<int, string>> _testKeyValue = new()
     {
         new KeyValuePair<int,string>(1,"Asset"),
         new KeyValuePair<int, string>(2,"Test1"),

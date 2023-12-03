@@ -16,9 +16,11 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
         [MaxLength(700)]
         public string? Description { get; set; }
         [EnumDataType(typeof(AccountCategory))]
-        public AccountCategory Category { get; set; }
+        [Required]
+        public AccountCategory? Category { get; set; } = null;
         [EnumDataType(typeof(AccountDomain))]
-        public AccountDomain Domain { get; set; }
+        [Required]
+        public AccountDomain? Domain { get; set; } = null;
         [Required]
         public Guid CurrencyId { get; set; }
         public Guid Version { get; init; }
