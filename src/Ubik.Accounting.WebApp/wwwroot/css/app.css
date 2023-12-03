@@ -791,6 +791,12 @@ p {
   flex-grow: 1;
 }
 
+.appearance-none {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -1455,5 +1461,7 @@ p {
     padding-top: 0.75rem;
   }
 }
+
+
 
 

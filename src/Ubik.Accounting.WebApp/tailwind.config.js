@@ -1,13 +1,17 @@
 /** @type {import('tailwindcss').Config} */
-const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
+  variants: {
+    fill: [],
+    extend: {
+      borderColor: ['focus-visible'],
+    }
+  },
   darkMode: 'class',
   content: [
     './**/*.html',
     './**/*.razor',
     '../Ubik.Accounting.WebApp.Client/Components/**/*.razor'
   ],
-  mode: 'jit',
   theme: {
     extend: {
       fontFamily: {
