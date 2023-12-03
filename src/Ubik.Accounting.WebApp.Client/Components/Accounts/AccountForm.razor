@@ -13,11 +13,6 @@
                            PlaceholderText="Type a label (max 100 char.)" Type="text" @bind-Value="Account.Label"
                            ValidationFor="@(()=>Account.Label)"></UbikInputText>
         </div>
-        <div class="col-span-2">
-            <UbikInputTextArea Id="AccountDescription" Label="Description"
-                               PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Description"
-                               ValidationFor="@(()=>Account.Description)"></UbikInputTextArea>
-        </div>
         <div class="col-span-2 sm:col-span-1">
             <UbikInputSelect Id="AccountDomain" TValue="AccountDomain?"
                              ValueExpression="@(() => Account.Domain)" Value="@Account.Domain"
@@ -31,6 +26,11 @@
                              ValueChanged="@((AccountCategory? args) => Account.Category = args)"
                              Label="Category" PlaceholderText="Select a category..."
                              ValidationFor="@(()=>Account.Category)"></UbikInputSelect>
+        </div>
+        <div class="col-span-2">
+            <UbikInputTextArea Id="AccountDescription" Label="Description"
+                               PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Description"
+                               ValidationFor="@(()=>Account.Description)"></UbikInputTextArea>
         </div>
         <div class="col-span-2">
             <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
