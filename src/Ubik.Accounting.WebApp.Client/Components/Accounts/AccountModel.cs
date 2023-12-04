@@ -21,7 +21,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
         [Required]
         public AccountDomain? Domain { get; set; } = null;
         [Required]
-        public Guid CurrencyId { get; set; }
+        public Guid? CurrencyId { get; set; }
         public Guid Version { get; init; }
     }
 }

@@ -16,9 +16,16 @@ namespace Ubik.Accounting.WebApp.Controllers
         readonly IAccountingApiClient client = client;
 
         [HttpGet("/GetAllAccounts")]
-        public async Task AccountList()
+        public async Task AccountsList()
         {
             var response = await client.GetAllAccountsAsync();
+            await ForwardResponse(response);
+        }
+
+        [HttpGet("/GetAllCurrencies")]
+        public async Task CurrenciesList()
+        {
+            var response = await client.GetAllCurrenciesAsync();
             await ForwardResponse(response);
         }
 

@@ -17,6 +17,16 @@
                 <option value="@enumValue">@enumValue</option>
             }
         }
+        else
+        {
+            if(Data != null)
+            {
+                foreach(var obj in Data)
+                {
+                    <option value="@obj!.GetType().GetProperty(DataKey)!.GetValue(obj,null)">@obj.GetType().GetProperty(DataValue)!.GetValue(obj, null)</option>
+                }
+            }
+        }
     </select>
 }
 else
@@ -53,6 +63,12 @@ else
     private Type _currentType = default!;
     [Parameter] public Expression<Func<TValue>> ValidationFor { get; set; } = default!;
     private FieldIdentifier _fieldIdentifier;
+    [Parameter]
+    public IEnumerable<Object>? Data { get; set; } = null;
+    [Parameter]
+    public string DataKey { get; set; } = "Key";
+    [Parameter]
+    public string DataValue { get; set; } = "Value";
 
 
     protected override void OnInitialized()

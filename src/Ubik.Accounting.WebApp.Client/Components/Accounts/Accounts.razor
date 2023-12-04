@@ -1,16 +1,17 @@
 ﻿@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.Contracts.Currencies.Results
 @using Ubik.Accounting.Contracts.Error
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Modal
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
 @attribute [Authorize]
-@rendermode InteractiveServer
+@rendermode InteractiveAuto
 
 <button type="button" @onclick="ShowDialog" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add</button>
 <CascadingValue Name="AccountModel" Value="@_accountCurrent">
 <UbikModal @ref="_modal" ButtonLabel="Add" DialogTitle="Add an account">
-    <AccountForm></AccountForm>
+    <AccountForm CurrenciesList="_currencies"></AccountForm>
 </UbikModal>
 </CascadingValue>
 
@@ -83,6 +84,7 @@
 
 @code {
     private IQueryable<GetAllAccountsResult>? _accounts;
+    private IEnumerable<GetAllCurrenciesResult>? _currencies;
     private ProblemDetailsContract? _error;
     [CascadingParameter]
     private Task<AuthenticationState>? _authenticationState { get; set; }
@@ -104,6 +106,14 @@
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await LoadCurrenciesAsync();
+        }
+    }
+
     private async Task ShowDialog()
     {
         _accountCurrent = new(){Label="TEST"};
@@ -114,13 +124,11 @@
     {
         _isLoading = true;
         var response = await Client.GetAllAccountsAsync();
-        //var responseAccountTest = await Client.GetAccountAsync(Guid.NewGuid());
 
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? [];
             _accounts = result.AsQueryable();
-            
         }
         else
         {
@@ -128,5 +136,20 @@
             //_error = await responseAccountTest.Content.ReadFromJsonAsync<ProblemDetailsContract>();
         }
         _isLoading = false;
+    }
+
+    private async Task LoadCurrenciesAsync()
+    {
+        var response = await Client.GetAllCurrenciesAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            _currencies = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllCurrenciesResult>>() ?? [];
+        }
+        else
+        {
+            //TODO: IMPLEMENT ERROR HANDLING for PROBLEM DETAILS (and global exception handler)
+            //_error = await responseAccountTest.Content.ReadFromJsonAsync<ProblemDetailsContract>();
+        }
     }
 }

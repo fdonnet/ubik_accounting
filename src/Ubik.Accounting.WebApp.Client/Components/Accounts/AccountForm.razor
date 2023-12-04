@@ -1,12 +1,20 @@
 ﻿@using Ubik.Accounting.Contracts.Accounts.Enums;
+@using Ubik.Accounting.Contracts.Currencies.Results
 
 <EditForm Model="@Account" OnSubmit="Submit" FormName="AddAccount" class="p-4 md:p-5">
     <DataAnnotationsValidator />
     <div class="grid gap-4 mb-4 grid-cols-2">
-        <div class="col-span-2">
+        <div class="col-span-2 sm:col-span-1">
             <UbikInputText Id="AccountCode" Label="Code"
                            PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Account.Code"
                            ValidationFor="@(()=>Account.Code)"></UbikInputText>
+        </div>
+        <div class="col-span-2 sm:col-span-1">
+            <UbikInputSelect Id="AccountCcy" TValue="Guid?"
+                             ValueExpression="@(() => Account.CurrencyId)" Value="@Account.CurrencyId"
+                             ValueChanged="@((Guid? args) => Account.CurrencyId = args)"
+                             Label="Currency" PlaceholderText="Select a currency..."
+                             ValidationFor="@(()=>Account.CurrencyId)" Data="CurrenciesList" DataKey="Id" DataValue="IsoCode"></UbikInputSelect>
         </div>
         <div class="col-span-2">
             <UbikInputText Id="AccountLabel" Label="Label"
@@ -70,6 +78,8 @@
 @code {
     [CascadingParameter(Name = "AccountModel")]
     public AccountModel Account { get; set; } = default!;
+    [Parameter]
+    public IEnumerable<GetAllCurrenciesResult> CurrenciesList { get; set; } = default!;
 
     private List<KeyValuePair<int, string>> _testKeyValue = new()
     {
@@ -81,7 +91,7 @@
     private void Submit(EditContext editContext)
     {
         var valid = editContext.Validate();
-
+        Console.WriteLine(CurrenciesList);
         Console.WriteLine(Account!.Code);
         Console.WriteLine(Account!.Label);
         Console.WriteLine(Account!.Category);
