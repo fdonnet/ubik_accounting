@@ -4,54 +4,34 @@
 @using System.Globalization
 @using System.Linq.Expressions
 
-@* Valid state *@
-@if (EditContext.IsValid(_fieldIdentifier) && !EditContext.GetValidationMessages(_fieldIdentifier).Any())
-{
-    <label for="@Id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">@Label</label>
-    <select id="@Id" name="@Id" @bind="CurrentValue" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-        <option value="">@PlaceholderText</option>
-        @if (_currentType.IsEnum)
-        {
-            @foreach (var enumValue in Enum.GetValues(_currentType))
-            {
-                <option value="@enumValue">@enumValue</option>
-            }
-        }
-        else
-        {
-            if(Data != null)
-            {
-                foreach(var obj in Data)
-                {
-                    <option value="@obj!.GetType().GetProperty(DataKey)!.GetValue(obj,null)">@obj.GetType().GetProperty(DataValue)!.GetValue(obj, null)</option>
-                }
-            }
-        }
-    </select>
-}
-else
-{
-    @* InValid state *@
-    <label for="@Id" class="block mb-2 text-sm font-medium text-red-700 dark:text-red-500">@Label</label>
-    <select id="@Id" name="@Id" @bind="CurrentValue" class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500">
-        <option value="">@PlaceholderText</option>
-        @if (_currentType.IsEnum)
-        {
-            @foreach (var enumValue in Enum.GetValues(_currentType))
-            {
-                <option value="@enumValue">@enumValue</option>
-            }
-        }
-    </select>
-
-    @foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+<label for="@Id" class="@_labelCssClass">@Label</label>
+<select id="@Id" name="@Id" @bind="CurrentValue" class="@_selectCssClass">
+    <option value="">@PlaceholderText</option>
+    @if (_currentType.IsEnum)
     {
-        <p class="mt-2 text-sm text-red-600 dark:text-red-500">
-            <span class="font-medium">@message</span>
-        </p>
+        @foreach (var enumValue in Enum.GetValues(_currentType))
+        {
+            <option value="@enumValue">@enumValue</option>
+        }
     }
-}
+    else
+    {
+        if (Data != null)
+        {
+            foreach (var obj in Data)
+            {
+                <option value="@obj!.GetType().GetProperty(DataKey)!.GetValue(obj,null)">@obj.GetType().GetProperty(DataValue)!.GetValue(obj, null)</option>
+            }
+        }
+    }
+</select>
 
+@foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+{
+    <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+        <span class="font-medium">@message</span>
+    </p>
+}
 
 @code {
     [Parameter]
@@ -69,7 +49,9 @@ else
     public string DataKey { get; set; } = "Key";
     [Parameter]
     public string DataValue { get; set; } = "Value";
-
+        
+    private string _labelCssClass = UbikCSSConst.VALID_LABEL_CSS_CLASS;
+    private string _selectCssClass = UbikCSSConst.VALID_SELECT_CSS_CLASS;
 
     protected override void OnInitialized()
     {
@@ -78,7 +60,21 @@ else
         EditContext.OnValidationStateChanged += HandleValidationStateChanged!;
     }
 
-    private void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args) => StateHasChanged();
+    private void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args)
+    {
+        if (EditContext.IsValid(_fieldIdentifier))
+        {
+            _labelCssClass = UbikCSSConst.VALID_LABEL_CSS_CLASS;
+            _selectCssClass = UbikCSSConst.VALID_SELECT_CSS_CLASS;
+        }
+        else
+        {
+            _labelCssClass = UbikCSSConst.INVALID_LABEL_CSS_CLASS;
+            _selectCssClass = UbikCSSConst.INVALID_SELECT_CSS_CLASS;
+        }
+
+        StateHasChanged();
+    }
 
     public void Dispose()
     {
