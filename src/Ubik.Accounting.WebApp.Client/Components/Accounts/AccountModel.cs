@@ -24,4 +24,6 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
         public Guid? CurrencyId { get; set; }
         public Guid Version { get; init; }
     }
+
+
 }

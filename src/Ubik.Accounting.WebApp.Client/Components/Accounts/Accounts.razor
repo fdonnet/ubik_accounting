@@ -3,6 +3,8 @@
 @using Ubik.Accounting.Contracts.Error
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Modal
+@using Ubik.Accounting.WebApp.Client.Components.Common.Grid
+@using Microsoft.AspNetCore.Components.QuickGrid;
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
 @attribute [Authorize]
@@ -16,6 +18,17 @@
 </CascadingValue>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
+    <UbikGrid Items="@_accounts" Class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <PropertyColumn Property="@(c => c.Code)" Sortable="true" Align="Align.Right" />
+    </UbikGrid>
+    @*     <UbikGrid Items="@_accounts" Class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <PropertyColumn Title="Code" Property="@(a=>a.Code)">
+    <HeaderTemplate><span class="px-6 py-3">Code</span></HeaderTemplate>
+    <ColumnOptions>
+    <span class="px-6 py-4">@context.Code</span>
+    </ColumnOptions>
+    </PropertyColumn>
+    </UbikGrid> *@
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -141,7 +154,7 @@
 
         if (response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? []).OrderBy(a=>a.Code);
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? []).OrderBy(a => a.Code);
             _accounts = result.AsQueryable();
         }
         else
