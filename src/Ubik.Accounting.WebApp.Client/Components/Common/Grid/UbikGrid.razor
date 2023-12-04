@@ -1,4 +1,4 @@
-﻿@inherits QuickGrid<TGridItem>
+﻿@* @inherits QuickGrid<TGridItem>
 @typeparam TGridItem
 @using Microsoft.AspNetCore.Components.QuickGrid
 ﻿@using Microsoft.AspNetCore.Components.QuickGrid.Infrastructure
@@ -43,6 +43,28 @@
 </CascadingValue>
 
 @code {
+    private readonly RenderFragment _renderColumnHeaders;
+    private readonly RenderFragment _renderNonVirtualizedRows;
+    private Virtualize<(int, TGridItem)>? _virtualizeComponent;
+    private readonly InternalGridContext<TGridItem> _internalGridContext;
+
+    public UbikGrid()
+    {
+        _columns = new();
+        _internalGridContext = new(this);
+        _currentPageItemsChanged = new(EventCallback.Factory.Create<PaginationState>(this, RefreshDataCoreAsync));
+        _renderColumnHeaders = RenderColumnHeaders;
+        _renderNonVirtualizedRows = RenderNonVirtualizedRows;
+
+        // As a special case, we don't issue the first data load request until we've collected the initial set of columns
+        // This is so we can apply default sort order (or any future per-column options) before loading data
+        // We use EventCallbackSubscriber to safely hook this async operation into the synchronous rendering flow
+        var columnsFirstCollectedSubscriber = new EventCallbackSubscriber<object?>(
+            EventCallback.Factory.Create<object?>(this, RefreshDataCoreAsync));
+        columnsFirstCollectedSubscriber.SubscribeOrMove(_internalGridContext.ColumnsFirstCollected);
+    }
+
+
     private void RenderNonVirtualizedRows(RenderTreeBuilder __builder)
     {
         var initialRowIndex = 2; // aria-rowindex is 1-based, plus the first row is the header
@@ -108,3 +130,5 @@
     }
 }
 
+
+ *@

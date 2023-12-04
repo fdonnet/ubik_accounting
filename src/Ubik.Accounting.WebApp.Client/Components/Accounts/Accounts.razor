@@ -18,9 +18,10 @@
 </CascadingValue>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
-    <UbikGrid Items="@_accounts" Class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <PropertyColumn Property="@(c => c.Code)" Sortable="true" Align="Align.Right" />
-    </UbikGrid>
+    <QuickGrid Items="@_accounts" Class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <PropertyColumn Title="Code" Property="@(c => c.Code)" Sortable="true" Align="Align.Right" Class="bg-white border-b dark:bg-gray-800 dark:border-gray-700" >
+        </PropertyColumn>
+    </QuickGrid>
     @*     <UbikGrid Items="@_accounts" Class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
     <PropertyColumn Title="Code" Property="@(a=>a.Code)">
     <HeaderTemplate><span class="px-6 py-3">Code</span></HeaderTemplate>
@@ -106,7 +107,7 @@
 } *@
 
 @code {
-    private IQueryable<GetAllAccountsResult>? _accounts;
+    private IQueryable<AccountModel>? _accounts;
     private IEnumerable<GetAllCurrenciesResult>? _currencies;
     private ProblemDetailsContract? _error;
     [CascadingParameter]
@@ -154,7 +155,7 @@
 
         if (response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? []).OrderBy(a => a.Code);
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? []).ToAccountModel();
             _accounts = result.AsQueryable();
         }
         else
@@ -172,7 +173,7 @@
 
         if (response.IsSuccessStatusCode)
         {
-            _currencies = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllCurrenciesResult>>() ?? []).OrderBy(c => c.IsoCode);
+            _currencies = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllCurrenciesResult>>() ?? []);
         }
         else
         {

@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Contracts.Accounts.Enums;
+using Ubik.Accounting.Contracts.Accounts.Results;
+using Ubik.Accounting.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Accounts
 {
@@ -25,5 +27,21 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
         public Guid Version { get; init; }
     }
 
-
+    public static class AccountModelMappers
+    {
+        public static IEnumerable<AccountModel> ToAccountModel(this IEnumerable<GetAllAccountsResult> current)
+        {
+            return current.Select(x => new AccountModel()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Label = x.Label,
+                Description = x.Description,
+                Category = x.Category,
+                Domain = x.Domain,
+                CurrencyId = x.CurrencyId,
+                Version = x.Version
+            });
+        }
+    }
 }
