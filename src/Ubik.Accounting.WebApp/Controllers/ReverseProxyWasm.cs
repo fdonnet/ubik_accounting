@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Ubik.Accounting.WebApp.ApiClients;
-using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Webapp.Shared.Facades;
-using System.Net.Http;
-using Microsoft.AspNetCore.Http;
-using MassTransit;
 
 
 namespace Ubik.Accounting.WebApp.Controllers

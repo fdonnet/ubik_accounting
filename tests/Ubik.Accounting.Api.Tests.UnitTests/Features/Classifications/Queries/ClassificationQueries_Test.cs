@@ -23,7 +23,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
         {
             _serviceManager = Substitute.For<IServiceManager>();
 
-            _values = new Classification[] { new Classification() { Code = "TEST", Label = "Test" } };
+            _values = new Classification[] { new() { Code = "TEST", Label = "Test" } };
             _serviceManager.ClassificationService.GetAllAsync().Returns(_values);
         }
 
@@ -158,7 +158,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Queries
         {
             //Arrange
             var fake = new ClassificationStatus() { Id = NewId.NextGuid(), IsReady = true, MissingAccounts = new Account[]
-            { new Account { Code = "TEST", Label = "TEST", CurrencyId = NewId.NextGuid() } } };
+            { new() { Code = "TEST", Label = "TEST", CurrencyId = NewId.NextGuid() } } };
 
             var query = new GetClassificationStatusQuery()
             {

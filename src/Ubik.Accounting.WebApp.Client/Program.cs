@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.Webapp.Shared.Render;
 using Ubik.Accounting.Webapp.Shared.Security;

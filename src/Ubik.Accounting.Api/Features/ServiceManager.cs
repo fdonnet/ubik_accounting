@@ -3,6 +3,7 @@ using Ubik.Accounting.Api.Features.Accounts.Services;
 using Ubik.Accounting.Api.Features.AccountGroups.Services;
 using Ubik.Accounting.Api.Features.Classifications.Services;
 using Ubik.ApiService.Common.Services;
+using Ubik.Accounting.Api.Features.Currencies.Services;
 
 namespace Ubik.Accounting.Api.Features
 {
@@ -13,6 +14,7 @@ namespace Ubik.Accounting.Api.Features
         private IAccountService? _accountService;
         private IAccountGroupService? _accountGroupService;
         private IClassificationService? _classificationService;
+        private ICurrencyService? _currencyService;
 
         public ServiceManager(AccountingContext context, ICurrentUserService userService)
         {
@@ -44,6 +46,15 @@ namespace Ubik.Accounting.Api.Features
             {
                 _classificationService ??= new ClassificationService(_context,_userService);
                 return _classificationService;
+            }
+        }
+
+        public ICurrencyService CurrencyService
+        {
+            get
+            {
+                _currencyService ??= new CurrencyService(_context);
+                return _currencyService;
             }
         }
 

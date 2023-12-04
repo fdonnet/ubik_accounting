@@ -1,5 +1,4 @@
-﻿using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.Accounting.Webapp.Shared.Facades;
+﻿using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.WebApp.Security;
 
 namespace Ubik.Accounting.WebApp.ApiClients

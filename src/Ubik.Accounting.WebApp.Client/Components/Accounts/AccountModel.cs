@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using Ubik.Accounting.Contracts.Accounts.Enums;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Accounts

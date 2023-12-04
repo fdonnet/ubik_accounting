@@ -4,7 +4,7 @@ using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Accounts.Commands;
-using Ubik.ApiService.DB.Enums;
+using Ubik.Accounting.Contracts.Accounts.Enums;
 
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features

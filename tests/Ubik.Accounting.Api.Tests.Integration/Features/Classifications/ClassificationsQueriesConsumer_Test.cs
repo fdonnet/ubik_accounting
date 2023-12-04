@@ -12,13 +12,13 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 {
-    public class ClassificationsQueriesConsumer : BaseIntegrationTest, IAsyncLifetime
+    public class ClassificationsQueriesConsumer_Test : BaseIntegrationTest, IAsyncLifetime
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
         private readonly BaseValuesForClassifications _testValuesForClassifications;
 
-        public ClassificationsQueriesConsumer(IntegrationTestWebAppFactory factory) : base(factory)
+        public ClassificationsQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : base(factory)
         {
             _testValuesForClassifications = new BaseValuesForClassifications();
         }

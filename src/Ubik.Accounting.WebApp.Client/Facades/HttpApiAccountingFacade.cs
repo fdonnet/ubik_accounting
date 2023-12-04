@@ -1,7 +1,4 @@
-﻿using System.Net.Http;
-using System.Net.Http.Json;
-using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.Accounting.Webapp.Shared.Facades;
+﻿using Ubik.Accounting.Webapp.Shared.Facades;
 
 namespace Ubik.Accounting.WebApp.Client.Facades
 {
