@@ -10,8 +10,8 @@
 
 <button type="button" @onclick="ShowDialog" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add</button>
 <CascadingValue Name="AccountModel" Value="@_accountCurrent">
-    <UbikModal @ref="_modal" ButtonLabel="Add" DialogTitle="Add an account">
-        <AccountForm CurrenciesList="_currencies"></AccountForm>
+    <UbikModal @ref="_modal" ButtonLabel="Add" DialogTitle="Add an account" CloseOnClickOutisde="false">
+        <AccountForm CurrenciesList="_currencies" OnClose="CloseDialog"></AccountForm>
     </UbikModal>
 </CascadingValue>
 
@@ -126,8 +126,12 @@
 
     private async Task ShowDialog()
     {
-        _accountCurrent = new() { Label = "TEST" };
         await _modal.ShowDialog();
+    }
+
+    private async Task CloseDialog()
+    {
+        await _modal.CloseDialog();
     }
 
     private async Task LoadAccountsAsync()
@@ -137,7 +141,7 @@
 
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? [];
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? []).OrderBy(a=>a.Code);
             _accounts = result.AsQueryable();
         }
         else

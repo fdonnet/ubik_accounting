@@ -32,6 +32,8 @@
     public string ButtonLabel { get; set; } = "Show";
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public bool CloseOnClickOutisde { get; set; } = false;
 
     private IJSObjectReference? _jsModule = default!;
     private string _dialogId = $"dialog{Guid.NewGuid().ToString()}";
@@ -53,7 +55,8 @@
             _jsModule = await JS.InvokeAsync<IJSObjectReference>(
                 "import", "./Components/Common/Modal/UbikModal.razor.js");
 
-            await _jsModule.InvokeVoidAsync("clickOutside", _dialogId);
+            if (CloseOnClickOutisde)
+                await _jsModule.InvokeVoidAsync("clickOutside", _dialogId);
         }
     }
 
