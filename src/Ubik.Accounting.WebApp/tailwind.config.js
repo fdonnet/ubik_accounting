@@ -1,11 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  variants: {
-    fill: [],
-    extend: {
-      borderColor: ['focus-visible'],
-    }
-  },
   darkMode: 'class',
   content: [
     './**/*.html',
@@ -52,6 +46,6 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/forms'),],
 }
 
