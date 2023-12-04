@@ -4,22 +4,14 @@
 @typeparam TValue
 @implements IDisposable
 
-@if (EditContext.IsValid(_fieldIdentifier) && !EditContext.GetValidationMessages(_fieldIdentifier).Any())
-{
-    <label for="@Id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">@Label</label>
-    <input type="@Type" name="@Id" id="@Id" placeholder="@PlaceholderText" @bind-value="CurrentValue" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-}   
-else
-{
-    <label for="@Id" class="block mb-2 text-sm font-medium text-red-700 dark:text-red-500">@Label</label>
-    <input type="@Type" name="@Id" id="@Id" placeholder="@PlaceholderText" @bind-value="CurrentValue" class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500">
+<label for="@Id" class="@_labelCssClass">@Label</label>
+<input type="@Type" name="@Id" id="@Id" placeholder="@PlaceholderText" @bind-value="CurrentValue" class="@_inputCssClass">
 
-    @foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
-    {
-        <p class="mt-2 text-sm text-red-600 dark:text-red-500">
-            <span class="font-medium">@message</span>
-        </p>
-    }
+@foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+{
+    <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+        <span class="font-medium">@message</span>
+    </p>
 }
 
 @code {
@@ -31,10 +23,11 @@ else
     public string Type { get; set; } = "text";
     [Parameter]
     public string PlaceholderText { get; set; } = string.Empty;
-
     [Parameter] public Expression<Func<TValue>> ValidationFor { get; set; } = default!;
 
     private FieldIdentifier _fieldIdentifier;
+    private string _labelCssClass = UbikCSSConst.VALID_LABEL_CSS_CLASS;
+    private string _inputCssClass = UbikCSSConst.VALID_TEXTINPUT_CSS_CLASS;
 
     protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
@@ -49,7 +42,20 @@ else
         EditContext.OnValidationStateChanged += HandleValidationStateChanged!;
     }
 
-    private void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args) => StateHasChanged();
+    private void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args)
+    {
+        if (EditContext.IsValid(_fieldIdentifier))
+        {
+            _labelCssClass = UbikCSSConst.VALID_LABEL_CSS_CLASS;
+            _inputCssClass = UbikCSSConst.VALID_TEXTINPUT_CSS_CLASS;
+        }
+        else
+        {
+            _labelCssClass = UbikCSSConst.INVALID_LABEL_CSS_CLASS;
+            _inputCssClass = UbikCSSConst.INVALID_TEXTINPUT_CSS_CLASS;
+        }
+        StateHasChanged();
+    }
 
     public void Dispose()
     {
