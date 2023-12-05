@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
+@layer base {
   h1 {
     @apply mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-4xl dark:text-white;
   }
@@ -15,5 +15,4 @@
     @apply text-gray-500 dark:text-gray-400;
   }
 }
-
 

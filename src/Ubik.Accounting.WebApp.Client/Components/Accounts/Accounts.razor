@@ -4,7 +4,6 @@
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Modal
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid
-@using Microsoft.AspNetCore.Components.QuickGrid;
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
 @attribute [Authorize]
@@ -18,18 +17,6 @@
 </CascadingValue>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
-    <QuickGrid Items="@_accounts" Class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <PropertyColumn Title="Code" Property="@(c => c.Code)" Sortable="true" Align="Align.Right" Class="bg-white border-b dark:bg-gray-800 dark:border-gray-700" >
-        </PropertyColumn>
-    </QuickGrid>
-    @*     <UbikGrid Items="@_accounts" Class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-    <PropertyColumn Title="Code" Property="@(a=>a.Code)">
-    <HeaderTemplate><span class="px-6 py-3">Code</span></HeaderTemplate>
-    <ColumnOptions>
-    <span class="px-6 py-4">@context.Code</span>
-    </ColumnOptions>
-    </PropertyColumn>
-    </UbikGrid> *@
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
             <tr>
