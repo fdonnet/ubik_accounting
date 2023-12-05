@@ -50,8 +50,8 @@
     [Parameter]
     public string DataValue { get; set; } = "Value";
         
-    private string _labelCssClass = UbikCSSConst.VALID_LABEL_CSS_CLASS;
-    private string _selectCssClass = UbikCSSConst.VALID_SELECT_CSS_CLASS;
+    private string _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
+    private string _selectCssClass = UbikFormCSS.SELECT_VALID_CSS_CLASS;
 
     protected override void OnInitialized()
     {
@@ -64,13 +64,13 @@
     {
         if (EditContext.IsValid(_fieldIdentifier))
         {
-            _labelCssClass = UbikCSSConst.VALID_LABEL_CSS_CLASS;
-            _selectCssClass = UbikCSSConst.VALID_SELECT_CSS_CLASS;
+            _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
+            _selectCssClass = UbikFormCSS.SELECT_VALID_CSS_CLASS;
         }
         else
         {
-            _labelCssClass = UbikCSSConst.INVALID_LABEL_CSS_CLASS;
-            _selectCssClass = UbikCSSConst.INVALID_SELECT_CSS_CLASS;
+            _labelCssClass = UbikFormCSS.LABEL_INVALID_CSS_CLASS;
+            _selectCssClass = UbikFormCSS.SELECT_INVALID_CSS_CLASS;
         }
 
         StateHasChanged();
