@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
 {
@@ -8,10 +9,14 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
         [Parameter] public List<string> FieldNames { get; set; } = null;
         [Parameter] public bool EditAndRemoveButton { get; set; } = false;
 
+        [Parameter]
+        public EventCallback<TGridItem> OnEditItem { get; set; }
+        [Parameter]
+        public EventCallback<TGridItem> OnDeleteItem { get; set; }
+
         private readonly RenderFragment _renderLoading;
         private readonly RenderFragment _renderColumnHeaders;
         private readonly RenderFragment _renderRows;
-        private readonly RenderFragment _renderEditAndRemoveButtons;
 
         private int _columnNumber = 0;
 
@@ -20,7 +25,16 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             _renderLoading = RenderLoading;
             _renderColumnHeaders = RenderColumnHeaders;
             _renderRows = RenderRows;
-            _renderEditAndRemoveButtons = RenderEditRemoveButton;
+        }
+
+        private async Task EditItem(MouseEventArgs e, TGridItem currentItem)
+        {
+            await OnEditItem.InvokeAsync(currentItem);
+        }
+
+        private async Task DeleteItem(MouseEventArgs e, TGridItem currentItem)
+        {
+            await OnDeleteItem.InvokeAsync(currentItem);
         }
 
         protected override Task OnInitializedAsync()

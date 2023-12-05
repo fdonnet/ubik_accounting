@@ -62,22 +62,17 @@
                         }
                         _counter++;
                     }
-                    @_renderEditAndRemoveButtons
+                    @if (EditAndRemoveButton)
+                    {
+                        <td class="py-4 py-3">
+                            <button type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" @onclick="(args)=> EditItem(args, item)">Edit</button>
+                        </td>
+                        <td class="py-4 py-3">
+                            <button type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline pr-4" @onclick="(args)=> DeleteItem(args, item)">Delete</button>
+                        </td>
+                    }
                 </tr>
             }
-        }
-    }
-
-    private void RenderEditRemoveButton(RenderTreeBuilder __builder)
-    {
-        @if (EditAndRemoveButton)
-        {
-            <td class="py-4 py-3">
-                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-            </td>
-            <td class="py-4 py-3">
-                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline pr-4">Delete</a>
-            </td>
         }
     }
 

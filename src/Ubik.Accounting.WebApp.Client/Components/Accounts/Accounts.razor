@@ -10,7 +10,7 @@
 @attribute [Authorize]
 @rendermode InteractiveAuto
 
-<button type="button" @onclick="ShowDialog" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add</button>
+<button type="button" @onclick="AddAccountDialog" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add</button>
 <CascadingValue Name="AccountModel" Value="@_accountCurrent">
     <UbikModal @ref="_modal" ButtonLabel="Add" DialogTitle="Add an account" CloseOnClickOutisde="false">
         <AccountForm CurrenciesList="_currencies" OnClose="CloseDialog"></AccountForm>
@@ -18,7 +18,7 @@
 </CascadingValue>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
-    <UbikGrid Items="@_accounts" FieldNames="@_gridAccountFields" EditAndRemoveButton="true">
+    <UbikGrid Items="@_accounts" TGridItem="AccountModel" FieldNames="@_gridAccountFields" EditAndRemoveButton="true" OnEditItem="EditAccountDialog">
 
     </UbikGrid>
 </div>
@@ -63,8 +63,15 @@
         }
     }
 
-    private async Task ShowDialog()
+    private async Task EditAccountDialog(AccountModel currentAccount)
     {
+        _accountCurrent = currentAccount;
+        await _modal.ShowDialog();
+    }
+
+    private async Task AddAccountDialog()
+    {
+        _accountCurrent = new();
         await _modal.ShowDialog();
     }
 
