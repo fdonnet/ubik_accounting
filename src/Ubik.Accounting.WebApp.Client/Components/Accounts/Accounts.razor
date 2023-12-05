@@ -18,9 +18,18 @@
 </CascadingValue>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
-    <UbikGrid Items="@_accounts" TGridItem="AccountModel" FieldNames="@_gridAccountFields" EditAndRemoveButton="true" OnEditItem="EditAccountDialog">
+    <AuthorizeView Roles="ubik_accounting_account_write">
+        <Authorized>
+            <UbikGrid Items="@_accounts" TGridItem="AccountModel" FieldNames="@_gridAccountFields" EditAndRemoveButton="true" OnEditItem="EditAccountDialog">
 
-    </UbikGrid>
+            </UbikGrid>
+        </Authorized>
+        <NotAuthorized>
+            <UbikGrid Items="@_accounts" TGridItem="AccountModel" FieldNames="@_gridAccountFields" EditAndRemoveButton="false">
+
+            </UbikGrid>
+        </NotAuthorized>
+    </AuthorizeView>
 </div>
 
 @*

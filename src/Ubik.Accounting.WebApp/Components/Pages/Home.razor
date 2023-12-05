@@ -2,6 +2,7 @@
 @using Ubik.Accounting.WebApp.Security
 @inject UserService UserService;
 @attribute [Authorize]
+@rendermode InteractiveAuto
 
 <PageTitle>Home</PageTitle>
 <PageScript Src="./js/theme-switcher.js" />
@@ -13,6 +14,7 @@ Welcome to your new app.
     {
         <li>@c.Type         @c.Value</li>
     }
+    Ok account role : @UserService.GetUser().IsInRole("ubik_accounting_account_write")
 </ul>
 
 
