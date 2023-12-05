@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Quickgrid\Microsoft.AspNetCore.Components.QuickGrid.csproj" />
     <ProjectReference Include="..\Ubik.Accounting.Webapp.Shared\Ubik.Accounting.Webapp.Shared.csproj" />
   </ItemGroup>
 
