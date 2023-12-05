@@ -17,11 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Quickgrid\Microsoft.AspNetCore.Components.QuickGrid.csproj" />
     <ProjectReference Include="..\Ubik.Accounting.Webapp.Shared\Ubik.Accounting.Webapp.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Common\Grid\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
