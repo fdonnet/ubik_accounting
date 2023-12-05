@@ -1,0 +1,25 @@
+﻿@page "/manageaccounts"
+@using Ubik.Accounting.WebApp.Client.Components.Accounts
+@using Ubik.Accounting.WebApp.Security
+@inject UserService UserService;
+
+@attribute [Authorize]
+
+<PageScript Src="./js/theme-switcher.js" />
+<PageTitle>Manage accounts</PageTitle>
+<h1>Manage booking accounts</h1>
+<p class="mb-2">Manage the accounts used by your accounting system.</p>
+<p class="mb-5">See the classification section if you want to define how the accounts are structured.</p>
+<Accounts IsAuthorizedToRead="@_isReadAuthorized" IsAuthorizedToModify="@_isWriteAuthorized"></Accounts>
+
+@code{
+    private bool _isWriteAuthorized;
+    private bool _isReadAuthorized;
+
+    protected override void OnInitialized()
+    {
+        _isWriteAuthorized = UserService.GetUser().IsInRole("ubik_accounting_account_write");
+        _isReadAuthorized = UserService.GetUser().IsInRole("ubik_accounting_account_read");
+    }
+}
+

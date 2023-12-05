@@ -16,6 +16,7 @@ using Ubik.Accounting.WebApp.Render;
 using Ubik.Accounting.Webapp.Shared.Render;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Microsoft.AspNetCore.Components.Authorization;
+using Ubik.Accounting.WebApp.Client.Components.Accounts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -192,7 +193,7 @@ app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(ManageAccounts).Assembly);
+    .AddAdditionalAssemblies(typeof(Accounts).Assembly);
 //.AddAdditionalAssemblies(typeof(AccoutsList).Assembly)
 //.AddAdditionalAssemblies(typeof(Auth).Assembly);
 
