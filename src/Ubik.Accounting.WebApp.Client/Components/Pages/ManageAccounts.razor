@@ -8,22 +8,22 @@
 <h1>Manage booking accounts</h1>
 <p class="mb-2">Manage the accounts used by your accounting system.</p>
 <p class="mb-5">See the classification section if you want to define how the accounts are structured.</p>
-@* <Accounts IsAuthorizedToRead="@_isReadAuthorized" IsAuthorizedToModify="@_isWriteAuthorized"></Accounts> *@
-<Accounts></Accounts>
-@code{
-    // private bool _isWriteAuthorized;
-    // private bool _isReadAuthorized;
-    // [CascadingParameter]
-    // private Task<AuthenticationState>? _authenticationState { get; set; }
+<Accounts IsAuthorizedToRead="@_isReadAuthorized" IsAuthorizedToModify="@_isWriteAuthorized"></Accounts>
 
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     if (_authenticationState is not null)
-    //     {
-    //         var auth = await _authenticationState;
-    //         _isWriteAuthorized = auth.User.IsInRole("ubik_accounting_account_write");
-    //         _isReadAuthorized = auth.User.IsInRole("ubik_accounting_account_read");
-    //     }
-    // }
+@code{
+    private bool _isWriteAuthorized;
+    private bool _isReadAuthorized;
+    [CascadingParameter]
+    private Task<AuthenticationState>? _authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_authenticationState is not null)
+        {
+            var auth = await _authenticationState;
+            _isWriteAuthorized = auth.User.IsInRole("ubik_accounting_account_write");
+            _isReadAuthorized = auth.User.IsInRole("ubik_accounting_account_read");
+        }
+    }
 }
 
