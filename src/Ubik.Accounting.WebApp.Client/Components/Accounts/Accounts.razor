@@ -3,7 +3,7 @@
 @using Ubik.Accounting.Contracts.Error
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Modal
-@using Ubik.Accounting.WebApp.Client.Components.Common.Grid
+
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
 @attribute [Authorize]
@@ -15,6 +15,12 @@
         <AccountForm CurrenciesList="_currencies" OnClose="CloseDialog"></AccountForm>
     </UbikModal>
 </CascadingValue>
+
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
+@*     <UbikGrid Items="@_accounts" FieldNames="@_gridAccountFields">
+
+    </UbikGrid> *@
+</div>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -102,6 +108,7 @@
     private bool _isLoading = true;
     private UbikModal _modal = default!;
     private AccountModel _accountCurrent = new();
+    private List<string> _gridAccountFields = new () { "Code", "Label", "Domain", "Category" };
 
     protected override async Task OnInitializedAsync()
     {

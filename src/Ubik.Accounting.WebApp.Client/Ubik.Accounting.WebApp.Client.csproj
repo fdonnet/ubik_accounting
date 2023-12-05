@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\Common\Grid\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 

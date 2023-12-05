@@ -686,11 +686,6 @@ p {
   color: rgb(156 163 175 / var(--tw-text-opacity));
 }
 
-/*
-  thead {
-    @apply text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400;
-  }*/
-
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -2048,4 +2043,5 @@ p {
     width: 1024px;
   }
 }
+
 
