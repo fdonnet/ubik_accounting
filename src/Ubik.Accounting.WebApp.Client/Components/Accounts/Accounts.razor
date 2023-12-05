@@ -18,7 +18,7 @@
     }
 
     <CascadingValue Name="AccountModel" Value="@_accountCurrent">
-        <UbikModal @ref="_modal" ButtonLabel="Add" DialogTitle="Add an account" CloseOnClickOutisde="false">
+        <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
             <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialog"></AccountForm>
         </UbikModal>
     </CascadingValue>
@@ -56,17 +56,22 @@ else
     public bool IsAuthorizedToRead { get; set; } = false;
     [Parameter]
     public bool IsAuthorizedToModify { get; set; } = false;
+
     private IQueryable<AccountModel>? _accounts;
     private IEnumerable<GetAllCurrenciesResult>? _currencies;
     private ProblemDetailsContract? _error;
+
     [CascadingParameter]
     private Task<AuthenticationState>? _authenticationState { get; set; }
+
     private bool _isLoading = true;
-    private UbikModal _modal = default!;
-    private AccountForm _form = default!;
+    private UbikModal _dialog = default!;
+
     private AccountModel _accountCurrent = new();
     private List<string> _gridAccountFields = new() { "Code", "Label", "Domain", "Category" };
+
     private bool _editMode = false;
+    private string _dialogTitle = "Add account";
 
     protected override async Task OnInitializedAsync()
     {
@@ -92,21 +97,23 @@ else
 
     private async Task EditAccountDialog(AccountModel currentAccount)
     {
+        _dialogTitle = $"Edit account ({currentAccount.Code})";
         _editMode = true;
         _accountCurrent = currentAccount;
-        await _modal.ShowDialog();
+        await _dialog.ShowDialog();
     }
 
     private async Task AddAccountDialog()
     {
+        _dialogTitle = "Add an account";
         _editMode = false;
         _accountCurrent = new();
-        await _modal.ShowDialog();
+        await _dialog.ShowDialog();
     }
 
     private async Task CloseDialog()
     {
-        await _modal.CloseDialog();
+        await _dialog.CloseDialog();
     }
 
     private async Task LoadAccountsAsync()
