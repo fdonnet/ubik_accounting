@@ -4,6 +4,7 @@
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Modal
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid
+@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
@@ -14,7 +15,7 @@
 {
     @if (IsAuthorizedToModify)
     {
-        <button type="button" @onclick="AddAccountDialog" class="font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add</button>
+        <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" OnClick="AddAccountDialog"></UbikButton>
     }
 
     <CascadingValue Name="AccountModel" Value="@_accountCurrent">
