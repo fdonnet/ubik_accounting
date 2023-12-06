@@ -66,10 +66,10 @@
                     @if (EditAndRemoveButton)
                     {
                         <td class="py-4 py-3">
-                            <button type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" @onclick="(args)=> EditItem(args, item)">Edit</button>
+                            <UbikButtonLink Type="button" Label="Edit" TItem="TGridItem" OnClick="() => EditItem(item)"></UbikButtonLink>
                         </td>
                         <td class="py-4 py-3">
-                            <button type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline pr-4" @onclick="(args)=> DeleteItem(args, item)">Delete</button>
+                            <UbikButtonLink AdditionalCssClass="pr-4" Type="button" Label="Delete" TItem="TGridItem" OnClick="() => DeleteItem(item)"></UbikButtonLink>
                         </td>
                     }
                 </tr>

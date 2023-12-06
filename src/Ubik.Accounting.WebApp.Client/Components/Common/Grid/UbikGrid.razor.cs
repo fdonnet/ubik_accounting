@@ -6,7 +6,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
     public partial class UbikGrid<TGridItem>
     {
         [Parameter] public IQueryable<TGridItem>? Items { get; set; }
-        [Parameter] public List<string> FieldNames { get; set; } = null;
+        [Parameter] public List<string> FieldNames { get; set; } = default!;
         [Parameter] public bool EditAndRemoveButton { get; set; } = false;
 
         [Parameter]
@@ -27,12 +27,12 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             _renderRows = RenderRows;
         }
 
-        private async Task EditItem(MouseEventArgs e, TGridItem currentItem)
+        private async Task EditItem(TGridItem currentItem)
         {
             await OnEditItem.InvokeAsync(currentItem);
         }
 
-        private async Task DeleteItem(MouseEventArgs e, TGridItem currentItem)
+        private async Task DeleteItem(TGridItem currentItem)
         {
             await OnDeleteItem.InvokeAsync(currentItem);
         }

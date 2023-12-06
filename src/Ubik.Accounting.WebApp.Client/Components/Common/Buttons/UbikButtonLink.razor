@@ -1,0 +1,20 @@
+﻿@typeparam TItem
+<button type="@Type" class="@(AdditionalCssClass == string.Empty ? string.Empty : AdditionalCssClass + " ")font-medium text-blue-600 dark:text-blue-500 hover:underline" @onclick="(args)=> Click(args,Item)">@Label</button>
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = "button";
+    [Parameter]
+    public string Type { get; set; } = "button";
+    [Parameter]
+    public string AdditionalCssClass { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+    [Parameter]
+    public TItem? Item { get; set; }
+
+    private async Task Click(MouseEventArgs e, TItem? currentItem)
+    {
+        await OnClick.InvokeAsync(currentItem);
+    }
+}
