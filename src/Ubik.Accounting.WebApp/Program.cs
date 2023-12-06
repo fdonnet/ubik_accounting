@@ -111,6 +111,7 @@ builder.Services.AddAuthentication(options =>
             options.ClientSecret = authOptions.ClientSecret;
             options.ClientId = authOptions.ClientId;
             options.ResponseType = "code";
+            //TODO: not store the token in cookie, ask auth provider for initial JWT and store it (review that)
             options.SaveTokens = true;
             options.GetClaimsFromUserInfoEndpoint = true;
             options.Scope.Clear();

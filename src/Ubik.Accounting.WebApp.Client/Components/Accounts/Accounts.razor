@@ -25,18 +25,9 @@
     </CascadingValue>
 
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
-        @if (IsAuthorizedToModify)
-        {
-            <UbikGrid Items="@_accounts" TGridItem="AccountModel" FieldNames="@_gridAccountFields" EditAndRemoveButton="true" OnEditItem="EditAccountDialog">
-
-            </UbikGrid>
-        }
-        else
-        {
-            <UbikGrid Items="@_accounts" TGridItem="AccountModel" FieldNames="@_gridAccountFields" EditAndRemoveButton="false">
-
-            </UbikGrid>
-        }
+        <UbikGrid Items="@_accounts" TGridItem="AccountModel" FieldNames="@_gridAccountFields" EditAndRemoveButton="IsAuthorizedToModify" OnEditItem="EditAccountDialog">
+            <UbikGridColumn Field="@nameof(AccountModel.Code)" Label="Code"></UbikGridColumn>
+        </UbikGrid>
     </div>
 }
 else

@@ -3,16 +3,18 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
 {
-    public partial class UbikGrid<TGridItem>
+    [CascadingTypeParameter(nameof(TGridItem))]
+    public partial class UbikGrid<TGridItem> 
     {
         [Parameter] public IQueryable<TGridItem>? Items { get; set; }
         [Parameter] public List<string> FieldNames { get; set; } = default!;
         [Parameter] public bool EditAndRemoveButton { get; set; } = false;
+        [Parameter] public EventCallback<TGridItem> OnEditItem { get; set; }
+        [Parameter] public EventCallback<TGridItem> OnDeleteItem { get; set; }
+        [Parameter] public RenderFragment DataGridColumns { get; set; } = default!;
+        [Parameter] public RenderFragment ChildContent { get; set; } = default!;
 
-        [Parameter]
-        public EventCallback<TGridItem> OnEditItem { get; set; }
-        [Parameter]
-        public EventCallback<TGridItem> OnDeleteItem { get; set; }
+        protected List<UbikGridColumn<TGridItem>> Columns { get; } = [];
 
         private readonly RenderFragment _renderLoading;
         private readonly RenderFragment _renderColumnHeaders;
@@ -27,6 +29,17 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             _renderRows = RenderRows;
         }
 
+        public void AddColumn(UbikGridColumn<TGridItem> column)
+        {
+            Columns.Add(column);
+        }
+
+        protected override Task OnInitializedAsync()
+        {
+            _columnNumber = EditAndRemoveButton ? FieldNames.Count + 2 : FieldNames.Count; 
+            return base.OnInitializedAsync();
+        }
+
         private async Task EditItem(TGridItem currentItem)
         {
             await OnEditItem.InvokeAsync(currentItem);
@@ -35,12 +48,6 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
         private async Task DeleteItem(TGridItem currentItem)
         {
             await OnDeleteItem.InvokeAsync(currentItem);
-        }
-
-        protected override Task OnInitializedAsync()
-        {
-            _columnNumber = EditAndRemoveButton ? FieldNames.Count + 2 : FieldNames.Count; 
-            return base.OnInitializedAsync();
         }
     }
 }

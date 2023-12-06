@@ -3,6 +3,7 @@
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.WebApp.Client.Components.Common.Spinners
 
+<CascadingValue Value="@this" IsFixed>
 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
     <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
         <tr>
@@ -14,30 +15,37 @@
         @_renderRows
     </tbody>
 </table>
+</CascadingValue>
 
 @code {
     private int _counter = 0;
 
     private void RenderColumnHeaders(RenderTreeBuilder __builder)
     {
-        @if (FieldNames != null)
+        @foreach(var column in Columns)
         {
-            @foreach (var fieldName in FieldNames)
-            {
-                <th scope="col" class="px-6 py-3">
-                    @fieldName
-                </th>
-            }
-            @if (EditAndRemoveButton)
-            {
-                <th scope="col" class="px-6 py-3">
-
-                </th>
-                <th scope="col" class="py-4 py-3">
-
-                </th>
-            }
+            <th scope="col" class="px-6 py-3">
+                @column.Label
+            </th>
         }
+        // @if (FieldNames != null)
+        // {
+        //     @foreach (var fieldName in FieldNames)
+        //     {
+        //         <th scope="col" class="px-6 py-3">
+        //             @fieldName
+        //         </th>
+        //     }
+        //     @if (EditAndRemoveButton)
+        //     {
+        //         <th scope="col" class="px-6 py-3">
+
+        //         </th>
+        //         <th scope="col" class="py-4 py-3">
+
+        //         </th>
+        //     }
+        // }
     }
 
     private void RenderRows(RenderTreeBuilder __builder)
