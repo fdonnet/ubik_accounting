@@ -1,16 +1,30 @@
-﻿@page "/manageaccounts"
+﻿@page "/booking-accounts"
 @using Ubik.Accounting.WebApp.Client.Components.Accounts
-
+@using Ubik.Accounting.WebApp.Client.Components.Authorization
 @attribute [Authorize]
 
 <PageScript Src="./js/theme-switcher.js" />
 <PageTitle>Manage accounts</PageTitle>
 <h1>Manage booking accounts</h1>
-<p class="mb-2">Manage the accounts used by your accounting system.</p>
-<p class="mb-5">See the classification section if you want to define how the accounts are structured.</p>
-<Accounts IsAuthorizedToRead="@_isReadAuthorized" IsAuthorizedToModify="@_isWriteAuthorized"></Accounts>
 
-@code{
+@if (_isReadAuthorized || _isWriteAuthorized)
+{
+    if (!_isWriteAuthorized)
+    {
+        <ReadOnlyRightPanel />
+    }
+
+    <p class="mb-2">Manage the accounts used by your accounting system.</p>
+    <p class="mb-5">See the classification section if you want to define how the accounts are structured.</p>
+
+    <Accounts IsAuthorizedToRead="@_isReadAuthorized" IsAuthorizedToModify="@_isWriteAuthorized"></Accounts>
+}
+else
+{
+    <NotRightPanel/>
+}
+
+@code {
     private bool _isWriteAuthorized;
     private bool _isReadAuthorized;
     [CascadingParameter]
