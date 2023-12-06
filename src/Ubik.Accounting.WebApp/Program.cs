@@ -9,7 +9,6 @@ using Ubik.Accounting.WebApp.Components;
 using Ubik.Accounting.WebApp.Security;
 using static Ubik.Accounting.WebApp.Security.UserService;
 using IdentityModel.Client;
-using Ubik.Accounting.WebApp.Client.Components.Pages;
 using Ubik.Accounting.Webapp.Shared.Security;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.Accounting.WebApp.Render;
@@ -194,8 +193,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Accounts).Assembly);
-//.AddAdditionalAssemblies(typeof(AccoutsList).Assembly)
-//.AddAdditionalAssemblies(typeof(Auth).Assembly);
 
 app.Run();
 

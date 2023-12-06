@@ -15,6 +15,7 @@ namespace Ubik.Accounting.WebApp.Controllers
     {
         readonly IAccountingApiClient client = client;
 
+        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet("/GetAllAccounts")]
         public async Task AccountsList()
         {
@@ -22,6 +23,7 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
+        [Authorize(Roles = "ubik_accounting_currency_read")]
         [HttpGet("/GetAllCurrencies")]
         public async Task CurrenciesList()
         {
@@ -29,6 +31,7 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
+        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet("/GetAccount/{id}")]
         public async Task Account(Guid id)
         {
