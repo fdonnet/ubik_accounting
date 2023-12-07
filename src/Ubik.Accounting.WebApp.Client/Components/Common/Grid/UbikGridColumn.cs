@@ -14,6 +14,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             //base.OnInitialized();
 
             ParentUbikGrid?.AddColumn(this);
+
         }
     }
 }

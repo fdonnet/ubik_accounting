@@ -2,19 +2,29 @@
 @using Microsoft.AspNetCore.Components.Rendering
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.WebApp.Client.Components.Common.Spinners
+@using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils
 
 <CascadingValue Value="@this" IsFixed>
-<table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-    <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
-        <tr>
-            @_renderColumnHeaders
-        </tr>
-    </thead>
-    <tbody>
-        @_renderLoading
-        @_renderRows
-    </tbody>
-</table>
+    @{
+        StartCollectingColumns();
+    }
+    @ChildContent
+@*     <Defer> *@
+        @{
+            FinishCollectingColumns();
+        }
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    @_renderColumnHeaders
+                </tr>
+            </thead>
+            <tbody>
+                @_renderLoading
+                @_renderRows
+            </tbody>
+        </table>
+@*     </Defer> *@
 </CascadingValue>
 
 @code {
@@ -22,30 +32,22 @@
 
     private void RenderColumnHeaders(RenderTreeBuilder __builder)
     {
-        @foreach(var column in Columns)
+        @foreach (var column in Columns)
         {
             <th scope="col" class="px-6 py-3">
                 @column.Label
             </th>
         }
-        // @if (FieldNames != null)
-        // {
-        //     @foreach (var fieldName in FieldNames)
-        //     {
-        //         <th scope="col" class="px-6 py-3">
-        //             @fieldName
-        //         </th>
-        //     }
-        //     @if (EditAndRemoveButton)
-        //     {
-        //         <th scope="col" class="px-6 py-3">
 
-        //         </th>
-        //         <th scope="col" class="py-4 py-3">
+        @if (EditAndRemoveButton)
+        {
+            <th scope="col" class="px-6 py-3">
 
-        //         </th>
-        //     }
-        // }
+            </th>
+            <th scope="col" class="py-4 py-3">
+
+            </th>
+        }
     }
 
     private void RenderRows(RenderTreeBuilder __builder)

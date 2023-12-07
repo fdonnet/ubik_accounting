@@ -27,6 +27,9 @@
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
         <UbikGrid Items="@_accounts" TGridItem="AccountModel" FieldNames="@_gridAccountFields" EditAndRemoveButton="IsAuthorizedToModify" OnEditItem="EditAccountDialog">
             <UbikGridColumn Field="@nameof(AccountModel.Code)" Label="Code"></UbikGridColumn>
+            <UbikGridColumn Field="@nameof(AccountModel.Label)" Label="Label"></UbikGridColumn>
+            <UbikGridColumn Field="@nameof(AccountModel.Domain)" Label="Domain"></UbikGridColumn>
+            <UbikGridColumn Field="@nameof(AccountModel.Category)" Label="Category"></UbikGridColumn>
         </UbikGrid>
     </div>
 }

@@ -20,6 +20,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
         private readonly RenderFragment _renderColumnHeaders;
         private readonly RenderFragment _renderRows;
 
+        private bool _collectingColumns;
         private int _columnNumber = 0;
 
         public UbikGrid()
@@ -34,12 +35,25 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             Columns.Add(column);
         }
 
+        //TODO Column creation based on QuickGrid to manage
+        private void StartCollectingColumns()
+        {
+            //Columns.Clear();
+            _collectingColumns = true;
+        }
+
+        private void FinishCollectingColumns()
+        {
+            _collectingColumns = false;
+        }
+
         protected override Task OnInitializedAsync()
         {
             _columnNumber = EditAndRemoveButton ? FieldNames.Count + 2 : FieldNames.Count; 
             return base.OnInitializedAsync();
         }
 
+        
         private async Task EditItem(TGridItem currentItem)
         {
             await OnEditItem.InvokeAsync(currentItem);
