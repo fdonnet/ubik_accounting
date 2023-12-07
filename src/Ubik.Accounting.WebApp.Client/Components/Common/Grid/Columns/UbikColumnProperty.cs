@@ -6,10 +6,22 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
 {
     public class UbikColumnProperty<TGridItem, TProp> : UbikColumnBase<TGridItem>
     {
+        //Value in column
         [Parameter, EditorRequired] public Expression<Func<TGridItem, TProp>> Property { get; set; } = default!;
+        //Format
+        [Parameter] public string? Format { get; set; }
+
+        //Manage a property linked col
         private Expression<Func<TGridItem, TProp>>? _lastAssignedProperty;
         private Func<TGridItem, string?>? _cellTextFunc;
-        [Parameter] public string? Format { get; set; }
+        private GridSort<TGridItem>? _sortBuilder;
+
+        public override GridSort<TGridItem>? SortBy
+        {
+            get => _sortBuilder;
+            //set => throw new NotSupportedException($"PropertyColumn generates this member internally. For custom sorting rules, see '{typeof(TemplateColumn<TGridItem>)}'.");
+            set => throw new NotSupportedException($"PropertyColumn generates this member internally. For custom sorting rules, see 'typeof(TemplateColumn<TGridItem>'.");
+        }
 
         protected override void OnParametersSet()
         {
@@ -39,7 +51,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
                     _cellTextFunc = item => compiledPropertyExpression!(item)?.ToString();
                 }
 
-                //_sortBuilder = GridSort<TGridItem>.ByAscending(Property);
+                _sortBuilder = GridSort<TGridItem>.ByAscending(Property);
             }
 
             if (Title is null && Property.Body is MemberExpression memberExpression)

@@ -7,12 +7,23 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
 {
     public abstract partial class UbikColumnBase<TGridItem>
     {
+        //Params
         [CascadingParameter] internal InternalGridContext<TGridItem> InternalGridContext { get; set; } = default!;
         [Parameter] public string? Title { get; set; }
+        [Parameter] public bool? Sortable { get; set; }
+        [Parameter] public SortDirection InitialSortDirection { get; set; } = default;
+        [Parameter] public bool IsDefaultSortColumn { get; set; } = false;
 
+
+        //The context
         public UbikGrid<TGridItem> Grid => InternalGridContext.Grid;
-        protected internal abstract void CellContent(RenderTreeBuilder builder, TGridItem item);
+
+        //Content
         protected internal RenderFragment HeaderContent { get; protected set; }
+        protected internal abstract void CellContent(RenderTreeBuilder builder, TGridItem item);
+
+        //Sort
+        public abstract GridSort<TGridItem>? SortBy { get; set; }
 
         public UbikColumnBase()
         {
