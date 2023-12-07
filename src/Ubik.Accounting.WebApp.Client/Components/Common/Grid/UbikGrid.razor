@@ -33,10 +33,10 @@
 
     private void RenderColumnHeaders(RenderTreeBuilder __builder)
     {
-        @foreach (var column in _columns)
+        @foreach (var col in _columns)
         {
-            <th scope="col" class="px-6 py-3">
-                @column.Title
+            <th scope="col" class="px-6 py-3" aria-sort="@AriaSortValue(col)" @key="@col">
+                @col.HeaderContent
             </th>
         }
 

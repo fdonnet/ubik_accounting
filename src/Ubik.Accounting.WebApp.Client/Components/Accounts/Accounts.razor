@@ -27,10 +27,10 @@
 
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
         <UbikGrid Items="@_accounts" EditAndRemoveButton="@IsAuthorizedToModify" TGridItem="AccountModel" OnEditItem="EditAccountDialog">
-            <UbikColumnProperty Title="Code" Property="@(a=> a.Code)"></UbikColumnProperty>
-            <UbikColumnProperty Title="Label" Property="@(a=> a.Label)"></UbikColumnProperty>
-            <UbikColumnProperty Title="Domain" Property="@(a=> a.Domain)"></UbikColumnProperty>
-            <UbikColumnProperty Title="Category" Property="@(a=> a.Category)"></UbikColumnProperty>
+            <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
+            <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
+            <UbikColumnProperty Title="Domain" Property="@(a=> a.Domain)" Sortable="true"></UbikColumnProperty>
+            <UbikColumnProperty Title="Category" Property="@(a=> a.Category)" Sortable="true"></UbikColumnProperty>
         </UbikGrid>
     </div>
 }

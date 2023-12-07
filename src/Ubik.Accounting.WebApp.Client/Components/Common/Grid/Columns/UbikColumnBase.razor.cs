@@ -21,9 +21,10 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
         //Content
         protected internal RenderFragment HeaderContent { get; protected set; }
         protected internal abstract void CellContent(RenderTreeBuilder builder, TGridItem item);
-
+        
         //Sort
         public abstract GridSort<TGridItem>? SortBy { get; set; }
+        protected virtual bool IsSortableByDefault() => false;
 
         public UbikColumnBase()
         {
