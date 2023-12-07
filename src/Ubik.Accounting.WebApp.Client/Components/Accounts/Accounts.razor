@@ -10,7 +10,7 @@
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
 @attribute [Authorize]
-@rendermode InteractiveAuto
+@rendermode InteractiveServer
 
 @if (IsAuthorizedToRead)
 {
@@ -26,7 +26,7 @@
     </CascadingValue>
 
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
-        <UbikGrid Items="@_accounts" EditAndRemoveButton="true" TGridItem="AccountModel" OnEditItem="EditAccountDialog">
+        <UbikGrid Items="@_accounts" EditAndRemoveButton="@IsAuthorizedToModify" TGridItem="AccountModel" OnEditItem="EditAccountDialog">
             <UbikColumnProperty Title="Code" Property="@(a=> a.Code)"></UbikColumnProperty>
             <UbikColumnProperty Title="Label" Property="@(a=> a.Label)"></UbikColumnProperty>
             <UbikColumnProperty Title="Domain" Property="@(a=> a.Domain)"></UbikColumnProperty>
