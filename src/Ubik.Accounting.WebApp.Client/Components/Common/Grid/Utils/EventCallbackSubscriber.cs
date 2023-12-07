@@ -2,6 +2,9 @@
 
 namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils
 {
+    /// <summary>
+    /// Love for MS (code copied from their quickgrid)
+    /// </summary>
     internal sealed class EventCallbackSubscriber<T> : IDisposable
     {
         private readonly EventCallback<T> _handler;

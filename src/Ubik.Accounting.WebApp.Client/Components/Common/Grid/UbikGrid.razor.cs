@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿//A lot of things have been take from Microsoft --- Thx for your quick grid guys !!!
+//Need to continue to transfer what I need (virtualize, sorting, filtering etc)
+//TODO: don't forget to check their sources sometimes to retrieve the new of foing thing.
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns;
 using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils;
@@ -89,7 +92,6 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             }
         }
 
-        //TODO Column creation based on QuickGrid to manage
         private void StartCollectingColumns()
         {
             _columns.Clear();
@@ -101,13 +103,6 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             _columnNumber = EditAndRemoveButton ? _columns.Count + 2 : _columns.Count;
             _collectingColumns = false;
         }
-
-        //protected override Task OnInitializedAsync()
-        //{
-        //    _columnNumber = EditAndRemoveButton ? FieldNames.Count + 2 : FieldNames.Count;
-        //    return base.OnInitializedAsync();
-        //}
-
 
         private async Task EditItem(TGridItem currentItem)
         {

@@ -3,6 +3,10 @@ using System.ComponentModel;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils
 {
+    /// <summary>
+    /// Love for MS (code copied from their quickgrid)
+    /// </summary>
+    /// <typeparam name="TGridItem"></typeparam>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class ColumnsCollectedNotifier<TGridItem> : Microsoft.AspNetCore.Components.IComponent
     {
@@ -10,13 +14,11 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils
 
         [CascadingParameter] internal InternalGridContext<TGridItem> InternalGridContext { get; set; } = default!;
 
-        /// <inheritdoc/>
         public void Attach(RenderHandle renderHandle)
         {
             // This component never renders, so we can ignore the renderHandle
         }
 
-        /// <inheritdoc/>
         public Task SetParametersAsync(ParameterView parameters)
         {
             if (_isFirstRender)

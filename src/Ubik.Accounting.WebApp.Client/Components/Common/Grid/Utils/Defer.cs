@@ -4,6 +4,9 @@ using System.ComponentModel;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils
 {
+    /// <summary>
+    /// Love for MS (code copied from their quickgrid)
+    /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class Defer : ComponentBase
     {
