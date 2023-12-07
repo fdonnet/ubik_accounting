@@ -1,18 +1,19 @@
-﻿@typeparam TGridItem
-@using Microsoft.AspNetCore.Components.Rendering
+﻿@using Microsoft.AspNetCore.Components.Rendering
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.WebApp.Client.Components.Common.Spinners
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils
+@typeparam TGridItem
 
-<CascadingValue Value="@this" IsFixed>
+<CascadingValue TValue="InternalGridContext<TGridItem>" IsFixed="true" Value="@_internalGridContext">
     @{
         StartCollectingColumns();
     }
     @ChildContent
-@*     <Defer> *@
+    <Defer>
         @{
             FinishCollectingColumns();
         }
+        <ColumnsCollectedNotifier TGridItem="TGridItem" />
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
@@ -21,10 +22,10 @@
             </thead>
             <tbody>
                 @_renderLoading
-                @_renderRows
+                @_renderNonVirtualizedRows
             </tbody>
         </table>
-@*     </Defer> *@
+    </Defer>
 </CascadingValue>
 
 @code {
@@ -32,10 +33,10 @@
 
     private void RenderColumnHeaders(RenderTreeBuilder __builder)
     {
-        @foreach (var column in Columns)
+        @foreach (var column in _columns)
         {
             <th scope="col" class="px-6 py-3">
-                @column.Label
+                @column.Title
             </th>
         }
 
@@ -50,47 +51,104 @@
         }
     }
 
-    private void RenderRows(RenderTreeBuilder __builder)
+    private void RenderNonVirtualizedRows(RenderTreeBuilder __builder)
     {
-        @if (Items != null && FieldNames != null)
+        var initialRowIndex = 2; // aria-rowindex is 1-based, plus the first row is the header
+        var rowIndex = initialRowIndex;
+        foreach (var item in _currentNonVirtualizedViewItems)
         {
-            @foreach (var item in Items)
-            {
-                _counter = 0;
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    @foreach (var column in FieldNames)
-                    {
-                        if (_counter == 0)
-                        {
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                @item!.GetType().GetProperty(column)!.GetValue(item, null)
-                            </th>
-                        }
-                        else
-                        {
-                            <td class="px-6 py-4">
-                                @item!.GetType().GetProperty(column)!.GetValue(item, null)
-                            </td>
-                        }
-                        _counter++;
-                    }
-                    @if (EditAndRemoveButton)
-                    {
-                        <td class="py-4 py-3">
-                            <UbikButtonLink Type="button" Label="Edit" TItem="TGridItem" OnClick="() => EditItem(item)"></UbikButtonLink>
-                        </td>
-                        <td class="py-4 py-3">
-                            <UbikButtonLink AdditionalCssClass="pr-4" Type="button" Label="Delete" TItem="TGridItem" OnClick="() => DeleteItem(item)"></UbikButtonLink>
-                        </td>
-                    }
-                </tr>
-            }
+            _counter = 0;
+            RenderRow(__builder, rowIndex++, item);
         }
+
+        // When pagination is enabled, by default ensure we render the exact number of expected rows per page,
+        // even if there aren't enough data items. This avoids the layout jumping on the last page.
+        // Consider making this optional.
+        // if (Pagination is not null)
+        // {
+        //     while (rowIndex++ < initialRowIndex + Pagination.ItemsPerPage)
+        //     {
+        //         <tr></tr>
+        //     }
+        // }
     }
+
+    private void RenderRow(RenderTreeBuilder __builder, int rowIndex, TGridItem item)
+    {
+        <tr aria-rowindex="@rowIndex" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+            @foreach (var col in _columns)
+            {
+                if (_counter == 0)
+                {
+                    <th scope="row" @key="@col" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        @{
+                            col.CellContent(__builder, item);
+                        }
+                    </th>
+                }
+                else
+                {
+                    <td @key="@col" class="px-6 py-4">
+                        @{
+                            col.CellContent(__builder, item);
+                        }
+                    </td>
+                }
+                _counter++;
+            }
+            @if (EditAndRemoveButton)
+            {
+                <td class="py-4 py-3">
+                    <UbikButtonLink Type="button" Label="Edit" TItem="TGridItem" OnClick="() => EditItem(item)"></UbikButtonLink>
+                </td>
+                <td class="py-4 py-3">
+                    <UbikButtonLink AdditionalCssClass="pr-4" Type="button" Label="Delete" TItem="TGridItem" OnClick="() => DeleteItem(item)"></UbikButtonLink>
+                </td>
+            }
+        </tr>
+    }
+
+    // private void RenderRows(RenderTreeBuilder __builder)
+    // {
+    //     @if (Items != null && FieldNames != null)
+    //     {
+    //         @foreach (var item in Items)
+    //         {
+    //             _counter = 0;
+    //             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+    //                 @foreach (var column in FieldNames)
+    //                 {
+    //                     if (_counter == 0)
+    //                     {
+    //                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+    //                             @item!.GetType().GetProperty(column)!.GetValue(item, null)
+    //                         </th>
+    //                     }
+    //                     else
+    //                     {
+    //                         <td class="px-6 py-4">
+    //                             @item!.GetType().GetProperty(column)!.GetValue(item, null)
+    //                         </td>
+    //                     }
+    //                     _counter++;
+    //                 }
+    //                 @if (EditAndRemoveButton)
+    //                 {
+    //                     <td class="py-4 py-3">
+    //                         <UbikButtonLink Type="button" Label="Edit" TItem="TGridItem" OnClick="() => EditItem(item)"></UbikButtonLink>
+    //                     </td>
+    //                     <td class="py-4 py-3">
+    //                         <UbikButtonLink AdditionalCssClass="pr-4" Type="button" Label="Delete" TItem="TGridItem" OnClick="() => DeleteItem(item)"></UbikButtonLink>
+    //                     </td>
+    //                 }
+    //             </tr>
+    //         }
+    //     }
+    // }
 
     private void RenderLoading(RenderTreeBuilder __builder)
     {
-        @if (Items == null || FieldNames == null)
+        @if (Items == null)
         {
             <SpinnerInTable ColSpan="@_columnNumber"></SpinnerInTable>
         }
