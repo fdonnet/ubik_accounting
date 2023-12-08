@@ -6,6 +6,7 @@
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
+@using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Pagination
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
@@ -25,26 +26,31 @@
         </UbikModal>
     </CascadingValue>
 
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
-        <UbikGrid Items="@_accounts" TGridItem="AccountModel" HighlightFirstColumn="true">
-            <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
-            <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
-            <UbikColumnProperty Title="Domain" Property="@(a=> a.Domain)" Sortable="true"></UbikColumnProperty>
-            <UbikColumnProperty Title="Category" Property="@(a=> a.Category)" Sortable="true"></UbikColumnProperty>
-            @if (IsAuthorizedToModify)
-            {
-                <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
-                    <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialog(context))"></UbikButtonLink>
-                </UbikTemplateColumnTemplateColumn>
-                <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
-                    <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel"></UbikButtonLink>
-                </UbikTemplateColumnTemplateColumn>
-            }
-        </UbikGrid>
+    <div class="flex flex-col max-w-max mt-1">
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <UbikGrid Items="@_accounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="@pagination">
+                <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
+                <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
+                <UbikColumnProperty Title="Domain" Property="@(a=> a.Domain)" Sortable="true"></UbikColumnProperty>
+                <UbikColumnProperty Title="Category" Property="@(a=> a.Category)" Sortable="true"></UbikColumnProperty>
+                @if (IsAuthorizedToModify)
+                {
+                    <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
+                        <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialog(context))"></UbikButtonLink>
+                    </UbikTemplateColumnTemplateColumn>
+                    <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
+                        <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel"></UbikButtonLink>
+                    </UbikTemplateColumnTemplateColumn>
+                }
+            </UbikGrid>
+        </div>
+        @if(_numberOfAccounts != -1 && _numberOfAccounts > ITEMS_PER_PAGE)
+        {
+            <div class="mt-3 text-sm">
+                <UbikPaginator State="@pagination" />
+            </div>
+        }
     </div>
-}
-else
-{
 
 }
 
@@ -56,12 +62,14 @@ else
 } *@
 
 @code {
+    private const int ITEMS_PER_PAGE = 25;
     [Parameter]
     public bool IsAuthorizedToRead { get; set; } = false;
     [Parameter]
     public bool IsAuthorizedToModify { get; set; } = false;
 
     private IQueryable<AccountModel>? _accounts;
+    private int _numberOfAccounts = -1;
     private IEnumerable<GetAllCurrenciesResult>? _currencies;
     private ProblemDetailsContract? _error;
 
@@ -76,6 +84,8 @@ else
 
     private bool _editMode = false;
     private string _dialogTitle = "Add account";
+
+    PaginationState pagination = new PaginationState { ItemsPerPage = ITEMS_PER_PAGE };
 
     protected override async Task OnInitializedAsync()
     {
@@ -129,6 +139,7 @@ else
         {
             var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? []).ToAccountModel();
             _accounts = result.AsQueryable();
+            _numberOfAccounts = _accounts.Count();
         }
         else
         {

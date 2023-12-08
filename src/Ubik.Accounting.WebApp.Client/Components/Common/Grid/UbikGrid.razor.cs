@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns;
+using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Pagination;
 using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
@@ -19,6 +20,8 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
         [Parameter] public RenderFragment DataGridColumns { get; set; } = default!;
         [Parameter] public RenderFragment ChildContent { get; set; } = default!;
         [Parameter] public bool HighlightFirstColumn { get; set; } = false;
+        [Parameter] public PaginationState? Pagination { get; set; }
+
 
         private readonly InternalGridContext<TGridItem> _internalGridContext;
         private readonly List<UbikColumnBase<TGridItem>> _columns;
@@ -41,6 +44,9 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
         private object? _lastAssignedItemsOrProvider;
         private CancellationTokenSource? _pendingDataLoadCancellationTokenSource;
 
+        //Pagination
+        private readonly EventCallbackSubscriber<PaginationState> _currentPageItemsChanged;
+
         //Sort
         private UbikColumnBase<TGridItem>? _displayOptionsForColumn;
         public UbikColumnBase<TGridItem>? SortByColumn { get; private set; }
@@ -52,6 +58,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             _columns = [];
             _internalGridContext = new(this);
 
+            _currentPageItemsChanged = new(EventCallback.Factory.Create<PaginationState>(this, RefreshDataCoreAsync));
             _renderLoading = RenderLoading;
             _renderColumnHeaders = RenderColumnHeaders;
             _renderNonVirtualizedRows = RenderNonVirtualizedRows;
@@ -64,7 +71,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
         protected override Task OnParametersSetAsync()
         {
             //// The associated pagination state may have been added/removed/replaced
-            //_currentPageItemsChanged.SubscribeOrMove(Pagination?.CurrentPageItemsChanged);
+            _currentPageItemsChanged.SubscribeOrMove(Pagination?.CurrentPageItemsChanged);
 
             if (Items is not null && ItemsProvider is not null)
             {
@@ -80,9 +87,8 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
                 _asyncQueryExecutor = AsyncQueryExecutorSupplier.GetAsyncQueryExecutor(Services, Items);
             }
 
-            //var mustRefreshData = dataSourceHasChanged
-            //    || (Pagination?.GetHashCode() != _lastRefreshedPaginationStateHash);
-            var mustRefreshData = dataSourceHasChanged;
+            var mustRefreshData = dataSourceHasChanged
+                || (Pagination?.GetHashCode() != _lastRefreshedPaginationStateHash);
 
             // We don't want to trigger the first data load until we've collected the initial set of columns,
             // because they might perform some action like setting the default sort order, so it would be wasteful
@@ -131,14 +137,6 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             _collectingColumns = false;
         }
 
-        public Task ShowColumnOptionsAsync(UbikColumnBase<TGridItem> column)
-        {
-            _displayOptionsForColumn = column;
-            //_checkColumnOptionsPosition = true; // Triggers a call to JS to position the options element, apply autofocus, and any other setup
-            StateHasChanged();
-            return Task.CompletedTask;
-        }
-
         //Call a refresh
         public async Task RefreshDataAsync()
         {
@@ -165,6 +163,14 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             return RefreshDataAsync();
         }
 
+        public Task ShowColumnOptionsAsync(UbikColumnBase<TGridItem> column)
+        {
+            _displayOptionsForColumn = column;
+            //_checkColumnOptionsPosition = true; // Triggers a call to JS to position the options element, apply autofocus, and any other setup
+            StateHasChanged();
+            return Task.CompletedTask;
+        }
+
         private async Task RefreshDataCoreAsync()
         {
             // Move into a "loading" state, cancelling any earlier-but-still-pending load
@@ -182,20 +188,17 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             //else
             //{
             // If we're not using Virtualize, we build and execute a request against the items provider directly
-            //_lastRefreshedPaginationStateHash = Pagination?.GetHashCode();
-            //var startIndex = Pagination is null ? 0 : (Pagination.CurrentPageIndex * Pagination.ItemsPerPage);
-            //var request = new GridItemsProviderRequest<TGridItem>(
-            //    startIndex, Pagination?.ItemsPerPage, _sortByColumn, _sortByAscending, thisLoadCts.Token);
-
+            _lastRefreshedPaginationStateHash = Pagination?.GetHashCode();
+            var startIndex = Pagination is null ? 0 : (Pagination.CurrentPageIndex * Pagination.ItemsPerPage);
             var request = new GridItemsProviderRequest<TGridItem>(
-                    0, null, SortByColumn, SortByAscending, thisLoadCts.Token);
+                startIndex, Pagination?.ItemsPerPage, SortByColumn, SortByAscending, thisLoadCts.Token);
 
             var result = await ResolveItemsRequestAsync(request);
                 if (!thisLoadCts.IsCancellationRequested)
                 {
                     _currentNonVirtualizedViewItems = result.Items;
                     _ariaBodyRowCount = _currentNonVirtualizedViewItems.Count;
-                    //Pagination?.SetTotalItemCountAsync(result.TotalItemCount);
+                    Pagination?.SetTotalItemCountAsync(result.TotalItemCount);
                     _pendingDataLoadCancellationTokenSource = null;
                 }
             //}
