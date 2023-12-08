@@ -13,7 +13,6 @@ using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.ApiService.Common.Services;
 
-//TODO: manage to create container in parallel and see why it's create a container per test group...
 namespace Ubik.Accounting.Api.Tests.Integration
 {
     public class IntegrationTestWebAppFactory
