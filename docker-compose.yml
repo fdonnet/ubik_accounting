@@ -1,0 +1,93 @@
+services:
+  keycloak:
+
+    command:
+      - "start-dev --import-realm"
+
+    container_name: "ubik-keycloak"
+
+    entrypoint:
+      - "/opt/keycloak/bin/kc.sh"
+
+    environment:
+      - "KEYCLOAK_ADMIN=admin"
+      - "KEYCLOAK_ADMIN_PASSWORD=admin"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "LANG=en_US.UTF-8"
+
+    image: "quay.io/keycloak/keycloak:latest"
+
+    ipc: "private"
+
+    volumes:
+      - ./tests/Ubik.Accounting.Api.Tests.Integration/import/ubik-realm.json:/opt/keycloak/data/import/ubik-realm.json
+
+    logging:
+      driver: "json-file"
+      options: {}
+
+    network_mode: "bridge"
+
+    ports:
+      - "8080:8080/tcp"
+
+    user: "1000"
+
+  rabbitmq:
+    command:
+      - "rabbitmq-server"
+    container_name: "ubik-rabbitmq"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    environment:
+      - "PATH=/opt/rabbitmq/sbin:/opt/erlang/bin:/opt/openssl/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "ERLANG_INSTALL_PATH_PREFIX=/opt/erlang"
+      - "OPENSSL_INSTALL_PATH_PREFIX=/opt/openssl"
+      - "RABBITMQ_DATA_DIR=/var/lib/rabbitmq"
+      - "RABBITMQ_VERSION=3.12.7"
+      - "RABBITMQ_PGP_KEY_ID=0x0A9AF2115F4687BD29803A206B73A36E6026DFCA"
+      - "RABBITMQ_HOME=/opt/rabbitmq"
+      - "HOME=/var/lib/rabbitmq"
+      - "LANG=C.UTF-8"
+      - "LANGUAGE=C.UTF-8"
+      - "LC_ALL=C.UTF-8"
+    image: "rabbitmq:3.12-management"
+    ipc: "private"
+    logging:
+      driver: "json-file"
+      options: {}
+    network_mode: "bridge"
+    ports:
+      - "15672:15672/tcp"
+      - "5672:5672/tcp"
+    stdin_open: true
+    tty: true
+    volumes:
+      - "e2ae79fa4e97d24fdfdf97c75fcaa1d1c7d1b266e7f4f7cfbbc6dccc343b4aa8:/var/lib/rabbitmq"
+
+  redis-stack:
+    command:
+      - "/entrypoint.sh"
+    container_name: "ubik-redis-stack"
+    environment:
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "REDISBLOOM_ARGS="
+      - "REDISEARCH_ARGS="
+      - "REDISJSON_ARGS="
+      - "REDISTIMESERIES_ARGS="
+      - "REDIS_ARGS="
+    image: "redis/redis-stack:latest"
+    ipc: "private"
+    logging:
+      driver: "json-file"
+      options: {}
+    network_mode: "bridge"
+    ports:
+      - "6379:6379/tcp"
+      - "8001:8001/tcp"
+
+version: "3.6"
+
+volumes:
+  e2ae79fa4e97d24fdfdf97c75fcaa1d1c7d1b266e7f4f7cfbbc6dccc343b4aa8:
+    external: true
