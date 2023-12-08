@@ -14,6 +14,8 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
         [Parameter] public SortDirection InitialSortDirection { get; set; } = default;
         [Parameter] public bool IsDefaultSortColumn { get; set; } = false;
 
+        public bool ShowSortIcon { get; set; } = true;
+
 
         //The context
         public UbikGrid<TGridItem> Grid => InternalGridContext.Grid;
@@ -29,6 +31,12 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
         public UbikColumnBase()
         {
             HeaderContent = RenderDefaultHeaderContent;
+        }
+
+        protected override void OnInitialized()
+        {
+            if (IsDefaultSortColumn)
+                ShowSortIcon = false;
         }
     }
 }

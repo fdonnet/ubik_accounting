@@ -39,16 +39,6 @@
                 @col.HeaderContent
             </th>
         }
-
-        @if (EditAndRemoveButton)
-        {
-            <th scope="col" class="px-6 py-3">
-
-            </th>
-            <th scope="col" class="py-4 py-3">
-
-            </th>
-        }
     }
 
     private void RenderNonVirtualizedRows(RenderTreeBuilder __builder)
@@ -78,7 +68,7 @@
         <tr aria-rowindex="@rowIndex" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
             @foreach (var col in _columns)
             {
-                if (_counter == 0)
+                if (_counter == 0 && HighlightFirstColumn)
                 {
                     <th scope="row" @key="@col" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         @{
@@ -96,55 +86,8 @@
                 }
                 _counter++;
             }
-            @if (EditAndRemoveButton)
-            {
-                <td class="py-4 py-3">
-                    <UbikButtonLink Type="button" Label="Edit" TItem="TGridItem" OnClick="() => EditItem(item)"></UbikButtonLink>
-                </td>
-                <td class="py-4 py-3">
-                    <UbikButtonLink AdditionalCssClass="pr-4" Type="button" Label="Delete" TItem="TGridItem" OnClick="() => DeleteItem(item)"></UbikButtonLink>
-                </td>
-            }
         </tr>
     }
-
-    // private void RenderRows(RenderTreeBuilder __builder)
-    // {
-    //     @if (Items != null && FieldNames != null)
-    //     {
-    //         @foreach (var item in Items)
-    //         {
-    //             _counter = 0;
-    //             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-    //                 @foreach (var column in FieldNames)
-    //                 {
-    //                     if (_counter == 0)
-    //                     {
-    //                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-    //                             @item!.GetType().GetProperty(column)!.GetValue(item, null)
-    //                         </th>
-    //                     }
-    //                     else
-    //                     {
-    //                         <td class="px-6 py-4">
-    //                             @item!.GetType().GetProperty(column)!.GetValue(item, null)
-    //                         </td>
-    //                     }
-    //                     _counter++;
-    //                 }
-    //                 @if (EditAndRemoveButton)
-    //                 {
-    //                     <td class="py-4 py-3">
-    //                         <UbikButtonLink Type="button" Label="Edit" TItem="TGridItem" OnClick="() => EditItem(item)"></UbikButtonLink>
-    //                     </td>
-    //                     <td class="py-4 py-3">
-    //                         <UbikButtonLink AdditionalCssClass="pr-4" Type="button" Label="Delete" TItem="TGridItem" OnClick="() => DeleteItem(item)"></UbikButtonLink>
-    //                     </td>
-    //                 }
-    //             </tr>
-    //         }
-    //     }
-    // }
 
     private void RenderLoading(RenderTreeBuilder __builder)
     {

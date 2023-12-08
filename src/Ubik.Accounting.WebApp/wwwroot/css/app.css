@@ -1060,6 +1060,10 @@ p {
   margin-right: 0.5rem;
 }
 
+.ms-2 {
+  margin-inline-start: 0.5rem;
+}
+
 .ms-auto {
   margin-inline-start: auto;
 }
@@ -1128,6 +1132,10 @@ p {
   height: 0.75rem;
 }
 
+.h-4 {
+  height: 1rem;
+}
+
 .h-5 {
   height: 1.25rem;
 }
@@ -1170,6 +1178,10 @@ p {
 
 .w-3 {
   width: 0.75rem;
+}
+
+.w-4 {
+  width: 1rem;
 }
 
 .w-5 {
@@ -1233,6 +1245,11 @@ p {
   flex-grow: 1;
 }
 
+.rotate-180 {
+  --tw-rotate: 180deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -1265,6 +1282,10 @@ p {
 
 .items-center {
   align-items: center;
+}
+
+.justify-start {
+  justify-content: flex-start;
 }
 
 .justify-center {
@@ -1542,10 +1563,6 @@ p {
 
 .pb-2 {
   padding-bottom: 0.5rem;
-}
-
-.pr-4 {
-  padding-right: 1rem;
 }
 
 .ps-0 {
@@ -2088,6 +2105,10 @@ p {
 
   .sm\:mb-4 {
     margin-bottom: 1rem;
+  }
+
+  .sm\:ms-3 {
+    margin-inline-start: 0.75rem;
   }
 
   .sm\:mt-3 {

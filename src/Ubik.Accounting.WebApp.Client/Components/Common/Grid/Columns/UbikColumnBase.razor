@@ -24,9 +24,28 @@
 
         if (Sortable.HasValue ? Sortable.Value : IsSortableByDefault())
         {
-            <button type="button" @onclick="@(() => Grid.SortByColumnAsync(this))" class="uppercase">
-                <span>@Title</span>
-                <div class="sort-indicator" aria-hidden="true"></div>
+            <button type="button" @onclick="@(() => Grid.SortByColumnAsync(this))" class="uppercase w-full">
+                <div class="flex justify-start">
+                    <div>@Title</div>
+                    <div class="text-gray-900 dark:text-white items-center ms-2 sm:ms-3 h-4 w-4">
+                        @if (Grid.SortByColumn == this && this.ShowSortIcon)
+                        {
+                            if(Grid.SortByAscending)
+                            {
+                                <svg class="h-full w-full fill-current rotate-180" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d=" M 2 3.25 L 12 20.75 L 22 3.25 L 12 10 z" vector-effect="non-scaling-stroke" />
+                                </svg>
+                            }
+                            else
+                            {
+                                <svg class="h-full w-full fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M 2 3.25 L 12 20.75 L 22 3.25 L 12 10 z" vector-effect="non-scaling-stroke" />
+                                </svg>
+                            }
+                        }
+                       
+                    </div>
+                </div>
             </button>
         }
         else

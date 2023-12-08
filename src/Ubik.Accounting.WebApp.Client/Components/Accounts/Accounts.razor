@@ -26,11 +26,17 @@
     </CascadingValue>
 
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-max">
-        <UbikGrid Items="@_accounts" EditAndRemoveButton="@IsAuthorizedToModify" TGridItem="AccountModel" OnEditItem="EditAccountDialog">
+        <UbikGrid Items="@_accounts" TGridItem="AccountModel" HighlightFirstColumn="true">
             <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
             <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
             <UbikColumnProperty Title="Domain" Property="@(a=> a.Domain)" Sortable="true"></UbikColumnProperty>
             <UbikColumnProperty Title="Category" Property="@(a=> a.Category)" Sortable="true"></UbikColumnProperty>
+            <UbikTemplateColumnTemplateColumn Sortable="false" Title="">
+                <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialog(context))"></UbikButtonLink>
+            </UbikTemplateColumnTemplateColumn>
+            <UbikTemplateColumnTemplateColumn Sortable="false" Title="">
+                <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel"></UbikButtonLink>
+            </UbikTemplateColumnTemplateColumn>
         </UbikGrid>
     </div>
 }

@@ -16,13 +16,9 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
 
         [Parameter] public IQueryable<TGridItem>? Items { get; set; }
         [Parameter] public GridItemsProvider<TGridItem>? ItemsProvider { get; set; }
-
-        [Parameter] public bool EditAndRemoveButton { get; set; } = false;
-        [Parameter] public EventCallback<TGridItem> OnEditItem { get; set; }
-        [Parameter] public EventCallback<TGridItem> OnDeleteItem { get; set; }
-
         [Parameter] public RenderFragment DataGridColumns { get; set; } = default!;
         [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+        [Parameter] public bool HighlightFirstColumn { get; set; } = false;
 
         private readonly InternalGridContext<TGridItem> _internalGridContext;
         private readonly List<UbikColumnBase<TGridItem>> _columns;
@@ -47,13 +43,13 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
 
         //Sort
         private UbikColumnBase<TGridItem>? _displayOptionsForColumn;
-        private UbikColumnBase<TGridItem>? _sortByColumn;
-        private bool _sortByAscending;
+        public UbikColumnBase<TGridItem>? SortByColumn { get; private set; }
+        public bool SortByAscending { get; private set; }
         private bool _checkColumnOptionsPosition;
 
         public UbikGrid()
         {
-            _columns = new();
+            _columns = [];
             _internalGridContext = new(this);
 
             _renderLoading = RenderLoading;
@@ -116,10 +112,10 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             {
                 _columns.Add(column);
 
-                if (isDefaultSortColumn && _sortByColumn is null && initialSortDirection.HasValue)
+                if (isDefaultSortColumn && SortByColumn is null && initialSortDirection.HasValue)
                 {
-                    _sortByColumn = column;
-                    _sortByAscending = initialSortDirection.Value != SortDirection.Descending;
+                    SortByColumn = column;
+                    SortByAscending = initialSortDirection.Value != SortDirection.Descending;
                 }
             }
         }
@@ -132,7 +128,6 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
 
         private void FinishCollectingColumns()
         {
-            _columnNumber = EditAndRemoveButton ? _columns.Count + 2 : _columns.Count;
             _collectingColumns = false;
         }
 
@@ -153,15 +148,18 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
 
         public Task SortByColumnAsync(UbikColumnBase<TGridItem> column, SortDirection direction = SortDirection.Auto)
         {
-            _sortByAscending = direction switch
+            if(column.IsDefaultSortColumn)
+                column.ShowSortIcon = true;
+
+            SortByAscending = direction switch
             {
                 SortDirection.Ascending => true,
                 SortDirection.Descending => false,
-                SortDirection.Auto => _sortByColumn != column || !_sortByAscending,
+                SortDirection.Auto => SortByColumn != column || !SortByAscending,
                 _ => throw new NotSupportedException($"Unknown sort direction {direction}"),
             };
 
-            _sortByColumn = column;
+            SortByColumn = column;
 
             StateHasChanged(); // We want to see the updated sort order in the header, even before the data query is completed
             return RefreshDataAsync();
@@ -190,7 +188,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             //    startIndex, Pagination?.ItemsPerPage, _sortByColumn, _sortByAscending, thisLoadCts.Token);
 
             var request = new GridItemsProviderRequest<TGridItem>(
-                    0, null, _sortByColumn, _sortByAscending, thisLoadCts.Token);
+                    0, null, SortByColumn, SortByAscending, thisLoadCts.Token);
 
             var result = await ResolveItemsRequestAsync(request);
                 if (!thisLoadCts.IsCancellationRequested)
@@ -228,20 +226,9 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             }
         }
 
-        private async Task EditItem(TGridItem currentItem)
-        {
-            await OnEditItem.InvokeAsync(currentItem);
-        }
-
-        private async Task DeleteItem(TGridItem currentItem)
-        {
-            await OnDeleteItem.InvokeAsync(currentItem);
-        }
-
-
         private string AriaSortValue(UbikColumnBase<TGridItem> column)
-            => _sortByColumn == column
-                ? (_sortByAscending ? "ascending" : "descending")
+            => SortByColumn == column
+                ? (SortByAscending ? "ascending" : "descending")
                 : "none";
     }
 }
