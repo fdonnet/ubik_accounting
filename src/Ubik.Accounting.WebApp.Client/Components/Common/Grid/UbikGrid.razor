@@ -35,7 +35,7 @@
     {
         @foreach (var col in _columns)
         {
-            <th scope="col" class="px-6 py-3" aria-sort="@AriaSortValue(col)" @key="@col">
+            <th scope="col" class="p-0" aria-sort="@AriaSortValue(col)" @key="@col">
                 @col.HeaderContent
             </th>
         }
@@ -63,6 +63,7 @@
         // }
     }
 
+    //TODO: review this part with Tailwind Apply style or safelist to avoid spagetti code
     private void RenderRow(RenderTreeBuilder __builder, int rowIndex, TGridItem item)
     {
         <tr aria-rowindex="@rowIndex" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
@@ -70,19 +71,41 @@
             {
                 if (_counter == 0 && HighlightFirstColumn)
                 {
-                    <th scope="row" @key="@col" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        @{
-                            col.CellContent(__builder, item);
-                        }
-                    </th>
+                    if(col.SmallXPadding)
+                    {
+                        <th scope="row" @key="@col" class="px-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            @{
+                                col.CellContent(__builder, item);
+                            }
+                        </th>
+                    }
+                    else
+                    {
+                        <th scope="row" @key="@col" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            @{
+                                col.CellContent(__builder, item);
+                            }
+                        </th>
+                    }
                 }
                 else
                 {
-                    <td @key="@col" class="px-6 py-4">
-                        @{
-                            col.CellContent(__builder, item);
-                        }
-                    </td>
+                    if (col.SmallXPadding)
+                    {
+                        <td @key="@col" class="px-3 py-4">
+                            @{
+                                col.CellContent(__builder, item);
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td @key="@col" class="px-6 py-4">
+                            @{
+                                col.CellContent(__builder, item);
+                            }
+                        </td>
+                    }
                 }
                 _counter++;
             }

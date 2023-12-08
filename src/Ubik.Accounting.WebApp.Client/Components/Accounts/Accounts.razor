@@ -31,12 +31,15 @@
             <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
             <UbikColumnProperty Title="Domain" Property="@(a=> a.Domain)" Sortable="true"></UbikColumnProperty>
             <UbikColumnProperty Title="Category" Property="@(a=> a.Category)" Sortable="true"></UbikColumnProperty>
-            <UbikTemplateColumnTemplateColumn Sortable="false" Title="">
-                <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialog(context))"></UbikButtonLink>
-            </UbikTemplateColumnTemplateColumn>
-            <UbikTemplateColumnTemplateColumn Sortable="false" Title="">
-                <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel"></UbikButtonLink>
-            </UbikTemplateColumnTemplateColumn>
+            @if (IsAuthorizedToModify)
+            {
+                <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
+                    <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialog(context))"></UbikButtonLink>
+                </UbikTemplateColumnTemplateColumn>
+                <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
+                    <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel"></UbikButtonLink>
+                </UbikTemplateColumnTemplateColumn>
+            }
         </UbikGrid>
     </div>
 }
