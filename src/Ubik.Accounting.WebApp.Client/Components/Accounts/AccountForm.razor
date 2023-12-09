@@ -61,7 +61,7 @@
         </div>
     </div>
     <div class="mt-2">
-        <ErrCannotSumbit @ref="_cannotSubmitMsg"></ErrCannotSumbit>
+        <ErrCannotSubmit @ref="_cannotSubmitMsg"></ErrCannotSubmit>
     </div>
 </EditForm>
 
@@ -76,7 +76,7 @@
     [Parameter]
     public EventCallback OnClose { get; set; }
 
-    private ErrCannotSumbit _cannotSubmitMsg =default!;
+    private ErrCannotSubmit _cannotSubmitMsg =default!;
     private UbikButton _buttonSubmitEdit = default!;
     private UbikButton _buttonSubmitAdd = default!;
 
