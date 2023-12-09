@@ -1517,10 +1517,6 @@ p {
   fill: currentColor;
 }
 
-.fill-white {
-  fill: #fff;
-}
-
 .p-0 {
   padding: 0px;
 }
