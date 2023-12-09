@@ -38,6 +38,8 @@ module.exports = {
     'dark:focus:ring-blue-500',
     'dark:focus:border-blue-500',
     'dark:border-gray-600',
+    'invisible',
+    'cursor-not-allowed'
   ],
   theme: {
     extend: {
