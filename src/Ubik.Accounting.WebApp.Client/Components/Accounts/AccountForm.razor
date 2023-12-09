@@ -1,6 +1,7 @@
 ﻿@using Ubik.Accounting.Contracts.Accounts.Enums
 @using Ubik.Accounting.Contracts.Currencies.Results
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
+@using Ubik.Accounting.WebApp.Client.Components.Common.Errors;
 
 <EditForm Model="@Account" OnSubmit="Submit" FormName="AddAccount" class="p-4 md:p-5">
     <DataAnnotationsValidator />
@@ -59,6 +60,7 @@
             <UbikButtonAlternative Type="button" AdditionalCssClass="mt-4" Label="Close" OnClick="Close"></UbikButtonAlternative>
         </div>
     </div>
+    <ErrCannotSumbit @ref="_cannotSubmitMsg"></ErrCannotSumbit>
 </EditForm>
 
 @code {
@@ -72,8 +74,9 @@
     [Parameter]
     public EventCallback OnClose { get; set; }
 
+    private ErrCannotSumbit _cannotSubmitMsg =default!;
 
-    private void Submit(EditContext editContext)
+    private async Task Submit(EditContext editContext)
     {
         var valid = editContext.Validate();
         Console.WriteLine(CurrenciesList);
@@ -83,6 +86,10 @@
         Console.WriteLine(Account!.Category);
         Console.WriteLine(Account!.Domain);
         Console.WriteLine(Account!.Description);
+        if(!valid)
+        {
+            await _cannotSubmitMsg.ShowError();
+        }
     }
 
     private async Task Close()

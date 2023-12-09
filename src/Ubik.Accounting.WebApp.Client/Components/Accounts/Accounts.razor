@@ -26,13 +26,13 @@
         {
             <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" OnClick="AddAccountDialog"></UbikButton>
         }
-    }
 
-    <CascadingValue Name="AccountModel" Value="@_accountCurrent">
-        <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
-            <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialog"></AccountForm>
-        </UbikModal>
-    </CascadingValue>
+        <CascadingValue Name="AccountModel" Value="@_accountCurrent">
+            <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
+                <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialog"></AccountForm>
+            </UbikModal>
+        </CascadingValue>
+    }
 
     <div class="flex flex-col max-w-max mt-1">
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">

@@ -1,0 +1,56 @@
+﻿@inject IJSRuntime JS
+<div id="@_alertId" class="hidden flex items-center p-4 mb-4 text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+    <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+        <g>
+            <g id="Error_1_">
+                <g id="Error">
+                    <circle cx="16" cy="16" id="BG" r="16" class="fill-current" />
+                    <path d="M14.5,25h3v-3h-3V25z M14.5,6v13h3V6H14.5z" id="Exclamatory_x5F_Sign" class="fill-white" />
+                </g>
+            </g>
+        </g>
+    </svg>
+    <span class="sr-only">Info</span>
+    <div class="ms-3 text-sm font-medium">
+        <p class="text-red-800 dark:text-red-400">Cannot submit the data.</p>
+        <p class="text-red-800 dark:text-red-400">Pls check the field(s) you need to update above before proceding again.</p>
+    </div>
+    <button type="button" @onclick="CloseError" class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700" aria-label="Close">
+        <span class="sr-only">Close</span>
+        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+        </svg>
+    </button>
+</div>
+
+@code {
+    private IJSObjectReference? _jsModule = default!;
+
+    private string _alertId = $"alert-submit-{Guid.NewGuid()}";
+
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./Components/Common/Errors/ErrCannotSumbit.razor.js");
+        }
+    }
+
+    public async Task ShowError()
+    {
+        await _jsModule!.InvokeVoidAsync("openErrorSubmit", _alertId);
+    }
+
+    public async Task CloseError()
+    {
+        await _jsModule!.InvokeVoidAsync("closeErrorSubmit", _alertId);
+    }
+}
