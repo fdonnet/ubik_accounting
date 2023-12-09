@@ -18,8 +18,8 @@ namespace Ubik.Accounting.WebApp.Security
 
         public async Task SetUserTokenAsync(TokenCacheEntry token)
         {
-            if (await GetUserTokenAsync(token.UserId) != null)
-                await _cache.RemoveAsync(token.UserId);
+            //if (await GetUserTokenAsync(token.UserId) != null)
+            //    await _cache.RemoveAsync(token.UserId);
 
             var toCache = JsonSerializer.SerializeToUtf8Bytes(token, options: _serializerOptions);
 
