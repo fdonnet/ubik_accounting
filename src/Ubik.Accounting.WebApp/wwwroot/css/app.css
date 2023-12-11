@@ -1260,6 +1260,10 @@ p {
   width: 100%;
 }
 
+.min-w-\[70px\] {
+  min-width: 70px;
+}
+
 .max-w-4xl {
   max-width: 56rem;
 }
@@ -1332,6 +1336,10 @@ p {
 
 .cursor-wait {
   cursor: wait;
+}
+
+.list-disc {
+  list-style-type: disc;
 }
 
 .grid-cols-1 {
@@ -1692,6 +1700,10 @@ p {
   text-align: center;
 }
 
+.font-\[\'Inconsolata\'\] {
+  font-family: 'Inconsolata';
+}
+
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
@@ -1719,6 +1731,10 @@ p {
 
 .font-bold {
   font-weight: 700;
+}
+
+.font-light {
+  font-weight: 300;
 }
 
 .font-medium {
@@ -2303,8 +2319,20 @@ p {
     margin-inline-start: 0.75rem;
   }
 
+  .sm\:ms-4 {
+    margin-inline-start: 1rem;
+  }
+
   .sm\:mt-3 {
     margin-top: 0.75rem;
+  }
+
+  .sm\:mt-4 {
+    margin-top: 1rem;
+  }
+
+  .sm\:mt-5 {
+    margin-top: 1.25rem;
   }
 
   .sm\:block {
