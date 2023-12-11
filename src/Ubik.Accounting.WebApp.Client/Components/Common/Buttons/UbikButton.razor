@@ -1,5 +1,5 @@
 ﻿@inject IJSRuntime JS
-<button id="@_buttonId" type="@Type" @onclick="Click" class="@(AdditionalCssClass == string.Empty ? string.Empty : AdditionalCssClass + " ")text-white relative inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+<button id="@_buttonId" type="@Type" @onclick="ClickAsync" class="@(AdditionalCssClass == string.Empty ? string.Empty : AdditionalCssClass + " ")text-white relative inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
     <div class="visible flex" id="@_contentButtonId">
         @ChildContent
         @Label
@@ -39,17 +39,17 @@
         }
     }
 
-    public async Task LoadingState()
+    public async Task LoadingStateAsync()
     {
         await _jsModule!.InvokeVoidAsync("loadingModeUp", new[] { _contentButtonId, _spinnerButtonId, _buttonId });
     }
 
-    public async Task LoadingStateFinished()
+    public async Task LoadingStateFinishedAsync()
     {
         await _jsModule!.InvokeVoidAsync("loadingModeDown", new[] { _contentButtonId, _spinnerButtonId, _buttonId });
     }
 
-    private async Task Click()
+    private async Task ClickAsync()
     {
         await OnClick.InvokeAsync();
     }

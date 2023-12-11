@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Enums;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.Classifications.Results;
@@ -42,6 +43,19 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
                 CurrencyId = x.CurrencyId,
                 Version = x.Version
             });
+        }
+
+        public static AddAccountCommand ToAddAccountCommand(this AccountModel accountModel)
+        {
+            return new AddAccountCommand()
+            {
+                Code = accountModel.Code,
+                Label = accountModel.Label,
+                Category = (AccountCategory)accountModel.Category!,
+                Domain = (AccountDomain)accountModel.Domain!,
+                Description = accountModel.Description,
+                CurrencyId = (Guid)accountModel.CurrencyId!
+            };
         }
     }
 }

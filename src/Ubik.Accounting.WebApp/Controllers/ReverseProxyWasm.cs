@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Ubik.Accounting.Webapp.Shared.Facades;
+using Ubik.Accounting.Contracts.Accounts.Commands;
 
 
 namespace Ubik.Accounting.WebApp.Controllers
@@ -23,11 +24,11 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_currency_read")]
-        [HttpGet("/GetAllCurrencies")]
-        public async Task CurrenciesList()
+        [Authorize(Roles = "ubik_accounting_account_write")]
+        [HttpPost("/AddAccount")]
+        public async Task AddAccount(AddAccountCommand command)
         {
-            var response = await client.GetAllCurrenciesAsync();
+            var response = await client.AddAccountsAsync(command);
             await ForwardResponse(response);
         }
 
@@ -36,6 +37,14 @@ namespace Ubik.Accounting.WebApp.Controllers
         public async Task Account(Guid id)
         {
             var response = await client.GetAccountAsync(id);
+            await ForwardResponse(response);
+        }
+
+        [Authorize(Roles = "ubik_accounting_currency_read")]
+        [HttpGet("/GetAllCurrencies")]
+        public async Task CurrenciesList()
+        {
+            var response = await client.GetAllCurrenciesAsync();
             await ForwardResponse(response);
         }
 

@@ -24,12 +24,12 @@
         }
         else
         {
-            <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" OnClick="AddAccountDialog"></UbikButton>
+            <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" OnClick="AddAccountDialogAsync"></UbikButton>
         }
 
         <CascadingValue Name="AccountModel" Value="@_accountCurrent">
             <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
-                <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialog"></AccountForm>
+                <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialogAsync"></AccountForm>
             </UbikModal>
         </CascadingValue>
     }
@@ -44,7 +44,7 @@
                 @if (IsAuthorizedToModify)
                 {
                     <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
-                        <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialog(context))"></UbikButtonLink>
+                        <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialogAsync(context))"></UbikButtonLink>
                     </UbikTemplateColumnTemplateColumn>
                     <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
                         <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel"></UbikButtonLink>
@@ -118,7 +118,7 @@
         }
     }
 
-    private async Task EditAccountDialog(AccountModel currentAccount)
+    private async Task EditAccountDialogAsync(AccountModel currentAccount)
     {
         _dialogTitle = $"Edit account ({currentAccount.Code})";
         _editMode = true;
@@ -126,7 +126,7 @@
         await _dialog.ShowDialog();
     }
 
-    private async Task AddAccountDialog()
+    private async Task AddAccountDialogAsync()
     {
         _dialogTitle = "Add an account";
         _editMode = false;
@@ -134,7 +134,7 @@
         await _dialog.ShowDialog();
     }
 
-    private async Task CloseDialog()
+    private async Task CloseDialogAsync()
     {
         await _dialog.CloseDialog();
     }

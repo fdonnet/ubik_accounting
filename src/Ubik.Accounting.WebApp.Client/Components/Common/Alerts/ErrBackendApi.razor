@@ -90,7 +90,7 @@
         await _jsModule!.InvokeVoidAsync("dismissError", _alertId);
     }
 
-    public async Task ShowError(HttpResponseMessage? errorResponse = null)
+    public async Task ShowErrorAsync(HttpResponseMessage? errorResponse = null)
     {
         if (errorResponse == null)
         {
@@ -109,6 +109,8 @@
                 _currentError = GenerateStandardError((int)errorResponse.StatusCode);
             }
         }
+
+        StateHasChanged();
         await _jsModule!.InvokeVoidAsync("showError", _alertId);
     }
 

@@ -1,5 +1,5 @@
 ﻿@typeparam TItem
-<button type="@Type" class="@(AdditionalCssClass == string.Empty ? string.Empty : AdditionalCssClass + " ")font-medium text-blue-600 dark:text-blue-500 hover:underline" @onclick="(args)=> Click(args,Item)">@Label</button>
+<button type="@Type" class="@(AdditionalCssClass == string.Empty ? string.Empty : AdditionalCssClass + " ")font-medium text-blue-600 dark:text-blue-500 hover:underline" @onclick="(args)=> ClickAsync(args,Item)">@Label</button>
 
 @code {
     [Parameter]
@@ -13,7 +13,7 @@
     [Parameter]
     public TItem? Item { get; set; }
 
-    private async Task Click(MouseEventArgs e, TItem? currentItem)
+    private async Task ClickAsync(MouseEventArgs e, TItem? currentItem)
     {
         await OnClick.InvokeAsync(currentItem);
     }

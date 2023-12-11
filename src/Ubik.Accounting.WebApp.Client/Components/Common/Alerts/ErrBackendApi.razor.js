@@ -1,8 +1,9 @@
 export function showError(alertId) {
   var panel = document.getElementById(alertId);
-  panel.classList.remove("block");
-  panel.classList.add("hidden");
+  panel.classList.remove("hidden");
+  panel.classList.add("block");
 }
+
 export function dismissError(alertId) {
   var panel = document.getElementById(alertId);
   panel.classList.remove("block");

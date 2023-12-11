@@ -1,9 +1,12 @@
 ﻿@using Ubik.Accounting.Contracts.Accounts.Enums
 @using Ubik.Accounting.Contracts.Currencies.Results
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
-@using Ubik.Accounting.WebApp.Client.Components.Common.Errors;
+@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts;
+@using Ubik.Accounting.Webapp.Shared.Facades
 
-<EditForm Model="@Account" OnSubmit="Submit" FormName="AddAccount" class="p-4 md:p-5">
+@inject IAccountingApiClient Client
+
+<EditForm Model="@Account" OnSubmit="SubmitAsync" FormName="AddAccount" class="p-4 md:p-5">
     <DataAnnotationsValidator />
     <div class="grid gap-4 mb-4 grid-cols-2">
         <div class="col-span-2 sm:col-span-1">
@@ -57,12 +60,13 @@
             }
         </div>
         <div>
-            <UbikButtonAlternative Type="button" Label="Close" OnClick="Close"></UbikButtonAlternative>
+            <UbikButtonAlternative Type="button" Label="Close" OnClick="CloseAsync"></UbikButtonAlternative>
         </div>
     </div>
     <div class="mt-3 sm:mt-4">
+        <MsgSuccess SuccessMessage="please wait, this form is closing ..."></MsgSuccess>
         <ErrCannotSubmit @ref="_cannotSubmitMsg"></ErrCannotSubmit>
-        <ErrBackendApi></ErrBackendApi>
+        <ErrBackendApi @ref="_backendError"></ErrBackendApi>
     </div>
 </EditForm>
 
@@ -78,33 +82,54 @@
     public EventCallback OnClose { get; set; }
 
     private ErrCannotSubmit _cannotSubmitMsg =default!;
+    private ErrBackendApi _backendError = default!;
     private UbikButton _buttonSubmitEdit = default!;
     private UbikButton _buttonSubmitAdd = default!;
 
-    private async Task Submit(EditContext editContext)
+    private async Task SubmitAsync(EditContext editContext)
     {
         var valid = editContext.Validate();
-        Console.WriteLine(CurrenciesList);
-        Console.WriteLine(Account!.Code);
-        Console.WriteLine(Account!.CurrencyId);
-        Console.WriteLine(Account!.Label);
-        Console.WriteLine(Account!.Category);
-        Console.WriteLine(Account!.Domain);
-        Console.WriteLine(Account!.Description);
 
-        await _buttonSubmitAdd.LoadingState();
+        await _buttonSubmitAdd.LoadingStateAsync();
 
-        if(!valid)
+        if(valid)
         {
-            await _cannotSubmitMsg.ShowError();
+            var response = await SendDataAsync();
+
+            if(response != null && response.IsSuccessStatusCode)
+            {
+                await CloseAsync();
+            }
+            else
+            {
+                await _backendError.ShowErrorAsync(response);
+            }
+        }
+        else
+        {
+            await _cannotSubmitMsg.ShowErrorAsync();
         }
 
-        await _buttonSubmitAdd.LoadingStateFinished();
+        await _buttonSubmitAdd.LoadingStateFinishedAsync();
     }
 
-    private async Task Close()
+    private async Task CloseAsync()
     {
         await OnClose.InvokeAsync();
+    }
+
+    private async Task<HttpResponseMessage?> SendDataAsync()
+    {
+        if(EditMode)
+        {
+            var payLoad = Account.ToAddAccountCommand();
+            return await Client.AddAccountsAsync(payLoad);
+        }
+        else
+        {
+            var payLoad = Account.ToAddAccountCommand();
+            return await Client.AddAccountsAsync(payLoad);
+        }
     }
 
 }
