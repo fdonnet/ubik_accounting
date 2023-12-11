@@ -17,31 +17,40 @@ namespace Ubik.Accounting.WebApp.Controllers
         readonly IAccountingApiClient client = client;
 
         [Authorize(Roles = "ubik_accounting_account_read")]
-        [HttpGet("/GetAllAccounts")]
+        [HttpGet("/Accounts")]
         public async Task AccountsList()
         {
             var response = await client.GetAllAccountsAsync();
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_account_write")]
-        [HttpPost("/AddAccount")]
-        public async Task AddAccount(AddAccountCommand command)
-        {
-            var response = await client.AddAccountsAsync(command);
-            await ForwardResponse(response);
-        }
-
         [Authorize(Roles = "ubik_accounting_account_read")]
-        [HttpGet("/GetAccount/{id}")]
+        [HttpGet("/Accounts/{id}")]
         public async Task Account(Guid id)
         {
             var response = await client.GetAccountAsync(id);
             await ForwardResponse(response);
         }
 
+
+        [Authorize(Roles = "ubik_accounting_account_write")]
+        [HttpPost("/Accounts")]
+        public async Task AddAccount(AddAccountCommand command)
+        {
+            var response = await client.AddAccountsAsync(command);
+            await ForwardResponse(response);
+        }
+
+        [Authorize(Roles = "ubik_accounting_account_write")]
+        [HttpPut("/Accounts/{id}")]
+        public async Task AddAccount(Guid id, UpdateAccountCommand command)
+        {
+            var response = await client.UpdateAccountsAsync(id,command);
+            await ForwardResponse(response);
+        }
+
         [Authorize(Roles = "ubik_accounting_currency_read")]
-        [HttpGet("/GetAllCurrencies")]
+        [HttpGet("/Currencies")]
         public async Task CurrenciesList()
         {
             var response = await client.GetAllCurrenciesAsync();

@@ -1,8 +1,32 @@
-﻿<div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+﻿@inject IJSRuntime JS
+
+<div id="@_alertId" class="hidden p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
     <span class="font-medium">Success,</span> @SuccessMessage
 </div>
 
 @code {
     [Parameter]
     public string SuccessMessage { get; set; } = "Pls wait, this form is closing...";
+
+    private IJSObjectReference? _jsModule = default!;
+    private string _alertId = $"sucess-{Guid.NewGuid()}";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./Components/Common/Alerts/MsgSuccess.razor.js");
+        }
+    }
+
+    public async Task ShowSuccessAsync()
+    {
+        await _jsModule!.InvokeVoidAsync("showSuccess", _alertId);
+    }
 }

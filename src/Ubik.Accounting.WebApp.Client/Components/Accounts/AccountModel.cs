@@ -57,5 +57,20 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
                 CurrencyId = (Guid)accountModel.CurrencyId!
             };
         }
+
+        public static UpdateAccountCommand ToUpdateAccountCommand(this AccountModel accountModel)
+        {
+            return new UpdateAccountCommand()
+            {
+                Id = accountModel.Id,
+                Code = accountModel.Code,
+                Label = accountModel.Label,
+                Category = (AccountCategory)accountModel.Category!,
+                Domain = (AccountDomain)accountModel.Domain!,
+                Description = accountModel.Description,
+                CurrencyId = (Guid)accountModel.CurrencyId!,
+                Version = accountModel.Version
+            };
+        }
     }
 }

@@ -54,7 +54,7 @@
             }
             else
             {
-                <UbikButton @ref="@_buttonSubmitAdd"  Type="submit" Label="Add account">
+                <UbikButton @ref="@_buttonSubmitAdd" Type="submit" Label="Add account">
                     <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                 </UbikButton>
             }
@@ -64,9 +64,9 @@
         </div>
     </div>
     <div class="mt-3 sm:mt-4">
-        <MsgSuccess SuccessMessage="please wait, this form is closing ..."></MsgSuccess>
+        <MsgSuccess @ref="_successMsg" SuccessMessage="please wait, this form is closing ..."></MsgSuccess>
         <ErrCannotSubmit @ref="_cannotSubmitMsg"></ErrCannotSubmit>
-        <ErrBackendApi @ref="_backendError"></ErrBackendApi>
+        <ErrBackendApi @ref="_backendErrorMsg"></ErrBackendApi>
     </div>
 </EditForm>
 
@@ -81,36 +81,44 @@
     [Parameter]
     public EventCallback OnClose { get; set; }
 
-    private ErrCannotSubmit _cannotSubmitMsg =default!;
-    private ErrBackendApi _backendError = default!;
+    private ErrCannotSubmit _cannotSubmitMsg = default!;
+    private ErrBackendApi _backendErrorMsg = default!;
+    private MsgSuccess _successMsg = default!;
+
     private UbikButton _buttonSubmitEdit = default!;
     private UbikButton _buttonSubmitAdd = default!;
 
     private async Task SubmitAsync(EditContext editContext)
     {
+        await CleanErrorMsg();
+        await LoadingAsync();
+
         var valid = editContext.Validate();
 
-        await _buttonSubmitAdd.LoadingStateAsync();
-
-        if(valid)
+        if (valid)
         {
             var response = await SendDataAsync();
+            await LoadingFinishedAsync();
 
-            if(response != null && response.IsSuccessStatusCode)
+            if (response != null && response.IsSuccessStatusCode)
             {
+                await _successMsg.ShowSuccessAsync();
+                StateHasChanged();
+                await Task.Delay(1500);
+
                 await CloseAsync();
             }
             else
             {
-                await _backendError.ShowErrorAsync(response);
+                await _backendErrorMsg.ShowErrorAsync(response);
+                StateHasChanged();
             }
         }
         else
         {
+            await LoadingFinishedAsync();
             await _cannotSubmitMsg.ShowErrorAsync();
         }
-
-        await _buttonSubmitAdd.LoadingStateFinishedAsync();
     }
 
     private async Task CloseAsync()
@@ -118,17 +126,37 @@
         await OnClose.InvokeAsync();
     }
 
+    private async Task CleanErrorMsg()
+    {
+        await _cannotSubmitMsg.CloseErrorAsync();
+        await _backendErrorMsg.DismissErrorAsync();
+    }
+
+    private async Task LoadingAsync()
+    {
+        if (EditMode)
+            await _buttonSubmitEdit.LoadingStateAsync();
+        else
+            await _buttonSubmitAdd.LoadingStateAsync();
+    }
+
+    private async Task LoadingFinishedAsync()
+    {
+        if (EditMode)
+            await _buttonSubmitEdit.LoadingStateFinishedAsync();
+        else
+            await _buttonSubmitAdd.LoadingStateFinishedAsync();
+    }
+
     private async Task<HttpResponseMessage?> SendDataAsync()
     {
-        if(EditMode)
+        if (EditMode)
         {
-            var payLoad = Account.ToAddAccountCommand();
-            return await Client.AddAccountsAsync(payLoad);
+            return await Client.UpdateAccountsAsync(Account.Id, Account.ToUpdateAccountCommand());
         }
         else
         {
-            var payLoad = Account.ToAddAccountCommand();
-            return await Client.AddAccountsAsync(payLoad);
+            return await Client.AddAccountsAsync(Account.ToAddAccountCommand());
         }
     }
 

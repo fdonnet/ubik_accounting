@@ -11,6 +11,7 @@ namespace Ubik.Accounting.WebApp.ApiClients
         private readonly HttpClient _client;
         private readonly UserService _user;
 
+        //TODO: inject Ioption for API uri
         public AccountingApiClient(HttpClient client, UserService user)
         {
             _client = client;
@@ -35,6 +36,13 @@ namespace Ubik.Accounting.WebApp.ApiClients
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(account);
             return await _client.PostAsync("Accounts", new StringContent(request, Encoding.UTF8, "application/json"));
+        }
+
+        public async Task<HttpResponseMessage> UpdateAccountsAsync(Guid id, UpdateAccountCommand account, CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            var request = JsonSerializer.Serialize(account);
+            return await _client.PutAsync($"Accounts/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
         public async Task<HttpResponseMessage> GetAllCurrenciesAsync(CancellationToken cancellationToken = default)

@@ -6,8 +6,11 @@ export function showError(alertId) {
 
 export function dismissError(alertId) {
   var panel = document.getElementById(alertId);
-  panel.classList.remove("block");
-  panel.classList.add("hidden");
+  if (panel.classList.contains("block"))
+  {
+    panel.classList.remove("block");
+    panel.classList.add("hidden");
+  }
 }
 
 export function showErrorDetails(detailId) {

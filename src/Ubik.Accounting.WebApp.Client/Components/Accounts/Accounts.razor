@@ -12,7 +12,7 @@
 @inject IRenderContext RenderContext
 @attribute [Authorize]
 
-@rendermode InteractiveAuto
+@rendermode InteractiveServer
 
 @if (IsAuthorizedToRead)
 {
@@ -70,7 +70,7 @@
 } *@
 
 @code {
-    private const int ITEMS_PER_PAGE = 25;
+    private const int ITEMS_PER_PAGE = 10;
     [Parameter]
     public bool IsAuthorizedToRead { get; set; } = false;
     [Parameter]

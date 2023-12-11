@@ -6,6 +6,9 @@ export function openErrorSubmit(alertId) {
 
 export function closeErrorSubmit(alertId) {
   var panel = document.getElementById(alertId);
-  panel.classList.remove("block");
-  panel.classList.add("hidden");
+  if (panel.classList.contains("block"))
+  {
+    panel.classList.remove("block");
+    panel.classList.add("hidden");
+  }
 }

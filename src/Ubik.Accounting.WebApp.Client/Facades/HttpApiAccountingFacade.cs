@@ -11,23 +11,29 @@ namespace Ubik.Accounting.WebApp.Client.Facades
 
         public async Task<HttpResponseMessage> GetAccountAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await http.GetAsync($"GetAccount/{id}", cancellationToken: cancellationToken);
+            return await http.GetAsync($"Accounts/{id}", cancellationToken: cancellationToken);
         }
 
         public async Task<HttpResponseMessage> GetAllAccountsAsync(CancellationToken cancellationToken = default)
         {
-            return await http.GetAsync("GetAllAccounts", cancellationToken: cancellationToken);
+            return await http.GetAsync("Accounts", cancellationToken: cancellationToken);
         }
 
         public async Task<HttpResponseMessage> AddAccountsAsync(AddAccountCommand account, CancellationToken cancellationToken = default)
         {
             var request = JsonSerializer.Serialize(account);
-            return await http.PostAsync("AddAccount", new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
+            return await http.PostAsync("Accounts", new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
+        }
+
+        public async Task<HttpResponseMessage> UpdateAccountsAsync(Guid id, UpdateAccountCommand account, CancellationToken cancellationToken = default)
+        {
+            var request = JsonSerializer.Serialize(account);
+            return await http.PutAsync($"Accounts/{id}", new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
         }
 
         public async Task<HttpResponseMessage> GetAllCurrenciesAsync(CancellationToken cancellationToken = default)
         {
-            return await http.GetAsync("GetAllCurrencies", cancellationToken: cancellationToken);
+            return await http.GetAsync("Currencies", cancellationToken: cancellationToken);
         }
     }
 }
