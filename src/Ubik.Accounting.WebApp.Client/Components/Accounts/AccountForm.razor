@@ -60,7 +60,7 @@
             }
         </div>
         <div>
-            <UbikButtonAlternative Type="button" Label="Close" OnClick="CloseAsync"></UbikButtonAlternative>
+            <UbikButtonAlternative Type="button" Label="Close" OnClick="() => CloseAsync(false)"></UbikButtonAlternative>
         </div>
     </div>
     <div class="mt-3 sm:mt-4">
@@ -79,7 +79,7 @@
     public bool EditMode { get; set; } = false;
 
     [Parameter]
-    public EventCallback OnClose { get; set; }
+    public EventCallback<bool> OnClose { get; set; }
 
     private ErrCannotSubmit _cannotSubmitMsg = default!;
     private ErrBackendApi _backendErrorMsg = default!;
@@ -91,14 +91,14 @@
     private async Task SubmitAsync(EditContext editContext)
     {
         await CleanErrorMsg();
-        await LoadingAsync();
+        await SetSendingStateAsync();
 
         var valid = editContext.Validate();
 
         if (valid)
         {
             var response = await SendDataAsync();
-            await LoadingFinishedAsync();
+            await SetSendingFinishedAsync();
 
             if (response != null && response.IsSuccessStatusCode)
             {
@@ -106,7 +106,7 @@
                 StateHasChanged();
                 await Task.Delay(1500);
 
-                await CloseAsync();
+                await CloseAsync(true);
             }
             else
             {
@@ -116,14 +116,14 @@
         }
         else
         {
-            await LoadingFinishedAsync();
+            await SetSendingFinishedAsync();
             await _cannotSubmitMsg.ShowErrorAsync();
         }
     }
 
-    private async Task CloseAsync()
+    private async Task CloseAsync(bool withRefresh = false)
     {
-        await OnClose.InvokeAsync();
+        await OnClose.InvokeAsync(withRefresh);
     }
 
     private async Task CleanErrorMsg()
@@ -132,7 +132,7 @@
         await _backendErrorMsg.DismissErrorAsync();
     }
 
-    private async Task LoadingAsync()
+    private async Task SetSendingStateAsync()
     {
         if (EditMode)
             await _buttonSubmitEdit.LoadingStateAsync();
@@ -140,7 +140,7 @@
             await _buttonSubmitAdd.LoadingStateAsync();
     }
 
-    private async Task LoadingFinishedAsync()
+    private async Task SetSendingFinishedAsync()
     {
         if (EditMode)
             await _buttonSubmitEdit.LoadingStateFinishedAsync();

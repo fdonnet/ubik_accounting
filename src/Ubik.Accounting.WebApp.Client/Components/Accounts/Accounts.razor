@@ -134,8 +134,13 @@
         await _dialog.ShowDialog();
     }
 
-    private async Task CloseDialogAsync()
+    private async Task CloseDialogAsync(bool refresh = false)
     {
+        if (refresh)
+        {
+            await LoadAccountsAsync();
+        }
+
         await _dialog.CloseDialog();
     }
 
