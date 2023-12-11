@@ -31,11 +31,10 @@
             <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
                 <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialogAsync"></AccountForm>
             </UbikModal>
+            <UbikModalCenter @ref="_deleteDialog">
+                <AccountConfirmDelete></AccountConfirmDelete>
+            </UbikModalCenter>
         </CascadingValue>
-
-        <UbikModalCenter @ref="_deleteDialog">
-            <AccountConfirmDelete></AccountConfirmDelete>
-        </UbikModalCenter>
     }
 
     <div class="flex flex-col max-w-max mt-1">
@@ -188,6 +187,6 @@
 
     private async Task DeleteConfirmation()
     {
-        await _deleteDialog.CloseDialogAsync();
+        await _deleteDialog.ShowDialogAsync();
     }
 }
