@@ -3,13 +3,13 @@ export function onLoad() {
 
 }
 export function onUpdate() {
-  if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage))) {
     document.documentElement.classList.add('dark');
   } else {
     document.documentElement.classList.remove('dark')
   }
 
-  if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage))) {
     themeToggleLightIcon.classList.remove('hidden');
     themeToggleLightIcon.classList.add('block');
     themeToggleDarkIcon.classList.remove('block');
