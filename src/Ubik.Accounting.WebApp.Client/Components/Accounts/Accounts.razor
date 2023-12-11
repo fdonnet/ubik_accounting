@@ -32,6 +32,8 @@
                 <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialogAsync"></AccountForm>
             </UbikModal>
         </CascadingValue>
+
+        <UbikModalCenter @ref="_deleteDialog"></UbikModalCenter>
     }
 
     <div class="flex flex-col max-w-max mt-1">
@@ -47,7 +49,7 @@
                         <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialogAsync(context))"></UbikButtonLink>
                     </UbikTemplateColumnTemplateColumn>
                     <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
-                        <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel"></UbikButtonLink>
+                        <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel" OnClick="DeleteConfirmation"></UbikButtonLink>
                     </UbikTemplateColumnTemplateColumn>
                 }
             </UbikGrid>
@@ -86,6 +88,7 @@
 
     private bool _isLoading = true;
     private UbikModal _dialog = default!;
+    private UbikModalCenter _deleteDialog = default!;
 
     private AccountModel _accountCurrent = new();
     private List<string> _gridAccountFields = new() { "Code", "Label", "Domain", "Category" };
@@ -179,5 +182,10 @@
             //TODO: IMPLEMENT ERROR HANDLING for PROBLEM DETAILS (and global exception handler)
             //_error = await responseAccountTest.Content.ReadFromJsonAsync<ProblemDetailsContract>();
         }
+    }
+
+    private async Task DeleteConfirmation()
+    {
+        await _deleteDialog.ShowDialog();
     }
 }
