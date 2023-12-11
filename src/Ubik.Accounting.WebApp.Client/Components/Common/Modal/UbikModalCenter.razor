@@ -29,7 +29,12 @@
         }
     }
 
-    public async Task ShowDialog()
+    public async Task ShowDialogAsync()
+    {
+        await _jsModule!.InvokeVoidAsync("openDialogDelete", _dialogId);
+    }
+
+    public async Task CloseDialogAsync()
     {
         await _jsModule!.InvokeVoidAsync("openDialogDelete", _dialogId);
     }

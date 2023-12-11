@@ -146,7 +146,7 @@
             await LoadAccountsAsync();
         }
 
-        await _dialog.CloseDialog();
+        await _dialog.CloseDialogAsync();
     }
 
     private async Task LoadAccountsAsync()
@@ -188,6 +188,6 @@
 
     private async Task DeleteConfirmation()
     {
-        await _deleteDialog.ShowDialog();
+        await _deleteDialog.CloseDialogAsync();
     }
 }
