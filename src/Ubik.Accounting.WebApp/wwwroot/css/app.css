@@ -2376,6 +2376,10 @@ p {
     grid-column: span 1 / span 1;
   }
 
+  .sm\:m-auto {
+    margin: auto;
+  }
+
   .sm\:mb-0 {
     margin-bottom: 0px;
   }
