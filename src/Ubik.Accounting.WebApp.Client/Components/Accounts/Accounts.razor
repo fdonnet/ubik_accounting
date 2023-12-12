@@ -178,7 +178,7 @@
         if (response.IsSuccessStatusCode)
         {
             var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllCurrenciesResult>>() ?? []);
-            _currencies = result.OrderBy(c=> c.IsoCode);
+            _currencies = result.OrderBy(c => c.IsoCode);
         }
         else
         {

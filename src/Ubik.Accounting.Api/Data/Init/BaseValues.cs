@@ -2,11 +2,11 @@
 {
     public record BaseValuesForAccounts
     {
-        public Guid AccountId1 { get; } = Guid.Parse("7777f11f-20dd-4888-88f8-428e59bbc537");
-        public Guid AccountId2 { get; } = Guid.Parse("9524f11f-20dd-4888-88f8-428e59bbc229");
-        public Guid AccountId3 { get; } = Guid.Parse("9524f11f-20dd-4888-88f8-428e59bbc230");
-        public Guid AccountIdForDel { get; } = Guid.Parse("9524f11f-20dd-4888-88f8-428e59bbc300");
-        public string AccountCode1 { get; } = "1020";
+        public Guid AccountId1 { get; } = Guid.Parse("10070000-5d1a-0015-91f9-08dbfb1b9879");
+        public Guid AccountId2 { get; } = Guid.Parse("10070000-5d1a-0015-b866-08dbfb1baa3b");
+        public Guid AccountId3 { get; } = Guid.Parse("10070000-5d1a-0015-885e-08dbfb1bb84d");
+        public Guid AccountIdForDel { get; } = Guid.Parse("10070000-5d1a-0015-70f2-08dbfb1bd313");
+        public string AccountCode1 { get; } = "1000";
     }
 
     public record BaseValuesForAccountGroups
