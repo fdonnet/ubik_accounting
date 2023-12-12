@@ -94,6 +94,7 @@ services:
       - "docker-entrypoint.sh"
     environment:
       - "POSTGRES_PASSWORD=test01"
+      - "POSTGRES_USER=postgres"
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/16/bin"
       - "GOSU_VERSION=1.16"
       - "LANG=en_US.utf8"
@@ -109,7 +110,9 @@ services:
     volumes:
       - "ubik-postgresl-vol:/var/lib/postgresql/data"
     ports:
-      - "5432:5432"
+      - 5435:5432
+    expose:
+      - "5435"
 
 version: "3.6"
 
