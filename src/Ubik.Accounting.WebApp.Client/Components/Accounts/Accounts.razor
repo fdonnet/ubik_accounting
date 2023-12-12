@@ -35,7 +35,7 @@
                 <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialogAsync"></AccountForm>
             </UbikModal>
             <UbikModalCenter @ref="_deleteDialog">
-                <AccountConfirmDelete OnClose="CloseDeleteDialogAsync"></AccountConfirmDelete>
+                <AccountConfirmDelete @ref="_deleteMsg" OnClose="CloseDeleteDialogAsync"></AccountConfirmDelete>
             </UbikModalCenter>
         </CascadingValue>
     }
@@ -87,6 +87,7 @@
     private UbikModal _dialog = default!;
     private UbikModalCenter _deleteDialog = default!;
     private ErrBackendApi _backendErrorMsg = default!;
+    private AccountConfirmDelete _deleteMsg = default!;
 
     private AccountModel _accountCurrent = new();
     private List<string> _gridAccountFields = new() { "Code", "Label", "Domain", "Category" };
@@ -189,6 +190,8 @@
     private async Task DeleteConfirmation(AccountModel currentAccount)
     {
         _accountCurrent = currentAccount;
+
+        await _deleteMsg.SetInitialStatus();
         await _deleteDialog.ShowDialogAsync();
     }
 }
