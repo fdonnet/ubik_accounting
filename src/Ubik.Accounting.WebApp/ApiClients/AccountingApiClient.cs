@@ -31,18 +31,24 @@ namespace Ubik.Accounting.WebApp.ApiClients
             return await _client.GetAsync("Accounts");
         }
 
-        public async Task<HttpResponseMessage> AddAccountsAsync(AddAccountCommand account,CancellationToken cancellationToken = default)
+        public async Task<HttpResponseMessage> AddAccountAsync(AddAccountCommand account,CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(account);
             return await _client.PostAsync("Accounts", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
-        public async Task<HttpResponseMessage> UpdateAccountsAsync(Guid id, UpdateAccountCommand account, CancellationToken cancellationToken = default)
+        public async Task<HttpResponseMessage> UpdateAccountAsync(Guid id, UpdateAccountCommand account, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(account);
             return await _client.PutAsync($"Accounts/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
+        }
+
+        public async Task<HttpResponseMessage> DeleteAccountAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            return await _client.DeleteAsync($"Accounts/{id}");
         }
 
         public async Task<HttpResponseMessage> GetAllCurrenciesAsync(CancellationToken cancellationToken = default)

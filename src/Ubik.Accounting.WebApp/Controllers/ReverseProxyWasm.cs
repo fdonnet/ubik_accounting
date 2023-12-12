@@ -37,7 +37,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         [HttpPost("/Accounts")]
         public async Task AddAccount(AddAccountCommand command)
         {
-            var response = await client.AddAccountsAsync(command);
+            var response = await client.AddAccountAsync(command);
             await ForwardResponse(response);
         }
 
@@ -45,7 +45,15 @@ namespace Ubik.Accounting.WebApp.Controllers
         [HttpPut("/Accounts/{id}")]
         public async Task AddAccount(Guid id, UpdateAccountCommand command)
         {
-            var response = await client.UpdateAccountsAsync(id,command);
+            var response = await client.UpdateAccountAsync(id,command);
+            await ForwardResponse(response);
+        }
+
+        [Authorize(Roles = "ubik_accounting_account_write")]
+        [HttpDelete("/Accounts/{id}")]
+        public async Task DeleteAccount(Guid id)
+        {
+            var response = await client.DeleteAccountAsync(id);
             await ForwardResponse(response);
         }
 
@@ -62,7 +70,9 @@ namespace Ubik.Accounting.WebApp.Controllers
             if (responseMsg == null) return;
 
             HttpContext.Response.StatusCode = (int)responseMsg.StatusCode;
-            await responseMsg.Content.CopyToAsync(HttpContext.Response.Body);
+
+            if(HttpContext.Response.StatusCode != 204)
+                await responseMsg.Content.CopyToAsync(HttpContext.Response.Body);
         }
     }
 }

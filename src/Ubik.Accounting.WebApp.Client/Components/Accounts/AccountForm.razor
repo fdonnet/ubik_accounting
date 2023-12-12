@@ -152,11 +152,11 @@
     {
         if (EditMode)
         {
-            return await Client.UpdateAccountsAsync(Account.Id, Account.ToUpdateAccountCommand());
+            return await Client.UpdateAccountAsync(Account.Id, Account.ToUpdateAccountCommand());
         }
         else
         {
-            return await Client.AddAccountsAsync(Account.ToAddAccountCommand());
+            return await Client.AddAccountAsync(Account.ToAddAccountCommand());
         }
     }
 }

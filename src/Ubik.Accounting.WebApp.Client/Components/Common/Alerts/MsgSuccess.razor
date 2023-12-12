@@ -29,4 +29,9 @@
     {
         await _jsModule!.InvokeVoidAsync("showSuccess", _alertId);
     }
+
+    public async Task HideSuccessAsync()
+    {
+        await _jsModule!.InvokeVoidAsync("closeSuccess", _alertId);
+    }
 }

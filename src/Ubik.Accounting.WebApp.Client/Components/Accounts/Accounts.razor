@@ -35,7 +35,7 @@
                 <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialogAsync"></AccountForm>
             </UbikModal>
             <UbikModalCenter @ref="_deleteDialog">
-                <AccountConfirmDelete></AccountConfirmDelete>
+                <AccountConfirmDelete OnClose="CloseDeleteDialogAsync"></AccountConfirmDelete>
             </UbikModalCenter>
         </CascadingValue>
     }
@@ -138,6 +138,16 @@
         await _dialog.CloseDialogAsync();
     }
 
+    private async Task CloseDeleteDialogAsync(bool refresh = false)
+    {
+        if (refresh)
+        {
+            await LoadAccountsAsync();
+        }
+
+        await _deleteDialog.CloseDialogAsync();
+    }
+
     private async Task LoadAccountsAsync()
     {
         _isLoading = true;
@@ -166,7 +176,8 @@
 
         if (response.IsSuccessStatusCode)
         {
-            _currencies = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllCurrenciesResult>>() ?? []);
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllCurrenciesResult>>() ?? []);
+            _currencies = result.OrderBy(c=> c.IsoCode);
         }
         else
         {
