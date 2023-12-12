@@ -7,7 +7,7 @@
         </svg>
         <span class="sr-only">Error</span>
         <div class="ms-3 text-sm font-medium">
-            <p class="text-red-800 dark:text-red-400 font-bold">Cannot save your data.</p>
+            <p class="text-red-800 dark:text-red-400 font-bold">@MainErrorMsg</p>
             <ul class="ms-2 list-disc">
                 @foreach (var err in _currentError.Errors)
                 {
@@ -60,6 +60,9 @@
 </div>
 
 @code {
+    [Parameter]
+    public string MainErrorMsg { get; set; } = "Cannot save your data.";
+
     private IJSObjectReference? _jsModule = default!;
     private string _alertId = $"alert-backend-{Guid.NewGuid()}";
     private string _detailId = $"error-detail-{Guid.NewGuid()}";

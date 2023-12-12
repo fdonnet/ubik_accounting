@@ -7,6 +7,7 @@
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Pagination
+@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
@@ -16,6 +17,8 @@
 
 @if (IsAuthorizedToRead)
 {
+    <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
+
     @if (IsAuthorizedToModify)
     {
         if (_isLoading || RenderContext.IsPrerendering)
@@ -50,7 +53,7 @@
                         <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialogAsync(context))"></UbikButtonLink>
                     </UbikTemplateColumnTemplateColumn>
                     <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
-                        <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel" OnClick="DeleteConfirmation"></UbikButtonLink>
+                        <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel" OnClick="@(()=>DeleteConfirmation(context))"></UbikButtonLink>
                     </UbikTemplateColumnTemplateColumn>
                 }
             </UbikGrid>
@@ -64,13 +67,6 @@
     </div>
 
 }
-
-@*
-@if(_error is not null)
-{
-    @_error
-    @_error.Errors[0]
-} *@
 
 @code {
     private const int ITEMS_PER_PAGE = 10;
@@ -90,6 +86,7 @@
     private bool _isLoading = true;
     private UbikModal _dialog = default!;
     private UbikModalCenter _deleteDialog = default!;
+    private ErrBackendApi _backendErrorMsg = default!;
 
     private AccountModel _accountCurrent = new();
     private List<string> _gridAccountFields = new() { "Code", "Label", "Domain", "Category" };
@@ -111,13 +108,6 @@
         {
             await _authenticationState;
             await LoadAccountsAsync();
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
             await LoadCurrenciesAsync();
         }
     }
@@ -162,14 +152,14 @@
         }
         else
         {
-            //TODO: IMPLEMENT ERROR HANDLING for PROBLEM DETAILS (and global exception handler)
-            //_error = await responseAccountTest.Content.ReadFromJsonAsync<ProblemDetailsContract>();
+            await _backendErrorMsg.ShowErrorAsync(response);
+            StateHasChanged();
         }
 
         _isLoading = false;
     }
 
-    //TODO: see to load that at the correct time to avoid reloading
+    //TODO: see to load that at the correct time to avoid reloading / + use caching
     private async Task LoadCurrenciesAsync()
     {
         var response = await Client.GetAllCurrenciesAsync();
@@ -180,13 +170,14 @@
         }
         else
         {
-            //TODO: IMPLEMENT ERROR HANDLING for PROBLEM DETAILS (and global exception handler)
-            //_error = await responseAccountTest.Content.ReadFromJsonAsync<ProblemDetailsContract>();
+            await _backendErrorMsg.ShowErrorAsync(response);
+            StateHasChanged();
         }
     }
 
-    private async Task DeleteConfirmation()
+    private async Task DeleteConfirmation(AccountModel currentAccount)
     {
+        _accountCurrent = currentAccount;
         await _deleteDialog.ShowDialogAsync();
     }
 }
