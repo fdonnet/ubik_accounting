@@ -268,7 +268,8 @@ In program.cs, you can access the config of:
 
 ## Others
 
--- Ubik.Accounting.ApiService.Common -- / -- Ubik.Db.Common --
+-- Ubik.Accounting.ApiService.Common -- / -- Ubik.Db.Common -- / -- Ubik.Accounting.Contracts --
 
 - Common config things that can be reuse in other projects
 - This part will maybe grow
+- Contracts is to store all the communication records (command, queries, results etc)
