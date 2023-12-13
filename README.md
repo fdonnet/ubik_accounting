@@ -15,6 +15,7 @@ Not perfect at all, but the very first goal is to have a base architecture that 
 - Look at the open issues and make a PR.
 - Correct bad technical decisions by opening an issue or propose a PR.
 - Share your "business" accounting skills and point out where I m conceptually wrong. (no expert here)
+- A lot of things can be upgraded in every layers, so don't hesitate, I made this repo public for that => to receive feedback.
 
 ## Not ready for production
 
