@@ -13,7 +13,7 @@ Not perfect at all, but the very first goal is to have a base architecture that 
 ## How you can help
 
 - Look at the open issues and make a PR.
-- Correct bad technical decisions by opening an issue.
+- Correct bad technical decisions by opening an issue or propose a PR.
 - Share your "business" accounting skills and point out where I m conceptually wrong. (no expert here)
 
 ## Not ready for production
