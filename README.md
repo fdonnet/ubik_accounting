@@ -25,7 +25,7 @@ At this stage, **DO NOT USE THIS SYSTEM ON A PRODUCTION** environnement.
 
 ## Build and Run
 
-At the root of the repository. "Mount" the dependencies with Docker by running that in your terminal:
+At the root of the repository. "Mount" the dependencies with Docker by running this command in your terminal:
 
 `docker compose up`
 
@@ -48,7 +48,7 @@ You can now access Swagger here <https://localhost:7289/swagger> (click on autho
 
 `dotnet run --launch-profile https --project ./src/Ubik.Accounting.WebApp/Ubik.Accounting.WebApp.csproj`
 
-And now, you can access the very first version of a the Blazor 8 web app here <https://localhost:7249>
+And now, you can access the very first version of a the Blazor 8 webapp here <https://localhost:7249>
 
 *Don't change the ports of the api and the blazor apps. It's hard coded in the Blazor prj (need to be changed) because no service discovery for the moment.*
 
@@ -56,7 +56,7 @@ And now, you can access the very first version of a the Blazor 8 web app here <h
 
 If you click on authorize in Swagger or if you try to access the Blazor app, you will be redirected on a Keycloak login page
 
-3 login credentials are available:
+Login credentials:
 
 | User/Pass | Role |
 |----------- | -------- |
@@ -144,7 +144,7 @@ Example above with an add operation:
 1) Validate if not already exists
 2) Validate if the specified parent account exists
 3) Validate if the specified classification exists
-4) Add in EF.
+4) Add in EF context
 
 #### In Features / commands layer
 
@@ -167,15 +167,15 @@ public async Task Consume(ConsumeContext<AddAccountGroupCommand> context)
 }
 ```
 
-Example above with an update command:
+Example above with an add command:
 
 1) Receive a message from the message bus and map it to EF Model
 2) Call the service
 3) Match the `Either<Left,Right>`
-4) If right => publish a Added event (pub/sub), SaveAsync in db
-5) If right => With masstransit outbox enabled, the message is not published if the db is not updated
+4) If right => publish an Added event (pub/sub), SaveAsync in db
+5) If right => with masstransit outbox enabled, the message is not published if the db is not updated
 6) If right => send the response on message bus
-7) If left => send the err response on message bus (Masstransit authorize to send `<result,error>`msg too) and it allows to doesn't trigger an exception that will finish in an error queue if your error is a predictable one.
+7) If left => send the err response on message bus (Masstransit authorize to send `<result,error>`msg too) and it allows to not trigger an exception that will finish in an error queue if your error is a predictable one.
 
 #### In Features / controller layer
 
@@ -270,4 +270,4 @@ In program.cs, you can access the config of:
 -- Ubik.Accounting.ApiService.Common -- / -- Ubik.Db.Common --
 
 - Common config things that can be reuse in other projects
-- This part will grow
+- This part will maybe grow
