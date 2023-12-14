@@ -51,7 +51,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
         private UbikColumnBase<TGridItem>? _displayOptionsForColumn;
         public UbikColumnBase<TGridItem>? SortByColumn { get; private set; }
         public bool SortByAscending { get; private set; }
-        private bool _checkColumnOptionsPosition;
+        //private bool _checkColumnOptionsPosition;
 
         public UbikGrid()
         {
@@ -97,20 +97,20 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             return (_columns.Count > 0 && mustRefreshData) ? RefreshDataCoreAsync() : Task.CompletedTask;
         }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            //if (firstRender)
-            //{
-            //    _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Microsoft.AspNetCore.Components.QuickGrid/QuickGrid.razor.js");
-            //    _jsEventDisposable = await _jsModule.InvokeAsync<IJSObjectReference>("init", _tableReference);
-            //}
+        //protected override async Task OnAfterRenderAsync(bool firstRender)
+        //{
+        //    if (firstRender)
+        //    {
+        //        _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Microsoft.AspNetCore.Components.QuickGrid/QuickGrid.razor.js");
+        //        _jsEventDisposable = await _jsModule.InvokeAsync<IJSObjectReference>("init", _tableReference);
+        //    }
 
-            //if (_checkColumnOptionsPosition && _displayOptionsForColumn is not null)
-            //{
-            //    _checkColumnOptionsPosition = false;
-            //    _ = _jsModule?.InvokeVoidAsync("checkColumnOptionsPosition", _tableReference).AsTask();
-            //}
-        }
+        //    if (_checkColumnOptionsPosition && _displayOptionsForColumn is not null)
+        //    {
+        //        _checkColumnOptionsPosition = false;
+        //        _ = _jsModule?.InvokeVoidAsync("checkColumnOptionsPosition", _tableReference).AsTask();
+        //    }
+        //}
 
         public void AddColumn(UbikColumnBase<TGridItem> column, SortDirection? initialSortDirection, bool isDefaultSortColumn)
         {

@@ -78,7 +78,6 @@
     private IQueryable<AccountModel>? _accounts;
     private int _numberOfAccounts = -1;
     private IEnumerable<GetAllCurrenciesResult>? _currencies;
-    private ProblemDetailsContract? _error;
 
     [CascadingParameter]
     private Task<AuthenticationState>? _authenticationState { get; set; }

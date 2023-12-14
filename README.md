@@ -230,7 +230,10 @@ First uncomment this lines in Ubik.Accounting.WebApp.csproj:
   </Target>
 ```
 
-I don't know why, but my build fail in Github actions if I let this Tailwind instructions (related to the forms plugin). If someone has an idea...
+I don't know why, but my build fails in Github actions if I let this Tailwind instructions (related to the forms plugin). If someone has an idea...
+`EXEC : error : Cannot find module '@tailwindcss/forms'`
+
+**To use Tailwind in DEV**, you need to have node installed, Tailwind and Tailwind forms... I let you go on their site for installation instructions.
 
 | Package | For what |
 |----------- | -------- |
