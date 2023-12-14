@@ -27,6 +27,7 @@ jobs:
       with:
         node-version: 20.10.x
         cache-dependency-path: ./src/Ubik.Accounting.WebApp/package-lock.json
+    - run: npm install -D @tailwindcss/forms
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
