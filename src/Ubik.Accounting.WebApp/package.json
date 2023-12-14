@@ -5,10 +5,10 @@
   "dependencies": {
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.31",
+    "@tailwindcss/forms": "^0.5.7",
     "tailwindcss": "^3.3.6"
   },
   "devDependencies": {
-    "flowbite-typography": "^1.0.3",
-    "@tailwindcss/forms": "^0.5.7"
+    "flowbite-typography": "^1.0.3"
   }
 }
