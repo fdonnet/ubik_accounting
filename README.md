@@ -223,13 +223,6 @@ First you can maybe uncomment this lines in Ubik.Accounting.WebApp.csproj, if yo
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css" />
   </Target>
-
-  <Target Name="UpdateTailwindCSS" BeforeTargets="Compile">
-    <Exec Command="npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css" ContinueOnError="true">
-      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-    </Exec>
-    <Error Condition="'$(ErrorCode)' != '0'" Text="Error building CSS file" />
-  </Target>
 ```
 
 I don't know why, but my build fails in Github actions if I let this Tailwind instructions (related to the forms plugin). If someone has an idea...
