@@ -233,7 +233,7 @@ First uncomment this lines in Ubik.Accounting.WebApp.csproj:
 I don't know why, but my build fails in Github actions if I let this Tailwind instructions (related to the forms plugin). If someone has an idea...
 `EXEC : error : Cannot find module '@tailwindcss/forms'`
 
-**To use Tailwind in DEV**, you need to have node installed, Tailwind and Tailwind forms... I let you go on their site for installation instructions.
+**To use Tailwind in DEV**, you need to have node installed, Tailwind and Tailwind forms... I let you go on their site for installation instructions. Maybe, `npm install` command can be sufficient in the WebApp (server) project, cannot be sure because it sees to trigger a weird error in the dotnet build github action.
 
 | Package | For what |
 |----------- | -------- |
