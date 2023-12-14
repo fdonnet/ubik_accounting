@@ -215,7 +215,7 @@ At the end, your global exception handler will take care of the real exceptions 
 
 -- Ubik.Accounting.WebApp -- / -- Ubik.Accounting.WebApp.Client -- / -- Ubik.Accounting.WebApp.Shared --
 
-First uncomment this lines in Ubik.Accounting.WebApp.csproj:
+First you can maybe uncomment this lines in Ubik.Accounting.WebApp.csproj, if you want to play with Tailwind, or go your own way with Tailwind cli and dotnet watch:
 
 ```xml
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -233,7 +233,7 @@ First uncomment this lines in Ubik.Accounting.WebApp.csproj:
 I don't know why, but my build fails in Github actions if I let this Tailwind instructions (related to the forms plugin). If someone has an idea...
 `EXEC : error : Cannot find module '@tailwindcss/forms'`
 
-**To use Tailwind in DEV**, you need to have node installed, Tailwind and Tailwind forms... I let you go on their site for installation instructions. Maybe, `npm install` command can be sufficient in the WebApp (server) project, cannot be sure because it sees to trigger a weird error in the dotnet build github action.
+**To use Tailwind in DEV**, you need to have node installed, Tailwind and Tailwind forms... I let you go on their site for installation instructions. Maybe, `npm install` command can be sufficient in the WebApp (server) project, cannot be sure because it seems to trigger a weird error in the dotnet build github actions.
 
 | Package | For what |
 |----------- | -------- |
