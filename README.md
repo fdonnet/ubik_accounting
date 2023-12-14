@@ -217,7 +217,7 @@ At the end, your global exception handler will take care of the real exceptions 
 
 | Package | For what |
 |----------- | -------- |
-| [BalzorPageScript](https://github.com/MackinnonBuck/blazor-page-script) | small tool that allows Tailwind to apply its Dark or Light theme on each page an compo |
+| [BalzorPageScript](https://github.com/MackinnonBuck/blazor-page-script) | small tool that allows Tailwind to apply its Dark or Light theme on each page and component |
 | [IdentityModel](https://github.com/IdentityModel) | Small extension to refresh token in OpenIdC |
 
 Send some love on github to this projects...
