@@ -6,6 +6,8 @@ A .net8 project to manage double entry accounting. (it's the very beginning of a
 
 Design a system that can be used to manage small company business (accounting = first step).
 
+It can be used as a microservice and supports multi-tenants.
+
 But for now, it's an experimental project that references a lot of things about .net 8 - Backend and Frontend sides of things -.
 
 Not perfect at all, but the very first goal is to have a base architecture that I can come back on when needed (for others projects etc.)
