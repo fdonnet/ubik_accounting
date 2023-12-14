@@ -215,6 +215,23 @@ At the end, your global exception handler will take care of the real exceptions 
 
 -- Ubik.Accounting.WebApp -- / -- Ubik.Accounting.WebApp.Client -- / -- Ubik.Accounting.WebApp.Shared --
 
+First uncomment this lines in Ubik.Accounting.WebApp.csproj:
+
+```xml
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css" />
+  </Target>
+
+  <Target Name="UpdateTailwindCSS" BeforeTargets="Compile">
+    <Exec Command="npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Error building CSS file" />
+  </Target>
+```
+
+I don't know why, but my build fail in Github actions if I let this Tailwind instructions (related to the forms plugin). If someone has an idea...
+
 | Package | For what |
 |----------- | -------- |
 | [BalzorPageScript](https://github.com/MackinnonBuck/blazor-page-script) | small tool that allows Tailwind to apply its Dark or Light theme on each page and component |
