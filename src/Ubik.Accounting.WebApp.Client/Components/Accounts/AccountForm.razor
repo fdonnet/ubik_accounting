@@ -1,0 +1,162 @@
+﻿@using Ubik.Accounting.Contracts.Accounts.Enums
+@using Ubik.Accounting.Contracts.Currencies.Results
+@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
+@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts;
+@using Ubik.Accounting.Webapp.Shared.Facades
+
+@inject IAccountingApiClient Client
+
+<EditForm Model="@Account" OnSubmit="SubmitAsync" FormName="AddAccount" class="p-4 md:p-5">
+    <DataAnnotationsValidator />
+    <div class="grid gap-4 mb-4 grid-cols-2">
+        <div class="col-span-2 sm:col-span-1">
+            <UbikInputText Id="AccountCode" Label="Code"
+                           PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Account.Code"
+                           ValidationFor="@(()=>Account.Code)"></UbikInputText>
+        </div>
+        <div class="col-span-2 sm:col-span-1">
+            <UbikInputSelect Id="AccountCcy" TValue="Guid?"
+                             ValueExpression="@(() => Account.CurrencyId)" Value="@Account.CurrencyId"
+                             ValueChanged="@((Guid? args) => Account.CurrencyId = args)"
+                             Label="Currency" PlaceholderText="Select a currency..."
+                             ValidationFor="@(()=>Account.CurrencyId)" Data="CurrenciesList" DataKey="Id" DataValue="IsoCode"></UbikInputSelect>
+        </div>
+        <div class="col-span-2">
+            <UbikInputText Id="AccountLabel" Label="Label"
+                           PlaceholderText="Type a label (max 100 char.)" Type="text" @bind-Value="Account.Label"
+                           ValidationFor="@(()=>Account.Label)"></UbikInputText>
+        </div>
+        <div class="col-span-2 sm:col-span-1">
+            <UbikInputSelect Id="AccountDomain" TValue="AccountDomain?"
+                             ValueExpression="@(() => Account.Domain)" Value="@Account.Domain"
+                             ValueChanged="@((AccountDomain? args) => Account.Domain = args)"
+                             Label="Domain" PlaceholderText="Select a domain..."
+                             ValidationFor="@(()=>Account.Domain)"></UbikInputSelect>
+        </div>
+        <div class="col-span-2 sm:col-span-1">
+            <UbikInputSelect Id="AccountCategory" TValue="AccountCategory?"
+                             ValueExpression="@(() => Account.Category)" Value="@Account.Category"
+                             ValueChanged="@((AccountCategory? args) => Account.Category = args)"
+                             Label="Category" PlaceholderText="Select a category..."
+                             ValidationFor="@(()=>Account.Category)"></UbikInputSelect>
+        </div>
+        <div class="col-span-2">
+            <UbikInputTextArea Id="AccountDescription" Label="Description"
+                               PlaceholderText="Type a description (max 700 char.)" @bind-Value="Account.Description"
+                               ValidationFor="@(()=>Account.Description)"></UbikInputTextArea>
+        </div>
+    </div>
+    <div class="flex justify-between mt-3 sm:mt-4">
+        <div>
+            @if (EditMode)
+            {
+                <UbikButton @ref="@_buttonSubmitEdit" Type="submit" Label="Save"></UbikButton>
+            }
+            else
+            {
+                <UbikButton @ref="@_buttonSubmitAdd" Type="submit" Label="Add account">
+                    <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                </UbikButton>
+            }
+        </div>
+        <div>
+            <UbikButtonAlternative Type="button" Label="Close" OnClick="() => CloseAsync(false)"></UbikButtonAlternative>
+        </div>
+    </div>
+    <div class="mt-3 sm:mt-4">
+        <MsgSuccess @ref="_successMsg" SuccessMessage="please wait, this form is closing ..."></MsgSuccess>
+        <ErrCannotSubmit @ref="_cannotSubmitMsg"></ErrCannotSubmit>
+        <ErrBackendApi @ref="_backendErrorMsg"></ErrBackendApi>
+    </div>
+</EditForm>
+
+@code {
+    [CascadingParameter(Name = "AccountModel")]
+    public AccountModel Account { get; set; } = default!;
+    [Parameter]
+    public IEnumerable<GetAllCurrenciesResult> CurrenciesList { get; set; } = default!;
+    [Parameter]
+    public bool EditMode { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    private ErrCannotSubmit _cannotSubmitMsg = default!;
+    private ErrBackendApi _backendErrorMsg = default!;
+    private MsgSuccess _successMsg = default!;
+
+    private UbikButton _buttonSubmitEdit = default!;
+    private UbikButton _buttonSubmitAdd = default!;
+
+    private async Task SubmitAsync(EditContext editContext)
+    {
+        await CleanErrorMsg();
+        await SetSendingStateAsync();
+
+        var valid = editContext.Validate();
+
+        if (valid)
+        {
+            var response = await SendDataAsync();
+            await SetSendingFinishedAsync();
+
+            if (response != null && response.IsSuccessStatusCode)
+            {
+                await _successMsg.ShowSuccessAsync();
+                StateHasChanged();
+                await Task.Delay(1500);
+
+                await CloseAsync(true);
+            }
+            else
+            {
+                await _backendErrorMsg.ShowErrorAsync(response);
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            await SetSendingFinishedAsync();
+            await _cannotSubmitMsg.ShowErrorAsync();
+        }
+    }
+
+    private async Task CloseAsync(bool withRefresh = false)
+    {
+        await OnClose.InvokeAsync(withRefresh);
+    }
+
+    private async Task CleanErrorMsg()
+    {
+        await _cannotSubmitMsg.CloseErrorAsync();
+        await _backendErrorMsg.DismissErrorAsync();
+    }
+
+    private async Task SetSendingStateAsync()
+    {
+        if (EditMode)
+            await _buttonSubmitEdit.LoadingStateAsync();
+        else
+            await _buttonSubmitAdd.LoadingStateAsync();
+    }
+
+    private async Task SetSendingFinishedAsync()
+    {
+        if (EditMode)
+            await _buttonSubmitEdit.LoadingStateFinishedAsync();
+        else
+            await _buttonSubmitAdd.LoadingStateFinishedAsync();
+    }
+
+    private async Task<HttpResponseMessage?> SendDataAsync()
+    {
+        if (EditMode)
+        {
+            return await Client.UpdateAccountAsync(Account.Id, Account.ToUpdateAccountCommand());
+        }
+        else
+        {
+            return await Client.AddAccountAsync(Account.ToAddAccountCommand());
+        }
+    }
+}

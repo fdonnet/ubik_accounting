@@ -1,0 +1,86 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  darkMode: 'class',
+  content: [
+    './**/*.html',
+    './**/*.razor',
+    '../Ubik.Accounting.WebApp.Client/Components/**/*.razor'
+  ],
+  safelist: [
+    'block',
+    'mb-2',
+    'text-sm',
+    'font-medium',
+    'text-gray-900',
+    'dark:text-white',
+    'text-red-700',
+    'dark:text-red-500',
+    'bg-gray-50',
+    'bg-red-50',
+    'border',
+    'border-gray-300',
+    'border-red-500',
+    'text-red-900',
+    'placeholder-red-700',
+    'rounded-lg',
+    'focus:ring-blue-500',
+    'focus:ring-red-500',
+    'focus:border-blue-500',
+    'dark:bg-gray-700',
+    'focus:border-red-500',
+    'w-full',
+    'p-2.5',
+    'dark:placeholder-gray-400',
+    'dark:text-red-500',
+    'dark:placeholder-red-500',
+    'dark:border-red-500',
+    'dark:text-white',
+    'dark:focus:ring-blue-500',
+    'dark:focus:border-blue-500',
+    'dark:border-gray-600',
+    'invisible',
+    'cursor-not-allowed'
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        'body': [
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
+          '-apple-system',
+          'system-ui',
+          '"Segoe UI"',
+          'Roboto',
+          '"Helvetica Neue"',
+          'Arial',
+          '"Noto Sans"',
+          'sans-serif',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+          '"Noto Color Emoji"'
+        ],
+        'sans': [
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
+          '-apple-system',
+          'system-ui',
+          '"Segoe UI"',
+          'Roboto',
+          '"Helvetica Neue"',
+          'Arial',
+          '"Noto Sans"',
+          'sans-serif',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+          '"Noto Color Emoji"'
+        ]
+      },
+    },
+  },
+  plugins: [require('@tailwindcss/forms'),],
+}
+

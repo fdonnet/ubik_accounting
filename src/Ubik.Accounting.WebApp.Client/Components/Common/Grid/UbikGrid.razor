@@ -1,0 +1,122 @@
+﻿@using Microsoft.AspNetCore.Components.Rendering
+@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
+@using Ubik.Accounting.WebApp.Client.Components.Common.Spinners
+@using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils
+@typeparam TGridItem
+
+<CascadingValue TValue="InternalGridContext<TGridItem>" IsFixed="true" Value="@_internalGridContext">
+    @{
+        StartCollectingColumns();
+    }
+    @ChildContent
+    <Defer>
+        @{
+            FinishCollectingColumns();
+        }
+        <ColumnsCollectedNotifier TGridItem="TGridItem" />
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    @_renderColumnHeaders
+                </tr>
+            </thead>
+            <tbody>
+                @_renderLoading
+                @_renderNonVirtualizedRows
+            </tbody>
+        </table>
+    </Defer>
+</CascadingValue>
+
+@code {
+    private int _counter = 0;
+
+    private void RenderColumnHeaders(RenderTreeBuilder __builder)
+    {
+        @foreach (var col in _columns)
+        {
+            <th scope="col" class="p-0" aria-sort="@AriaSortValue(col)" @key="@col">
+                @col.HeaderContent
+            </th>
+        }
+    }
+
+    private void RenderNonVirtualizedRows(RenderTreeBuilder __builder)
+    {
+        var initialRowIndex = 2; // aria-rowindex is 1-based, plus the first row is the header
+        var rowIndex = initialRowIndex;
+        foreach (var item in _currentNonVirtualizedViewItems)
+        {
+            _counter = 0;
+            RenderRow(__builder, rowIndex++, item);
+        }
+
+        // When pagination is enabled, by default ensure we render the exact number of expected rows per page,
+        // even if there aren't enough data items. This avoids the layout jumping on the last page.
+        // Consider making this optional.
+        if (Pagination is not null)
+        {
+            while (rowIndex++ < initialRowIndex + Pagination.ItemsPerPage)
+            {
+                <tr></tr>
+            }
+        }
+    }
+
+    //TODO: review this part with Tailwind Apply style or safelist to avoid spagetti code
+    private void RenderRow(RenderTreeBuilder __builder, int rowIndex, TGridItem item)
+    {
+        <tr aria-rowindex="@rowIndex" class="bg-white border-t dark:bg-gray-800 dark:border-gray-700">
+            @foreach (var col in _columns)
+            {
+                if (_counter == 0 && HighlightFirstColumn)
+                {
+                    if(col.SmallXPadding)
+                    {
+                        <th scope="row" @key="@col" class="px-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            @{
+                                col.CellContent(__builder, item);
+                            }
+                        </th>
+                    }
+                    else
+                    {
+                        <th scope="row" @key="@col" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            @{
+                                col.CellContent(__builder, item);
+                            }
+                        </th>
+                    }
+                }
+                else
+                {
+                    if (col.SmallXPadding)
+                    {
+                        <td @key="@col" class="px-3 py-4">
+                            @{
+                                col.CellContent(__builder, item);
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td @key="@col" class="px-6 py-4">
+                            @{
+                                col.CellContent(__builder, item);
+                            }
+                        </td>
+                    }
+                }
+                _counter++;
+            }
+        </tr>
+    }
+
+    private void RenderLoading(RenderTreeBuilder __builder)
+    {
+        @if (Items == null)
+        {
+            <SpinnerInTable ColSpan="@_columnNumber"></SpinnerInTable>
+        }
+    }
+}

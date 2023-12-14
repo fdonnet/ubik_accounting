@@ -1,0 +1,83 @@
+﻿@inherits InputSelect<TValue>
+@typeparam TValue
+@using System.Diagnostics.CodeAnalysis
+@using System.Globalization
+@using System.Linq.Expressions
+
+<label for="@Id" class="@_labelCssClass">@Label</label>
+<select id="@Id" name="@Id" @bind="CurrentValue" class="@_selectCssClass">
+    <option value="">@PlaceholderText</option>
+    @if (_currentType.IsEnum)
+    {
+        @foreach (var enumValue in Enum.GetValues(_currentType))
+        {
+            <option value="@enumValue">@enumValue</option>
+        }
+    }
+    else
+    {
+        if (Data != null)
+        {
+            foreach (var obj in Data)
+            {
+                <option value="@obj!.GetType().GetProperty(DataKey)!.GetValue(obj,null)">@obj.GetType().GetProperty(DataValue)!.GetValue(obj, null)</option>
+            }
+        }
+    }
+</select>
+
+@foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+{
+    <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+        <span class="font-medium">@message</span>
+    </p>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = "SelectInput";
+    [Parameter]
+    public string Label { get; set; } = "Standard select input";
+    [Parameter]
+    public string PlaceholderText { get; set; } = "select something";
+    private Type _currentType = default!;
+    [Parameter] public Expression<Func<TValue>> ValidationFor { get; set; } = default!;
+    private FieldIdentifier _fieldIdentifier;
+    [Parameter]
+    public IEnumerable<Object>? Data { get; set; } = null;
+    [Parameter]
+    public string DataKey { get; set; } = "Key";
+    [Parameter]
+    public string DataValue { get; set; } = "Value";
+        
+    private string _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
+    private string _selectCssClass = UbikFormCSS.SELECT_VALID_CSS_CLASS;
+
+    protected override void OnInitialized()
+    {
+        _currentType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
+        _fieldIdentifier = FieldIdentifier.Create(ValidationFor);
+        EditContext.OnValidationStateChanged += HandleValidationStateChanged!;
+    }
+
+    private void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args)
+    {
+        if (EditContext.IsValid(_fieldIdentifier))
+        {
+            _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
+            _selectCssClass = UbikFormCSS.SELECT_VALID_CSS_CLASS;
+        }
+        else
+        {
+            _labelCssClass = UbikFormCSS.LABEL_INVALID_CSS_CLASS;
+            _selectCssClass = UbikFormCSS.SELECT_INVALID_CSS_CLASS;
+        }
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        EditContext.OnValidationStateChanged -= HandleValidationStateChanged!;
+    }
+}

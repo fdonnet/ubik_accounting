@@ -1,0 +1,20 @@
+﻿@page "/"
+@using Ubik.Accounting.WebApp.Security
+@inject UserService UserService;
+@attribute [Authorize]
+
+<PageTitle>Home</PageTitle>
+<PageScript Src="./js/theme-switcher.js" />
+
+Welcome to your new app.
+
+<ul>
+    @foreach (var c in UserService.GetUser().Claims)
+    {
+        <li>@c.Type         @c.Value</li>
+    }
+    Ok account role : @UserService.GetUser().IsInRole("ubik_accounting_account_write")
+</ul>
+
+
+

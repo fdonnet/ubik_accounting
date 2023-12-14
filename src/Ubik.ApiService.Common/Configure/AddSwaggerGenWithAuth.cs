@@ -27,8 +27,21 @@ namespace Ubik.ApiService.Common.Configure
                                             TokenUrl = new Uri(options.TokenUrl),
                                             Scopes = new Dictionary<string, string> { }
                                         }
-                                    }
-                                });
+                                        //ClientCredentials = new OpenApiOAuthFlow
+                                        //{
+                                        //    AuthorizationUrl = new Uri(options.TokenUrl),
+                                        //    TokenUrl = new Uri(options.TokenUrl)
+                                        //}
+                                    },
+                                    // OpenIdConnectUrl = new Uri(options.MetadataAddress)
+                                }) ;
+                //"OpenIdConnect",
+                //new OpenApiSecurityScheme
+                //{
+                //    Type = SecuritySchemeType.OpenIdConnect,
+                //    OpenIdConnectUrl = new Uri(options.MetadataAddress)
+                //}
+                //);
 
 
                 c.AddSecurityRequirement(

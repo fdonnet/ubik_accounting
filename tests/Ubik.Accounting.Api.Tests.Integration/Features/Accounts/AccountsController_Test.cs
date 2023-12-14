@@ -157,7 +157,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<GetAccountResult>()
-                .And.Match<GetAccountResult>(x => x.Code == "1020");
+                .And.Match<GetAccountResult>(x => x.Code == _testValuesForAccounts.AccountCode1);
         }
 
         [Fact]
@@ -552,7 +552,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId2}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetAccountResult>();
             
-            var fake = FakeGenerator.GenerateUpdAccounts(1, id: resultGet!.Id, code:"1020",version: resultGet!.Version).First();
+            var fake = FakeGenerator.GenerateUpdAccounts(1, id: resultGet!.Id, code: _testValuesForAccounts.AccountCode1, version: resultGet!.Version).First();
 
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");

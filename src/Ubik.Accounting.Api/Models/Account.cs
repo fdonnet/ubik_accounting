@@ -1,4 +1,4 @@
-﻿using Ubik.ApiService.DB.Enums;
+﻿using Ubik.Accounting.Contracts.Accounts.Enums;
 using Ubik.DB.Common;
 
 namespace Ubik.Accounting.Api.Models

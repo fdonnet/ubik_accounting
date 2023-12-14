@@ -1,0 +1,63 @@
+﻿﻿@using Microsoft.AspNetCore.Components.Rendering
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+
+@typeparam TGridItem
+@{
+    InternalGridContext.Grid.AddColumn(this, InitialSortDirection, IsDefaultSortColumn);
+}
+
+@code {
+    //TODO Manage the sort thing
+    private void RenderDefaultHeaderContent(RenderTreeBuilder __builder)
+    {
+        // @if (HeaderTemplate is not null)
+        // {
+        //     @HeaderTemplate(this)
+        // }
+        // else
+        // {
+        //     @if (ColumnOptions is not null && (Align != Align.Right && Align != Align.End))
+        //     {
+        //         <button class="col-options-button" type="button" @onclick="@(() => Grid.ShowColumnOptionsAsync(this))"></button>
+        //     }
+
+        if (Sortable.HasValue ? Sortable.Value : IsSortableByDefault())
+        {
+            <button type="button" @onclick="@(() => Grid.SortByColumnAsync(this))" class="uppercase w-full">
+                <div class="px-6 py-3 hover:bg-white dark:hover:bg-gray-800 flex justify-start">
+                    <div>@Title</div>
+                    <div class="text-gray-900 dark:text-white items-center ms-2 sm:ms-3 h-4 w-4">
+                        @if (Grid.SortByColumn == this && this.ShowSortIcon)
+                        {
+                            if(Grid.SortByAscending)
+                            {
+                                <svg class="h-full w-full fill-current rotate-180" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M 2 3.25 L 12 20.75 L 22 3.25 L 12 10 z" vector-effect="non-scaling-stroke" />
+                                </svg>
+                            }
+                            else
+                            {
+                                <svg class="h-full w-full fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M 2 3.25 L 12 20.75 L 22 3.25 L 12 10 z" vector-effect="non-scaling-stroke" />
+                                </svg>
+                            }
+                        }
+                       
+                    </div>
+                </div>
+            </button>
+        }
+        else
+        {
+            <span class="px-6 py-3">@Title</span>
+        }
+
+        //     @if (ColumnOptions is not null && (Align == Align.Right || Align == Align.End))
+        //     {
+        //         <button class="col-options-button" type="button" @onclick="@(() => Grid.ShowColumnOptionsAsync(this))"></button>
+        //     }
+        // }
+    }
+
+}

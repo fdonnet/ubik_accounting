@@ -13,7 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Api.Tests.I
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Api.Tests.UnitTests", "..\..\tests\Ubik.Accounting.Api.Tests.UnitTests\Ubik.Accounting.Api.Tests.UnitTests.csproj", "{28D8CCFA-1FA3-436E-AE22-0B46EEAAABC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Accounting.Contracts", "..\Ubik.Accounting.Contracts\Ubik.Accounting.Contracts.csproj", "{E7DE036A-E2E6-4A65-A1A9-40CF9EA5E449}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Contracts", "..\Ubik.Accounting.Contracts\Ubik.Accounting.Contracts.csproj", "{E7DE036A-E2E6-4A65-A1A9-40CF9EA5E449}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.WebApp", "..\Ubik.Accounting.WebApp\Ubik.Accounting.WebApp.csproj", "{49287A03-F87B-4CD9-B967-B1E205743B64}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.WebApp.Client", "..\Ubik.Accounting.WebApp.Client\Ubik.Accounting.WebApp.Client.csproj", "{8C2B2D6D-3B92-4FB4-B794-F0A889A7A91D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Webapp.Shared", "..\Ubik.Accounting.Webapp.Shared\Ubik.Accounting.Webapp.Shared.csproj", "{742D3CF1-3470-4347-8902-4E57B0ABF2C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +51,18 @@ Global
 		{E7DE036A-E2E6-4A65-A1A9-40CF9EA5E449}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7DE036A-E2E6-4A65-A1A9-40CF9EA5E449}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7DE036A-E2E6-4A65-A1A9-40CF9EA5E449}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49287A03-F87B-4CD9-B967-B1E205743B64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49287A03-F87B-4CD9-B967-B1E205743B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49287A03-F87B-4CD9-B967-B1E205743B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49287A03-F87B-4CD9-B967-B1E205743B64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C2B2D6D-3B92-4FB4-B794-F0A889A7A91D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C2B2D6D-3B92-4FB4-B794-F0A889A7A91D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C2B2D6D-3B92-4FB4-B794-F0A889A7A91D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C2B2D6D-3B92-4FB4-B794-F0A889A7A91D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{742D3CF1-3470-4347-8902-4E57B0ABF2C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{742D3CF1-3470-4347-8902-4E57B0ABF2C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{742D3CF1-3470-4347-8902-4E57B0ABF2C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{742D3CF1-3470-4347-8902-4E57B0ABF2C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

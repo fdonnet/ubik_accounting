@@ -1,4 +1,4 @@
-﻿using Ubik.ApiService.DB.Enums;
+﻿using Ubik.Accounting.Contracts.Accounts.Enums;
 
 namespace Ubik.Accounting.Contracts.Classifications.Results
 {

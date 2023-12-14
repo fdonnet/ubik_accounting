@@ -1,0 +1,66 @@
+﻿@inherits InputBase<string>
+@using System.Linq.Expressions
+@using System.Diagnostics.CodeAnalysis;
+@typeparam TValue
+@implements IDisposable
+
+<label for="@Id" class="@_labelCssClass">@Label</label>
+<textarea id="@Id" rows="@RowNumber" placeholder="@PlaceholderText" @bind="CurrentValueAsString" class="@_inputCssClass"></textarea>
+
+@foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+{
+    <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+        <span class="font-medium">@message</span>
+    </p>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = "input";
+    [Parameter]
+    public string Label { get; set; } = "Standard input";
+    [Parameter]
+    public string Type { get; set; } = "text";
+    [Parameter]
+    public string PlaceholderText { get; set; } = string.Empty;
+    [Parameter]
+    public int RowNumber { get; set; } = 4;
+    [Parameter] public Expression<Func<TValue>> ValidationFor { get; set; } = default!;
+
+    private FieldIdentifier _fieldIdentifier;
+    private string _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
+    private string _inputCssClass = UbikFormCSS.TEXTAREA_VALID_CSS_CLASS;
+
+    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+
+    protected override void OnInitialized()
+    {
+        _fieldIdentifier = FieldIdentifier.Create(ValidationFor);
+        EditContext.OnValidationStateChanged += HandleValidationStateChanged!;
+    }
+
+    private void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args)
+    {
+        if (EditContext.IsValid(_fieldIdentifier))
+        {
+            _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
+            _inputCssClass = UbikFormCSS.TEXTAREA_VALID_CSS_CLASS;
+        }
+        else
+        {
+            _labelCssClass = UbikFormCSS.LABEL_INVALID_CSS_CLASS;
+            _inputCssClass = UbikFormCSS.TEXTAREA_INVALID_CSS_CLASS;
+        }
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        EditContext.OnValidationStateChanged -= HandleValidationStateChanged!;
+    }
+}

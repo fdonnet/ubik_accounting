@@ -1,0 +1,55 @@
+﻿﻿@using Microsoft.AspNetCore.Components.Web
+
+<div class="flex px-2 pt-2 pb-3 w-full justify-between text-gray-700 dark:text-gray-400">
+    @if (State.TotalItemCount.HasValue)
+    {
+        <div class="summary">
+            @if (SummaryTemplate is not null)
+            {
+                @SummaryTemplate
+            }
+            else
+            {
+                <text><strong>@State.TotalItemCount</strong> items</text>
+            }
+        </div>
+        <div class="hidden sm:block">
+            Page <strong>@(State.CurrentPageIndex + 1)</strong>
+            of <strong>@(State.LastPageIndex + 1)</strong>
+        </div>
+        <div>
+            <nav role="navigation">
+                <button class="disabled:text-gray-300 disabled:dark:text-gray-700" type="button" @onclick="GoFirstAsync" disabled="@(!CanGoBack)" title="Go to first page" aria-label="Go to first page">
+                    <svg class="h-5 w-5 fill-current rotate-90" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <path fill-rule="evenodd" d="m 2,1.5 l 10,17.5 l 10,-17.5 l -10,7.75 l -10,-7.75 z" vector-effect="non-scaling-stroke" />
+                            <rect height="2" width="20" y="20.5" x="2" fill-rule="evenodd"> </rect>
+                        </g>
+                    </svg>
+                </button>
+                <button class="ms-3 disabled:text-gray-300 disabled:dark:text-gray-700" type="button" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="Go to previous page" aria-label="Go to previous page">
+                    <svg class="h-5 w-5 fill-current rotate-90" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M 2 3.25 L 12 20.75 L 22 3.25 L 12 11 z" vector-effect="non-scaling-stroke" />
+                    </svg>
+                </button>
+                <button class="ms-3 disabled:text-gray-300 disabled:dark:text-gray-700" type="button" @onclick="GoNextAsync" disabled="@(!CanGoForwards)" title="Go to next page" aria-label="Go to next page">
+                    <svg class="h-5 w-5 fill-current -rotate-90" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M 2 3.25 L 12 20.75 L 22 3.25 L 12 11 z" vector-effect="non-scaling-stroke" />
+                    </svg>
+                </button>
+                <button class="ms-3 disabled:text-gray-300 disabled:dark:text-gray-700" type="button" @onclick="GoLastAsync" disabled="@(!CanGoForwards)" title="Go to last page" aria-label="Go to last page">
+                    <svg class="h-5 w-5 fill-current -rotate-90" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <path fill-rule="evenodd" d="m 2,1.5 l 10,17.5 l 10,-17.5 l -10,7.75 l -10,-7.75 z" vector-effect="non-scaling-stroke" />
+                            <rect height="2" width="20" y="20.5" x="2" fill-rule="evenodd"> </rect>
+                        </g>
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    }
+</div>
+
+@code {
+
+}

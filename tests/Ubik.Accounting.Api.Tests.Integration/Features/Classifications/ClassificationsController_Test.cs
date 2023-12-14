@@ -9,9 +9,7 @@ using Ubik.ApiService.Common.Exceptions;
 using System.Text;
 using System.Text.Json;
 using Ubik.Accounting.Contracts.Classifications.Commands;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Api.Models;
-using MassTransit;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 {
