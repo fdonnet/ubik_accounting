@@ -84,7 +84,7 @@ Some used external libs:
 | [LanguageExt.Core](https://github.com/louthy/language-ext) | use Either<Left, Right> pattern |
 | [Masstransit](https://github.com/MassTransit/MassTransit) | message bus abstraction + inbox/outbox pattern |
 
-Send some love on github for this projects...
+Send some love on github to this projects...
 
 In program.cs, you can access the config of:
 
@@ -176,7 +176,7 @@ Example above with an add command:
 4) If right => publish an Added event (pub/sub), SaveAsync in db
 5) If right => with masstransit outbox enabled, the message is not published if the db is not updated
 6) If right => send the response on message bus
-7) If left => send the err response on message bus (Masstransit authorize to send `<result,error>`msg too) and it allows to not trigger an exception that will finish in an error queue if your error is a predictable one.
+7) If left => send the err response on message bus (Masstransit authorizes the sending of `(result,error)` tuple msg too) and it allows to not trigger an exception that will finish in an error queue if your error is a predictable one.
 
 #### In Features / controller layer
 
@@ -245,7 +245,7 @@ In program.cs, you can access the config of:
 
 - All components are able to run in auto mode (InteractiveServer or InteractiveWasm)
 - The very first business components about booking accounts management
-- Authorization components (depending on authorize state)
+- Authorization components (depending on authorized state)
 - Minimal common components (Alerts, Buttons, Form Inputs, Grid *(Microsoft inspired/copied)*, Modal, Spinners)
 - Tailwind Flowbite design for components
 - The implementation of the facade that call the reverse proxy controller that call the Backend api for automode
@@ -270,6 +270,6 @@ In program.cs, you can access the config of:
 
 -- Ubik.Accounting.ApiService.Common -- / -- Ubik.Db.Common -- / -- Ubik.Accounting.Contracts --
 
-- Common config things that can be reuse in other projects
+- Common config things that can be reused in other projects
 - This part will maybe grow
 - Contracts prj is to store all the communication records (command, queries, results etc)
