@@ -30,12 +30,12 @@ At the root of the repository. "Mount" the dependencies with Docker by running t
 
 `docker compose up`
 
-It will "mount" 4 containers:
-
-- Redis: cache
-- Rabbitmq: message bus
-- Keycloak: auth external provider with a example realm file loaded at the start
-- Postgres: database
+> It will "mount" 4 containers:
+>
+> - Redis: cache
+> - Rabbitmq: message bus
+> - Keycloak: auth external provider with a example realm file loaded at the start
+> - Postgres: database
 
 ### Ready to play
 
@@ -77,12 +77,12 @@ Some used external libs:
 
 | Package | For what |
 |----------- | -------- |
-| Asp.Versioning | automatic versioning of API (controllers / endpoints) |
+| [Asp.Versioning](https://github.com/dotnet/aspnet-api-versioning) | automatic versioning of API (controllers / endpoints) |
 | EfCore | commands and ez queries + data init etc |
-| Dapper | some read queries |
-| EFCore.NamingConvention | force EF core to postgres SnakeCase => way better if you need to use Dapper too  |
-| LanguageExt.Core | use Either<Left, Right> pattern |
-| Masstransit | message bus abstraction + inbox/outbox pattern |
+| [Dapper](https://github.com/DapperLib/Dapper) | some read queries |
+| [EFCore.NamingConvention](https://github.com/efcore/EFCore.NamingConventions) | force EF core to postgres SnakeCase => way better if you need to use Dapper too  |
+| [LanguageExt.Core](https://github.com/louthy/language-ext) | use Either<Left, Right> pattern |
+| [Masstransit](https://github.com/MassTransit/MassTransit) | message bus abstraction + inbox/outbox pattern |
 
 Send some love on github for this projects...
 
@@ -217,8 +217,8 @@ At the end, your global exception handler will take care of the real exceptions 
 
 | Package | For what |
 |----------- | -------- |
-| BalzorPageScript | small tool that allows Tailwind to apply its Dark or Light theme on each page an compo |
-| IdentityModel | Small extension to refresh token in OpenIdC |
+| [BalzorPageScript](https://github.com/MackinnonBuck/blazor-page-script) | small tool that allows Tailwind to apply its Dark or Light theme on each page an compo |
+| [IdentityModel](https://github.com/IdentityModel) | Small extension to refresh token in OpenIdC |
 
 Send some love on github to this projects...
 
@@ -272,4 +272,4 @@ In program.cs, you can access the config of:
 
 - Common config things that can be reuse in other projects
 - This part will maybe grow
-- Contracts is to store all the communication records (command, queries, results etc)
+- Contracts prj is to store all the communication records (command, queries, results etc)
