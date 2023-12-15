@@ -223,13 +223,6 @@ First you can maybe uncomment this lines in Ubik.Accounting.WebApp.csproj, if yo
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css" />
   </Target>
-
-  <Target Name="UpdateTailwindCSS" BeforeTargets="Compile">
-    <Exec Command="npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css" ContinueOnError="true">
-      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-    </Exec>
-    <Error Condition="'$(ErrorCode)' != '0'" Text="Error building CSS file" />
-  </Target>
 ```
 
 I don't know why, but my build fails in Github actions if I let this Tailwind instructions (related to the forms plugin). If someone has an idea...
@@ -277,7 +270,7 @@ In program.cs, you can access the config of:
 (shared side)
 
 - All the facades (interfaces) that need to be implemented on server and client side
-- All the services implementation that can run both side without specific implementation
+- All the services implementation that can run both sides without specific implementation
 
 ## Tests
 
