@@ -32,9 +32,9 @@
                 <UbikButtonAlternative Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2"></UbikButtonAlternative>
             </div>
         </div>
-        <div class="flex w-full justify-center mb-3">
-            <div class="grid gap-4 mb-4 grid-cols-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <div class="col-span-2 sm:col-span-1">
+        <div class="flex items-end w-full mb-3">
+            <div class="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div>
                     <span>Currency</span>
                     <select id="currencyFilter" name="currencyFilter" @bind="_currencyFilter">
                         <option value="" selected></option>
@@ -47,10 +47,10 @@
                         }
                     </select>
                 </div>
-                <div class="col-span-2 sm:col-span-1">
+                <div>
                     Domain
                 </div>
-                <div class="col-span-2 sm:col-span-1">
+                <div>
                     Category
                 </div>
             </div>

@@ -1382,6 +1382,10 @@ p {
   flex-direction: column;
 }
 
+.content-end {
+  align-content: flex-end;
+}
+
 .items-start {
   align-items: flex-start;
 }
@@ -1408,6 +1412,10 @@ p {
 
 .justify-items-start {
   justify-items: start;
+}
+
+.justify-items-end {
+  justify-items: end;
 }
 
 .gap-4 {
