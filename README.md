@@ -270,7 +270,7 @@ In program.cs, you can access the config of:
 (shared side)
 
 - All the facades (interfaces) that need to be implemented on server and client side
-- All the services implementation that can run both side without specific implementation
+- All the services implementation that can run both sides without specific implementation
 
 ## Tests
 
