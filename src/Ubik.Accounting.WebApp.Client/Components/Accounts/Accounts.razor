@@ -20,18 +20,44 @@
     <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
 
     <div class="flex flex-col max-w-max mt-1">
-        @if (IsAuthorizedToModify)
-        {
-            <div class="flex justify-between">
-                <div>
+        <div class="flex justify-between">
+            <div>
+                @if (IsAuthorizedToModify)
+                {
                     <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" IsDisabled=@_isButtonsDisabled OnClick="AddAccountDialogAsync"></UbikButton>
-                </div>
-                <div>
+                }
+            </div>
+            <div>
 
-                    <UbikButtonAlternative Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2"></UbikButtonAlternative>
+                <UbikButtonAlternative Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2"></UbikButtonAlternative>
+            </div>
+        </div>
+        <div class="flex w-full justify-center mb-3">
+            <div class="grid gap-4 mb-4 grid-cols-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div class="col-span-2 sm:col-span-1">
+                    <span>Currency</span>
+                    <select id="currencyFilter" name="currencyFilter" @bind="_currencyFilter">
+                        <option value="" selected></option>
+                        @if(_currencies != null)
+                        {
+                        foreach (var ccy in _currencies)
+                            {
+                                <option value="@ccy.Id.ToString()">@ccy.IsoCode</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                    Domain
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                    Category
                 </div>
             </div>
+        </div>
 
+        @if (IsAuthorizedToModify)
+        {
             <CascadingValue Name="AccountModel" Value="@_accountCurrent">
                 <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
                     <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialogAsync"></AccountForm>
@@ -41,6 +67,7 @@
                 </UbikModalCenter>
             </CascadingValue>
         }
+
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <UbikGrid Items="@_accounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="@pagination">
                 <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
@@ -87,12 +114,13 @@
     private UbikModalCenter _deleteDialog = default!;
     private ErrBackendApi _backendErrorMsg = default!;
     private AccountConfirmDelete _deleteMsg = default!;
-
     private AccountModel _accountCurrent = new();
     private List<string> _gridAccountFields = new() { "Code", "Label", "Domain", "Category" };
 
     private bool _editMode = false;
     private string _dialogTitle = "Add account";
+
+    private Guid? _currencyFilter = null;
 
     private bool _isButtonsDisabled
     {
