@@ -162,7 +162,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                     using var transaction = _context.Database.BeginTransaction();
 
                     //Clean all account groups structure
-                    var firstLvlAccountGroups = await GetFirstLvlAccountGroups(id);
+                    var firstLvlAccountGroups = await GetFirstLvlAccountGroupsAsync(id);
                     var deletedAccountGroups = new List<AccountGroup>();
 
                     foreach (var ag in firstLvlAccountGroups)
@@ -189,7 +189,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 : classification;
         }
 
-        private async Task<IEnumerable<AccountGroup>> GetFirstLvlAccountGroups(Guid classificationId)
+        private async Task<IEnumerable<AccountGroup>> GetFirstLvlAccountGroupsAsync(Guid classificationId)
         {
             return await _context.AccountGroups
                                     .Where(ag => ag.ClassificationId == classificationId
