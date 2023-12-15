@@ -112,12 +112,12 @@ Contains the core features (in Vertical Slices mode).
 - All commands go to message bus (request/response) and are "consumed" by Masstransit consumers
 - All queries access the service layer directly but can be called from another service via message bus (request/response)
 - When a command is executed with success, an event is published to the message bus (pub/sub)
-- Manual mapping between models and contract
+- Manual mapping between models and contracts
 - Controllers versioning
 - Service and very minimal service manager (need to be reviewed)
-- Functional `Either<IServiceAndFeatureError, AccountGroup>` patterns in all layers with usage of `bind`, `map` and `match` to transfer errors between layer and to keep the code not too dirty. (not an expert but I like it)
+- Functional `Either<Error, Result>` patterns in all layers with usage of `bind`, `map` and `match` to transfer errors between layer and to keep the code not too dirty. (not an expert but I like it)
 - Masstransit usage of the tupple (result,error) to not raise exceptions via errors queue when it's a predictable error => usage of error queue only when it's a real exception
-- Problemdetails as return of controller endpoints when in error (all cases => business errors and exception via global exception handling)
+- Problemdetails as returns of controller endpoints when in error (all cases => business errors and exception via global exception handling)
 
 ## Frontend Blazor
 
