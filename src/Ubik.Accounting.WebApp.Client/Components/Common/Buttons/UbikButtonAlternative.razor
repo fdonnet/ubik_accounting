@@ -1,7 +1,18 @@
-﻿<button type="@Type" @onclick="ClickAsync" class="@(AdditionalCssClass == string.Empty ? string.Empty : AdditionalCssClass + " ")text-blue-700 inline-flex hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 p-2.5 text-center mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
-    @ChildContent
-    @Label
-</button>
+﻿@if(IsDisabled)
+{
+    <button type="@Type" disabled @onclick="ClickAsync" class="@(AdditionalCssClass == string.Empty ? string.Empty : AdditionalCssClass + " ")text-blue-700 cursor-wait inline-flex hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 p-2.5 text-center mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
+        @ChildContent
+        @Label
+    </button>
+}
+else
+{
+    <button type="@Type" @onclick="ClickAsync" class="@(AdditionalCssClass == string.Empty ? string.Empty : AdditionalCssClass + " ")text-blue-700 inline-flex hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 p-2.5 text-center mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
+        @ChildContent
+        @Label
+    </button>
+}
+
 
 @code {
     [Parameter]
@@ -14,6 +25,8 @@
     public RenderFragment? ChildContent { get; set; } = null;
     [Parameter]
     public EventCallback OnClick { get; set; }
+    [Parameter]
+    public bool IsDisabled { get; set; } = false;
 
     private async Task ClickAsync()
     {

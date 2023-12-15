@@ -19,28 +19,28 @@
 {
     <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
 
-    @if (IsAuthorizedToModify)
-    {
-        if (_isLoading || RenderContext.IsPrerendering)
-        {
-            <button type="button" class="mb-2 text-white bg-blue-400 dark:bg-blue-500 cursor-wait font-medium rounded-lg text-sm px-5 py-2.5 text-center" disabled>Add</button>
-        }
-        else
-        {
-            <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" OnClick="AddAccountDialogAsync"></UbikButton>
-        }
-
-        <CascadingValue Name="AccountModel" Value="@_accountCurrent">
-            <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
-                <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialogAsync"></AccountForm>
-            </UbikModal>
-            <UbikModalCenter @ref="_deleteDialog">
-                <AccountConfirmDelete @ref="_deleteMsg" OnClose="CloseDeleteDialogAsync"></AccountConfirmDelete>
-            </UbikModalCenter>
-        </CascadingValue>
-    }
-
     <div class="flex flex-col max-w-max mt-1">
+        @if (IsAuthorizedToModify)
+        {
+            <div class="flex justify-between">
+                <div>
+                    <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" IsDisabled=@_isButtonsDisabled OnClick="AddAccountDialogAsync"></UbikButton>
+                </div>
+                <div>
+
+                    <UbikButtonAlternative Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2"></UbikButtonAlternative>
+                </div>
+            </div>
+
+            <CascadingValue Name="AccountModel" Value="@_accountCurrent">
+                <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
+                    <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialogAsync"></AccountForm>
+                </UbikModal>
+                <UbikModalCenter @ref="_deleteDialog">
+                    <AccountConfirmDelete @ref="_deleteMsg" OnClose="CloseDeleteDialogAsync"></AccountConfirmDelete>
+                </UbikModalCenter>
+            </CascadingValue>
+        }
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <UbikGrid Items="@_accounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="@pagination">
                 <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
@@ -93,6 +93,14 @@
 
     private bool _editMode = false;
     private string _dialogTitle = "Add account";
+
+    private bool _isButtonsDisabled
+    {
+        get
+        {
+            return _isLoading || RenderContext.IsPrerendering;
+        }
+    }
 
     PaginationState pagination = new PaginationState { ItemsPerPage = ITEMS_PER_PAGE };
 
