@@ -170,6 +170,7 @@ In program.cs, you can access the config of:
 - Minimal common components (Alerts, Buttons, Form Inputs, Grid *(Microsoft inspired/copied)*, Modal, Spinners)
 - Tailwind Flowbite design for components
 - The implementation of the facade that call the reverse proxy controller that call the Backend api for automode
+- Error components that manage problemdetails returns from backend api (try to add a booking account with an existing code as an example) 
 
 ### Ubik.Accounting.WebApp.Shared
 
