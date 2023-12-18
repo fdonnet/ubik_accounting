@@ -26,11 +26,14 @@
     }
 </select>
 
-@foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+@if(_needValidation)
 {
-    <p class="mt-2 text-sm text-red-600 dark:text-red-500">
-        <span class="font-medium">@message</span>
-    </p>
+    foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+    {
+        <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+            <span class="font-medium">@message</span>
+        </p>
+    }
 }
 
 @code {
@@ -41,7 +44,7 @@
     [Parameter]
     public string PlaceholderText { get; set; } = "select something";
     private Type _currentType = default!;
-    [Parameter] public Expression<Func<TValue>> ValidationFor { get; set; } = default!;
+    [Parameter] public Expression<Func<TValue>>? ValidationFor { get; set; } = null;
     private FieldIdentifier _fieldIdentifier;
     [Parameter]
     public IEnumerable<Object>? Data { get; set; } = null;
@@ -49,35 +52,45 @@
     public string DataKey { get; set; } = "Key";
     [Parameter]
     public string DataValue { get; set; } = "Value";
-        
+
     private string _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
     private string _selectCssClass = UbikFormCSS.SELECT_VALID_CSS_CLASS;
+    private bool _needValidation = false;
 
     protected override void OnInitialized()
     {
         _currentType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
-        _fieldIdentifier = FieldIdentifier.Create(ValidationFor);
-        EditContext.OnValidationStateChanged += HandleValidationStateChanged!;
+
+        if (ValidationFor != null)
+        {
+            _fieldIdentifier = FieldIdentifier.Create(ValidationFor);
+            EditContext.OnValidationStateChanged += HandleValidationStateChanged!;
+            _needValidation = true;
+        }
     }
 
     private void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args)
     {
-        if (EditContext.IsValid(_fieldIdentifier))
+        if (_needValidation)
         {
-            _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
-            _selectCssClass = UbikFormCSS.SELECT_VALID_CSS_CLASS;
-        }
-        else
-        {
-            _labelCssClass = UbikFormCSS.LABEL_INVALID_CSS_CLASS;
-            _selectCssClass = UbikFormCSS.SELECT_INVALID_CSS_CLASS;
-        }
+            if (EditContext.IsValid(_fieldIdentifier))
+            {
+                _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
+                _selectCssClass = UbikFormCSS.SELECT_VALID_CSS_CLASS;
+            }
+            else
+            {
+                _labelCssClass = UbikFormCSS.LABEL_INVALID_CSS_CLASS;
+                _selectCssClass = UbikFormCSS.SELECT_INVALID_CSS_CLASS;
+            }
 
-        StateHasChanged();
+            StateHasChanged();
+        }
     }
 
     public void Dispose()
     {
-        EditContext.OnValidationStateChanged -= HandleValidationStateChanged!;
+        if (_needValidation)
+            EditContext.OnValidationStateChanged -= HandleValidationStateChanged!;
     }
 }

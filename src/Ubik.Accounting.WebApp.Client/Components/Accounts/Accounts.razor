@@ -8,6 +8,7 @@
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Pagination
 @using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
+@using Ubik.Accounting.Contracts.Accounts.Enums
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
@@ -19,30 +20,35 @@
 {
     <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
 
-    @if (IsAuthorizedToModify)
-    {
-        if (_isLoading || RenderContext.IsPrerendering)
-        {
-            <button type="button" class="mb-2 text-white bg-blue-400 dark:bg-blue-500 cursor-wait font-medium rounded-lg text-sm px-5 py-2.5 text-center" disabled>Add</button>
-        }
-        else
-        {
-            <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" OnClick="AddAccountDialogAsync"></UbikButton>
-        }
-
-        <CascadingValue Name="AccountModel" Value="@_accountCurrent">
-            <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
-                <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialogAsync"></AccountForm>
-            </UbikModal>
-            <UbikModalCenter @ref="_deleteDialog">
-                <AccountConfirmDelete @ref="_deleteMsg" OnClose="CloseDeleteDialogAsync"></AccountConfirmDelete>
-            </UbikModalCenter>
-        </CascadingValue>
-    }
-
     <div class="flex flex-col max-w-max mt-1">
+        <div class="flex justify-between">
+            <div>
+                @if (IsAuthorizedToModify)
+                {
+                    <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" IsDisabled=@_isButtonsDisabled OnClick="AddAccountDialogAsync"></UbikButton>
+                }
+            </div>
+            <div>
+                <UbikButtonAlternative IsPurple="@_accountFilters.IsFiltersApplied" Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2" OnClick="OpenCloseFilterView"></UbikButtonAlternative>
+            </div>
+        </div>
+
+        <AccountFilters @ref="_filters" CurrenciesList="_currencies" Filters="@_accountFilters" OnApplyFilters="ApplyFilters"></AccountFilters>
+
+        @if (IsAuthorizedToModify)
+        {
+            <CascadingValue Name="AccountModel" Value="@_accountCurrent">
+                <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
+                    <AccountForm CurrenciesList="_currencies" EditMode="@_editMode" OnClose="CloseDialogAsync"></AccountForm>
+                </UbikModal>
+                <UbikModalCenter @ref="_deleteDialog">
+                    <AccountConfirmDelete @ref="_deleteMsg" OnClose="CloseDeleteDialogAsync"></AccountConfirmDelete>
+                </UbikModalCenter>
+            </CascadingValue>
+        }
+
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <UbikGrid Items="@_accounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="@pagination">
+            <UbikGrid Items="@_filteredAccounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="@pagination">
                 <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
                 <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
                 <UbikColumnProperty Title="Domain" Property="@(a=> a.Domain)" Sortable="true"></UbikColumnProperty>
@@ -87,12 +93,43 @@
     private UbikModalCenter _deleteDialog = default!;
     private ErrBackendApi _backendErrorMsg = default!;
     private AccountConfirmDelete _deleteMsg = default!;
-
     private AccountModel _accountCurrent = new();
-    private List<string> _gridAccountFields = new() { "Code", "Label", "Domain", "Category" };
 
     private bool _editMode = false;
     private string _dialogTitle = "Add account";
+
+    private AccountFiltersModel _accountFilters = new();
+    private AccountFilters _filters = default!;
+
+    private IQueryable<AccountModel>? _filteredAccounts
+    {
+        get
+        {
+            if (_accounts == null || !_accountFilters.IsFiltersApplied)
+                return _accounts;
+
+            var result = _accounts;
+
+            if (_accountFilters.CurrencyFilter != null)
+                result = result.Where(a => a.CurrencyId == _accountFilters.CurrencyFilter);
+
+            if (_accountFilters.DomainFilter != null)
+                result = result.Where(a => a.Domain == _accountFilters.DomainFilter);
+
+            if (_accountFilters.CategoryFilter != null)
+                result = result.Where(a => a.Category == _accountFilters.CategoryFilter);
+
+            return result;
+        }
+    }
+
+    private bool _isButtonsDisabled
+    {
+        get
+        {
+            return _isLoading || RenderContext.IsPrerendering;
+        }
+    }
 
     PaginationState pagination = new PaginationState { ItemsPerPage = ITEMS_PER_PAGE };
 
@@ -192,5 +229,15 @@
 
         await _deleteMsg.SetInitialStatus();
         await _deleteDialog.ShowDialogAsync();
+    }
+
+    private async Task OpenCloseFilterView()
+    {
+        await _filters.OpenCloseFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        StateHasChanged();
     }
 }

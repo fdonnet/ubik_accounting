@@ -3,7 +3,7 @@ services:
 
     command:
       - "start-dev"
-      - "--import-realm"
+      - "--import-realm" 
 
     container_name: "ubik-keycloak"
 
