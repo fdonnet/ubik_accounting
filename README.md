@@ -45,7 +45,7 @@ At the root of the repository. "Mount" the dependencies with Docker by running t
 
 `dotnet run --launch-profile https --project ./src/Ubik.Accounting.Api/Ubik.Accounting.Api.csproj`
 
-You can now access Swagger here <https://localhost:7289/swagger> (click on authorize before trying an endpoint, see credentials below)
+You can now access Swagger here <https://localhost:7289/swagger> (click on authorize before trying an endpoint)
 
 #### For the Blazor app, in another terminal windows, at the root again
 
