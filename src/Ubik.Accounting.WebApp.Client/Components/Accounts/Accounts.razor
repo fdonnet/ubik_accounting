@@ -8,6 +8,7 @@
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Pagination
 @using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
+@using Ubik.Accounting.Contracts.Accounts.Enums
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
@@ -28,33 +29,11 @@
                 }
             </div>
             <div>
+                <UbikButtonAlternative IsPurple="@_accountFilters.IsFiltersApplied" Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2" OnClick="OpenCloseFilterView"></UbikButtonAlternative>
+            </div>
+        </div>
 
-                <UbikButtonAlternative Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2"></UbikButtonAlternative>
-            </div>
-        </div>
-        <div class="flex text-sm justify-end w-full mb-3">
-            <div class="bg-white p-4 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <div class="flex items-center">
-                    <label>Currency</label>
-                    <select @bind="_currencyFilter" class="block w-full ms-3 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="currencyFilter" name="currencyFilter">
-                        <option value="-1" selected></option>
-                        @if (_currencies != null)
-                        {
-                            foreach (var ccy in _currencies)
-                            {
-                                <option value="@ccy.Id.ToString()">@ccy.IsoCode</option>
-                            }
-                        }
-                    </select>
-                </div>
-                <div>
-                    Domain
-                </div>
-                <div>
-                    Category
-                </div>
-            </div>
-        </div>
+        <AccountFilters @ref="_filters" CurrenciesList="_currencies" Filters="@_accountFilters" OnApplyFilters="ApplyFilters"></AccountFilters>
 
         @if (IsAuthorizedToModify)
         {
@@ -69,7 +48,7 @@
         }
 
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <UbikGrid Items="@_accounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="@pagination">
+            <UbikGrid Items="@_filteredAccounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="@pagination">
                 <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
                 <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
                 <UbikColumnProperty Title="Domain" Property="@(a=> a.Domain)" Sortable="true"></UbikColumnProperty>
@@ -115,12 +94,34 @@
     private ErrBackendApi _backendErrorMsg = default!;
     private AccountConfirmDelete _deleteMsg = default!;
     private AccountModel _accountCurrent = new();
-    private List<string> _gridAccountFields = new() { "Code", "Label", "Domain", "Category" };
 
     private bool _editMode = false;
     private string _dialogTitle = "Add account";
 
-    private string _currencyFilter = "-1";
+    private AccountFiltersModel _accountFilters = new();
+    private AccountFilters _filters = default!;
+
+    private IQueryable<AccountModel>? _filteredAccounts
+    {
+        get
+        {
+            if (_accounts == null || !_accountFilters.IsFiltersApplied)
+                return _accounts;
+
+            var result = _accounts;
+
+            if (_accountFilters.CurrencyFilter != null)
+                result = result.Where(a => a.CurrencyId == _accountFilters.CurrencyFilter);
+
+            if (_accountFilters.DomainFilter != null)
+                result = result.Where(a => a.Domain == _accountFilters.DomainFilter);
+
+            if (_accountFilters.CategoryFilter != null)
+                result = result.Where(a => a.Category == _accountFilters.CategoryFilter);
+
+            return result;
+        }
+    }
 
     private bool _isButtonsDisabled
     {
@@ -228,5 +229,15 @@
 
         await _deleteMsg.SetInitialStatus();
         await _deleteDialog.ShowDialogAsync();
+    }
+
+    private async Task OpenCloseFilterView()
+    {
+        await _filters.OpenCloseFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        StateHasChanged();
     }
 }

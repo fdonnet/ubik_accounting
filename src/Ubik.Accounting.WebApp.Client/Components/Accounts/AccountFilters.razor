@@ -1,0 +1,85 @@
+﻿@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
+@using Ubik.Accounting.Contracts.Accounts.Enums
+@using Ubik.Accounting.Contracts.Currencies.Results
+
+@inject IJSRuntime JS
+
+<EditForm id="@_filtersId" Model="@Filters" FormName="AccountFilters" class="hidden flex text-sm justify-end w-full mb-3 mt-2">
+    <div class="bg-white w-full sm:w-auto p-3 flex flex-col border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <div class="grid grid-cols-2 gap-2">
+            <div class="col-span-1">
+                <UbikInputSelect Id="FilterCcy" TValue="Guid?"
+                                 ValueExpression="@(() => Filters.CurrencyFilter)" Value="@Filters.CurrencyFilter"
+                                 ValueChanged="@((Guid? args) => Filters.CurrencyFilter = args)"
+                                 Label="Currency" PlaceholderText=""
+                                 Data="CurrenciesList" DataKey="Id" DataValue="IsoCode"></UbikInputSelect>
+            </div>
+            <div class="col-span-1">
+                <UbikInputSelect Id="FilterDomain" TValue="AccountDomain?"
+                                 ValueExpression="@(() => Filters.DomainFilter)" Value="@Filters.DomainFilter"
+                                 ValueChanged="@((AccountDomain? args) => Filters.DomainFilter = args)"
+                                 Label="Domain" PlaceholderText=""></UbikInputSelect>
+            </div>
+            <div class="col-span-1">
+                <UbikInputSelect Id="FilterCategory" TValue="AccountCategory?"
+                                 ValueExpression="@(() => Filters.CategoryFilter)" Value="@Filters.CategoryFilter"
+                                 ValueChanged="@((AccountCategory? args) => Filters.CategoryFilter = args)"
+                                 Label="Category" PlaceholderText=""></UbikInputSelect>
+            </div>
+        </div>
+        <div class="flex justify-between mt-3">
+            <div>
+                <UbikButton Label="Apply" OnClick="ApplyFilters"></UbikButton>
+            </div>
+            <div>
+                <UbikButtonAlternative Label="Reset" OnClick="ResetValues"></UbikButtonAlternative>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public AccountFiltersModel Filters { get; set; } = default!;
+    [Parameter]
+    public IEnumerable<GetAllCurrenciesResult> CurrenciesList { get; set; } = default!;
+    [Parameter]
+    public EventCallback OnApplyFilters { get; set; }
+
+    private IJSObjectReference? _jsModule = default!;
+    private string _filtersId = $"account-filters{Guid.NewGuid()}";
+
+    public void ResetValues()
+    {
+        Filters.DomainFilter = null;
+        Filters.CategoryFilter = null;
+        Filters.CurrencyFilter = null;
+    }
+
+    public async Task ApplyFilters()
+    {
+        if (Filters.CurrencyFilter == null
+            && Filters.DomainFilter == null
+            && Filters.CategoryFilter == null)
+            Filters.IsFiltersApplied = false;
+        else
+            Filters.IsFiltersApplied = true;
+
+        await OnApplyFilters.InvokeAsync();
+        await OpenCloseFilters();
+    }
+
+    public async Task OpenCloseFilters()
+    {
+        await _jsModule!.InvokeVoidAsync("openCloseAccountFilters", _filtersId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./Components/Accounts/AccountFilters.razor.js");
+        }
+    }
+}
