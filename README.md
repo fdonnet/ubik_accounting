@@ -57,7 +57,7 @@ And now, you can access the very first version of a the Blazor 8 webapp here <ht
 
 ### All the things are up
 
-If you click on authorize in Swagger or if you try to access the Blazor app, you will be redirected on a Keycloak login page
+If you try to access the Blazor app, you will be redirected on a Keycloak login page
 
 Login credentials:
 
