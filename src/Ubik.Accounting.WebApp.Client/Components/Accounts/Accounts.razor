@@ -32,15 +32,15 @@
                 <UbikButtonAlternative Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2"></UbikButtonAlternative>
             </div>
         </div>
-        <div class="flex items-end w-full mb-3">
-            <div class="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <div>
-                    <span>Currency</span>
-                    <select id="currencyFilter" name="currencyFilter" @bind="_currencyFilter">
-                        <option value="" selected></option>
-                        @if(_currencies != null)
+        <div class="flex text-sm justify-end w-full mb-3">
+            <div class="bg-white p-4 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div class="flex items-center">
+                    <label>Currency</label>
+                    <select @bind="_currencyFilter" class="block w-full ms-3 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="currencyFilter" name="currencyFilter">
+                        <option value="-1" selected></option>
+                        @if (_currencies != null)
                         {
-                        foreach (var ccy in _currencies)
+                            foreach (var ccy in _currencies)
                             {
                                 <option value="@ccy.Id.ToString()">@ccy.IsoCode</option>
                             }
@@ -120,7 +120,7 @@
     private bool _editMode = false;
     private string _dialogTitle = "Add account";
 
-    private Guid? _currencyFilter = null;
+    private string _currencyFilter = "-1";
 
     private bool _isButtonsDisabled
     {
