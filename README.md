@@ -45,7 +45,7 @@ At the root of the repository. "Mount" the dependencies with Docker by running t
 
 `dotnet run --launch-profile https --project ./src/Ubik.Accounting.Api/Ubik.Accounting.Api.csproj`
 
-You can now access Swagger here <https://localhost:7289/swagger> (click on authorize before trying an endpoint, see credentials below)
+You can now access Swagger here <https://localhost:7289/swagger> (click on authorize before trying an endpoint)
 
 #### For the Blazor app, in another terminal windows, at the root again
 
@@ -57,7 +57,7 @@ And now, you can access the very first version of a the Blazor 8 webapp here <ht
 
 ### All the things are up
 
-If you click on authorize in Swagger or if you try to access the Blazor app, you will be redirected on a Keycloak login page
+If you try to access the Blazor app, you will be redirected on a Keycloak login page
 
 Login credentials:
 
@@ -112,106 +112,12 @@ Contains the core features (in Vertical Slices mode).
 - All commands go to message bus (request/response) and are "consumed" by Masstransit consumers
 - All queries access the service layer directly but can be called from another service via message bus (request/response)
 - When a command is executed with success, an event is published to the message bus (pub/sub)
-- Manual mapping between models and contract
+- Manual mapping between models and contracts
 - Controllers versioning
 - Service and very minimal service manager (need to be reviewed)
-
-### Functional things
-
-In all backend layers, you find a little bit of functional programming. I m not expert at all but I think it's very useful for an API that prefers "transferring" errors than raising exceptions and to keep the code not too dirty. (see LanguageExt on github)
-
-#### In Features / service layer
-
-You will find some stuff like that:
-
-```cs
-public async Task<Either<IServiceAndFeatureError, AccountGroup>> AddAsync(AccountGroup accountGroup)
-{
-    return await ValidateIfNotAlreadyExistsAsync(accountGroup).ToAsync()
-        .Bind(ac => ValidateIfParentAccountGroupExists(ac).ToAsync())
-        .Bind(ac => ValidateIfClassificationExists(ac).ToAsync())
-        .MapAsync(async ac =>
-        {
-            ac.Id = NewId.NextGuid();
-            await _context.AccountGroups.AddAsync(ac);
-            _context.SetAuditAndSpecialFields()
-            return ac;
-        });
-}
-```
-
-It uses the `Either<Left,Right>` pattern and `bind` and `map` functions a lot. If at any stage of the process an `IServiceAndFeatureError` occurs, it returns to the calling function as a `LEFT` result.
-
-Example above with an add operation:
-
-1) Validate if not already exists
-2) Validate if the specified parent account exists
-3) Validate if the specified classification exists
-4) Add in EF context
-
-#### In Features / commands layer
-
-In Masstransit consumers, the use of `.Match`:
-
-```cs
-public async Task Consume(ConsumeContext<AddAccountGroupCommand> context)
-{
-    var account = context.Message.ToAccountGroup()
-    var result = await _serviceManager.AccountGroupService.AddAsync(account)
-    await result.Match(
-        Right: async r =>
-        {
-            //Store and publish AccountGroupAdded event
-            await _publishEndpoint.Publish(r.ToAccountGroupAdded(), CancellationToken.None);
-            await _serviceManager.SaveAsync();
-            await context.RespondAsync(r.ToAddAccountGroupResult());
-        },
-        Left: async err => await context.RespondAsync(err));
-}
-```
-
-Example above with an add command:
-
-1) Receive a message from the message bus and map it to EF Model
-2) Call the service
-3) Match the `Either<Left,Right>`
-4) If right => publish an Added event (pub/sub), SaveAsync in db
-5) If right => with masstransit outbox enabled, the message is not published if the db is not updated
-6) If right => send the response on message bus
-7) If left => send the err response on message bus (Masstransit authorizes the sending of `(result,error)` tuple msg too) and it allows to not trigger an exception that will finish in an error queue if your error is a predictable one.
-
-#### In Features / controller layer
-
-Response from masstransit request:
-
-```cs
-[Authorize(Roles = "ubik_accounting_accountgroup_write")]
-[HttpPost]
-[ProducesResponseType(201)]
-[ProducesResponseType(typeof(CustomProblemDetails), 400)]
-[ProducesResponseType(typeof(CustomProblemDetails), 409)]
-[ProducesResponseType(typeof(CustomProblemDetails), 500)]
-public async Task<ActionResult<AddAccountGroupResult>> Add(AddAccountGroupCommand command, IRequestClient<AddAccountGroupCommand> client)
-{
-    var (result, error) = await client.GetResponse<AddAccountGroupResult, IServiceAndFeatureError>(command)
-    if (result.IsCompletedSuccessfully)
-    {
-        var addedAccountGroup = (await result).Message;
-        return CreatedAtAction(nameof(Get), new { id = addedAccountGroup.Id }, addedAccountGroup);
-    }
-    else
-    {
-        var problem = await error;
-        return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-    }
-}
-```
-
-You can look at both case `(result,error)` tuple and separate it with `.IsCompletedSuccessfully`.
-
-In case of error, you can send a ProblemDetails of your choice as endpoint result. And before that, access the masstransit error payload with `await error`.
-
-At the end, your global exception handler will take care of the real exceptions raised by your system and will not trigger on predictable error cases.
+- Functional `Either<Error, Result>` patterns in all layers with usage of `bind`, `map` and `match` to transfer errors between layer and to keep the code not too dirty. (not an expert but I like it)
+- Masstransit usage of the tupple (result,error) to not raise exceptions via errors queue when it's a predictable error => usage of error queue only when it's a real exception
+- Problemdetails as returns of controller endpoints when in error (all cases => business errors and exception via global exception handling)
 
 ## Frontend Blazor
 
@@ -264,6 +170,7 @@ In program.cs, you can access the config of:
 - Minimal common components (Alerts, Buttons, Form Inputs, Grid *(Microsoft inspired/copied)*, Modal, Spinners)
 - Tailwind Flowbite design for components
 - The implementation of the facade that call the reverse proxy controller that call the Backend api for automode
+- Error components that manage problemdetails returns from backend api (try to add a booking account with an existing code as an example) 
 
 ### Ubik.Accounting.WebApp.Shared
 
