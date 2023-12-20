@@ -17,25 +17,15 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private string _dialogId = $"dialog-delete-{Guid.NewGuid().ToString()}";
-    private IJSObjectReference? _jsModule = default!;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./Components/Common/Modal/UbikModalCenter.razor.js");
-        }
-    }
+    private string _dialogId = $"dialog-center-{Guid.NewGuid().ToString()}";
 
     public async Task ShowDialogAsync()
     {
-        await _jsModule!.InvokeVoidAsync("openDialogDelete", _dialogId);
+        await JS.InvokeVoidAsync("openDialog", _dialogId);
     }
 
     public async Task CloseDialogAsync()
     {
-        await _jsModule!.InvokeVoidAsync("closeDialogDelete", _dialogId);
+        await JS.InvokeVoidAsync("closeDialog", _dialogId);
     }
 }

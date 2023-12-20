@@ -46,7 +46,6 @@
     [Parameter]
     public EventCallback OnApplyFilters { get; set; }
 
-    private IJSObjectReference? _jsModule = default!;
     private string _filtersId = $"account-filters{Guid.NewGuid()}";
 
     public void ResetValues()
@@ -71,15 +70,6 @@
 
     public async Task OpenCloseFilters()
     {
-        await _jsModule!.InvokeVoidAsync("openCloseAccountFilters", _filtersId);
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./Components/Accounts/AccountFilters.razor.js");
-        }
+        await JS.InvokeVoidAsync("toggleVisibility", _filtersId);
     }
 }

@@ -35,28 +35,24 @@
     [Parameter]
     public bool CloseOnClickOutisde { get; set; } = false;
 
-    private IJSObjectReference? _jsModule = default!;
     private string _dialogId = $"dialog{Guid.NewGuid().ToString()}";
 
     public async Task ShowDialog()
     {
-        await _jsModule!.InvokeVoidAsync("openDialog", _dialogId);
+        await JS.InvokeVoidAsync("openDialog", _dialogId);
     }
 
     public async Task CloseDialogAsync()
     {
-        await _jsModule!.InvokeVoidAsync("closeDialog", _dialogId);
+        await JS.InvokeVoidAsync("closeDialog", _dialogId);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./Components/Common/Modal/UbikModal.razor.js");
-
             if (CloseOnClickOutisde)
-                await _jsModule.InvokeVoidAsync("clickOutside", _dialogId);
+                await JS.InvokeVoidAsync("closeOnClickOutsideDialog", _dialogId);
         }
     }
 
