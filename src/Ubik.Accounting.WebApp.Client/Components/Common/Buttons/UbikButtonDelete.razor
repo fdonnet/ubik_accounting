@@ -24,29 +24,18 @@
     [Parameter]
     public EventCallback OnClick { get; set; }
 
-
-    private IJSObjectReference? _jsModule = default!;
     private string _contentButtonId = $"content-button-{Guid.NewGuid()}";
     private string _buttonId = $"button-{Guid.NewGuid()}";
     private string _spinnerButtonId = $"spinner-button-{Guid.NewGuid()}";
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./Components/Common/Buttons/UbikButtonDelete.razor.js");
-        }
-    }
-
     public async Task LoadingStateAsync()
     {
-        await _jsModule!.InvokeVoidAsync("loadingModeUpDeleteBtn", new[] { _contentButtonId, _spinnerButtonId, _buttonId });
+        await JS.InvokeVoidAsync("buttonLoadingModeUp", new[] { _contentButtonId, _spinnerButtonId, _buttonId });
     }
 
     public async Task LoadingStateFinishedAsync()
     {
-        await _jsModule!.InvokeVoidAsync("loadingModeDownDeleteBtn", new[] { _contentButtonId, _spinnerButtonId, _buttonId });
+        await JS.InvokeVoidAsync("buttonLoadingModeDown", new[] { _contentButtonId, _spinnerButtonId, _buttonId });
     }
 
     private async Task ClickAsync()
