@@ -46,7 +46,6 @@
     [Parameter]
     public EventCallback OnApplyFilters { get; set; }
 
-    private IJSObjectReference? _jsModule = default!;
     private string _filtersId = $"account-filters{Guid.NewGuid()}";
 
     public void ResetValues()

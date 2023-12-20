@@ -63,7 +63,6 @@
     [Parameter]
     public string MainErrorMsg { get; set; } = "Cannot save your data.";
 
-    private IJSObjectReference? _jsModule = default!;
     private string _alertId = $"alert-backend-{Guid.NewGuid()}";
     private string _detailId = $"error-detail-{Guid.NewGuid()}";
     private ProblemDetailsContract _currentError = new();

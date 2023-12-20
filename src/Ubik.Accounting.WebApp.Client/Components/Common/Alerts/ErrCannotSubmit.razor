@@ -17,7 +17,6 @@
 </div>
 
 @code {
-    private IJSObjectReference? _jsModule = default!;
     private string _alertId = $"alert-submit-{Guid.NewGuid()}";
 
     protected override void OnInitialized()
@@ -25,22 +24,13 @@
         base.OnInitialized();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./Components/Common/Alerts/ErrCannotSubmit.razor.js");
-        }
-    }
-
     public async Task ShowErrorAsync()
     {
-        await _jsModule!.InvokeVoidAsync("openErrorSubmit", _alertId);
+        await JS.InvokeVoidAsync("showElement", _alertId);
     }
 
     public async Task CloseErrorAsync()
     {
-        await _jsModule!.InvokeVoidAsync("closeErrorSubmit", _alertId);
+        await JS.InvokeVoidAsync("hideElement", _alertId);
     }
 }
