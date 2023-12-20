@@ -1,7 +1,7 @@
-export function openDialogDelete(dialogId) {
+export function openDialogCenter(dialogId) {
   document.getElementById(dialogId).showModal();
 }
 
-export function closeDialogDelete(dialogId) {
+export function closeDialogCenter(dialogId) {
   document.getElementById(dialogId).close();
 }

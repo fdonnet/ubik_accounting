@@ -17,7 +17,7 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private string _dialogId = $"dialog-delete-{Guid.NewGuid().ToString()}";
+    private string _dialogId = $"dialog-center-{Guid.NewGuid().ToString()}";
     private IJSObjectReference? _jsModule = default!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -31,11 +31,11 @@
 
     public async Task ShowDialogAsync()
     {
-        await _jsModule!.InvokeVoidAsync("openDialogDelete", _dialogId);
+        await _jsModule!.InvokeVoidAsync("openDialogCenter", _dialogId);
     }
 
     public async Task CloseDialogAsync()
     {
-        await _jsModule!.InvokeVoidAsync("closeDialogDelete", _dialogId);
+        await _jsModule!.InvokeVoidAsync("closeDialogCenter", _dialogId);
     }
 }
