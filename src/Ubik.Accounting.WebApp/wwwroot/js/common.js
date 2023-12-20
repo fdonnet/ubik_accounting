@@ -6,8 +6,10 @@ function toggleVisibility(elementId) {
     element.classList.add("hidden");
   }
   else {
-    element.classList.remove("hidden");
-    element.classList.add("block");
+    if (element.classList.contains("hidden")) {
+      element.classList.remove("hidden");
+      element.classList.add("block");
+    }
   }
 }
 
