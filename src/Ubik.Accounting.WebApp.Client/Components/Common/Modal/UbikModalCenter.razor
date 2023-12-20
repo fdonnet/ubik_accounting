@@ -17,7 +17,7 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private string _dialogId = $"dialog-delete-{Guid.NewGuid().ToString()}";
+    private string _dialogId = $"dialog-center-{Guid.NewGuid().ToString()}";
     private IJSObjectReference? _jsModule = default!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
