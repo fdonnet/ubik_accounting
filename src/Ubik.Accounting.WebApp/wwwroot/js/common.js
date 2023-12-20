@@ -54,3 +54,20 @@ function buttonLoadingModeDown(contentId, spinnerId, buttonId) {
   currentButton.classList.remove("cursor-not-allowed");
   currentButton.removeAttribute("disabled");
 }
+
+function openDialog(dialogId) {
+  document.getElementById(dialogId).showModal();
+}
+
+function closeDialog(dialogId) {
+  document.getElementById(dialogId).close();
+}
+
+function closeOnClickOutsideDialog(dialogId) {
+  var dialog = document.getElementById(dialogId)
+
+  dialog.addEventListener('click', function (e) {
+    console.info(e.target.tagName);
+    if (e.target.tagName === 'DIALOG') dialog.close()
+  });
+}
