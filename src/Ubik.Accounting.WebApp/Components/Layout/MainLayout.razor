@@ -1,4 +1,6 @@
 ﻿@using Ubik.Accounting.WebApp.Components.Layout
+@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
+
 @inherits LayoutComponentBase
 
 <div class="flex h-screen flex-col">
@@ -8,7 +10,14 @@
             <NavMenu />
         </aside>
         <article class="flex-1 bg-gray-100 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-950 text-gray-700 dark:text-gray-400 overflow-x-hidden overflow-y-auto p-4">
-            @Body
+            <ErrorBoundary>
+                <ChildContent>
+                    @Body
+                </ChildContent>
+                <ErrorContent>
+                    <ErrUnhandled MainErrorMsg="General application error"></ErrUnhandled>
+                </ErrorContent>
+            </ErrorBoundary>
         </article>
     </main>
 </div>
