@@ -8,30 +8,20 @@
     [Parameter]
     public string SuccessMessage { get; set; } = "Pls wait, this form is closing...";
 
-    private IJSObjectReference? _jsModule = default!;
-    private string _alertId = $"sucess-{Guid.NewGuid()}";
+    private string _alertId = $"success-{Guid.NewGuid()}";
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./Components/Common/Alerts/MsgSuccess.razor.js");
-        }
-    }
-
     public async Task ShowSuccessAsync()
     {
-        await _jsModule!.InvokeVoidAsync("showSuccess", _alertId);
+        await JS.InvokeVoidAsync("showElement", _alertId);
     }
 
     public async Task HideSuccessAsync()
     {
-        await _jsModule!.InvokeVoidAsync("closeSuccess", _alertId);
+        await JS.InvokeVoidAsync("hideElement", _alertId);
     }
 }
