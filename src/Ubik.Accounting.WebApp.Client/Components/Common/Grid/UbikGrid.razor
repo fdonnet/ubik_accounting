@@ -66,7 +66,7 @@
     //TODO: review this part with Tailwind Apply style or safelist to avoid spagetti code
     private void RenderRow(RenderTreeBuilder __builder, int rowIndex, TGridItem item)
     {
-        <tr aria-rowindex="@rowIndex" class="bg-white border-t dark:bg-gray-800 dark:border-gray-700">
+        <tr aria-rowindex="@rowIndex" class="bg-white border-t dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 focus:bg-gray-100 focus:hover:bg-gray-600">
             @foreach (var col in _columns)
             {
                 if (_counter == 0 && HighlightFirstColumn)
