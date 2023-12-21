@@ -1,0 +1,18 @@
+﻿@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
+@rendermode InteractiveAuto
+<ErrorBoundary>
+    <ChildContent>
+        <Accounts IsAuthorizedToModify="@IsAuthorizedToModify" IsAuthorizedToRead="IsAuthorizedToRead"> </Accounts>
+    </ChildContent>
+    <ErrorContent>
+        <ErrUnhandled MainErrorMsg="Booking accounts module in error"></ErrUnhandled>
+    </ErrorContent>
+</ErrorBoundary>
+
+
+@code {
+    [Parameter]
+    public bool IsAuthorizedToRead { get; set; } = false;
+    [Parameter]
+    public bool IsAuthorizedToModify { get; set; } = false;
+}

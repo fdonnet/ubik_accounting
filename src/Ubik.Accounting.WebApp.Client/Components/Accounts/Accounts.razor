@@ -12,9 +12,6 @@
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
-@attribute [Authorize]
-
-@rendermode InteractiveAuto
 
 @if (IsAuthorizedToRead)
 {
@@ -76,6 +73,7 @@
 
 @code {
     private const int ITEMS_PER_PAGE = 10;
+
     [Parameter]
     public bool IsAuthorizedToRead { get; set; } = false;
     [Parameter]
@@ -84,9 +82,6 @@
     private IQueryable<AccountModel>? _accounts;
     private int _numberOfAccounts = -1;
     private IEnumerable<GetAllCurrenciesResult>? _currencies;
-
-    [CascadingParameter]
-    private Task<AuthenticationState>? _authenticationState { get; set; }
 
     private bool _isLoading = true;
     private UbikModal _dialog = default!;
@@ -141,12 +136,8 @@
             return;
         }
 
-        if (_authenticationState is not null)
-        {
-            await _authenticationState;
-            await LoadAccountsAsync();
-            await LoadCurrenciesAsync();
-        }
+        await LoadAccountsAsync();
+        await LoadCurrenciesAsync();
     }
 
     private async Task EditAccountDialogAsync(AccountModel currentAccount)
