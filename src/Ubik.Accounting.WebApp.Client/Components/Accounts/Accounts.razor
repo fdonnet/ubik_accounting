@@ -9,6 +9,7 @@
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Pagination
 @using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
 @using Ubik.Accounting.Contracts.Accounts.Enums
+@using Ubik.Accounting.WebApp.Client.Components.Common.Search
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
@@ -25,12 +26,19 @@
                     <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" IsDisabled=@_isButtonsDisabled OnClick="AddAccountDialogAsync"></UbikButton>
                 }
             </div>
+            <div class="hidden md:block">
+                <UbikSimpleSearchBar @bind-Value="@_searchValue" PlaceHolderMsg="Search for codes or labels" />
+            </div>
             <div>
                 <UbikButtonAlternative IsPurple="@_accountFilters.IsFiltersApplied" Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2" OnClick="OpenCloseFilterView"></UbikButtonAlternative>
             </div>
         </div>
 
         <AccountFilters @ref="_filters" CurrenciesList="_currencies" Filters="@_accountFilters" OnApplyFilters="ApplyFilters"></AccountFilters>
+
+        <div class="block md:hidden w-full mt-1">
+            <UbikSimpleSearchBar @bind-Value="@_searchValue" PlaceHolderMsg="Search for codes or labels" />
+        </div>
 
         @if (IsAuthorizedToModify)
         {
@@ -44,7 +52,7 @@
             </CascadingValue>
         }
 
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div class="relative overflow-x-auto shadow-md rounded-lg">
             <UbikGrid Items="@_filteredAccounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="@pagination">
                 <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
                 <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
@@ -95,12 +103,13 @@
 
     private AccountFiltersModel _accountFilters = new();
     private AccountFilters _filters = default!;
+    private string _searchValue = string.Empty;
 
     private IQueryable<AccountModel>? _filteredAccounts
     {
         get
         {
-            if (_accounts == null || !_accountFilters.IsFiltersApplied)
+            if (_accounts == null || (!_accountFilters.IsFiltersApplied && _searchValue == string.Empty))
                 return _accounts;
 
             var result = _accounts;
@@ -113,6 +122,10 @@
 
             if (_accountFilters.CategoryFilter != null)
                 result = result.Where(a => a.Category == _accountFilters.CategoryFilter);
+
+            if(_searchValue != string.Empty)
+                result = result.Where(a => a.Code.ToLower().Contains(_searchValue.ToLower())
+                                        || a.Label.ToLower().Contains(_searchValue.ToLower()));
 
             return result;
         }
