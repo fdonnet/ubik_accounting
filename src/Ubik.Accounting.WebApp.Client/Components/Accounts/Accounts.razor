@@ -20,12 +20,13 @@
 
     <div class="flex flex-col max-w-max mt-1">
         <div class="flex justify-between">
-            <div>
-                @if (IsAuthorizedToModify)
-                {
+            @if (IsAuthorizedToModify)
+            {
+                <div>
+
                     <UbikButton Type="button" Label="Add" AdditionalCssClass="mb-2" IsDisabled=@_isButtonsDisabled OnClick="AddAccountDialogAsync"></UbikButton>
-                }
-            </div>
+                </div>
+            }
             <div class="hidden md:block">
                 <UbikSimpleSearchBar @bind-Value="@_searchValue" PlaceHolderMsg="Search for codes or labels" />
             </div>
@@ -123,7 +124,7 @@
             if (_accountFilters.CategoryFilter != null)
                 result = result.Where(a => a.Category == _accountFilters.CategoryFilter);
 
-            if(_searchValue != string.Empty)
+            if (_searchValue != string.Empty)
                 result = result.Where(a => a.Code.ToLower().Contains(_searchValue.ToLower())
                                         || a.Label.ToLower().Contains(_searchValue.ToLower()));
 
