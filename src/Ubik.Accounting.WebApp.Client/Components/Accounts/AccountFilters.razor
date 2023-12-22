@@ -29,7 +29,7 @@
         </div>
         <div class="flex justify-between mt-3">
             <div>
-                <UbikButton Label="Apply" OnClick="ApplyFilters"></UbikButton>
+                <UbikButton Label="Apply" OnClick="ApplyFiltersAsync"></UbikButton>
             </div>
             <div>
                 <UbikButtonAlternative Label="Reset" OnClick="ResetValues"></UbikButtonAlternative>
@@ -55,7 +55,7 @@
         Filters.CurrencyFilter = null;
     }
 
-    public async Task ApplyFilters()
+    public async Task ApplyFiltersAsync()
     {
         if (Filters.CurrencyFilter == null
             && Filters.DomainFilter == null
@@ -65,10 +65,10 @@
             Filters.IsFiltersApplied = true;
 
         await OnApplyFilters.InvokeAsync();
-        await OpenCloseFilters();
+        await OpenCloseFiltersAsync();
     }
 
-    public async Task OpenCloseFilters()
+    public async Task OpenCloseFiltersAsync()
     {
         await JS.InvokeVoidAsync("toggleVisibility", _filtersId);
     }

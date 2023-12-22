@@ -30,7 +30,7 @@
                 <UbikSimpleSearchBar @bind-Value="@_searchValue" PlaceHolderMsg="Search for codes or labels" />
             </div>
             <div>
-                <UbikButtonAlternative IsPurple="@_accountFilters.IsFiltersApplied" Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2" OnClick="OpenCloseFilterView"></UbikButtonAlternative>
+                <UbikButtonAlternative IsPurple="@_accountFilters.IsFiltersApplied" Type="button" Label="Filters" IsDisabled=@_isButtonsDisabled AdditionalCssClass="mb-2" OnClick="OpenCloseFilterViewAsync"></UbikButtonAlternative>
             </div>
         </div>
 
@@ -64,7 +64,7 @@
                         <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialogAsync(context))"></UbikButtonLink>
                     </UbikTemplateColumnTemplateColumn>
                     <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
-                        <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel" OnClick="@(()=>DeleteConfirmation(context))"></UbikButtonLink>
+                        <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel" OnClick="@(()=>DeleteConfirmationAsync(context))"></UbikButtonLink>
                     </UbikTemplateColumnTemplateColumn>
                 }
             </UbikGrid>
@@ -227,7 +227,7 @@
         }
     }
 
-    private async Task DeleteConfirmation(AccountModel currentAccount)
+    private async Task DeleteConfirmationAsync(AccountModel currentAccount)
     {
         _accountCurrent = currentAccount;
 
@@ -235,13 +235,14 @@
         await _deleteDialog.ShowDialogAsync();
     }
 
-    private async Task OpenCloseFilterView()
+    private async Task OpenCloseFilterViewAsync()
     {
-        await _filters.OpenCloseFilters();
+        await _filters.OpenCloseFiltersAsync();
     }
 
-    private void ApplyFilters()
+    private Task ApplyFilters()
     {
         StateHasChanged();
+        return Task.CompletedTask;
     }
 }
