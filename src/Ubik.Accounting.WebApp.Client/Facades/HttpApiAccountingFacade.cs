@@ -40,5 +40,9 @@ namespace Ubik.Accounting.WebApp.Client.Facades
         {
             return await http.GetAsync("Currencies", cancellationToken: cancellationToken);
         }
+        public async Task<HttpResponseMessage> GetAllClassificationsAsync(CancellationToken cancellationToken = default)
+        {
+            return await http.GetAsync("Classifications", cancellationToken: cancellationToken);
+        }
     }
 }

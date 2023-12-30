@@ -1,0 +1,63 @@
+﻿@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
+@using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.WebApp.Client.Components.Common.Forms
+@using Ubik.Accounting.Contracts.Classifications.Results
+
+@inject IAccountingApiClient Client
+@inject IRenderContext RenderContext
+
+@if (IsAuthorizedToRead)
+{
+    <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
+
+    <div class="flex">
+        <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
+                         ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
+                         ValueChanged="@((Guid? args) => _currentClassificationId = args)"
+                         Label="Current classification" PlaceholderText=""
+                         Data="_classifications" DataKey="Id" DataValue="Code"></UbikInputSelect>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsAuthorizedToRead { get; set; } = false;
+    [Parameter]
+    public bool IsAuthorizedToModify { get; set; } = false;
+
+    private Guid? _currentClassificationId { get; set; }
+    private IQueryable<ClassificationModel>? _classifications;
+
+    private ErrBackendApi _backendErrorMsg = default!;
+    private bool _isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RenderContext.IsPrerendering)
+        {
+            return;
+        }
+
+        await LoadClassificationsAsync();
+    }
+
+    private async Task LoadClassificationsAsync()
+    {
+        _isLoading = true;
+
+        var response = await Client.GetAllClassificationsAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllClassificationsResult>>() ?? []).ToClassificationModel();
+            _classifications = result.AsQueryable();
+        }
+        else
+        {
+            await _backendErrorMsg.ShowErrorAsync(response);
+            StateHasChanged();
+        }
+
+        _isLoading = false;
+    }
+}

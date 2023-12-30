@@ -57,6 +57,12 @@ namespace Ubik.Accounting.WebApp.ApiClients
             return await _client.GetAsync("Currencies");
         }
 
+        public async Task<HttpResponseMessage> GetAllClassificationsAsync(CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            return await _client.GetAsync("Classifications");
+        }
+
         private async Task SetSecruityHeaderAsync()
         {
             var usertoken =  await _user.GetTokenAsync();

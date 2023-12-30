@@ -65,6 +65,14 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
+        [Authorize(Roles = "ubik_accounting_classification_read")]
+        [HttpGet("/Classifications")]
+        public async Task ClassificationsList()
+        {
+            var response = await client.GetAllClassificationsAsync();
+            await ForwardResponse(response);
+        }
+
         private async Task ForwardResponse(HttpResponseMessage? responseMsg)
         {
             if (responseMsg == null) return;
