@@ -1394,10 +1394,6 @@ p {
   flex-direction: column;
 }
 
-.content-center {
-  align-content: center;
-}
-
 .items-start {
   align-items: flex-start;
 }
@@ -1772,10 +1768,6 @@ p {
 
 .text-center {
   text-align: center;
-}
-
-.align-middle {
-  vertical-align: middle;
 }
 
 .font-\[\'Inconsolata\'\] {
@@ -2633,20 +2625,12 @@ p {
 }
 
 @media (min-width: 1024px) {
-  .lg\:w-60 {
-    width: 15rem;
-  }
-
   .lg\:w-64 {
     width: 16rem;
   }
 
   .lg\:w-\[1024px\] {
     width: 1024px;
-  }
-
-  .lg\:w-\[600px\] {
-    width: 600px;
   }
 
   .lg\:w-\[520px\] {
