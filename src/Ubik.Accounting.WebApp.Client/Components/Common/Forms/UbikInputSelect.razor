@@ -4,7 +4,11 @@
 @using System.Globalization
 @using System.Linq.Expressions
 
-<label for="@Id" class="@_labelCssClass">@Label</label>
+@if(Label != string.Empty)
+{
+    <label for="@Id" class="@_labelCssClass">@Label</label>
+}
+
 <select id="@Id" name="@Id" @bind="CurrentValue" class="@_selectCssClass">
     <option value="">@PlaceholderText</option>
     @if (_currentType.IsEnum)
@@ -26,7 +30,7 @@
     }
 </select>
 
-@if(_needValidation)
+@if (_needValidation)
 {
     foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
     {
@@ -40,7 +44,7 @@
     [Parameter]
     public string Id { get; set; } = "SelectInput";
     [Parameter]
-    public string Label { get; set; } = "Standard select input";
+    public string Label { get; set; } = string.Empty;
     [Parameter]
     public string PlaceholderText { get; set; } = "select something";
     private Type _currentType = default!;

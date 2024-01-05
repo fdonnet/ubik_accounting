@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.WebApp.Security;
 
@@ -61,6 +62,20 @@ namespace Ubik.Accounting.WebApp.ApiClients
         {
             await SetSecruityHeaderAsync();
             return await _client.GetAsync("Classifications");
+        }
+
+        public async Task<HttpResponseMessage> AddClassificationAsync(AddClassificationCommand classification, CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            var request = JsonSerializer.Serialize(classification);
+            return await _client.PostAsync("Classifications", new StringContent(request, Encoding.UTF8, "application/json"));
+        }
+
+        public async Task<HttpResponseMessage> UpdateClassificationAsync(Guid id, UpdateClassificationCommand classification, CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            var request = JsonSerializer.Serialize(classification);
+            return await _client.PutAsync($"Classifications/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
         private async Task SetSecruityHeaderAsync()

@@ -2,6 +2,8 @@
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Forms
 @using Ubik.Accounting.Contracts.Classifications.Results
+@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
+@using Ubik.Accounting.WebApp.Client.Components.Common.Modal
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
@@ -10,13 +12,33 @@
 {
     <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
 
-    <div class="flex">
-        <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
-                         ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
-                         ValueChanged="@((Guid? args) => _currentClassificationId = args)"
-                         Label="Current classification" PlaceholderText=""
-                         Data="_classifications" DataKey="Id" DataValue="Code"></UbikInputSelect>
+    <div class="flex items-center">
+        <div class="w-full lg:w-[520px]">
+            <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
+                             ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
+                             ValueChanged="@((Guid? args) => _currentClassificationId = args)"
+                             PlaceholderText="Select a classification"
+                             Data="_classifications" DataKey="Id" DataValue="Code"></UbikInputSelect>
+        </div>
+        @if (IsAuthorizedToModify)
+        {
+            <div class="ms-2">
+                or
+            </div>
+            <div class="ms-2">
+                <UbikButton Label="Add new" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddClassificationDialogAsync"></UbikButton>
+            </div>
+        }
     </div>
+
+    @if (IsAuthorizedToModify)
+    {
+        <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
+            <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
+                <ClassificationForm EditMode="@_editMode" OnClose="CloseDialogAsync"></ClassificationForm>
+            </UbikModal>
+        </CascadingValue>
+    }
 }
 
 @code {
@@ -27,9 +49,22 @@
 
     private Guid? _currentClassificationId { get; set; }
     private IQueryable<ClassificationModel>? _classifications;
+    private ClassificationModel _classificationCurrent = new();
 
     private ErrBackendApi _backendErrorMsg = default!;
     private bool _isLoading = false;
+
+    private UbikModal _dialog = default!;
+    private bool _editMode = false;
+    private string _dialogTitle = "Add classification";
+
+    private bool _isButtonsDisabled
+    {
+        get
+        {
+            return _isLoading || RenderContext.IsPrerendering;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,5 +94,23 @@
         }
 
         _isLoading = false;
+    }
+
+    private async Task CloseDialogAsync(bool refresh = false)
+    {
+        if (refresh)
+        {
+            await LoadClassificationsAsync();
+        }
+
+        await _dialog.CloseDialogAsync();
+    }
+
+    private async Task AddClassificationDialogAsync()
+    {
+        _dialogTitle = "Add a classification";
+        _editMode = false;
+        _classificationCurrent = new();
+        await _dialog.ShowDialog();
     }
 }

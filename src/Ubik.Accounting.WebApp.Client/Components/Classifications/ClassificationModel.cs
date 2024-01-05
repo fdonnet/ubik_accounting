@@ -1,4 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.Accounting.Contracts.Accounts.Enums;
+using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.Accounting.WebApp.Client.Components.Accounts;
 
@@ -32,6 +35,28 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
                 Description = x.Description,
                 Version = x.Version
             });
+        }
+
+        public static AddClassificationCommand ToAddClassificationCommand(this ClassificationModel classificationModel)
+        {
+            return new AddClassificationCommand()
+            {
+                Code = classificationModel.Code,
+                Label = classificationModel.Label,
+                Description = classificationModel.Description,
+            };
+        }
+
+        public static UpdateClassificationCommand ToUpdateClassificationCommand(this ClassificationModel classificationModel)
+        {
+            return new UpdateClassificationCommand()
+            {
+                Id = classificationModel.Id,
+                Code = classificationModel.Code,
+                Label = classificationModel.Label,
+                Description = classificationModel.Description,
+                Version = classificationModel.Version
+            };
         }
     }
 }

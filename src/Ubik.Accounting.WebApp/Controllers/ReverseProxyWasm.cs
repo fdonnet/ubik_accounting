@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.Accounting.Contracts.Classifications.Commands;
 
 
 namespace Ubik.Accounting.WebApp.Controllers
@@ -43,7 +44,7 @@ namespace Ubik.Accounting.WebApp.Controllers
 
         [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpPut("/Accounts/{id}")]
-        public async Task AddAccount(Guid id, UpdateAccountCommand command)
+        public async Task UpdateAccount(Guid id, UpdateAccountCommand command)
         {
             var response = await client.UpdateAccountAsync(id,command);
             await ForwardResponse(response);
@@ -70,6 +71,22 @@ namespace Ubik.Accounting.WebApp.Controllers
         public async Task ClassificationsList()
         {
             var response = await client.GetAllClassificationsAsync();
+            await ForwardResponse(response);
+        }
+
+        [Authorize(Roles = "ubik_accounting_classification_write")]
+        [HttpPost("/Classifications")]
+        public async Task AddClassification(AddClassificationCommand command)
+        {
+            var response = await client.AddClassificationAsync(command);
+            await ForwardResponse(response);
+        }
+
+        [Authorize(Roles = "ubik_accounting_classification_write")]
+        [HttpPut("/Classifications/{id}")]
+        public async Task UpdateClassification(Guid id, UpdateClassificationCommand command)
+        {
+            var response = await client.UpdateClassificationAsync(id, command);
             await ForwardResponse(response);
         }
 

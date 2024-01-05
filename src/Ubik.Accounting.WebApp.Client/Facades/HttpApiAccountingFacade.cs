@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Webapp.Shared.Facades;
 
 namespace Ubik.Accounting.WebApp.Client.Facades
@@ -43,6 +44,18 @@ namespace Ubik.Accounting.WebApp.Client.Facades
         public async Task<HttpResponseMessage> GetAllClassificationsAsync(CancellationToken cancellationToken = default)
         {
             return await http.GetAsync("Classifications", cancellationToken: cancellationToken);
+        }
+
+        public async Task<HttpResponseMessage> AddClassificationAsync(AddClassificationCommand classification, CancellationToken cancellationToken = default)
+        {
+            var request = JsonSerializer.Serialize(classification);
+            return await http.PostAsync("Classifications", new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
+        }
+
+        public async Task<HttpResponseMessage> UpdateClassificationAsync(Guid id, UpdateClassificationCommand classification, CancellationToken cancellationToken = default)
+        {
+            var request = JsonSerializer.Serialize(classification);
+            return await http.PutAsync($"Classifications/{id}", new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
         }
     }
 }
