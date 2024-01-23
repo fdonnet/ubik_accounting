@@ -78,11 +78,19 @@ namespace Ubik.Accounting.WebApp.ApiClients
             return await _client.PutAsync($"Classifications/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
+        public async Task<HttpResponseMessage> GetAllAccountGroupsAsync(CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            return await _client.GetAsync("AccountGroups");
+        }
+
         private async Task SetSecruityHeaderAsync()
         {
             var usertoken =  await _user.GetTokenAsync();
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {usertoken}");
         }
+
+
     }
 }

@@ -57,5 +57,10 @@ namespace Ubik.Accounting.WebApp.Client.Facades
             var request = JsonSerializer.Serialize(classification);
             return await http.PutAsync($"Classifications/{id}", new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
         }
+
+        public async Task<HttpResponseMessage> GetAllAccountGroupsAsync(CancellationToken cancellationToken = default)
+        {
+            return await http.GetAsync("AccountGroups", cancellationToken: cancellationToken);
+        }
     }
 }

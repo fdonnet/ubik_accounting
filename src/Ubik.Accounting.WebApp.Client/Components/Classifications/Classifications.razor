@@ -2,6 +2,7 @@
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Forms
 @using Ubik.Accounting.Contracts.Classifications.Results
+@using Ubik.Accounting.Contracts.AccountGroups.Results
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.WebApp.Client.Components.Common.Modal
 
@@ -39,6 +40,16 @@
             </UbikModal>
         </CascadingValue>
     }
+
+@* <ul class="ml-6">
+    @foreach (var node in CourseNode.Nodes)
+    {
+        <li class="list-none">
+            <Node CourseNode="@node" OnNodeSelected="@OnNodeSelected"/>
+        </li>
+    }
+</ul> *@
+
 }
 
 @code {
@@ -49,6 +60,7 @@
 
     private Guid? _currentClassificationId { get; set; }
     private IQueryable<ClassificationModel>? _classifications;
+    private IQueryable<AccountGroupModel>? _accountGroups;
     private ClassificationModel _classificationCurrent = new();
 
     private ErrBackendApi _backendErrorMsg = default!;
@@ -74,6 +86,7 @@
         }
 
         await LoadClassificationsAsync();
+        await LoadAccountGroupsAsync();
     }
 
     private async Task LoadClassificationsAsync()
@@ -96,11 +109,29 @@
         _isLoading = false;
     }
 
+    private async Task LoadAccountGroupsAsync()
+    {
+        var response = await Client.GetAllAccountGroupsAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>() ?? []).ToAccountGroupModel();
+            _accountGroups = result.AsQueryable();
+        }
+        else
+        {
+            await _backendErrorMsg.ShowErrorAsync(response);
+            StateHasChanged();
+        }
+
+    }
+
     private async Task CloseDialogAsync(bool refresh = false)
     {
         if (refresh)
         {
             await LoadClassificationsAsync();
+            await LoadAccountGroupsAsync();
         }
 
         await _dialog.CloseDialogAsync();
