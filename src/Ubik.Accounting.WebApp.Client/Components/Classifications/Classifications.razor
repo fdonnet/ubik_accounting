@@ -17,7 +17,7 @@
         <div class="w-full lg:w-[520px]">
             <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
                              ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
-                             ValueChanged="@((Guid? args) => _currentClassificationId = args)"
+                             ValueChanged="@((Guid? args) => OnClassificationChanged(args))"
                              PlaceholderText="Select a classification"
                              Data="_classifications" DataKey="Id" DataValue="Code"></UbikInputSelect>
         </div>
@@ -41,15 +41,17 @@
         </CascadingValue>
     }
 
-@* <ul class="ml-6">
-    @foreach (var node in CourseNode.Nodes)
+    @if (_accountGroupsRoot != null && !_isLoading)
     {
-        <li class="list-none">
-            <Node CourseNode="@node" OnNodeSelected="@OnNodeSelected"/>
-        </li>
+        <ul class="ml-6">
+            @foreach (var node in _accountGroupsRoot)
+            {
+                <li class="list-none">
+                    @node.Code @node.Label
+                </li>
+            }
+        </ul>
     }
-</ul> *@
-
 }
 
 @code {
@@ -61,6 +63,7 @@
     private Guid? _currentClassificationId { get; set; }
     private IQueryable<ClassificationModel>? _classifications;
     private IQueryable<AccountGroupModel>? _accountGroups;
+    private IEnumerable<AccountGroupModel>? _accountGroupsRoot;
     private ClassificationModel _classificationCurrent = new();
 
     private ErrBackendApi _backendErrorMsg = default!;
@@ -87,6 +90,15 @@
 
         await LoadClassificationsAsync();
         await LoadAccountGroupsAsync();
+    }
+
+    private Task OnClassificationChanged(Guid? value)
+    {
+        _currentClassificationId = value;
+        _accountGroupsRoot = _accountGroups?.Where(ag => ag.AccountGroupClassificationId == _currentClassificationId
+                                                       && ag.ParentAccountGroupId == null);
+
+        return Task.CompletedTask;
     }
 
     private async Task LoadClassificationsAsync()
