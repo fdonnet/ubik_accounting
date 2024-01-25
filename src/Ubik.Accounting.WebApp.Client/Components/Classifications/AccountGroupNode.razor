@@ -1,0 +1,49 @@
+﻿@using Ubik.Accounting.Webapp.Shared.Facades
+
+@inject IAccountingApiClient Client
+@inject IRenderContext RenderContext
+
+@if (!_isLoading)
+{
+    <span>@CurrentAccountGroup.Code @CurrentAccountGroup.Label</span>
+    if (_currentNodeAccountGroups.Any())
+    {
+        <ul class="ml-6">
+            @foreach (var node in _currentNodeAccountGroups)
+            {
+                <li class="list-none">
+                    <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
+                </li>
+            }
+        </ul>
+    }
+}
+
+@code {
+    [Parameter]
+    public AccountGroupModel CurrentAccountGroup { get; set; } = default!;
+    [CascadingParameter]
+    public IQueryable<AccountGroupModel> AccountGroups { get; set; } = default!;
+
+    private bool _isLoading = false;
+    private IEnumerable<AccountGroupModel> _currentNodeAccountGroups = [];
+
+    protected override void OnInitialized()
+    {
+        if (RenderContext.IsPrerendering)
+        {
+            return;
+        }
+        _isLoading = true;
+
+        SetCurrentNodeAccountGroups();
+
+        _isLoading = false;
+    }
+
+    private void SetCurrentNodeAccountGroups()
+    {
+        _currentNodeAccountGroups = AccountGroups.Where(ag => ag.ParentAccountGroupId == CurrentAccountGroup.Id);
+    }
+
+}

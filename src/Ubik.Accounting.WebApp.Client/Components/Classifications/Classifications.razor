@@ -43,14 +43,16 @@
 
     @if (_accountGroupsRoot != null && !_isLoading)
     {
-        <ul class="ml-6">
+        <CascadingValue Value="@_accountGroups">
+        <ul>
             @foreach (var node in _accountGroupsRoot)
             {
                 <li class="list-none">
-                    @node.Code @node.Label
+                   <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
                 </li>
             }
         </ul>
+        </CascadingValue>
     }
 }
 
@@ -87,9 +89,12 @@
         {
             return;
         }
+        _isLoading = true;
 
         await LoadClassificationsAsync();
         await LoadAccountGroupsAsync();
+
+        _isLoading = false;
     }
 
     private Task OnClassificationChanged(Guid? value)
@@ -103,8 +108,6 @@
 
     private async Task LoadClassificationsAsync()
     {
-        _isLoading = true;
-
         var response = await Client.GetAllClassificationsAsync();
 
         if (response.IsSuccessStatusCode)
@@ -117,8 +120,6 @@
             await _backendErrorMsg.ShowErrorAsync(response);
             StateHasChanged();
         }
-
-        _isLoading = false;
     }
 
     private async Task LoadAccountGroupsAsync()

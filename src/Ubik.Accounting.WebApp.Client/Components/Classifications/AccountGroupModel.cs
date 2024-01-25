@@ -6,6 +6,8 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
     public class AccountGroupModel
     {
         [Required]
+        public Guid Id { get; init; }
+        [Required]
         [MaxLength(20)]
         public string Code { get; init; } = default!;
         [Required]
@@ -26,6 +28,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
         {
             return current.Select(x => new AccountGroupModel()
             {
+                Id = x.Id,
                 Code = x.Code,
                 Label = x.Label,
                 Description = x.Description,
