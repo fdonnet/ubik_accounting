@@ -1,4 +1,5 @@
-﻿@using Ubik.Accounting.Webapp.Shared.Facades
+﻿@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.Webapp.Shared.Facades
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
@@ -20,13 +21,17 @@
 }
 
 @code {
+    //TODO see the best way to update and refresh only the needed part
     [Parameter]
     public AccountGroupModel CurrentAccountGroup { get; set; } = default!;
-    [CascadingParameter]
+    [CascadingParameter(Name = "AccountGroups")]
     public IQueryable<AccountGroupModel> AccountGroups { get; set; } = default!;
+    [CascadingParameter(Name = "Accounts")]
+    public IQueryable<GetAllAccountsResult> Accounts { get; set; } = default!;
 
     private bool _isLoading = false;
     private IEnumerable<AccountGroupModel> _currentNodeAccountGroups = [];
+    private IEnumerable<GetAllAccountsResult> _currentNodeAccounts = [];
 
     protected override void OnInitialized()
     {
@@ -36,12 +41,12 @@
         }
         _isLoading = true;
 
-        SetCurrentNodeAccountGroups();
+        SetCurrentNodeData();
 
         _isLoading = false;
     }
 
-    private void SetCurrentNodeAccountGroups()
+    private void SetCurrentNodeData()
     {
         _currentNodeAccountGroups = AccountGroups.Where(ag => ag.ParentAccountGroupId == CurrentAccountGroup.Id);
     }

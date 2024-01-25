@@ -44,15 +44,17 @@
 
     @if (!_isLoading)
     {
-        <CascadingValue Value="@_accountGroups">
-        <ul>
-            @foreach (var node in _accountGroupsRoot)
-            {
-                <li class="list-none">
-                   <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
-                </li>
-            }
-        </ul>
+        <CascadingValue Name="AccountGroups" Value="@_accountGroups">
+            <CascadingValue Name="AccountGroups" Value="@_accountGroups">
+                <ul>
+                    @foreach (var node in _accountGroupsRoot)
+                    {
+                        <li class="list-none">
+                            <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
+                        </li>
+                    }
+                </ul>
+            </CascadingValue>
         </CascadingValue>
     }
 }
@@ -128,7 +130,7 @@
             _classifications = result.AsQueryable();
         }
         else
-            await ManageError(response);    
+            await ManageError(response);
     }
 
     private async Task LoadAccountGroupsAsync(HttpResponseMessage response)
