@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\Common\Treeview\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 

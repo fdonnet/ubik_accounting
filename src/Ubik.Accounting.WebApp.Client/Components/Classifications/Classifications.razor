@@ -1,7 +1,9 @@
-﻿@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
+﻿@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Forms
 @using Ubik.Accounting.Contracts.Classifications.Results
+@using Ubik.Accounting.Contracts.AccountGroups.Results
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.WebApp.Client.Components.Common.Modal
 
@@ -16,7 +18,7 @@
         <div class="w-full lg:w-[520px]">
             <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
                              ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
-                             ValueChanged="@((Guid? args) => _currentClassificationId = args)"
+                             ValueChanged="@((Guid? args) => OnClassificationChanged(args))"
                              PlaceholderText="Select a classification"
                              Data="_classifications" DataKey="Id" DataValue="Code"></UbikInputSelect>
         </div>
@@ -39,6 +41,22 @@
             </UbikModal>
         </CascadingValue>
     }
+
+    @if (!_isLoading)
+    {
+        <CascadingValue Name="AccountGroups" Value="@_accountGroups">
+            <CascadingValue Name="AccountGroups" Value="@_accountGroups">
+                <ul>
+                    @foreach (var node in _accountGroupsRoot)
+                    {
+                        <li class="list-none">
+                            <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
+                        </li>
+                    }
+                </ul>
+            </CascadingValue>
+        </CascadingValue>
+    }
 }
 
 @code {
@@ -49,6 +67,9 @@
 
     private Guid? _currentClassificationId { get; set; }
     private IQueryable<ClassificationModel>? _classifications;
+    private IQueryable<AccountGroupModel> _accountGroups = default!;
+    private IEnumerable<AccountGroupModel> _accountGroupsRoot = [];
+    private IEnumerable<GetAllAccountsResult> _accounts = [];
     private ClassificationModel _classificationCurrent = new();
 
     private ErrBackendApi _backendErrorMsg = default!;
@@ -72,35 +93,76 @@
         {
             return;
         }
-
-        await LoadClassificationsAsync();
-    }
-
-    private async Task LoadClassificationsAsync()
-    {
         _isLoading = true;
 
-        var response = await Client.GetAllClassificationsAsync();
+        await LoadDataAync();
 
+        _isLoading = false;
+    }
+
+    private async Task LoadDataAync()
+    {
+        var taskClassification = Client.GetAllClassificationsAsync();
+        var taskAccountGroups = Client.GetAllAccountGroupsAsync();
+        var taskAccounts = Client.GetAllAccountsAsync();
+
+        await Task.WhenAll(taskClassification, taskAccountGroups, taskAccounts);
+
+        await LoadClassificationsAsync(await taskClassification);
+        await LoadAccountGroupsAsync(await taskAccountGroups);
+        await LoadAccountsAsync(await taskAccounts);
+    }
+
+    private Task OnClassificationChanged(Guid? value)
+    {
+        _currentClassificationId = value;
+        _accountGroupsRoot = _accountGroups.Where(ag => ag.AccountGroupClassificationId == _currentClassificationId
+                                                       && ag.ParentAccountGroupId == null);
+
+        return Task.CompletedTask;
+    }
+
+    private async Task LoadClassificationsAsync(HttpResponseMessage response)
+    {
         if (response.IsSuccessStatusCode)
         {
             var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllClassificationsResult>>() ?? []).ToClassificationModel();
             _classifications = result.AsQueryable();
         }
         else
-        {
-            await _backendErrorMsg.ShowErrorAsync(response);
-            StateHasChanged();
-        }
+            await ManageError(response);
+    }
 
-        _isLoading = false;
+    private async Task LoadAccountGroupsAsync(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>() ?? []).ToAccountGroupModel();
+            _accountGroups = result.AsQueryable();
+        }
+        else
+            await ManageError(response);
+    }
+
+    private async Task LoadAccountsAsync(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+            _accounts = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? [];
+        else
+            await ManageError(response);
+    }
+
+    private async Task ManageError(HttpResponseMessage response)
+    {
+        await _backendErrorMsg.ShowErrorAsync(response);
+        StateHasChanged();
     }
 
     private async Task CloseDialogAsync(bool refresh = false)
     {
         if (refresh)
         {
-            await LoadClassificationsAsync();
+            await LoadDataAync();
         }
 
         await _dialog.CloseDialogAsync();

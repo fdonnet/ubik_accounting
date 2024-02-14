@@ -1,0 +1,54 @@
+﻿@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.Webapp.Shared.Facades
+
+@inject IAccountingApiClient Client
+@inject IRenderContext RenderContext
+
+@if (!_isLoading)
+{
+    <span>@CurrentAccountGroup.Code @CurrentAccountGroup.Label</span>
+    if (_currentNodeAccountGroups.Any())
+    {
+        <ul class="ml-6">
+            @foreach (var node in _currentNodeAccountGroups)
+            {
+                <li class="list-none">
+                    <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
+                </li>
+            }
+        </ul>
+    }
+}
+
+@code {
+    //TODO see the best way to update and refresh only the needed part
+    [Parameter]
+    public AccountGroupModel CurrentAccountGroup { get; set; } = default!;
+    [CascadingParameter(Name = "AccountGroups")]
+    public IQueryable<AccountGroupModel> AccountGroups { get; set; } = default!;
+    [CascadingParameter(Name = "Accounts")]
+    public IQueryable<GetAllAccountsResult> Accounts { get; set; } = default!;
+
+    private bool _isLoading = false;
+    private IEnumerable<AccountGroupModel> _currentNodeAccountGroups = [];
+    private IEnumerable<GetAllAccountsResult> _currentNodeAccounts = [];
+
+    protected override void OnInitialized()
+    {
+        if (RenderContext.IsPrerendering)
+        {
+            return;
+        }
+        _isLoading = true;
+
+        SetCurrentNodeData();
+
+        _isLoading = false;
+    }
+
+    private void SetCurrentNodeData()
+    {
+        _currentNodeAccountGroups = AccountGroups.Where(ag => ag.ParentAccountGroupId == CurrentAccountGroup.Id);
+    }
+
+}

@@ -90,6 +90,14 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
+        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
+        [HttpGet("/AccountGroups")]
+        public async Task AccountGroupsList()
+        {
+            var response = await client.GetAllAccountGroupsAsync();
+            await ForwardResponse(response);
+        }
+
         private async Task ForwardResponse(HttpResponseMessage? responseMsg)
         {
             if (responseMsg == null) return;
