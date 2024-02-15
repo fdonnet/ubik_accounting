@@ -18,6 +18,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
         private readonly GetAccountQuery _query;
         private readonly GetAccountGroupsForAccountQuery _queryAccountGroups;
         private readonly Account _account;
+        private readonly AccountAccountGroup _accountGroupLink;
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
 
@@ -36,6 +37,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
             };
 
             _account = new Account() { Code = "TEST", Label = "Test", CurrencyId = Guid.NewGuid() };
+            _accountGroupLink = new AccountAccountGroup { AccountGroupId = Guid.NewGuid(), AccountId= Guid.NewGuid(),Id=Guid.NewGuid() };
+            _serviceManager.AccountService.GetAllAccountGroupLinksAsync().Returns(new[] {_accountGroupLink});
             _serviceManager.AccountService.GetAsync(_query.Id).Returns(_account);
             _serviceManager.AccountService.GetAccountGroupsWithClassificationInfoAsync(_queryAccountGroups.AccountId).Returns(new List<AccountGroupClassification>
             {
@@ -51,11 +54,35 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Queries
                     x.AddScoped<IServiceManager>(sm => _serviceManager);
                     x.AddConsumer<GetAccountConsumer>();
                     x.AddConsumer<GetAccountGroupsForAccountConsumer>();
+                    x.AddConsumer<GetAllAccountGroupLinksConsumer>();
 
                 }).BuildServiceProvider(true);
 
             _harness = _provider.GetRequiredService<ITestHarness>();
             await _harness.Start();
+        }
+
+        [Fact]
+        public async Task GetAllAccountGroupLinks_AccountGroupLinks_Ok()
+        {
+            //Arrange
+            var client = _harness.GetRequestClient<GetAllAccountGroupLinksQuery>();
+            var consumerHarness = _harness.GetConsumerHarness<GetAllAccountGroupLinksConsumer>();
+
+            //Act
+            var response = await client.GetResponse<GetAllAccountGroupLinksResults>(new { });
+
+            //Assert
+            var sent = await _harness.Sent.Any<GetAllAccountGroupLinksResults>();
+            var consumed = await _harness.Consumed.Any<GetAllAccountGroupLinksQuery>();
+            var consumerConsumed = await consumerHarness.Consumed.Any<GetAllAccountGroupLinksQuery>();
+
+            sent.Should().Be(true);
+            consumed.Should().Be(true);
+            consumerConsumed.Should().Be(true);
+            response.Message.AccountGroupLinks.Should()
+                .HaveCount(1)
+                .And.AllBeOfType<GetAllAccountGroupLinksResult>();
         }
 
         [Fact]

@@ -202,5 +202,12 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 ? accountAccountGroup
                 : new AccountGroupNotFoundForAccountError(accountAccountGroup.AccountGroupId);
         }
+
+        public async Task<IEnumerable<AccountAccountGroup>> GetAllAccountGroupLinksAsync()
+        {
+            var results = await _context.AccountsAccountGroups.ToListAsync();
+
+            return results;
+        }
     }
 }

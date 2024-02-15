@@ -204,5 +204,16 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 CurrencyId = account.CurrencyId
             };
         }
+
+        public static IEnumerable<GetAllAccountGroupLinksResult> ToGetAllAccountGroupLinkResult(this IEnumerable<AccountAccountGroup> accountGroupLinks)
+        {
+            return accountGroupLinks.Select(x => new GetAllAccountGroupLinksResult()
+            {
+                Id = x.Id,
+                AccountId = x.AccountId,
+                AccountGroupId = x.AccountGroupId,
+                Version = x.Version
+            });
+        }
     }
 }

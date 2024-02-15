@@ -90,34 +90,6 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                         a.ErrorType == ServiceAndFeatureErrorType.NotFound);
         }
 
-        //[Theory]
-        //[InlineData("1020", true)]
-        //[InlineData("ZZZZZZZXX", false)]
-        //public async Task IfExist_TrueOrFalse_Ok(string accountCode, bool resultNeeded)
-        //{
-        //    //Arrange
-
-        //    //Act
-        //    var result = await _serviceManager.AccountService.ValidateIfNotAlreadyExists(accountCode);
-
-        //    //Assert
-        //    result.Should().Be(resultNeeded);
-        //}
-
-        //[Theory]
-        //[InlineData("1020", "7777f11f-20dd-4888-88f8-428e59bbc535", true)]
-        //[InlineData("zzzz999", "7777f11f-20dd-4888-88f8-428e59bbc535", false)]
-        //public async Task IfExistWithDifferentId_TrueorFalse_Ok(string accountCode, string currentGuid, bool resultNeeded)
-        //{
-        //    //Arrange
-
-        //    //Act
-        //    var result = await _serviceManager.AccountService.IfExistsWithDifferentIdAsync(accountCode, Guid.Parse(currentGuid));
-
-        //    //Assert
-        //    result.Should().Be(resultNeeded);
-        //}
-
         [Fact]
         public async Task GetAll_Accounts_Ok()
         {
@@ -130,6 +102,20 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should()
                     .NotBeNull()
                     .And.AllBeOfType<Account>();
+        }
+
+        [Fact]
+        public async Task GetAllAccountGroupLinks_AccountGroupLinks_Ok()
+        {
+            //Arrange
+
+            //Act
+            var result = await _serviceManager.AccountService.GetAllAccountGroupLinksAsync();
+
+            //Assert
+            result.Should()
+                    .NotBeNull()
+                    .And.AllBeOfType<AccountAccountGroup>();
         }
 
         [Theory]

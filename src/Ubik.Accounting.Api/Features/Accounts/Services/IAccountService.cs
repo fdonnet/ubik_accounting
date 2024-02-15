@@ -15,5 +15,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         public Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddInAccountGroupAsync(Guid id, Guid accountGroupId);
         public Task<Either<IServiceAndFeatureError, AccountAccountGroup>> DeleteFromAccountGroupAsync(Guid id, Guid accountGroupId);
         public Task<Either<IServiceAndFeatureError, IEnumerable<AccountGroupClassification>>> GetAccountGroupsWithClassificationInfoAsync(Guid id);
+        public Task<IEnumerable<AccountAccountGroup>> GetAllAccountGroupLinksAsync();
     }
 }
