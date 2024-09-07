@@ -17,5 +17,6 @@ namespace Ubik.Accounting.Webapp.Shared.Facades
         Task<HttpResponseMessage> UpdateClassificationAsync(Guid id, UpdateClassificationCommand classification, CancellationToken cancellationToken = default);
 
         Task<HttpResponseMessage> GetAllAccountGroupsAsync(CancellationToken cancellationToken = default);
+        Task<HttpResponseMessage> GetAllAccountsLinksAsync(CancellationToken cancellationToken = default);
     }
 }

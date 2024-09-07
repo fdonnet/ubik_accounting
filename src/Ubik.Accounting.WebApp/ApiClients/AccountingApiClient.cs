@@ -91,6 +91,10 @@ namespace Ubik.Accounting.WebApp.ApiClients
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {usertoken}");
         }
 
-
+        public async Task<HttpResponseMessage> GetAllAccountsLinksAsync(CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            return await _client.GetAsync("Accounts/AllAccountGroupLinks");
+        }
     }
 }

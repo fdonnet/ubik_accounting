@@ -33,6 +33,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Act
             var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
+            var responseGetAllAccountGroupLinks = await httpClient.GetAsync($"{_baseUrlForV1}/AllAccountGroupLinks");
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}");
             var responsePost = await httpClient.PostAsync
                 (_baseUrlForV1, new StringContent("test", Encoding.UTF8, "application/json"));
@@ -49,6 +50,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            responseGetAllAccountGroupLinks.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseGet.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responsePost.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responsePut.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -68,6 +70,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Act
             var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
+            var responseGetAllAccountGroupLinks = await httpClient.GetAsync($"{_baseUrlForV1}/AllAccountGroupLinks");
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}");
             var responsePost = await httpClient.PostAsync(_baseUrlForV1, new StringContent("test", Encoding.UTF8, "application/json"));
             var responsePut = await httpClient.PutAsync
@@ -82,6 +85,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            responseGetAllAccountGroupLinks.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responseGet.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responsePost.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             responsePut.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -137,6 +141,26 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Should()
                 .NotBeNull()
                 .And.AllBeOfType<GetAllAccountsResult>(); ;
+        }
+
+        [Fact]
+        public async Task GetAllAccountGroupLinks_Links_Ok()
+        {
+            //Arrange
+            var httpClient = Factory.CreateDefaultClient();
+
+            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //Act
+            var response = await httpClient.GetAsync($"{_baseUrlForV1}/AllAccountGroupLinks");
+            var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupLinksResult>>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.AllBeOfType<GetAllAccountGroupLinksResult>(); ;
         }
 
         [Fact]

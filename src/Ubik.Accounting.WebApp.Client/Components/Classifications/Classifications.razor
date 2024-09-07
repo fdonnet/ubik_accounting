@@ -70,6 +70,7 @@
     private IQueryable<AccountGroupModel> _accountGroups = default!;
     private IEnumerable<AccountGroupModel> _accountGroupsRoot = [];
     private IEnumerable<GetAllAccountsResult> _accounts = [];
+    private IEnumerable<GetAllAccountGroupLinksResult> _accountsLinks = [];
     private ClassificationModel _classificationCurrent = new();
 
     private ErrBackendApi _backendErrorMsg = default!;
@@ -105,12 +106,14 @@
         var taskClassification = Client.GetAllClassificationsAsync();
         var taskAccountGroups = Client.GetAllAccountGroupsAsync();
         var taskAccounts = Client.GetAllAccountsAsync();
+        var taskAccountsLinks = Client.GetAllAccountsLinksAsync();
 
-        await Task.WhenAll(taskClassification, taskAccountGroups, taskAccounts);
+        await Task.WhenAll(taskClassification, taskAccountGroups, taskAccounts,taskAccountsLinks);
 
         await LoadClassificationsAsync(await taskClassification);
         await LoadAccountGroupsAsync(await taskAccountGroups);
         await LoadAccountsAsync(await taskAccounts);
+        await LoadAccountsLinksAsync(await taskAccountsLinks);
     }
 
     private Task OnClassificationChanged(Guid? value)
@@ -148,6 +151,14 @@
     {
         if (response.IsSuccessStatusCode)
             _accounts = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? [];
+        else
+            await ManageError(response);
+    }
+
+    private async Task LoadAccountsLinksAsync(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+            _accountsLinks = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupLinksResult>>() ?? [];
         else
             await ManageError(response);
     }
