@@ -18,6 +18,18 @@
             }
         </ul>
     }
+
+    if (_currentNodeAccounts.Any())
+    {
+        <ul class="ml-6">
+            @foreach (var account in _currentNodeAccounts)
+            {
+                <li>
+                    <span>@account.Code @account.Label</span>
+                </li>
+            }
+        </ul>
+    }
 }
 
 @code {
@@ -25,13 +37,15 @@
     [Parameter]
     public AccountGroupModel CurrentAccountGroup { get; set; } = default!;
     [CascadingParameter(Name = "AccountGroups")]
-    public IQueryable<AccountGroupModel> AccountGroups { get; set; } = default!;
+    public IEnumerable<AccountGroupModel> AccountGroups { get; set; } = default!;
     [CascadingParameter(Name = "Accounts")]
-    public IQueryable<GetAllAccountsResult> Accounts { get; set; } = default!;
+    public IEnumerable<AccountModel> Accounts { get; set; } = default!;
+    [CascadingParameter(Name = "AccountGroupLinks")]
+    public IEnumerable<AccountGroupLinkModel> AccountGroupLinks { get; set; } = default!;
 
     private bool _isLoading = false;
     private IEnumerable<AccountGroupModel> _currentNodeAccountGroups = [];
-    private IEnumerable<GetAllAccountsResult> _currentNodeAccounts = [];
+    private IEnumerable<AccountModel> _currentNodeAccounts = [];
 
     protected override void OnInitialized()
     {
@@ -49,6 +63,8 @@
     private void SetCurrentNodeData()
     {
         _currentNodeAccountGroups = AccountGroups.Where(ag => ag.ParentAccountGroupId == CurrentAccountGroup.Id);
+        var currentNodeAccountGroupLinksAccountIds = AccountGroupLinks.Where(l => l.AccountGroupId == CurrentAccountGroup.Id).Select(l => l.AccountId).ToList();
+        _currentNodeAccounts = Accounts.Where(a => currentNodeAccountGroupLinksAccountIds.Contains(a.Id));
     }
 
 }

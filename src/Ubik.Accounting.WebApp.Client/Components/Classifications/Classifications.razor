@@ -45,32 +45,35 @@
     @if (!_isLoading)
     {
         <CascadingValue Name="AccountGroups" Value="@_accountGroups">
-            <CascadingValue Name="AccountGroups" Value="@_accountGroups">
-                <ul>
-                    @foreach (var node in _accountGroupsRoot)
-                    {
-                        <li class="list-none">
-                            <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
-                        </li>
-                    }
-                </ul>
+            <CascadingValue Name="Accounts" Value="@_accounts">
+                <CascadingValue Name="AccountGroupLinks" Value="@_accountsLinks">
+                    <ul>
+                        @foreach (var node in _accountGroupsRoot)
+                        {
+                            <li class="list-none">
+                                <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
+                            </li>
+                        }
+                    </ul>
+                </CascadingValue>
             </CascadingValue>
         </CascadingValue>
     }
 }
 
 @code {
+    //TODO set a dictionnary for the account links
     [Parameter]
     public bool IsAuthorizedToRead { get; set; } = false;
     [Parameter]
     public bool IsAuthorizedToModify { get; set; } = false;
 
     private Guid? _currentClassificationId { get; set; }
-    private IQueryable<ClassificationModel>? _classifications;
-    private IQueryable<AccountGroupModel> _accountGroups = default!;
+    private IEnumerable<ClassificationModel>? _classifications;
+    private IEnumerable<AccountGroupModel> _accountGroups = default!;
     private IEnumerable<AccountGroupModel> _accountGroupsRoot = [];
-    private IEnumerable<GetAllAccountsResult> _accounts = [];
-    private IEnumerable<GetAllAccountGroupLinksResult> _accountsLinks = [];
+    private IEnumerable<AccountModel> _accounts = default!;
+    private IEnumerable<AccountGroupLinkModel> _accountsLinks = default!;
     private ClassificationModel _classificationCurrent = new();
 
     private ErrBackendApi _backendErrorMsg = default!;
@@ -108,7 +111,7 @@
         var taskAccounts = Client.GetAllAccountsAsync();
         var taskAccountsLinks = Client.GetAllAccountsLinksAsync();
 
-        await Task.WhenAll(taskClassification, taskAccountGroups, taskAccounts,taskAccountsLinks);
+        await Task.WhenAll(taskClassification, taskAccountGroups, taskAccounts, taskAccountsLinks);
 
         await LoadClassificationsAsync(await taskClassification);
         await LoadAccountGroupsAsync(await taskAccountGroups);
@@ -129,9 +132,9 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllClassificationsResult>>() ?? []).ToClassificationModel();
-            _classifications = result.AsQueryable();
-        }
+            _classifications = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllClassificationsResult>>()
+                ?? []).ToClassificationModel();
+       }
         else
             await ManageError(response);
     }
@@ -140,8 +143,8 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>() ?? []).ToAccountGroupModel();
-            _accountGroups = result.AsQueryable();
+            _accountGroups = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>()
+                ?? []).ToAccountGroupModel();
         }
         else
             await ManageError(response);
@@ -150,7 +153,10 @@
     private async Task LoadAccountsAsync(HttpResponseMessage response)
     {
         if (response.IsSuccessStatusCode)
-            _accounts = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? [];
+        {
+            _accounts = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>()
+                    ?? []).ToAccountModel();
+        }
         else
             await ManageError(response);
     }
@@ -158,7 +164,10 @@
     private async Task LoadAccountsLinksAsync(HttpResponseMessage response)
     {
         if (response.IsSuccessStatusCode)
-            _accountsLinks = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupLinksResult>>() ?? [];
+        {
+            _accountsLinks = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupLinksResult>>()
+                    ?? []).ToAccountGroupLinkModel();
+        }
         else
             await ManageError(response);
     }
