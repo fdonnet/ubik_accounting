@@ -14,48 +14,44 @@
 {
     <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
 
-    @if (!_isLoading)
-    {
-        <div class="flex items-center">
-            <div class="w-full lg:w-[520px]">
-                <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
-                                 ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
-                                 ValueChanged="@((Guid? args) => OnClassificationChanged(args))"
-                                 PlaceholderText="Select a classification"
-                                 Data="_classifications" DataKey="Id" DataValue="Code"></UbikInputSelect>
-            </div>
-            @if (IsAuthorizedToModify)
-            {
-                <div class="ms-2">
-                    or
-                </div>
-                <div class="ms-2">
-                    <UbikButton Label="Add new" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddClassificationDialogAsync"></UbikButton>
-                </div>
-            }
-        </div>
 
+    <div class="flex items-center">
+        <div class="w-full lg:w-[520px]">
+            <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
+                             ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
+                             ValueChanged="@((Guid? args) => OnClassificationChanged(args))"
+                             PlaceholderText="Select a classification"
+                             Data="_classifications" DataKey="Id" DataValue="Code"></UbikInputSelect>
+        </div>
         @if (IsAuthorizedToModify)
         {
-            <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
-                <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
-                    <ClassificationForm EditMode="@_editMode" OnClose="CloseDialogAsync"></ClassificationForm>
-                </UbikModal>
-            </CascadingValue>
+            <div class="ms-2">
+                or
+            </div>
+            <div class="ms-2">
+                <UbikButton Label="Add new" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddClassificationDialogAsync"></UbikButton>
+            </div>
         }
+    </div>
 
+    @if (IsAuthorizedToModify)
+    {
+        <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
+            <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
+                <ClassificationForm EditMode="@_editMode" OnClose="CloseDialogAsync"></ClassificationForm>
+            </UbikModal>
+        </CascadingValue>
+    }
 
+    @if (!_isLoading)
+    {
         <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
             <CascadingValue Name="Accounts" Value="@_accounts">
-                <CascadingValue Name="AccountGroupLinks" Value="@_accountsLinks">
-                    <ul>
-                        @foreach (var node in _accountGroupsRoot)
-                        {
-                            <li class="list-none">
-                                <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
-                            </li>
-                        }
-                    </ul>
+                <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
+                    @foreach (var node in _accountGroupsRoot)
+                    {
+                        <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
+                    }
                 </CascadingValue>
             </CascadingValue>
         </CascadingValue>
@@ -75,7 +71,7 @@
     private IEnumerable<AccountGroupModel> _accountGroupsRoot = [];
     private Dictionary<Guid, List<AccountGroupModel>> _accountGroupsDicByParent = default!;
     private IEnumerable<AccountModel> _accounts = default!;
-    private IEnumerable<AccountGroupLinkModel> _accountsLinks = default!;
+    private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent = default!;
     private ClassificationModel _classificationCurrent = new();
 
     private ErrBackendApi _backendErrorMsg = default!;
@@ -125,7 +121,7 @@
     {
         _currentClassificationId = value;
         _accountGroupsRoot = _accountGroups.Where(ag => ag.AccountGroupClassificationId == _currentClassificationId
-                                                       && ag.ParentAccountGroupId == null);
+                                                       && ag.ParentAccountGroupId == null).OrderBy(root => root.Code);
 
         return Task.CompletedTask;
     }
@@ -179,8 +175,18 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            _accountsLinks = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupLinksResult>>()
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupLinksResult>>()
                     ?? []).ToAccountGroupLinkModel();
+
+            _accountsLinksByParent = new();
+
+            foreach (var childAccount in result)
+            {
+                if (_accountsLinksByParent.TryGetValue((Guid)childAccount.AccountGroupId!, out var value))
+                    value.Add(childAccount);
+                else
+                    _accountsLinksByParent.Add((Guid)childAccount.AccountGroupId!, new List<AccountGroupLinkModel> { childAccount });
+            }
         }
         else
             await ManageError(response);

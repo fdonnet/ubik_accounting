@@ -6,30 +6,55 @@
 
 @if (!_isLoading)
 {
-    <span>@CurrentAccountGroup.Code @CurrentAccountGroup.Label</span>
-    if (_currentNodeAccountGroups.Any())
-    {
-        <ul class="ml-6">
-            @foreach (var node in _currentNodeAccountGroups)
+    <ul>
+        <li>
+            <div class="mt-2 flex items-center">
+                <div class="text-blue-700 dark:text-blue-400">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 13.5H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"></path>
+                    </svg>
+                </div>
+                <div class="mt-1 px-2 align-bottom">
+                    @CurrentAccountGroup.Code @CurrentAccountGroup.Label
+                </div>
+            </div>
+        </li>
+        <li>
+            @if (_currentNodeAccountGroups.Any())
             {
-                <li class="list-none">
-                    <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
-                </li>
+                <ul class="ml-6">
+                    @foreach (var node in _currentNodeAccountGroups)
+                    {
+                        <li>
+                            <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
+                        </li>
+                    }
+                </ul>
             }
-        </ul>
-    }
-
-    if (_currentNodeAccounts.Any())
-    {
-        <ul class="ml-6">
-            @foreach (var account in _currentNodeAccounts)
+        </li>
+        <li>
+            @if (_currentNodeAccounts.Any())
             {
-                <li>
-                    <span>@account.Code @account.Label</span>
-                </li>
+                <ul class="ml-6">
+                    @foreach (var account in _currentNodeAccounts)
+                    {
+                        <li>
+                            <div class="mt-1 flex items-center">
+                                <div class="text-blue-700 dark:text-blue-400">
+                                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.49 12 3.75 3.75m0 0-3.75 3.75m3.75-3.75H3.74V4.499" />
+                                    </svg>
+                                </div>
+                                <div class="mt-1 px-2 align-bottom">
+                                    @account.Code @account.Label
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
             }
-        </ul>
-    }
+        </li>
+    </ul>
 }
 
 @code {
@@ -40,8 +65,8 @@
     public IDictionary<Guid, List<AccountGroupModel>> AccountGroupsDicbyParent { get; set; } = default!;
     [CascadingParameter(Name = "Accounts")]
     public IEnumerable<AccountModel> Accounts { get; set; } = default!;
-    [CascadingParameter(Name = "AccountGroupLinks")]
-    public IEnumerable<AccountGroupLinkModel> AccountGroupLinks { get; set; } = default!;
+    [CascadingParameter(Name = "AccountGroupLinksByParent")]
+    public Dictionary<Guid, List<AccountGroupLinkModel>> AccountGroupLinksByParent { get; set; } = default!;
 
     private bool _isLoading = false;
     private IEnumerable<AccountGroupModel> _currentNodeAccountGroups = [];
@@ -63,10 +88,12 @@
     private void SetCurrentNodeData()
     {
         if (AccountGroupsDicbyParent.TryGetValue(CurrentAccountGroup.Id, out var groups))
-            _currentNodeAccountGroups = groups;
-        
-        var currentNodeAccountGroupLinksAccountIds = AccountGroupLinks.Where(l => l.AccountGroupId == CurrentAccountGroup.Id).Select(l => l.AccountId).ToList();
-        _currentNodeAccounts = Accounts.Where(a => currentNodeAccountGroupLinksAccountIds.Contains(a.Id));
-    }
+            _currentNodeAccountGroups = groups.OrderBy(g => g.Code);
 
+        if (AccountGroupLinksByParent.TryGetValue(CurrentAccountGroup.Id, out var accounts))
+        {
+            var currentNodeAccountGroupLinksAccountIds = accounts.Select(l => l.AccountId).ToList();
+            _currentNodeAccounts = Accounts.Where(a => currentNodeAccountGroupLinksAccountIds.Contains(a.Id)).OrderBy(a => a.Code);
+        }
+    }
 }
