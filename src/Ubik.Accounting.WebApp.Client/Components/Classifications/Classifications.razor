@@ -46,7 +46,7 @@
     {
         @if (_accountGroupsRoot.Any())
         {
-            <div class="mt-5 overflow-x-auto rounded-lg bg-white px-2 pb-2 dark:bg-gray-800">
+            <div class="mt-5 overflow-x-auto whitespace-nowrap rounded-lg bg-white px-2 pb-2 dark:bg-gray-800">
                 <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
                     <CascadingValue Name="Accounts" Value="@_accounts">
                         <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
@@ -70,11 +70,11 @@
     public bool IsAuthorizedToModify { get; set; } = false;
 
     private Guid? _currentClassificationId { get; set; }
-    private IEnumerable<ClassificationModel>? _classifications;
+    private List<ClassificationModel>? _classifications;
     private IEnumerable<AccountGroupModel> _accountGroups = default!;
-    private IEnumerable<AccountGroupModel> _accountGroupsRoot = [];
+    private List<AccountGroupModel> _accountGroupsRoot = [];
     private Dictionary<Guid, List<AccountGroupModel>> _accountGroupsDicByParent = default!;
-    private IEnumerable<AccountModel> _accounts = default!;
+    private List<AccountModel> _accounts = default!;
     private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent = default!;
     private ClassificationModel _classificationCurrent = new();
 
@@ -125,7 +125,7 @@
     {
         _currentClassificationId = value;
         _accountGroupsRoot = _accountGroups.Where(ag => ag.AccountGroupClassificationId == _currentClassificationId
-                                                       && ag.ParentAccountGroupId == null).OrderBy(root => root.Code);
+                                                       && ag.ParentAccountGroupId == null).OrderBy(root => root.Code).ToList();
 
         return Task.CompletedTask;
     }
@@ -135,7 +135,7 @@
         if (response.IsSuccessStatusCode)
         {
             _classifications = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllClassificationsResult>>()
-                ?? []).ToClassificationModel();
+                ?? []).ToClassificationModel().ToList();
         }
         else
             await ManageError(response);
@@ -169,7 +169,7 @@
         if (response.IsSuccessStatusCode)
         {
             _accounts = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>()
-                    ?? []).ToAccountModel();
+                    ?? []).ToAccountModel().ToList();
         }
         else
             await ManageError(response);

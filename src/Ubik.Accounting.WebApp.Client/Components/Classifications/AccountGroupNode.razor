@@ -64,7 +64,7 @@
     [CascadingParameter(Name = "AccountGroupsDicByParent")]
     public IDictionary<Guid, List<AccountGroupModel>> AccountGroupsDicbyParent { get; set; } = default!;
     [CascadingParameter(Name = "Accounts")]
-    public IEnumerable<AccountModel> Accounts { get; set; } = default!;
+    public List<AccountModel> Accounts { get; set; } = default!;
     [CascadingParameter(Name = "AccountGroupLinksByParent")]
     public Dictionary<Guid, List<AccountGroupLinkModel>> AccountGroupLinksByParent { get; set; } = default!;
 
