@@ -14,8 +14,7 @@
 {
     <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
 
-
-    <div class="flex items-center">
+    <div class="mb-5 flex items-center">
         <div class="w-full lg:w-[520px]">
             <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
                              ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
@@ -45,16 +44,21 @@
 
     @if (!_isLoading)
     {
-        <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
-            <CascadingValue Name="Accounts" Value="@_accounts">
-                <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
-                    @foreach (var node in _accountGroupsRoot)
-                    {
-                        <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
-                    }
+        @if (_accountGroupsRoot.Any())
+        {
+            <div class="mt-5 overflow-x-auto rounded-lg bg-white px-2 pb-2 dark:bg-gray-800">
+                <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
+                    <CascadingValue Name="Accounts" Value="@_accounts">
+                        <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
+                            @foreach (var node in _accountGroupsRoot)
+                            {
+                                <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
+                            }
+                        </CascadingValue>
+                    </CascadingValue>
                 </CascadingValue>
-            </CascadingValue>
-        </CascadingValue>
+            </div>
+        }
     }
 }
 
