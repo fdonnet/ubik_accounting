@@ -36,8 +36,8 @@
     //TODO see the best way to update and refresh only the needed part
     [Parameter]
     public AccountGroupModel CurrentAccountGroup { get; set; } = default!;
-    [CascadingParameter(Name = "AccountGroups")]
-    public IEnumerable<AccountGroupModel> AccountGroups { get; set; } = default!;
+    [CascadingParameter(Name = "AccountGroupsDicByParent")]
+    public IDictionary<Guid, List<AccountGroupModel>> AccountGroupsDicbyParent { get; set; } = default!;
     [CascadingParameter(Name = "Accounts")]
     public IEnumerable<AccountModel> Accounts { get; set; } = default!;
     [CascadingParameter(Name = "AccountGroupLinks")]
@@ -62,7 +62,9 @@
 
     private void SetCurrentNodeData()
     {
-        _currentNodeAccountGroups = AccountGroups.Where(ag => ag.ParentAccountGroupId == CurrentAccountGroup.Id);
+        if (AccountGroupsDicbyParent.TryGetValue(CurrentAccountGroup.Id, out var groups))
+            _currentNodeAccountGroups = groups;
+        
         var currentNodeAccountGroupLinksAccountIds = AccountGroupLinks.Where(l => l.AccountGroupId == CurrentAccountGroup.Id).Select(l => l.AccountId).ToList();
         _currentNodeAccounts = Accounts.Where(a => currentNodeAccountGroupLinksAccountIds.Contains(a.Id));
     }
