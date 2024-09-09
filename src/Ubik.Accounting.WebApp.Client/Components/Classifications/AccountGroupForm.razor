@@ -1,26 +1,26 @@
 ﻿@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
-@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts;
 @using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts;
 
 @inject IAccountingApiClient Client
 
-<EditForm Model="@Classification" OnSubmit="SubmitAsync" FormName="AddClassification" class="p-4 md:p-5">
+<EditForm Model="@AccountGroup" OnSubmit="SubmitAsync" FormName="AddAccountGroup" class="p-4 md:p-5">
     <DataAnnotationsValidator />
     <div class="grid-cols-2 mb-4 grid gap-4">
         <div class="col-span-2 sm:col-span-1">
-            <UbikInputText Id="ClassCode" Label="Code"
-                           PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Classification.Code"
-                           ValidationFor="@(()=>Classification.Code)"></UbikInputText>
+            <UbikInputText Id="AccountGrpCode" Label="Code"
+                           PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="AccountGroup.Code"
+                           ValidationFor="@(()=>AccountGroup.Code)"></UbikInputText>
         </div>
         <div class="col-span-2 sm:col-span-1">
-            <UbikInputText Id="ClassificationLabel" Label="Label"
-                           PlaceholderText="Type a label (max 100 char.)" Type="text" @bind-Value="Classification.Label"
-                           ValidationFor="@(()=>Classification.Label)"></UbikInputText>
+            <UbikInputText Id="AccountGrpLabel" Label="Label"
+                           PlaceholderText="Type a label (max 100 char.)" Type="text" @bind-Value="AccountGroup.Label"
+                           ValidationFor="@(()=>AccountGroup.Label)"></UbikInputText>
         </div>
         <div class="col-span-2">
-            <UbikInputTextArea Id="ClassificationDescription" Label="Description"
-                               PlaceholderText="Type a description (max 700 char.)" @bind-Value="Classification.Description"
-                               ValidationFor="@(()=>Classification.Description)"></UbikInputTextArea>
+            <UbikInputTextArea Id="AccountGrpDescription" Label="Description"
+                               PlaceholderText="Type a description (max 700 char.)" @bind-Value="AccountGroup.Description"
+                               ValidationFor="@(()=>AccountGroup.Description)"></UbikInputTextArea>
         </div>
     </div>
     <div class="mt-3 flex justify-between sm:mt-4">
@@ -47,10 +47,14 @@
 </EditForm>
 
 @code {
-    [CascadingParameter(Name = "ClassificationModel")]
-    public ClassificationModel Classification { get; set; } = default!;
+    //TODO: make a component for standart add/edit form (see classification form etc)
+    [CascadingParameter(Name = "AccountGroupModel")]
+    public AccountGroupModel AccountGroup { get; set; } = default!;
     [Parameter]
     public bool EditMode { get; set; } = false;
+
+    [Parameter]
+    public Guid? ClassificationId { get; set; } = null;
 
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
@@ -77,6 +81,7 @@
             if (response != null && response.IsSuccessStatusCode)
             {
                 await _successMsg.ShowSuccessAsync();
+
                 StateHasChanged();
                 await Task.Delay(1500);
 
@@ -121,11 +126,12 @@
     {
         if (EditMode)
         {
-            return await Client.UpdateClassificationAsync(Classification.Id, Classification.ToUpdateClassificationCommand());
+            return await Client.UpdateAccountGroupAsync(AccountGroup.Id, AccountGroup.ToUpdateAccountGroupCommand());
         }
         else
         {
-            return await Client.AddClassificationAsync(Classification.ToAddClassificationCommand());
+            AccountGroup.AccountGroupClassificationId = (Guid)ClassificationId!;
+            return await Client.AddAccountGroupAsync(AccountGroup.ToAddAccountGroupCommand());
         }
     }
 
@@ -133,4 +139,5 @@
     {
         await OnClose.InvokeAsync(withRefresh);
     }
+
 }

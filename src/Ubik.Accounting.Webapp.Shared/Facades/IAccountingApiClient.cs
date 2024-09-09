@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Contracts.Accounts.Commands;
+﻿using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 
 namespace Ubik.Accounting.Webapp.Shared.Facades
@@ -17,6 +18,9 @@ namespace Ubik.Accounting.Webapp.Shared.Facades
         Task<HttpResponseMessage> UpdateClassificationAsync(Guid id, UpdateClassificationCommand classification, CancellationToken cancellationToken = default);
 
         Task<HttpResponseMessage> GetAllAccountGroupsAsync(CancellationToken cancellationToken = default);
+        Task<HttpResponseMessage> AddAccountGroupAsync(AddAccountGroupCommand classification, CancellationToken cancellationToken = default);
+        Task<HttpResponseMessage> UpdateAccountGroupAsync(Guid id, UpdateAccountGroupCommand classification, CancellationToken cancellationToken = default);
+
         Task<HttpResponseMessage> GetAllAccountsLinksAsync(CancellationToken cancellationToken = default);
     }
 }

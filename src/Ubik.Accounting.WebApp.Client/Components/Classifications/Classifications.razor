@@ -44,17 +44,29 @@
 
     @if (!_isLoading)
     {
+        <div class="flex w-full flex-row">
+            @if (_currentClassificationId != null)
+            {
+                <div>
+                    <UbikButton Label="Add root" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddAccountGroupDialogAsync"></UbikButton>
+                </div>
+            }
+            @if (_accountGroupsRoot.Any())
+            {
+                <div class="flex w-full flex-row justify-end">
+                    <div class="mr-2">
+                        <UbikButtonAlternative Label="Expand all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>ToggleExpandHideAllAccountGroups(true)"></UbikButtonAlternative>
+                    </div>
+                    <div>
+                        <UbikButtonAlternative Label="Hide all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>ToggleExpandHideAllAccountGroups(false)"></UbikButtonAlternative>
+                    </div>
+                </div>
+            }
+        </div>
+
         @if (_accountGroupsRoot.Any())
         {
-            <div class="flex w-full flex-row justify-end">
-                <div>
-                    <UbikButtonAlternative Label="Expand all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>ToggleExpandHideAllAccountGroups(true)"></UbikButtonAlternative>
-                </div>
-                <div>
-                    <UbikButtonAlternative Label="Hide all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>ToggleExpandHideAllAccountGroups(false)"></UbikButtonAlternative>
-                </div>
-            </div>
-            <div class="mt-5 overflow-x-auto whitespace-nowrap rounded-lg bg-white px-2 pb-2 dark:bg-gray-800">
+            <div class="mt-1 overflow-x-auto whitespace-nowrap rounded-lg bg-white px-2 pb-2 dark:bg-gray-800">
                 <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
                     <CascadingValue Name="Accounts" Value="@_accounts">
                         <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
@@ -66,6 +78,21 @@
                     </CascadingValue>
                 </CascadingValue>
             </div>
+        }
+        @if (_currentClassificationId != null)
+        {
+            <div class="mt-3">
+                <UbikButtonDelete Label="Delete this classification" Type="buttoon" AdditionalCssClass="whitespace-nowrap"></UbikButtonDelete>
+            </div>
+        }
+
+        @if (IsAuthorizedToModify)
+        {
+            <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
+                <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
+                    <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
+                </UbikModal>
+            </CascadingValue>
         }
     }
 }
@@ -84,6 +111,7 @@
     private Dictionary<Guid, AccountModel> _accounts = default!;
     private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent = default!;
     private ClassificationModel _classificationCurrent = new();
+    private AccountGroupModel _accountGroupCurrent = new();
 
     private ErrBackendApi _backendErrorMsg = default!;
     private bool _isLoading = false;
@@ -91,6 +119,10 @@
     private UbikModal _dialog = default!;
     private bool _editMode = false;
     private string _dialogTitle = "Add classification";
+
+    private UbikModal _dialogAccountGrp = default!;
+    private bool _editModeAccountGrp = false;
+    private string _dialogAccountGrpTitle = "Add account group";
 
     private bool _isButtonsDisabled
     {
@@ -230,11 +262,24 @@
         await _dialog.CloseDialogAsync();
     }
 
+    private async Task CloseDialogAccountGroupAsync(bool refresh = false)
+    {
+        await _dialogAccountGrp.CloseDialogAsync();
+    }
+
     private async Task AddClassificationDialogAsync()
     {
         _dialogTitle = "Add a classification";
         _editMode = false;
         _classificationCurrent = new();
         await _dialog.ShowDialog();
+    }
+
+    private async Task AddAccountGroupDialogAsync()
+    {
+        _dialogAccountGrpTitle = "Add a root";
+        _editModeAccountGrp = false;
+        _accountGroupCurrent = new();
+        await _dialogAccountGrp.ShowDialog();
     }
 }

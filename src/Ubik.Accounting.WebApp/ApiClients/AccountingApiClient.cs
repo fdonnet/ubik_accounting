@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Webapp.Shared.Facades;
@@ -82,6 +83,20 @@ namespace Ubik.Accounting.WebApp.ApiClients
         {
             await SetSecruityHeaderAsync();
             return await _client.GetAsync("AccountGroups");
+        }
+
+        public async Task<HttpResponseMessage> AddAccountGroupAsync(AddAccountGroupCommand accountGroup, CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            var request = JsonSerializer.Serialize(accountGroup);
+            return await _client.PostAsync("AccountGroups", new StringContent(request, Encoding.UTF8, "application/json"));
+        }
+
+        public async Task<HttpResponseMessage> UpdateAccountGroupAsync(Guid id, UpdateAccountGroupCommand accountGroup, CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            var request = JsonSerializer.Serialize(accountGroup);
+            return await _client.PutAsync($"AccountGroups/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
         private async Task SetSecruityHeaderAsync()

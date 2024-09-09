@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
+using Ubik.Accounting.Contracts.Classifications.Commands;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Classifications
 {
@@ -9,7 +11,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
         public Guid Id { get; init; }
         [Required]
         [MaxLength(20)]
-        public string Code { get; init; } = default!;
+        public string Code { get; set; } = default!;
         [Required]
         [MaxLength(100)]
         public string Label { get; set; } = default!;
@@ -37,6 +39,32 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
                 AccountGroupClassificationId = x.AccountGroupClassificationId,
                 Version = x.Version
             });
+        }
+
+        public static AddAccountGroupCommand ToAddAccountGroupCommand(this AccountGroupModel accountGroupModel)
+        {
+            return new AddAccountGroupCommand()
+            {
+                Code = accountGroupModel.Code,
+                Label = accountGroupModel.Label,
+                Description = accountGroupModel.Description,
+                AccountGroupClassificationId= accountGroupModel.AccountGroupClassificationId,
+                ParentAccountGroupId= accountGroupModel.ParentAccountGroupId
+            };
+        }
+
+        public static UpdateAccountGroupCommand ToUpdateAccountGroupCommand(this AccountGroupModel accountGroupModel)
+        {
+            return new UpdateAccountGroupCommand()
+            {
+                Id = accountGroupModel.Id,
+                Code = accountGroupModel.Code,
+                Label = accountGroupModel.Label,
+                Description = accountGroupModel.Description,
+                AccountGroupClassificationId = accountGroupModel.AccountGroupClassificationId,
+                ParentAccountGroupId = accountGroupModel.ParentAccountGroupId,
+                Version = accountGroupModel.Version
+            };
         }
     }
 }

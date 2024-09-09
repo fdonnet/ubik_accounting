@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
 
 
 namespace Ubik.Accounting.WebApp.Controllers
@@ -95,6 +96,22 @@ namespace Ubik.Accounting.WebApp.Controllers
         public async Task AccountGroupsList()
         {
             var response = await client.GetAllAccountGroupsAsync();
+            await ForwardResponse(response);
+        }
+
+        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
+        [HttpPost("/AccountGroups")]
+        public async Task AddAccountGroup(AddAccountGroupCommand command)
+        {
+            var response = await client.AddAccountGroupAsync(command);
+            await ForwardResponse(response);
+        }
+
+        [Authorize(Roles = "ubik_accounting_classification_write")]
+        [HttpPut("/AccountGroups/{id}")]
+        public async Task UpdateAccountGroup(Guid id, UpdateAccountGroupCommand command)
+        {
+            var response = await client.UpdateAccountGroupAsync(id, command);
             await ForwardResponse(response);
         }
 

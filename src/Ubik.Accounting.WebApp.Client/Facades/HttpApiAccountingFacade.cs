@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Webapp.Shared.Facades;
@@ -61,6 +62,18 @@ namespace Ubik.Accounting.WebApp.Client.Facades
         public async Task<HttpResponseMessage> GetAllAccountGroupsAsync(CancellationToken cancellationToken = default)
         {
             return await http.GetAsync("AccountGroups", cancellationToken: cancellationToken);
+        }
+
+        public async Task<HttpResponseMessage> AddAccountGroupAsync(AddAccountGroupCommand AccountGroup, CancellationToken cancellationToken = default)
+        {
+            var request = JsonSerializer.Serialize(AccountGroup);
+            return await http.PostAsync("AccountGroups", new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
+        }
+
+        public async Task<HttpResponseMessage> UpdateAccountGroupAsync(Guid id, UpdateAccountGroupCommand AccountGroup, CancellationToken cancellationToken = default)
+        {
+            var request = JsonSerializer.Serialize(AccountGroup);
+            return await http.PutAsync($"AccountGroups/{id}", new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
         }
 
         public async Task<HttpResponseMessage> GetAllAccountsLinksAsync(CancellationToken cancellationToken = default)
