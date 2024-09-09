@@ -85,15 +85,10 @@
             if (response != null && response.IsSuccessStatusCode)
             {
                 await _successMsg.ShowSuccessAsync();
-
-                var result = (await response.Content.ReadFromJsonAsync<AddAccountGroupResult>()).ToAccountGroupModel();
-                if (result.ParentAccountGroupId == null)
-                {
-                    AccountGroups.Add(result);
-                }
+                await ManageResponseReturns(response);
 
                 StateHasChanged();
-                await Task.Delay(1500);
+                await Task.Delay(1300);
 
                 await CloseAsync(true);
             }
@@ -107,6 +102,28 @@
         {
             await SetSendingFinishedAsync();
             await _cannotSubmitMsg.ShowErrorAsync();
+        }
+    }
+
+    private async Task ManageResponseReturns(HttpResponseMessage response)
+    {
+        if (EditMode)
+        {
+
+        }
+        else
+        {
+            var result = await response.Content.ReadFromJsonAsync<AddAccountGroupResult>();
+
+            if (result == null)
+                throw new ArgumentNullException("Cannot access response result for AddAccountGroupResult");
+
+            var resultModel = result.ToAccountGroupModel();
+
+            if (resultModel.ParentAccountGroupId == null)
+            {
+                AccountGroups.Add(resultModel);
+            }
         }
     }
 
