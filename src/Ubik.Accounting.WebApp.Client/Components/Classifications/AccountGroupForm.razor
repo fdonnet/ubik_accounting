@@ -1,4 +1,5 @@
-﻿@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
+﻿@using Ubik.Accounting.Contracts.AccountGroups.Results
+@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Alerts;
 
@@ -50,12 +51,15 @@
     //TODO: make a component for standart add/edit form (see classification form etc)
     [CascadingParameter(Name = "AccountGroupModel")]
     public AccountGroupModel AccountGroup { get; set; } = default!;
+    [CascadingParameter(Name = "AccountGroupsDicByParent")]
+    public IDictionary<Guid, List<AccountGroupModel>> AccountGroupsDicbyParent { get; set; } = default!;
+    [CascadingParameter(Name = "AccountGroups")]
+    public List<AccountGroupModel> AccountGroups { get; set; } = default!;
+
     [Parameter]
     public bool EditMode { get; set; } = false;
-
     [Parameter]
     public Guid? ClassificationId { get; set; } = null;
-
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
@@ -81,6 +85,12 @@
             if (response != null && response.IsSuccessStatusCode)
             {
                 await _successMsg.ShowSuccessAsync();
+
+                var result = (await response.Content.ReadFromJsonAsync<AddAccountGroupResult>()).ToAccountGroupModel();
+                if (result.ParentAccountGroupId == null)
+                {
+                    AccountGroups.Add(result);
+                }
 
                 StateHasChanged();
                 await Task.Delay(1500);

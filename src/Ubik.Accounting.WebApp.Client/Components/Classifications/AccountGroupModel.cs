@@ -27,7 +27,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
 
     public static class AccountGroupModelMappers
     {
-        public static IEnumerable<AccountGroupModel> ToAccountGroupModel(this IEnumerable<GetAllAccountGroupsResult> current)
+        public static IEnumerable<AccountGroupModel> ToAccountGroupModels(this IEnumerable<GetAllAccountGroupsResult> current)
         {
             return current.Select(x => new AccountGroupModel()
             {
@@ -50,6 +50,21 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
                 Description = accountGroupModel.Description,
                 AccountGroupClassificationId= accountGroupModel.AccountGroupClassificationId,
                 ParentAccountGroupId= accountGroupModel.ParentAccountGroupId
+            };
+        }
+
+        public static AccountGroupModel ToAccountGroupModel(this AddAccountGroupResult current)
+        {
+            return new AccountGroupModel()
+            {
+                AccountGroupClassificationId = current.AccountGroupClassificationId,
+                ParentAccountGroupId = current.ParentAccountGroupId,
+                Code = current.Code,
+                Label = current.Label,
+                Description = current.Description,
+                Id = current.Id,
+                IsExpand = true,
+                Version = current.Version
             };
         }
 

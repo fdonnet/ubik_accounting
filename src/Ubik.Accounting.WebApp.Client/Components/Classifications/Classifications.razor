@@ -88,10 +88,14 @@
 
         @if (IsAuthorizedToModify)
         {
-            <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
-                <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
-                    <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
-                </UbikModal>
+            <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
+                    <CascadingValue Name="AccountGroups" Value="@_accountGroups">
+                        <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
+                            <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
+                                <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
+                            </UbikModal>
+                        </CascadingValue>
+                </CascadingValue>
             </CascadingValue>
         }
     }
@@ -163,11 +167,16 @@
     private Task OnClassificationChanged(Guid? value)
     {
         _currentClassificationId = value;
-        _accountGroupsRoot = _accountGroups.Where(ag => ag.AccountGroupClassificationId == _currentClassificationId
-                                                       && ag.ParentAccountGroupId == null).OrderBy(root => root.Code).ToList();
+        RefreshAccountGroupRoots();
 
         StateHasChanged();
         return Task.CompletedTask;
+    }
+
+    private void RefreshAccountGroupRoots()
+    {
+        _accountGroupsRoot = _accountGroups.Where(ag => ag.AccountGroupClassificationId == _currentClassificationId
+                                                       && ag.ParentAccountGroupId == null).OrderBy(root => root.Code).ToList();
     }
 
     private async Task LoadClassificationsAsync(HttpResponseMessage response)
@@ -186,7 +195,7 @@
         if (response.IsSuccessStatusCode)
         {
             _accountGroups = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>()
-                ?? []).ToAccountGroupModel().ToList();
+                ?? []).ToAccountGroupModels().ToList();
 
             BuildAccountGrpDicByParent();
         }
@@ -264,6 +273,7 @@
 
     private async Task CloseDialogAccountGroupAsync(bool refresh = false)
     {
+        RefreshAccountGroupRoots();
         await _dialogAccountGrp.CloseDialogAsync();
     }
 
