@@ -46,13 +46,21 @@
     {
         @if (_accountGroupsRoot.Any())
         {
+            <div class="flex w-full flex-row justify-end">
+                <div>
+                    <UbikButtonAlternative Label="Expand all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>ToggleExpandHideAllAccountGroups(true)"></UbikButtonAlternative>
+                </div>
+                <div>
+                    <UbikButtonAlternative Label="Hide all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>ToggleExpandHideAllAccountGroups(false)"></UbikButtonAlternative>
+                </div>
+            </div>
             <div class="mt-5 overflow-x-auto whitespace-nowrap rounded-lg bg-white px-2 pb-2 dark:bg-gray-800">
                 <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
                     <CascadingValue Name="Accounts" Value="@_accounts">
                         <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
                             @foreach (var node in _accountGroupsRoot)
                             {
-                                <AccountGroupNode CurrentAccountGroup="@node"></AccountGroupNode>
+                                <AccountGroupNode @key="node" CurrentAccountGroup="@node"></AccountGroupNode>
                             }
                         </CascadingValue>
                     </CascadingValue>
@@ -63,7 +71,6 @@
 }
 
 @code {
-    //TODO set a dictionnary for the account links
     [Parameter]
     public bool IsAuthorizedToRead { get; set; } = false;
     [Parameter]
@@ -71,10 +78,10 @@
 
     private Guid? _currentClassificationId { get; set; }
     private List<ClassificationModel>? _classifications;
-    private IEnumerable<AccountGroupModel> _accountGroups = default!;
+    private List<AccountGroupModel> _accountGroups = default!;
     private List<AccountGroupModel> _accountGroupsRoot = [];
     private Dictionary<Guid, List<AccountGroupModel>> _accountGroupsDicByParent = default!;
-    private List<AccountModel> _accounts = default!;
+    private Dictionary<Guid, AccountModel> _accounts = default!;
     private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent = default!;
     private ClassificationModel _classificationCurrent = new();
 
@@ -127,6 +134,7 @@
         _accountGroupsRoot = _accountGroups.Where(ag => ag.AccountGroupClassificationId == _currentClassificationId
                                                        && ag.ParentAccountGroupId == null).OrderBy(root => root.Code).ToList();
 
+        StateHasChanged();
         return Task.CompletedTask;
     }
 
@@ -146,22 +154,32 @@
         if (response.IsSuccessStatusCode)
         {
             _accountGroups = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>()
-                ?? []).ToAccountGroupModel();
+                ?? []).ToAccountGroupModel().ToList();
 
-            //Create a DIC from parentId
-            var withParent = _accountGroups.Where(ag => ag.ParentAccountGroupId != null);
-            _accountGroupsDicByParent = new();
-
-            foreach (var childAccount in withParent)
-            {
-                if (_accountGroupsDicByParent.TryGetValue((Guid)childAccount.ParentAccountGroupId!, out var value))
-                    value.Add(childAccount);
-                else
-                    _accountGroupsDicByParent.Add((Guid)childAccount.ParentAccountGroupId!, new List<AccountGroupModel> { childAccount });
-            }
+            BuildAccountGrpDicByParent();
         }
         else
             await ManageError(response);
+    }
+
+    private void ToggleExpandHideAllAccountGroups(bool expand)
+    {
+        _accountGroups.ForEach(ag => ag.IsExpand = expand);
+        BuildAccountGrpDicByParent();
+    }
+
+    private void BuildAccountGrpDicByParent()
+    {
+        var withParent = _accountGroups.Where(ag => ag.ParentAccountGroupId != null);
+        _accountGroupsDicByParent = new();
+
+        foreach (var childAccountGrp in withParent)
+        {
+            if (_accountGroupsDicByParent.TryGetValue((Guid)childAccountGrp.ParentAccountGroupId!, out var value))
+                value.Add(childAccountGrp);
+            else
+                _accountGroupsDicByParent.Add((Guid)childAccountGrp.ParentAccountGroupId!, new List<AccountGroupModel> { childAccountGrp });
+        }
     }
 
     private async Task LoadAccountsAsync(HttpResponseMessage response)
@@ -169,7 +187,7 @@
         if (response.IsSuccessStatusCode)
         {
             _accounts = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>()
-                    ?? []).ToAccountModel().ToList();
+                    ?? []).ToAccountModel().ToDictionary(x => x.Id);
         }
         else
             await ManageError(response);

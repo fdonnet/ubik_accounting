@@ -20,6 +20,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
         public Guid AccountGroupClassificationId { get; set; }
         [Required]
         public Guid Version { get; set; }
+        public bool IsExpand { get; set; } = true;
     }
 
     public static class AccountGroupModelMappers
