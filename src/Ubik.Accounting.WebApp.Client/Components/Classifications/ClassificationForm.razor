@@ -1,4 +1,5 @@
-﻿@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
+﻿@using Ubik.Accounting.Contracts.Classifications.Results
+@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.WebApp.Client.Components.Common.Alerts;
 @using Ubik.Accounting.Webapp.Shared.Facades
 
@@ -56,6 +57,9 @@
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
+    [Parameter]
+    public EventCallback<ClassificationModel> OnClassificationChange { get; set; }
+
     private UbikButton _buttonSubmitEdit = default!;
     private UbikButton _buttonSubmitAdd = default!;
 
@@ -78,6 +82,7 @@
             if (response != null && response.IsSuccessStatusCode)
             {
                 await _successMsg.ShowSuccessAsync();
+                await ManageResponseReturns(response);
                 StateHasChanged();
                 await Task.Delay(1500);
 
@@ -93,6 +98,23 @@
         {
             await SetSendingFinishedAsync();
             await _cannotSubmitMsg.ShowErrorAsync();
+        }
+    }
+
+    private async Task ManageResponseReturns(HttpResponseMessage response)
+    {
+        if (EditMode)
+        {
+
+        }
+        else
+        {
+            var result = await response.Content.ReadFromJsonAsync<AddClassificationResult>();
+
+            if (result == null)
+                throw new ArgumentNullException("Cannot access response result for AddClassificationResult");
+
+            await ClassificationChangeAsync(result.ToAccountGroupModel());
         }
     }
 
@@ -133,5 +155,10 @@
     private async Task CloseAsync(bool withRefresh = false)
     {
         await OnClose.InvokeAsync(withRefresh);
+    }
+
+    private async Task ClassificationChangeAsync(ClassificationModel classification)
+    {
+        await OnClassificationChange.InvokeAsync(classification);
     }
 }

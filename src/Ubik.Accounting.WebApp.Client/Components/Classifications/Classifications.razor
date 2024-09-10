@@ -37,7 +37,7 @@
     {
         <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
             <UbikModal @ref="_classificationDialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
-                <ClassificationForm EditMode="@_editMode" OnClose="CloseClassificationDialogAsync"></ClassificationForm>
+                <ClassificationForm EditMode="@_editMode" OnClassificationChange="ClassificationAddedOrEdited" OnClose="CloseClassificationDialogAsync"></ClassificationForm>
             </UbikModal>
         </CascadingValue>
     }
@@ -174,7 +174,10 @@
     private Task OnClassificationChanged(Guid? value)
     {
         _currentClassificationId = value;
-        _classificationCurrent = _classifications?.Where(c => c.Id == _currentClassificationId).FirstOrDefault();
+        if (_currentClassificationId == null)
+            _classificationCurrent = new();
+        else
+            _classificationCurrent = _classifications?.Where(c => c.Id == _currentClassificationId).FirstOrDefault();
 
         RefreshAccountGroupRoots();
 
@@ -270,11 +273,20 @@
         StateHasChanged();
     }
 
+    private void ClassificationAddedOrEdited(ClassificationModel classification)
+    {
+        _classificationCurrent = classification;
+    }
+
     private async Task CloseClassificationDialogAsync(bool refresh = false)
     {
         if (refresh)
         {
+            _isLoading = true;
             await LoadDataAync();
+            _currentClassificationId = _classificationCurrent!.Id;
+            RefreshAccountGroupRoots();
+            _isLoading = false;
         }
 
         await _classificationDialog.CloseDialogAsync();

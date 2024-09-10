@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Enums;
 using Ubik.Accounting.Contracts.Classifications.Commands;
@@ -44,6 +45,18 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
                 Code = classificationModel.Code,
                 Label = classificationModel.Label,
                 Description = classificationModel.Description,
+            };
+        }
+
+        public static ClassificationModel ToAccountGroupModel(this AddClassificationResult current)
+        {
+            return new ClassificationModel()
+            {
+                Code = current.Code,
+                Label = current.Label,
+                Description = current.Description,
+                Id = current.Id,
+                Version = current.Version
             };
         }
 
