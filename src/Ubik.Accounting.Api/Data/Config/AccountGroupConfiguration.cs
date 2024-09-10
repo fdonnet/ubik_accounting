@@ -41,7 +41,7 @@ namespace Ubik.Accounting.Api.Data.Config
             builder
                 .HasOne(s => s.ParentAccountGroup)
                 .WithMany(m => m.ChildrenAccountGroups)
-                .HasForeignKey(e => e.ParentAccountGroupId)
+                .HasForeignKey(e => e.ParentAccountGroupId).OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
             builder
@@ -49,13 +49,6 @@ namespace Ubik.Accounting.Api.Data.Config
                 .WithMany(g => g.OwnedAccountGroups)
                 .HasForeignKey(b => b.ClassificationId).OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
-
-            builder
-                .HasMany(e => e.Accounts)
-                .WithMany()
-                .UsingEntity<AccountAccountGroup>(
-                a => a.HasOne<Account>().WithMany().HasForeignKey(e => e.AccountId).OnDelete(DeleteBehavior.Cascade),
-                g => g.HasOne<AccountGroup>().WithMany().HasForeignKey(e => e.AccountGroupId).OnDelete(DeleteBehavior.Cascade));
         }
     }
 }

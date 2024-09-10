@@ -91,6 +91,14 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
+        [Authorize(Roles = "ubik_accounting_classification_write")]
+        [HttpDelete("/Classifications/{id}")]
+        public async Task DeleteClassification(Guid id)
+        {
+            var response = await client.DeleteClassificationAsync(id);
+            await ForwardResponse(response);
+        }
+
         [Authorize(Roles = "ubik_accounting_accountgroup_read")]
         [HttpGet("/AccountGroups")]
         public async Task AccountGroupsList()

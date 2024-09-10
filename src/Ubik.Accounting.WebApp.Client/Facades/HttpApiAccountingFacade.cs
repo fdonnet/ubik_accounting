@@ -59,6 +59,11 @@ namespace Ubik.Accounting.WebApp.Client.Facades
             return await http.PutAsync($"Classifications/{id}", new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
         }
 
+        public async Task<HttpResponseMessage> DeleteClassificationAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await http.DeleteAsync($"Classifications/{id}", cancellationToken: cancellationToken);
+        }
+
         public async Task<HttpResponseMessage> GetAllAccountGroupsAsync(CancellationToken cancellationToken = default)
         {
             return await http.GetAsync("AccountGroups", cancellationToken: cancellationToken);

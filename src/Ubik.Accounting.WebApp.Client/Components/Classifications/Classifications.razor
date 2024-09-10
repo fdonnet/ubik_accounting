@@ -36,8 +36,8 @@
     @if (IsAuthorizedToModify)
     {
         <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
-            <UbikModal @ref="_dialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
-                <ClassificationForm EditMode="@_editMode" OnClose="CloseDialogAsync"></ClassificationForm>
+            <UbikModal @ref="_classificationDialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
+                <ClassificationForm EditMode="@_editMode" OnClose="CloseClassificationDialogAsync"></ClassificationForm>
             </UbikModal>
         </CascadingValue>
     }
@@ -83,7 +83,7 @@
         @if (_currentClassificationId != null && IsAuthorizedToModify)
         {
             <div class="mt-3">
-                <UbikButtonDelete Label="Delete this classification" Type="buttoon" AdditionalCssClass="whitespace-nowrap"></UbikButtonDelete>
+                <UbikButtonDelete Label="Delete this classification" Type="buttoon" AdditionalCssClass="whitespace-nowrap" OnClick="DeleteClassificationConfirmationAsync"></UbikButtonDelete>
             </div>
         }
 
@@ -95,6 +95,11 @@
                         <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
                     </UbikModal>
                 </CascadingValue>
+            </CascadingValue>
+            <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
+                <UbikModalCenter @ref="_deleteClassificationDialog">
+                    <ClassificationConfirmDelete @ref="_deleteClassificationMsg" OnClose="CloseDeleteClassificationDialogAsync"></ClassificationConfirmDelete>
+                </UbikModalCenter>
             </CascadingValue>
         }
     }
@@ -113,15 +118,18 @@
     private Dictionary<Guid, List<AccountGroupModel>> _accountGroupsDicByParent = default!;
     private Dictionary<Guid, AccountModel> _accounts = default!;
     private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent = default!;
-    private ClassificationModel _classificationCurrent = new();
+    private ClassificationModel? _classificationCurrent = new();
     private AccountGroupModel _accountGroupCurrent = new();
 
     private ErrBackendApi _backendErrorMsg = default!;
     private bool _isLoading = false;
 
-    private UbikModal _dialog = default!;
+    private UbikModal _classificationDialog = default!;
     private bool _editMode = false;
     private string _dialogTitle = "Add classification";
+
+    private UbikModalCenter _deleteClassificationDialog = default!;
+    private ClassificationConfirmDelete _deleteClassificationMsg = default!;
 
     private UbikModal _dialogAccountGrp = default!;
     private bool _editModeAccountGrp = false;
@@ -166,6 +174,8 @@
     private Task OnClassificationChanged(Guid? value)
     {
         _currentClassificationId = value;
+        _classificationCurrent = _classifications?.Where(c => c.Id == _currentClassificationId).FirstOrDefault();
+
         RefreshAccountGroupRoots();
 
         StateHasChanged();
@@ -260,14 +270,14 @@
         StateHasChanged();
     }
 
-    private async Task CloseDialogAsync(bool refresh = false)
+    private async Task CloseClassificationDialogAsync(bool refresh = false)
     {
         if (refresh)
         {
             await LoadDataAync();
         }
 
-        await _dialog.CloseDialogAsync();
+        await _classificationDialog.CloseDialogAsync();
     }
 
     private async Task CloseDialogAccountGroupAsync(bool refresh = false)
@@ -281,7 +291,7 @@
         _dialogTitle = "Add a classification";
         _editMode = false;
         _classificationCurrent = new();
-        await _dialog.ShowDialog();
+        await _classificationDialog.ShowDialog();
     }
 
     private async Task AddAccountGroupDialogAsync()
@@ -291,4 +301,29 @@
         _accountGroupCurrent = new();
         await _dialogAccountGrp.ShowDialog();
     }
+
+    private async Task DeleteClassificationConfirmationAsync()
+    {
+        if (_classificationCurrent != null)
+        {
+            await _deleteClassificationMsg.SetInitialStatus();
+            await _deleteClassificationDialog.ShowDialogAsync();
+        }
+    }
+    private async Task CloseDeleteClassificationDialogAsync(bool refresh = false)
+    {
+        await _deleteClassificationDialog.CloseDialogAsync();
+        if (refresh)
+        {
+            _isLoading = true;
+
+            await LoadDataAync();
+            _currentClassificationId = null;
+
+            RefreshAccountGroupRoots();
+
+            _isLoading = false;
+        }
+    }
+
 }

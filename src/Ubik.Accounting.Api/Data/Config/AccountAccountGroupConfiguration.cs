@@ -21,6 +21,16 @@ namespace Ubik.Accounting.Api.Data.Config
                 .IsUnique();
 
             builder.HasIndex(a => a.TenantId);
+
+            builder
+            .HasOne(e => e.Account)
+            .WithMany()
+            .HasForeignKey(e => e.AccountId).OnDelete(DeleteBehavior.Cascade);
+
+            builder
+           .HasOne(e => e.AccountGroup)
+           .WithMany()
+           .HasForeignKey(e => e.AccountGroupId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

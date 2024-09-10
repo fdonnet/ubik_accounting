@@ -18,7 +18,7 @@
 {
     <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
 
-    <div class="flex flex-col max-w-max mt-1">
+    <div class="mt-1 flex max-w-max flex-col">
         <div class="flex justify-between">
             @if (IsAuthorizedToModify)
             {
@@ -36,7 +36,7 @@
 
         <AccountFilters @ref="_filters" CurrenciesList="_currencies" Filters="@_accountFilters" OnApplyFilters="ApplyFilters"></AccountFilters>
 
-        <div class="block md:hidden w-full mt-1">
+        <div class="mt-1 block w-full md:hidden">
             <UbikSimpleSearchBar @bind-Value="@_searchValue" PlaceHolderMsg="Search for codes or labels" />
         </div>
 
@@ -52,7 +52,7 @@
             </CascadingValue>
         }
 
-        <div class="relative overflow-x-auto shadow-md rounded-lg">
+        <div class="relative overflow-x-auto rounded-lg shadow-md">
             <UbikGrid Items="@_filteredAccounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="@pagination">
                 <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
                 <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
@@ -89,7 +89,7 @@
 
     private IQueryable<AccountModel>? _accounts;
     private int _numberOfAccounts = -1;
-    private IEnumerable<GetAllCurrenciesResult>? _currencies;
+    private List<GetAllCurrenciesResult>? _currencies;
 
     private bool _isLoading = true;
     private UbikModal _dialog = default!;
@@ -218,7 +218,7 @@
         if (response.IsSuccessStatusCode)
         {
             var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllCurrenciesResult>>() ?? []);
-            _currencies = result.OrderBy(c => c.IsoCode);
+            _currencies = result.OrderBy(c => c.IsoCode).ToList();
         }
         else
         {

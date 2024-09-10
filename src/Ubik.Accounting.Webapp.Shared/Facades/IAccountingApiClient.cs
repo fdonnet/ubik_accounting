@@ -14,6 +14,7 @@ namespace Ubik.Accounting.Webapp.Shared.Facades
         Task<HttpResponseMessage> GetAllCurrenciesAsync(CancellationToken cancellationToken = default);
 
         Task<HttpResponseMessage> GetAllClassificationsAsync(CancellationToken cancellationToken = default);
+        Task<HttpResponseMessage> DeleteClassificationAsync(Guid id, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> AddClassificationAsync(AddClassificationCommand classification, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> UpdateClassificationAsync(Guid id, UpdateClassificationCommand classification, CancellationToken cancellationToken = default);
 
