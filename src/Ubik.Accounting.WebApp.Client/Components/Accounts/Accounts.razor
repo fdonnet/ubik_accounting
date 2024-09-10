@@ -155,9 +155,19 @@
 
     private async Task EditAccountDialogAsync(AccountModel currentAccount)
     {
-        _dialogTitle = $"Edit account ({currentAccount.Code})";
         _editMode = true;
-        _accountCurrent = currentAccount;
+        _accountCurrent = new()
+        {
+            Category = currentAccount.Category,
+            Code = currentAccount.Code,
+            CurrencyId = currentAccount.CurrencyId,
+            Id = currentAccount.Id,
+            Description = currentAccount.Description,
+            Domain = currentAccount.Domain,
+            Label = currentAccount.Label,
+            Version = currentAccount.Version
+        };
+        _dialogTitle = $"Edit account ({currentAccount.Code})";
         await _dialog.ShowDialog();
     }
 
