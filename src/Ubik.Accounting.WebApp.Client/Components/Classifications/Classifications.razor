@@ -45,7 +45,7 @@
     @if (!_isLoading)
     {
         <div class="flex w-full flex-row">
-            @if (_currentClassificationId != null)
+            @if (_currentClassificationId != null && IsAuthorizedToModify)
             {
                 <div>
                     <UbikButton Label="Add root" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddAccountGroupDialogAsync"></UbikButton>
@@ -79,7 +79,8 @@
                 </CascadingValue>
             </div>
         }
-        @if (_currentClassificationId != null)
+
+        @if (_currentClassificationId != null && IsAuthorizedToModify)
         {
             <div class="mt-3">
                 <UbikButtonDelete Label="Delete this classification" Type="buttoon" AdditionalCssClass="whitespace-nowrap"></UbikButtonDelete>
@@ -88,13 +89,11 @@
 
         @if (IsAuthorizedToModify)
         {
-            <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
-                    <CascadingValue Name="AccountGroups" Value="@_accountGroups">
-                        <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
-                            <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
-                                <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
-                            </UbikModal>
-                        </CascadingValue>
+            <CascadingValue Name="AccountGroups" Value="@_accountGroups">
+                <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
+                    <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
+                        <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
+                    </UbikModal>
                 </CascadingValue>
             </CascadingValue>
         }
