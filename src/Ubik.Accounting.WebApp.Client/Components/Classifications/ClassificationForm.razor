@@ -112,7 +112,7 @@
             var result = await response.Content.ReadFromJsonAsync<AddClassificationResult>();
 
             if (result == null)
-                throw new ArgumentNullException("Cannot access response result for AddClassificationResult");
+                throw new ArgumentNullException("Cannot access response result for edit or add a classification.");
 
             await ClassificationChangeAsync(result.ToAccountGroupModel());
         }

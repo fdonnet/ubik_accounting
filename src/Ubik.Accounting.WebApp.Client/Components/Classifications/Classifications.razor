@@ -44,16 +44,21 @@
 
     @if (!_isLoading)
     {
-        <div class="flex w-full flex-row">
+        <div class="flex w-full flex-col sm:flex-row">
             @if (_currentClassificationId != null && IsAuthorizedToModify)
             {
-                <div>
-                    <UbikButton Label="Add root" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddAccountGroupDialogAsync"></UbikButton>
+                <div class="flex w-full flex-row">
+                    <div>
+                        <UbikButton Label="Edit" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="EditClassificationDialogAsync"></UbikButton>
+                    </div>
+                    <div class="ms-2">
+                        <UbikButton Label="Add root" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddAccountGroupDialogAsync"></UbikButton>
+                    </div>
                 </div>
             }
             @if (_accountGroupsRoot.Any())
             {
-                <div class="flex w-full flex-row justify-end">
+                <div class="mt-2 flex w-full flex-row justify-start sm:justify-end sm:mt-0">
                     <div class="mr-2">
                         <UbikButtonAlternative Label="Expand all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>ToggleExpandHideAllAccountGroups(true)"></UbikButtonAlternative>
                     </div>
@@ -177,7 +182,17 @@
         if (_currentClassificationId == null)
             _classificationCurrent = new();
         else
-            _classificationCurrent = _classifications?.Where(c => c.Id == _currentClassificationId).FirstOrDefault();
+            _classificationCurrent = _classifications
+                                        ?.Where(c => c.Id == _currentClassificationId)
+                                        .Select(x => new ClassificationModel()
+                                        {   Code = x.Code,
+                                            Description = x.Description,
+                                            Id = x.Id,
+                                            Label = x.Label,
+                                            Version = x.Version
+                                        })
+                                        .FirstOrDefault();
+
 
         RefreshAccountGroupRoots();
 
@@ -304,6 +319,16 @@
         _editMode = false;
         _classificationCurrent = new();
         await _classificationDialog.ShowDialog();
+    }
+
+    private async Task EditClassificationDialogAsync()
+    {
+        if (_classificationCurrent != null)
+        {
+            _dialogTitle = $"Edit {_classificationCurrent.Code} classification";
+            _editMode = true;
+            await _classificationDialog.ShowDialog();
+        }
     }
 
     private async Task AddAccountGroupDialogAsync()

@@ -2480,6 +2480,10 @@ p:is(.dark *) {
     margin-inline-start: 1rem;
   }
 
+  .sm\:mt-0 {
+    margin-top: 0px;
+  }
+
   .sm\:mt-3 {
     margin-top: 0.75rem;
   }
@@ -2514,6 +2518,10 @@ p:is(.dark *) {
 
   .sm\:flex-row {
     flex-direction: row;
+  }
+
+  .sm\:justify-end {
+    justify-content: flex-end;
   }
 
   .sm\:py-5 {
