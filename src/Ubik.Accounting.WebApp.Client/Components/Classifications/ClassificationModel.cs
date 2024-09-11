@@ -48,7 +48,19 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
             };
         }
 
-        public static ClassificationModel ToAccountGroupModel(this AddClassificationResult current)
+        public static ClassificationModel ToClassificationModel(this AddClassificationResult current)
+        {
+            return new ClassificationModel()
+            {
+                Code = current.Code,
+                Label = current.Label,
+                Description = current.Description,
+                Id = current.Id,
+                Version = current.Version
+            };
+        }
+
+        public static ClassificationModel ToClassificationModel(this UpdateClassificationResult current)
         {
             return new ClassificationModel()
             {

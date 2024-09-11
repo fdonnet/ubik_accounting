@@ -179,25 +179,30 @@
     private Task OnClassificationChanged(Guid? value)
     {
         _currentClassificationId = value;
+
+        SelectClassification();
+        RefreshAccountGroupRoots();
+
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private void SelectClassification()
+    {
         if (_currentClassificationId == null)
             _classificationCurrent = new();
         else
             _classificationCurrent = _classifications
                                         ?.Where(c => c.Id == _currentClassificationId)
                                         .Select(x => new ClassificationModel()
-                                        {   Code = x.Code,
-                                            Description = x.Description,
-                                            Id = x.Id,
-                                            Label = x.Label,
-                                            Version = x.Version
-                                        })
+                                            {
+                                                Code = x.Code,
+                                                Description = x.Description,
+                                                Id = x.Id,
+                                                Label = x.Label,
+                                                Version = x.Version
+                                            })
                                         .FirstOrDefault();
-
-
-        RefreshAccountGroupRoots();
-
-        StateHasChanged();
-        return Task.CompletedTask;
     }
 
     private void RefreshAccountGroupRoots()
@@ -300,7 +305,11 @@
             _isLoading = true;
             await LoadDataAync();
             _currentClassificationId = _classificationCurrent!.Id;
-            RefreshAccountGroupRoots();
+            // InputSelectClassification.DataKey = _classificationCurrent!.Id;
+            // await OnClassificationChanged(_classificationCurrent!.Id);
+            // _currentClassificationId = _classificationCurrent!.Id;
+            // SelectClassification();
+            // RefreshAccountGroupRoots();
             _isLoading = false;
         }
 
@@ -355,9 +364,10 @@
             _isLoading = true;
 
             await LoadDataAync();
-            _currentClassificationId = null;
+            // _currentClassificationId = null;
 
-            RefreshAccountGroupRoots();
+            // SelectClassification();
+            // RefreshAccountGroupRoots();
 
             _isLoading = false;
         }

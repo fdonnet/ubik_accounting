@@ -16,7 +16,7 @@ services:
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       - "LANG=en_US.UTF-8"
 
-    image: "quay.io/keycloak/keycloak:latest"
+    image: "quay.io/keycloak/keycloak:21.1"
 
     ipc: "private"
 

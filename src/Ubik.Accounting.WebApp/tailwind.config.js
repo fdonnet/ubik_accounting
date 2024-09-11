@@ -2,8 +2,7 @@
 module.exports = {
   darkMode: 'class',
   content: [
-    './**/*.html',
-    './**/*.razor',
+      './**/*.razor',
     '../Ubik.Accounting.WebApp.Client/Components/**/*.razor'
   ],
   safelist: [
