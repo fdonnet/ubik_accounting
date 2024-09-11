@@ -19,10 +19,11 @@
             <UbikSelectSimple Id="CurrentClassification"
                               TValue="Guid?"
                               PlaceholderText="Select a classification"
-                              @bind-CurrentValue="_currentClassificationId"
+                              CurrentValue="_currentClassificationId"
                               Data="_classifications"
                               DataKey="Id"
-                              DataValue="Code">
+                              DataValue="Code"
+                              ValueChanged="OnClassificationChanged">
             </UbikSelectSimple>
             @*  <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
         ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
