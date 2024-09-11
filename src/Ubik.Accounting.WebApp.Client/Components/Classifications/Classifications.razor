@@ -19,11 +19,11 @@
             <UbikSelectSimple Id="CurrentClassification"
                               TValue="Guid?"
                               PlaceholderText="Select a classification"
-                              CurrentValue="_currentClassificationId"
+                              @bind-Value="_currentClassificationId"
+                              @bind-Value:after="OnClassificationChanged"
                               Data="_classifications"
                               DataKey="Id"
-                              DataValue="Code"
-                              ValueChanged="OnClassificationChanged">
+                              DataValue="Code">
             </UbikSelectSimple>
             @*  <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
         ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
@@ -185,15 +185,12 @@
         await LoadAccountsLinksAsync(await taskAccountsLinks);
     }
 
-    private Task OnClassificationChanged(Guid? value)
+    private void OnClassificationChanged()
     {
-        _currentClassificationId = value;
-
         SelectClassification();
         RefreshAccountGroupRoots();
 
         StateHasChanged();
-        return Task.CompletedTask;
     }
 
     private void SelectClassification()
@@ -305,6 +302,8 @@
     private void ClassificationAddedOrEdited(ClassificationModel classification)
     {
         _classificationCurrent = classification;
+        // _currentClassificationId = _classificationCurrent.Id;
+        // OnClassificationChanged();
     }
 
     private async Task CloseClassificationDialogAsync(bool refresh = false)
@@ -313,12 +312,8 @@
         {
             _isLoading = true;
             await LoadDataAync();
-            _currentClassificationId = _classificationCurrent!.Id;
-            // InputSelectClassification.DataKey = _classificationCurrent!.Id;
-            // await OnClassificationChanged(_classificationCurrent!.Id);
-            // _currentClassificationId = _classificationCurrent!.Id;
-            // SelectClassification();
-            // RefreshAccountGroupRoots();
+            OnClassificationChanged();
+
             _isLoading = false;
         }
 
