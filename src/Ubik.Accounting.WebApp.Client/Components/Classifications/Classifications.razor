@@ -16,11 +16,19 @@
 
     <div class="mb-5 flex items-center">
         <div class="w-full lg:w-[520px]">
-            <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
-                             ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
-                             ValueChanged="@((Guid? args) => OnClassificationChanged(args))"
-                             PlaceholderText="Select a classification"
-                             Data="_classifications" DataKey="Id" DataValue="Code"></UbikInputSelect>
+            <UbikSelectSimple Id="CurrentClassification"
+                              TValue="Guid?"
+                              PlaceholderText="Select a classification"
+                              CurrentValue="@_currentClassificationId"
+                              Data="_classifications"
+                              DataKey="Id"
+                              DataValue="Code">
+            </UbikSelectSimple>
+            @*  <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
+        ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
+        ValueChanged="@((Guid? args) => OnClassificationChanged(args))"
+        PlaceholderText="Select a classification"
+        Data="_classifications" DataKey="Id" DataValue="Code"></UbikInputSelect> *@
         </div>
         @if (IsAuthorizedToModify)
         {

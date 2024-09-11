@@ -1,0 +1,62 @@
+﻿@typeparam TValue
+
+@if (Label != string.Empty)
+{
+    <label for="@Id" class="@_labelCssClass">@Label</label>
+}
+
+<select id="@Id" name="@Id" @bind:event="onchange" class="@_selectCssClass" @bind:get="CurrentValue" @bind:set="OnChangeValueAsync">
+    <option value="">@PlaceholderText</option>
+    @if (_currentType.IsEnum)
+    {
+        @foreach (var enumValue in Enum.GetValues(_currentType))
+        {
+            <option value="@enumValue">@enumValue</option>
+        }
+    }
+    else
+    {
+        if (Data != null)
+        {
+            foreach (var obj in Data)
+            {
+                <option value="@obj!.GetType().GetProperty(DataKey)!.GetValue(obj,null)">@obj.GetType().GetProperty(DataValue)!.GetValue(obj, null)</option>
+            }
+        }
+    }
+</select>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = "SelectInput";
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+    [Parameter]
+    public string PlaceholderText { get; set; } = "select something";
+    [Parameter]
+    public IEnumerable<Object>? Data { get; set; } = null;
+    [Parameter]
+    public string DataKey { get; set; } = "Key";
+    [Parameter]
+    public string DataValue { get; set; } = "Value";
+    [Parameter]
+    public TValue? CurrentValue { get; set; } = default(TValue);
+
+    private Type _currentType = default!;
+
+    private string _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
+    private string _selectCssClass = UbikFormCSS.SELECT_VALID_CSS_CLASS;
+
+    protected override void OnInitialized()
+    {
+        _currentType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
+    }
+
+    private Task OnChangeValueAsync(TValue? value)
+    {
+        CurrentValue = value;
+        return Task.CompletedTask;
+    }
+
+
+}
