@@ -19,7 +19,7 @@
             <UbikSelectSimple Id="CurrentClassification"
                               TValue="Guid?"
                               PlaceholderText="Select a classification"
-                              CurrentValue="@_currentClassificationId"
+                              @bind-CurrentValue="_currentClassificationId"
                               Data="_classifications"
                               DataKey="Id"
                               DataValue="Code">

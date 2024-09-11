@@ -5,7 +5,7 @@
     <label for="@Id" class="@_labelCssClass">@Label</label>
 }
 
-<select id="@Id" name="@Id" @bind:event="onchange" class="@_selectCssClass" @bind:get="CurrentValue" @bind:set="OnChangeValueAsync">
+<select id="@Id" name="@Id" @onchange="OnChangeValueAsync" class="@_selectCssClass">
     <option value="">@PlaceholderText</option>
     @if (_currentType.IsEnum)
     {
@@ -41,22 +41,23 @@
     public string DataValue { get; set; } = "Value";
     [Parameter]
     public TValue? CurrentValue { get; set; } = default(TValue);
+    [Parameter]
+    public EventCallback<TValue> ValueChanged { get; set; }
 
     private Type _currentType = default!;
 
     private string _labelCssClass = UbikFormCSS.LABEL_VALID_CSS_CLASS;
     private string _selectCssClass = UbikFormCSS.SELECT_VALID_CSS_CLASS;
 
+
+
     protected override void OnInitialized()
     {
         _currentType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
     }
 
-    private Task OnChangeValueAsync(TValue? value)
+    private async Task OnChangeValueAsync()
     {
-        CurrentValue = value;
-        return Task.CompletedTask;
+        await ValueChanged.InvokeAsync(CurrentValue);
     }
-
-
 }
