@@ -13,46 +13,41 @@
 @if (IsAuthorizedToRead)
 {
     <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
-
-    <div class="mb-5 flex items-center">
-        <div class="w-full lg:w-[520px]">
-            <UbikSelectSimple Id="CurrentClassification"
-                              TValue="Guid?"
-                              PlaceholderText="Select a classification"
-                              @bind-Value="_currentClassificationId"
-                              @bind-Value:after="OnClassificationChanged"
-                              Data="_classifications"
-                              DataKey="Id"
-                              DataValue="Code">
-            </UbikSelectSimple>
-            @*  <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
-        ValueExpression="@(() => _currentClassificationId)" Value="@_currentClassificationId"
-        ValueChanged="@((Guid? args) => OnClassificationChanged(args))"
-        PlaceholderText="Select a classification"
-        Data="_classifications" DataKey="Id" DataValue="Code"></UbikInputSelect> *@
-        </div>
-        @if (IsAuthorizedToModify)
-        {
-            <div class="ms-2">
-                or
-            </div>
-            <div class="ms-2">
-                <UbikButton Label="Add new" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddClassificationDialogAsync"></UbikButton>
-            </div>
-        }
-    </div>
-
-    @if (IsAuthorizedToModify)
-    {
-        <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
-            <UbikModal @ref="_classificationDialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
-                <ClassificationForm EditMode="@_editMode" OnClassificationChange="ClassificationAddedOrEdited" OnClose="CloseClassificationDialogAsync"></ClassificationForm>
-            </UbikModal>
-        </CascadingValue>
-    }
-
     @if (!_isLoading)
     {
+        <div class="mb-5 flex items-center">
+            <div class="w-full lg:w-[520px]">
+                <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
+                                 ValueExpression="@(() => _currentClassificationId)"
+                                 Value="@_currentClassificationId"
+                                 ValueChanged="@((Guid? args) => OnClassificationChanged(args))"
+                                 PlaceholderText="Select a classification"
+                                 Data="_classifications"
+                                 DataKey="Id"
+                                 DataValue="Code">
+                </UbikInputSelect>
+            </div>
+
+            @if (IsAuthorizedToModify)
+            {
+                <div class="ms-2">
+                    or
+                </div>
+                <div class="ms-2">
+                    <UbikButton Label="Add new" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddClassificationDialogAsync"></UbikButton>
+                </div>
+            }
+        </div>
+
+        @if (IsAuthorizedToModify)
+        {
+            <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
+                <UbikModal @ref="_classificationDialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
+                    <ClassificationForm EditMode="@_editMode" OnClassificationChange="ClassificationAddedOrEdited" OnClose="CloseClassificationDialogAsync"></ClassificationForm>
+                </UbikModal>
+            </CascadingValue>
+        }
+
         <div class="flex w-full flex-col sm:flex-row">
             @if (_currentClassificationId != null && IsAuthorizedToModify)
             {
@@ -133,6 +128,7 @@
     private Dictionary<Guid, AccountModel> _accounts = default!;
     private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent = default!;
     private ClassificationModel? _classificationCurrent = new();
+
     private AccountGroupModel _accountGroupCurrent = new();
 
     private ErrBackendApi _backendErrorMsg = default!;
@@ -185,12 +181,11 @@
         await LoadAccountsLinksAsync(await taskAccountsLinks);
     }
 
-    private void OnClassificationChanged()
+    private void OnClassificationChanged(Guid? classificationId)
     {
+        _currentClassificationId = classificationId;
         SelectClassification();
         RefreshAccountGroupRoots();
-
-        StateHasChanged();
     }
 
     private void SelectClassification()
@@ -302,28 +297,26 @@
     private void ClassificationAddedOrEdited(ClassificationModel classification)
     {
         _classificationCurrent = classification;
-        // _currentClassificationId = _classificationCurrent.Id;
-        // OnClassificationChanged();
     }
 
     private async Task CloseClassificationDialogAsync(bool refresh = false)
     {
+        await _classificationDialog.CloseDialogAsync();
+
         if (refresh)
         {
             _isLoading = true;
             await LoadDataAync();
-            OnClassificationChanged();
+            OnClassificationChanged(_classificationCurrent?.Id);
 
             _isLoading = false;
         }
-
-        await _classificationDialog.CloseDialogAsync();
     }
 
     private async Task CloseDialogAccountGroupAsync(bool refresh = false)
     {
-        RefreshAccountGroupRoots();
         await _dialogAccountGrp.CloseDialogAsync();
+        RefreshAccountGroupRoots();
     }
 
     private async Task AddClassificationDialogAsync()
@@ -368,10 +361,8 @@
             _isLoading = true;
 
             await LoadDataAync();
-            // _currentClassificationId = null;
 
-            // SelectClassification();
-            // RefreshAccountGroupRoots();
+            OnClassificationChanged(null);
 
             _isLoading = false;
         }
