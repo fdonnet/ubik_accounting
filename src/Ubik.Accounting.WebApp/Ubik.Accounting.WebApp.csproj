@@ -39,9 +39,9 @@
     <None Include="wwwroot\js\theme-switcher.js" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <Watch Include="./Styles/app.css" Exclude="./wwwroot/**/*;obj\**\*;bin\**\*" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css" />

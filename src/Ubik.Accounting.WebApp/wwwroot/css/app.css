@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.4.10 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.11 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -944,12 +944,20 @@ p:is(.dark *) {
   margin-right: 0.5rem;
 }
 
+.ms-1 {
+  margin-inline-start: 0.25rem;
+}
+
 .ms-2 {
   margin-inline-start: 0.5rem;
 }
 
 .ms-3 {
   margin-inline-start: 0.75rem;
+}
+
+.ms-8 {
+  margin-inline-start: 2rem;
 }
 
 .ms-auto {
@@ -1108,6 +1116,10 @@ p:is(.dark *) {
   min-width: 70px;
 }
 
+.min-w-44 {
+  min-width: 11rem;
+}
+
 .max-w-full {
   max-width: 100%;
 }
@@ -1178,8 +1190,24 @@ p:is(.dark *) {
   list-style-type: disc;
 }
 
+.auto-cols-min {
+  grid-auto-columns: min-content;
+}
+
+.grid-flow-col {
+  grid-auto-flow: column;
+}
+
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-rows-1 {
+  grid-template-rows: repeat(1, minmax(0, 1fr));
 }
 
 .flex-row {
@@ -1504,6 +1532,10 @@ p:is(.dark *) {
 
 .text-center {
   text-align: center;
+}
+
+.text-right {
+  text-align: right;
 }
 
 .align-bottom {
@@ -2141,6 +2173,10 @@ p:is(.dark *) {
 
   .sm\:w-24 {
     width: 6rem;
+  }
+
+  .sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .sm\:flex-row {
