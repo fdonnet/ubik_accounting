@@ -38,7 +38,15 @@ module.exports = {
     'dark:focus:border-blue-500',
     'dark:border-gray-600',
     'invisible',
-    'cursor-not-allowed'
+    'cursor-not-allowed',
+    'px-2',
+    'px-4',
+    'px-6',
+    'px-8',
+    'px-10',
+    'px-12',
+    'px-14',
+    'px-16'
   ],
   theme: {
     extend: {

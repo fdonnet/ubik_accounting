@@ -75,17 +75,21 @@
 
         @if (_accountGroupsRoot.Any())
         {
-            <div class="mt-1 overflow-x-auto whitespace-nowrap rounded-lg bg-white px-2 pb-2 dark:bg-gray-800">
-                <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
-                    <CascadingValue Name="Accounts" Value="@_accounts">
-                        <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
-                            @foreach (var node in _accountGroupsRoot)
-                            {
-                                <AccountGroupNode @key="node" CurrentAccountGroup="@node"></AccountGroupNode>
-                            }
+            <div class="mt-2 overflow-x-auto">
+                <table class="w-full whitespace-nowrap">
+                    <tbody>
+                        <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
+                            <CascadingValue Name="Accounts" Value="@_accounts">
+                                <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
+                                    @foreach (var node in _accountGroupsRoot)
+                                    {
+                                        <AccountGroupNode @key="node" CurrentAccountGroup="@node"></AccountGroupNode>
+                                    }
+                                </CascadingValue>
+                            </CascadingValue>
                         </CascadingValue>
-                    </CascadingValue>
-                </CascadingValue>
+                    </tbody>
+                </table>
             </div>
         }
 
