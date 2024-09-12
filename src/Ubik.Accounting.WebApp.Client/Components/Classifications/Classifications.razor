@@ -155,11 +155,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _isLoading = true;
+
         if (RenderContext.IsPrerendering)
         {
             return;
         }
-        _isLoading = true;
 
         await LoadDataAync();
 
@@ -306,6 +307,7 @@
         if (refresh)
         {
             _isLoading = true;
+
             await LoadDataAync();
             OnClassificationChanged(_classificationCurrent?.Id);
 
@@ -361,7 +363,6 @@
             _isLoading = true;
 
             await LoadDataAync();
-
             OnClassificationChanged(null);
 
             _isLoading = false;
