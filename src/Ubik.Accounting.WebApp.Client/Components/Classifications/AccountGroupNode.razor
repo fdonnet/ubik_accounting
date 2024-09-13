@@ -31,8 +31,8 @@
         </td>
         @if (IsAuthorizedToModify)
         {
-            <td>
-                <div class="ms-8 flex justify-end gap-4 text-blue-700 dark:text-blue-400" @onclick="ShowActionsAccountGroupAsync">
+            <td class="w-24">
+                <div class="flex justify-end gap-4 text-blue-700 dark:text-blue-400" @onclick="ShowActionsAccountGroupAsync">
                     <div class="mr-2 flex cursor-pointer flex-row items-center">
                         <div>
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -78,8 +78,8 @@
                     </td>
                     @if (IsAuthorizedToModify)
                     {
-                        <td>
-                            <div class="ms-8 flex justify-end gap-4 text-blue-700 dark:text-blue-400">
+                        <td class="w-24">
+                            <div class="flex justify-end gap-4 text-blue-700 dark:text-blue-400">
                                 <div class="mr-2 flex cursor-pointer flex-row items-center">
                                     <div>
                                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -114,7 +114,6 @@
 }
 
 @code {
-    //TODO see the best way to update and refresh only the needed part
     [Parameter]
     public AccountGroupModel CurrentAccountGroup { get; set; } = default!;
     [Parameter]
@@ -130,6 +129,8 @@
 
     [Parameter]
     public EventCallback<AccountGroupModel> OnEditAccountGroupAsync { get; set; }
+    [Parameter]
+    public EventCallback<AccountGroupModel> OnDeleteAccountGroupAsync { get; set; }
 
     private bool _isLoading = false;
     private IEnumerable<AccountGroupModel> _currentNodeAccountGroups = [];
@@ -176,6 +177,11 @@
     }
 
     private async Task EditAccountGroupAsync(AccountGroupModel currentAccountGroup)
+    {
+        await OnEditAccountGroupAsync.InvokeAsync(currentAccountGroup);
+    }
+
+    private async Task DeleteAccountGroupAsync(AccountGroupModel currentAccountGroup)
     {
         await OnEditAccountGroupAsync.InvokeAsync(currentAccountGroup);
     }

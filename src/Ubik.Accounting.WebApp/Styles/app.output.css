@@ -1128,6 +1128,14 @@ p:is(.dark *) {
   width: 100%;
 }
 
+.w-24 {
+  width: 6rem;
+}
+
+.w-14 {
+  width: 3.5rem;
+}
+
 .min-w-\[70px\] {
   min-width: 70px;
 }
@@ -1143,6 +1151,10 @@ p:is(.dark *) {
 
 .max-w-md {
   max-width: 28rem;
+}
+
+.max-w-5 {
+  max-width: 1.25rem;
 }
 
 .flex-1 {

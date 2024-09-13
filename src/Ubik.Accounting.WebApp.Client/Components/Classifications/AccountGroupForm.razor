@@ -115,6 +115,7 @@
                 throw new ArgumentNullException("Cannot access response result for AddAccountGroupResult");
 
             var resultModel = result.ToAccountGroupModel();
+            resultModel.IsExpand = AccountGroup.IsExpand;
 
             if (resultModel.ParentAccountGroupId != null)
             {
