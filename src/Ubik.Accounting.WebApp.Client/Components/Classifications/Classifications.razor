@@ -62,7 +62,7 @@
             }
             @if (_accountGroupsRoot.Any())
             {
-                <div class="mt-2 flex w-full flex-row justify-start sm:justify-end sm:mt-0">
+                <div class="mt-2 flex w-full flex-row justify-start @(IsAuthorizedToModify ? "sm:justify-end":"") sm:mt-0">
                     <div class="mr-2">
                         <UbikButtonAlternative Label="Expand all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>ToggleExpandHideAllAccountGroups(true)"></UbikButtonAlternative>
                     </div>
@@ -83,7 +83,7 @@
                                 <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
                                     @foreach (var node in _accountGroupsRoot)
                                     {
-                                        <AccountGroupNode @key="node" CurrentAccountGroup="@node"></AccountGroupNode>
+                                        <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify" @key="node" CurrentAccountGroup="@node"></AccountGroupNode>
                                     }
                                 </CascadingValue>
                             </CascadingValue>
