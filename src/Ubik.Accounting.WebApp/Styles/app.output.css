@@ -960,10 +960,6 @@ p:is(.dark *) {
   margin-inline-start: 0.75rem;
 }
 
-.ms-8 {
-  margin-inline-start: 2rem;
-}
-
 .ms-auto {
   margin-inline-start: auto;
 }
@@ -1092,6 +1088,10 @@ p:is(.dark *) {
   width: 5rem;
 }
 
+.w-24 {
+  width: 6rem;
+}
+
 .w-3 {
   width: 0.75rem;
 }
@@ -1128,14 +1128,6 @@ p:is(.dark *) {
   width: 100%;
 }
 
-.w-24 {
-  width: 6rem;
-}
-
-.w-14 {
-  width: 3.5rem;
-}
-
 .min-w-\[70px\] {
   min-width: 70px;
 }
@@ -1151,10 +1143,6 @@ p:is(.dark *) {
 
 .max-w-md {
   max-width: 28rem;
-}
-
-.max-w-5 {
-  max-width: 1.25rem;
 }
 
 .flex-1 {
