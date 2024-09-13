@@ -56,7 +56,7 @@
                         <UbikButton Label="Edit" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="EditClassificationDialogAsync"></UbikButton>
                     </div>
                     <div class="ms-2">
-                        <UbikButton Label="Add root" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddAccountGroupDialogAsync"></UbikButton>
+                        <UbikButton Label="Add root" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddAccountGroupRootDialogAsync"></UbikButton>
                     </div>
                 </div>
             }
@@ -83,7 +83,7 @@
                                 <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
                                     @foreach (var node in _accountGroupsRoot)
                                     {
-                                        <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify" @key="node" CurrentAccountGroup="@node"></AccountGroupNode>
+                                        <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify" @key="node" CurrentAccountGroup="@node" OnEditAccountGroupAsync="EditAccountGroupDialogAsync"></AccountGroupNode>
                                     }
                                 </CascadingValue>
                             </CascadingValue>
@@ -102,11 +102,13 @@
 
         @if (IsAuthorizedToModify)
         {
-            <CascadingValue Name="AccountGroups" Value="@_accountGroups">
-                <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
-                    <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
-                        <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
-                    </UbikModal>
+            <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
+                <CascadingValue Name="AccountGroups" Value="@_accountGroups">
+                    <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
+                        <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
+                            <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
+                        </UbikModal>
+                    </CascadingValue>
                 </CascadingValue>
             </CascadingValue>
             <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
@@ -222,7 +224,7 @@
         if (response.IsSuccessStatusCode)
         {
             _classifications = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllClassificationsResult>>()
-                ?? []).ToClassificationModel().ToList();
+                ?? []).ToClassificationModel().OrderBy(c => c.Code).ToList();
         }
         else
             await ManageError(response);
@@ -343,11 +345,29 @@
         }
     }
 
-    private async Task AddAccountGroupDialogAsync()
+    private async Task AddAccountGroupRootDialogAsync()
     {
         _dialogAccountGrpTitle = "Add a root";
         _editModeAccountGrp = false;
         _accountGroupCurrent = new();
+        await _dialogAccountGrp.ShowDialog();
+    }
+
+    private async Task EditAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
+    {
+        _editModeAccountGrp = true;
+        _accountGroupCurrent = new()
+            {
+                AccountGroupClassificationId = currentAccountGroup.AccountGroupClassificationId,
+                Code = currentAccountGroup.Code,
+                Description = currentAccountGroup.Description,
+                Id = currentAccountGroup.Id,
+                IsExpand = currentAccountGroup.IsExpand,
+                Label = currentAccountGroup.Label,
+                ParentAccountGroupId = currentAccountGroup.ParentAccountGroupId,
+                Version = currentAccountGroup.Version
+            };
+        _dialogAccountGrpTitle = $"Edit {_accountGroupCurrent.Code}";
         await _dialogAccountGrp.ShowDialog();
     }
 

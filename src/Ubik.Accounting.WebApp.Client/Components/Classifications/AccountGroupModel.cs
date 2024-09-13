@@ -68,6 +68,21 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
             };
         }
 
+        public static AccountGroupModel ToAccountGroupModel(this UpdateAccountGroupResult current)
+        {
+            return new AccountGroupModel()
+            {
+                AccountGroupClassificationId = current.AccountGroupClassificationId,
+                ParentAccountGroupId = current.ParentAccountGroupId,
+                Code = current.Code,
+                Label = current.Label,
+                Description = current.Description,
+                Id = current.Id,
+                IsExpand = true,
+                Version = current.Version
+            };
+        }
+
         public static UpdateAccountGroupCommand ToUpdateAccountGroupCommand(this AccountGroupModel accountGroupModel)
         {
             return new UpdateAccountGroupCommand()

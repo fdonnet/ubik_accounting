@@ -109,7 +109,22 @@
     {
         if (EditMode)
         {
+            var result = await response.Content.ReadFromJsonAsync<UpdateAccountGroupResult>();
 
+            if (result == null)
+                throw new ArgumentNullException("Cannot access response result for AddAccountGroupResult");
+
+            var resultModel = result.ToAccountGroupModel();
+
+            if (resultModel.ParentAccountGroupId != null)
+            {
+                if (AccountGroupsDicbyParent.TryGetValue((Guid)resultModel.ParentAccountGroupId, out var current))
+                {
+                    current[current.FindIndex(a => a.Id == resultModel.Id)] = resultModel;
+                }
+            }
+
+            AccountGroups[AccountGroups.FindIndex(a => a.Id == resultModel.Id)] = resultModel;
         }
         else
         {

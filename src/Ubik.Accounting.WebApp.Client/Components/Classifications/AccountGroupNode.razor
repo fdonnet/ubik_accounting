@@ -55,7 +55,7 @@
 
             @foreach (var node in _currentNodeAccountGroups)
             {
-                <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify" CurrentAccountGroup="@node" CurrentRowMargin="CurrentRowMargin + 4"></AccountGroupNode>
+                <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify" CurrentAccountGroup="@node" CurrentRowMargin="CurrentRowMargin + 4" OnEditAccountGroupAsync="EditAccountGroupAsync"></AccountGroupNode>
             }
         }
 
@@ -103,7 +103,11 @@
     {
         <CascadingValue Name="AccountGroupModel" Value="@CurrentAccountGroup">
             <UbikModalCenter @ref="_actionsAccountGroupDialog">
-                <AccountGroupActionsDialog @ref="_actionsAccountGroupContent"></AccountGroupActionsDialog>
+                <AccountGroupActionsDialog
+                    @ref="_actionsAccountGroupContent"
+                    OnEditAccountGroupAsync="EditAccountGroupAsync"
+                    OnCloseAsync="CloseActionsDialog">
+                </AccountGroupActionsDialog>
             </UbikModalCenter>
         </CascadingValue>
     }
@@ -123,6 +127,9 @@
     public Dictionary<Guid, AccountModel> Accounts { get; set; } = default!;
     [CascadingParameter(Name = "AccountGroupLinksByParent")]
     public Dictionary<Guid, List<AccountGroupLinkModel>> AccountGroupLinksByParent { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<AccountGroupModel> OnEditAccountGroupAsync { get; set; }
 
     private bool _isLoading = false;
     private IEnumerable<AccountGroupModel> _currentNodeAccountGroups = [];
@@ -166,5 +173,15 @@
     private async Task ShowActionsAccountGroupAsync()
     {
         await _actionsAccountGroupDialog.ShowDialogAsync();
+    }
+
+    private async Task EditAccountGroupAsync(AccountGroupModel currentAccountGroup)
+    {
+        await OnEditAccountGroupAsync.InvokeAsync(currentAccountGroup);
+    }
+
+    private async Task CloseActionsDialog()
+    {
+        await _actionsAccountGroupDialog.CloseDialogAsync();
     }
 }
