@@ -111,7 +111,7 @@
             </CascadingValue>
             <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
                 <UbikModalCenter @ref="_deleteClassificationDialog">
-                    <ClassificationConfirmDelete @ref="_deleteClassificationMsg" OnClose="CloseDeleteClassificationDialogAsync"></ClassificationConfirmDelete>
+                    <ClassificationConfirmDelete @ref="_deleteClassificationMsg" OnCloseAsync="CloseDeleteClassificationDialogAsync"></ClassificationConfirmDelete>
                 </UbikModalCenter>
             </CascadingValue>
         }

@@ -984,6 +984,22 @@ p:is(.dark *) {
   margin-top: 1rem;
 }
 
+.mt-5 {
+  margin-top: 1.25rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
 .block {
   display: block;
 }
@@ -1260,6 +1276,10 @@ p:is(.dark *) {
 
 .whitespace-nowrap {
   white-space: nowrap;
+}
+
+.text-wrap {
+  text-wrap: wrap;
 }
 
 .rounded {
@@ -1554,10 +1574,6 @@ p:is(.dark *) {
 
 .align-bottom {
   vertical-align: bottom;
-}
-
-.align-text-bottom {
-  vertical-align: text-bottom;
 }
 
 .font-\[\'Inconsolata\'\] {

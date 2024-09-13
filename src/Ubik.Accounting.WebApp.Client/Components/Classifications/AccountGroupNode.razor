@@ -1,5 +1,6 @@
 ﻿@using Ubik.Accounting.Contracts.Accounts.Results
 @using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.WebApp.Client.Components.Common.Modal
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
@@ -31,7 +32,7 @@
         @if (IsAuthorizedToModify)
         {
             <td>
-                <div class="ms-8 flex justify-end gap-4 text-blue-700 dark:text-blue-400">
+                <div class="ms-8 flex justify-end gap-4 text-blue-700 dark:text-blue-400" @onclick="ShowActionsAccountGroupAsync">
                     <div class="mr-2 flex cursor-pointer flex-row items-center">
                         <div>
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -97,6 +98,15 @@
             }
         }
     }
+
+    @if (IsAuthorizedToModify)
+    {
+        <CascadingValue Name="AccountGroupModel" Value="@CurrentAccountGroup">
+            <UbikModalCenter @ref="_actionsAccountGroupDialog">
+                <AccountGroupActionsDialog @ref="_actionsAccountGroupContent"></AccountGroupActionsDialog>
+            </UbikModalCenter>
+        </CascadingValue>
+    }
 }
 
 @code {
@@ -119,6 +129,8 @@
     private IEnumerable<AccountModel> _currentNodeAccounts = [];
     public int _currentRowMarginForAccount = 0;
 
+    private UbikModalCenter _actionsAccountGroupDialog = default!;
+    private AccountGroupActionsDialog _actionsAccountGroupContent = default!;
 
     protected override void OnInitialized()
     {
@@ -149,5 +161,10 @@
     private void ToggleAccountGroupFolder(AccountGroupModel accountGroup)
     {
         accountGroup.IsExpand = !accountGroup.IsExpand;
+    }
+
+    private async Task ShowActionsAccountGroupAsync()
+    {
+        await _actionsAccountGroupDialog.ShowDialogAsync();
     }
 }

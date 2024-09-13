@@ -20,7 +20,7 @@
     [CascadingParameter(Name = "ClassificationModel")]
     public ClassificationModel Classification { get; set; } = default!;
     [Parameter]
-    public EventCallback<bool> OnClose { get; set; }
+    public EventCallback<bool> OnCloseAsync { get; set; }
 
     private ErrBackendApi _backendErrorMsg = default!;
     private MsgSuccess _successMsg = default!;
@@ -37,7 +37,7 @@
 
     private async Task CloseAsync(bool withRefresh = false)
     {
-        await OnClose.InvokeAsync(withRefresh);
+        await OnCloseAsync.InvokeAsync(withRefresh);
     }
 
     private async Task ConfirmDeleteAsync()
