@@ -105,6 +105,12 @@ namespace Ubik.Accounting.WebApp.ApiClients
             return await _client.PutAsync($"AccountGroups/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
+        public async Task<HttpResponseMessage> DeleteAccountGroupAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            return await _client.DeleteAsync($"AccountGroups/{id}");
+        }
+
         private async Task SetSecruityHeaderAsync()
         {
             var usertoken =  await _user.GetTokenAsync();

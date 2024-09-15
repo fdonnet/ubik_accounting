@@ -83,7 +83,12 @@
                                 <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
                                     @foreach (var node in _accountGroupsRoot)
                                     {
-                                        <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify" @key="node" CurrentAccountGroup="@node" OnEditAccountGroupAsync="EditAccountGroupDialogAsync"></AccountGroupNode>
+                                        <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify"
+                                                          @key="node"
+                                                          CurrentAccountGroup="@node"
+                                                          OnEditAccountGroupAsync="EditAccountGroupDialogAsync"
+                                                          OnDeleteAccountGroupAsync="DeleteAccountGroupDialogAsync">
+                                        </AccountGroupNode>
                                     }
                                 </CascadingValue>
                             </CascadingValue>
@@ -105,9 +110,15 @@
             <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
                 <CascadingValue Name="AccountGroups" Value="@_accountGroups">
                     <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
-                        <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
-                            <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
-                        </UbikModal>
+                        <CascadingValue Name="AccountLinksByParent" Value="@_accountsLinksByParent">
+                            <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
+                                <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
+                            </UbikModal>
+
+                            <UbikModalCenter @ref="_deleteAccountGroupDialog">
+                                <AccountGroupConfirmDelete @ref="_deleteAccountGroupMsg" OnCloseAsync="CloseDeleteAccountGroupDialogAsync"></AccountGroupConfirmDelete>
+                            </UbikModalCenter>
+                        </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
             </CascadingValue>
@@ -146,6 +157,9 @@
 
     private UbikModalCenter _deleteClassificationDialog = default!;
     private ClassificationConfirmDelete _deleteClassificationMsg = default!;
+
+    private UbikModalCenter _deleteAccountGroupDialog = default!;
+    private AccountGroupConfirmDelete _deleteAccountGroupMsg = default!;
 
     private UbikModal _dialogAccountGrp = default!;
     private bool _editModeAccountGrp = false;
@@ -356,24 +370,16 @@
     private async Task EditAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
     {
         _editModeAccountGrp = true;
-        _accountGroupCurrent = new()
-            {
-                AccountGroupClassificationId = currentAccountGroup.AccountGroupClassificationId,
-                Code = currentAccountGroup.Code,
-                Description = currentAccountGroup.Description,
-                Id = currentAccountGroup.Id,
-                IsExpand = currentAccountGroup.IsExpand,
-                Label = currentAccountGroup.Label,
-                ParentAccountGroupId = currentAccountGroup.ParentAccountGroupId,
-                Version = currentAccountGroup.Version
-            };
+        _accountGroupCurrent = currentAccountGroup.Clone();
         _dialogAccountGrpTitle = $"Edit {_accountGroupCurrent.Code}";
         await _dialogAccountGrp.ShowDialog();
     }
 
     private async Task DeleteAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
     {
-        
+        _accountGroupCurrent = currentAccountGroup.Clone();
+        await _deleteAccountGroupMsg.SetInitialStatus();
+        await _deleteAccountGroupDialog.ShowDialogAsync();
     }
 
     private async Task DeleteClassificationConfirmationAsync()
@@ -384,6 +390,7 @@
             await _deleteClassificationDialog.ShowDialogAsync();
         }
     }
+
     private async Task CloseDeleteClassificationDialogAsync(bool refresh = false)
     {
         await _deleteClassificationDialog.CloseDialogAsync();
@@ -395,6 +402,15 @@
             OnClassificationChanged(null);
 
             _isLoading = false;
+        }
+    }
+
+    private async Task CloseDeleteAccountGroupDialogAsync(bool refresh = false)
+    {
+        await _deleteAccountGroupDialog.CloseDialogAsync();
+        if (refresh)
+        {
+            RefreshAccountGroupRoots();
         }
     }
 

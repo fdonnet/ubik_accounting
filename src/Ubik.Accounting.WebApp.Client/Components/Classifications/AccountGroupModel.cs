@@ -23,6 +23,21 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
         [Required]
         public Guid Version { get; set; }
         public bool IsExpand { get; set; } = true;
+
+        public AccountGroupModel Clone()
+        {
+            return new()
+            {
+                AccountGroupClassificationId = AccountGroupClassificationId,
+                Code = Code,
+                Description = Description,
+                Id = Id,
+                IsExpand =IsExpand,
+                Label = Label,
+                ParentAccountGroupId = ParentAccountGroupId,
+                Version = Version
+            };
+        }
     }
 
     public static class AccountGroupModelMappers
@@ -83,6 +98,18 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
             };
         }
 
+        public static AccountGroupModel ToAccountGroupModel(this DeleteAccountGroupResult current)
+        {
+            return new AccountGroupModel()
+            {
+                ParentAccountGroupId = current.ParentAccountGroupId,
+                Code = current.Code,
+                Label = current.Label,
+                Id = current.Id,
+                IsExpand = true,
+            };
+        }
+
         public static UpdateAccountGroupCommand ToUpdateAccountGroupCommand(this AccountGroupModel accountGroupModel)
         {
             return new UpdateAccountGroupCommand()
@@ -94,6 +121,14 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
                 AccountGroupClassificationId = accountGroupModel.AccountGroupClassificationId,
                 ParentAccountGroupId = accountGroupModel.ParentAccountGroupId,
                 Version = accountGroupModel.Version
+            };
+        }
+
+        public static DeleteAccountGroupCommand ToDeleteAccountGroupCommand(this AccountGroupModel accountGroupModel)
+        {
+            return new DeleteAccountGroupCommand()
+            {
+                Id = accountGroupModel.Id,
             };
         }
     }

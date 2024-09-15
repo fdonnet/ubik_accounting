@@ -21,7 +21,7 @@ namespace Ubik.Accounting.Webapp.Shared.Facades
         Task<HttpResponseMessage> GetAllAccountGroupsAsync(CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> AddAccountGroupAsync(AddAccountGroupCommand classification, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> UpdateAccountGroupAsync(Guid id, UpdateAccountGroupCommand classification, CancellationToken cancellationToken = default);
-
+        Task<HttpResponseMessage> DeleteAccountGroupAsync(Guid id, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> GetAllAccountsLinksAsync(CancellationToken cancellationToken = default);
     }
 }

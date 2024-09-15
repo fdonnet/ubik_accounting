@@ -55,7 +55,12 @@
 
             @foreach (var node in _currentNodeAccountGroups)
             {
-                <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify" CurrentAccountGroup="@node" CurrentRowMargin="CurrentRowMargin + 4" OnEditAccountGroupAsync="EditAccountGroupAsync"></AccountGroupNode>
+                <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify"
+                                  CurrentAccountGroup="@node"
+                                  CurrentRowMargin="CurrentRowMargin + 4"
+                                  OnEditAccountGroupAsync="EditAccountGroupAsync"
+                                  OnDeleteAccountGroupAsync="DeleteAccountGroupAsync">
+                </AccountGroupNode>
             }
         }
 
@@ -103,10 +108,10 @@
     {
         <CascadingValue Name="AccountGroupModel" Value="@CurrentAccountGroup">
             <UbikModalCenter @ref="_actionsAccountGroupDialog">
-                <AccountGroupActionsDialog
-                    @ref="_actionsAccountGroupContent"
-                    OnEditAccountGroupAsync="EditAccountGroupAsync"
-                    OnCloseAsync="CloseActionsDialog">
+                <AccountGroupActionsDialog @ref="_actionsAccountGroupContent"
+                                           OnEditAccountGroupAsync="EditAccountGroupAsync"
+                                           OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
+                                           OnCloseAsync="CloseActionsDialog">
                 </AccountGroupActionsDialog>
             </UbikModalCenter>
         </CascadingValue>
@@ -183,7 +188,7 @@
 
     private async Task DeleteAccountGroupAsync(AccountGroupModel currentAccountGroup)
     {
-        await OnEditAccountGroupAsync.InvokeAsync(currentAccountGroup);
+        await OnDeleteAccountGroupAsync.InvokeAsync(currentAccountGroup);
     }
 
     private async Task CloseActionsDialog()
