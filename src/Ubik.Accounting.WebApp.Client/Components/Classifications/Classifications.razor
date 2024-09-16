@@ -195,7 +195,7 @@
     {
         _currentClassificationId = classificationId;
         SelectClassification();
-        RefreshAccountGroupRoots();
+        CurrentState.RefreshAccountGroupsRoot(_currentClassificationId);
     }
 
     private void SelectClassification()
@@ -216,12 +216,6 @@
                                         .FirstOrDefault();
     }
 
-    private void RefreshAccountGroupRoots()
-    {
-        CurrentState.AccountGroupsRoot = CurrentState.AccountGroups.Where(ag => ag.AccountGroupClassificationId == _currentClassificationId
-                                                       && ag.ParentAccountGroupId == null).OrderBy(root => root.Code).ToList();
-    }
-
     private async Task LoadClassificationsAsync(HttpResponseMessage response)
     {
         if (response.IsSuccessStatusCode)
@@ -237,10 +231,8 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            CurrentState.AccountGroups = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>()
-                ?? []).ToAccountGroupModels().ToList();
-
-            CurrentState.BuildAccountGrpDicByParent();
+            CurrentState.SetAccountGroups((await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>()
+                ?? []).ToAccountGroupModels().ToList());
         }
         else
             await ManageError(response);
@@ -250,8 +242,8 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            CurrentState.Accounts = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>()
-                    ?? []).ToAccountModel().ToDictionary(x => x.Id);
+            CurrentState.SetAccounts((await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>()
+                    ?? []).ToAccountModel().ToDictionary(x => x.Id));
         }
         else
             await ManageError(response);
@@ -299,7 +291,7 @@
     private async Task CloseDialogAccountGroupAsync(bool refresh = false)
     {
         await _dialogAccountGrp.CloseDialogAsync();
-        RefreshAccountGroupRoots();
+        CurrentState.RefreshAccountGroupsRoot(_currentClassificationId);
     }
 
     private async Task AddClassificationDialogAsync()
@@ -378,7 +370,7 @@
     private async Task CloseDeleteAccountGroupDialogAsync(bool refresh = false)
     {
         await _deleteAccountGroupDialog.CloseDialogAsync();
-        RefreshAccountGroupRoots();
+        CurrentState.RefreshAccountGroupsRoot(_currentClassificationId);
     }
 
 }

@@ -11,30 +11,33 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
     public class ClassificationStateService
     {
         public event EventHandler<AccountGrpArgs>? OnChange;
-        public List<AccountGroupModel> AccountGroups = default!;
-        public List<AccountGroupModel> AccountGroupsRoot = [];
-        public Dictionary<Guid, List<AccountGroupModel>> AccountGroupsDicByParent = default!;
-        public Dictionary<Guid, AccountModel> Accounts = default!;
-        public Dictionary<Guid, List<AccountGroupLinkModel>> AccountsLinksByParent = default!;
+        public List<AccountGroupModel> AccountGroups { get; private set; } = default!;
+        public List<AccountGroupModel> AccountGroupsRoot { get; private set; } = [];
+        public Dictionary<Guid, List<AccountGroupModel>> AccountGroupsDicByParent { get; private set; } = default!;
+        public Dictionary<Guid, AccountModel> Accounts { get; private set; } = default!;
+        public Dictionary<Guid, List<AccountGroupLinkModel>> AccountsLinksByParent { get; private set; } = default!;
+
+        public void RefreshAccountGroupsRoot(Guid? classificationId)
+        {
+            AccountGroupsRoot = AccountGroups.Where(ag => ag.AccountGroupClassificationId == classificationId
+                                                           && ag.ParentAccountGroupId == null).OrderBy(root => root.Code).ToList();
+        }
+
+        public void SetAccountGroups(List<AccountGroupModel> accountGroups)
+        {
+            AccountGroups = accountGroups;
+            BuildAccountGrpDicByParent();
+        }
+
+        public void SetAccounts(Dictionary<Guid, AccountModel> accounts)
+        {
+            Accounts = accounts;
+        }
 
         public void ToggleExpandHideAllAccountGroups(bool expand)
         {
             AccountGroups.ForEach(ag => ag.IsExpand = expand);
             BuildAccountGrpDicByParent();
-        }
-
-        public void BuildAccountGrpDicByParent()
-        {
-            var withParent = AccountGroups.Where(ag => ag.ParentAccountGroupId != null);
-            AccountGroupsDicByParent = new();
-
-            foreach (var childAccountGrp in withParent)
-            {
-                if (AccountGroupsDicByParent.TryGetValue((Guid)childAccountGrp.ParentAccountGroupId!, out var value))
-                    value.Add(childAccountGrp);
-                else
-                    AccountGroupsDicByParent.Add((Guid)childAccountGrp.ParentAccountGroupId!, new List<AccountGroupModel> { childAccountGrp });
-            }
         }
 
         public void BuildAccountLinksByParentDic(IEnumerable<AccountGroupLinkModel> links)
@@ -64,7 +67,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 
             AccountGroups.Add(accountGroup);
 
-            NotifyStateChanged(accountGroup.Id,AccountGrpArgsType.Added);
+            NotifyStateChanged(accountGroup.Id, AccountGrpArgsType.Added);
         }
 
         public void EditAccountGroup(AccountGroupModel accountGroup)
@@ -79,7 +82,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 
             AccountGroups[AccountGroups.FindIndex(a => a.Id == accountGroup.Id)] = accountGroup;
 
-            NotifyStateChanged(accountGroup.Id,AccountGrpArgsType.Edited);
+            NotifyStateChanged(accountGroup.Id, AccountGrpArgsType.Edited);
         }
 
         public void RemoveAccountGroup(Guid accountGroupId)
@@ -87,19 +90,33 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
             AccountGroupsDicByParent.Remove(accountGroupId);
             AccountGroups.RemoveAt(AccountGroups.FindIndex(a => a.Id == accountGroupId));
             AccountsLinksByParent.Remove(accountGroupId);
-            NotifyStateChanged(accountGroupId,AccountGrpArgsType.Deleted);
+            NotifyStateChanged(accountGroupId, AccountGrpArgsType.Deleted);
         }
 
-        private void NotifyStateChanged(Guid accountGroupId, AccountGrpArgsType type) => OnChange?.Invoke(this, new AccountGrpArgs(accountGroupId,type));
+        private void NotifyStateChanged(Guid accountGroupId, AccountGrpArgsType type) => OnChange?.Invoke(this, new AccountGrpArgs(accountGroupId, type));
+
+        private void BuildAccountGrpDicByParent()
+        {
+            var withParent = AccountGroups.Where(ag => ag.ParentAccountGroupId != null);
+            AccountGroupsDicByParent = new();
+
+            foreach (var childAccountGrp in withParent)
+            {
+                if (AccountGroupsDicByParent.TryGetValue((Guid)childAccountGrp.ParentAccountGroupId!, out var value))
+                    value.Add(childAccountGrp);
+                else
+                    AccountGroupsDicByParent.Add((Guid)childAccountGrp.ParentAccountGroupId!, new List<AccountGroupModel> { childAccountGrp });
+            }
+        }
 
     }
 
     public class AccountGrpArgs : EventArgs
     {
         public Guid AccountGroupId { get; }
-        public AccountGrpArgsType Type { get; } 
+        public AccountGrpArgsType Type { get; }
 
-        public AccountGrpArgs(Guid accountGroupId,AccountGrpArgsType type)
+        public AccountGrpArgs(Guid accountGroupId, AccountGrpArgsType type)
         {
             AccountGroupId = accountGroupId;
             Type = type;
@@ -111,6 +128,6 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
         Edited,
         Deleted
     }
-        
+
 
 }
