@@ -24,12 +24,6 @@
 @code {
     [CascadingParameter(Name = "AccountGroupModel")]
     public AccountGroupModel AccountGroup { get; set; } = default!;
-    // [CascadingParameter(Name = "AccountGroupsDicByParent")]
-    // private IDictionary<Guid, List<AccountGroupModel>> _accountGroupsDicbyParent { get; set; } = default!;
-    // [CascadingParameter(Name = "AccountGroups")]
-    // private List<AccountGroupModel> _accountGroups { get; set; } = default!;
-    // [CascadingParameter(Name = "AccountLinksByParent")]
-    // private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent { get; set; } = default!;
 
     [Parameter]
     public EventCallback<bool> OnCloseAsync { get; set; }
