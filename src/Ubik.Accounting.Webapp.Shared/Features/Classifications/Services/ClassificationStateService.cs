@@ -52,10 +52,17 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 
         public void AddAccountGroup(AccountGroupModel accountGroup)
         {
-            if (accountGroup.ParentAccountGroupId == null)
+            if (accountGroup.ParentAccountGroupId != null)
             {
-                AccountGroups.Add(accountGroup);
+                if (AccountGroupsDicByParent.TryGetValue((Guid)accountGroup.ParentAccountGroupId, out var current))
+                {
+                    current.Add(accountGroup);
+                }
+                else
+                    AccountGroupsDicByParent.Add((Guid)accountGroup.ParentAccountGroupId, new() { accountGroup });
             }
+
+            AccountGroups.Add(accountGroup);
 
             NotifyStateChanged(accountGroup.Id,AccountGrpArgsType.Added);
         }

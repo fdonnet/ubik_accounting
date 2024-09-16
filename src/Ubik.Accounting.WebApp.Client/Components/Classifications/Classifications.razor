@@ -87,7 +87,8 @@
                                               @key="node"
                                               CurrentAccountGroup="@node"
                                               OnEditAccountGroupAsync="EditAccountGroupDialogAsync"
-                                              OnDeleteAccountGroupAsync="DeleteAccountGroupDialogAsync">
+                                              OnDeleteAccountGroupAsync="DeleteAccountGroupDialogAsync"
+                                              OnAddSubAccountGroupAsync="AddSubAccountGroupDialogAsync">
                             </AccountGroupNode>
                         }
                     </tbody>
@@ -324,6 +325,15 @@
         _dialogAccountGrpTitle = "Add a root";
         _editModeAccountGrp = false;
         _accountGroupCurrent = new();
+        await _dialogAccountGrp.ShowDialog();
+    }
+
+    private async Task AddSubAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
+    {
+        _dialogAccountGrpTitle = $"Add a sub grp for ({currentAccountGroup.Code})";
+        _editModeAccountGrp = false;
+        _accountGroupCurrent = new();
+        _accountGroupCurrent.ParentAccountGroupId = currentAccountGroup.Id;
         await _dialogAccountGrp.ShowDialog();
     }
 

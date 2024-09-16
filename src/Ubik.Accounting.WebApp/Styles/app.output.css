@@ -1705,6 +1705,11 @@ p:is(.dark *) {
   color: rgb(133 77 14 / var(--tw-text-opacity));
 }
 
+.text-green-700 {
+  --tw-text-opacity: 1;
+  color: rgb(21 128 61 / var(--tw-text-opacity));
+}
+
 .placeholder-red-700::-moz-placeholder {
   --tw-placeholder-opacity: 1;
   color: rgb(185 28 28 / var(--tw-placeholder-opacity));
