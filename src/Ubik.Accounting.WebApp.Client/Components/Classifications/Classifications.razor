@@ -110,11 +110,11 @@
             <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
                 <CascadingValue Name="AccountGroups" Value="@_accountGroups">
                     <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
-                        <CascadingValue Name="AccountLinksByParent" Value="@_accountsLinksByParent">
-                            <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
-                                <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
-                            </UbikModal>
+                        <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
+                            <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
+                        </UbikModal>
 
+                        <CascadingValue Name="AccountLinksByParent" Value="@_accountsLinksByParent">
                             <UbikModalCenter @ref="_deleteAccountGroupDialog">
                                 <AccountGroupConfirmDelete @ref="_deleteAccountGroupMsg" OnCloseAsync="CloseDeleteAccountGroupDialogAsync"></AccountGroupConfirmDelete>
                             </UbikModalCenter>
@@ -410,6 +410,7 @@
         await _deleteAccountGroupDialog.CloseDialogAsync();
         if (refresh)
         {
+            _accountGroupCurrent = new();
             RefreshAccountGroupRoots();
         }
     }

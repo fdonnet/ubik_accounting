@@ -55,12 +55,18 @@
 
             @foreach (var node in _currentNodeAccountGroups)
             {
-                <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify"
-                                  CurrentAccountGroup="@node"
-                                  CurrentRowMargin="CurrentRowMargin + 4"
-                                  OnEditAccountGroupAsync="EditAccountGroupAsync"
-                                  OnDeleteAccountGroupAsync="DeleteAccountGroupAsync">
-                </AccountGroupNode>
+                <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicbyParent">
+                    <CascadingValue Name="Accounts" Value="@_accounts">
+                        <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountGroupLinksByParent">
+                            <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify"
+                                              CurrentAccountGroup="@node"
+                                              CurrentRowMargin="CurrentRowMargin + 4"
+                                              OnEditAccountGroupAsync="EditAccountGroupAsync"
+                                              OnDeleteAccountGroupAsync="DeleteAccountGroupAsync">
+                            </AccountGroupNode>
+                        </CascadingValue>
+                    </CascadingValue>
+                </CascadingValue>
             }
         }
 
@@ -126,11 +132,11 @@
     [Parameter]
     public bool IsAuthorizedToModify { get; set; } = false;
     [CascadingParameter(Name = "AccountGroupsDicByParent")]
-    public IDictionary<Guid, List<AccountGroupModel>> AccountGroupsDicbyParent { get; set; } = default!;
+    private IDictionary<Guid, List<AccountGroupModel>> _accountGroupsDicbyParent { get; set; } = default!;
     [CascadingParameter(Name = "Accounts")]
-    public Dictionary<Guid, AccountModel> Accounts { get; set; } = default!;
+    private Dictionary<Guid, AccountModel> _accounts { get; set; } = default!;
     [CascadingParameter(Name = "AccountGroupLinksByParent")]
-    public Dictionary<Guid, List<AccountGroupLinkModel>> AccountGroupLinksByParent { get; set; } = default!;
+    private Dictionary<Guid, List<AccountGroupLinkModel>> _accountGroupLinksByParent { get; set; } = default!;
 
     [Parameter]
     public EventCallback<AccountGroupModel> OnEditAccountGroupAsync { get; set; }
@@ -138,8 +144,8 @@
     public EventCallback<AccountGroupModel> OnDeleteAccountGroupAsync { get; set; }
 
     private bool _isLoading = false;
-    private IEnumerable<AccountGroupModel> _currentNodeAccountGroups = [];
-    private IEnumerable<AccountModel> _currentNodeAccounts = [];
+    private List<AccountGroupModel> _currentNodeAccountGroups = [];
+    private List<AccountModel> _currentNodeAccounts = [];
     public int _currentRowMarginForAccount = 0;
 
     private UbikModalCenter _actionsAccountGroupDialog = default!;
@@ -151,6 +157,7 @@
         {
             return;
         }
+
         _isLoading = true;
 
         RefreshCurrentNodeData();
@@ -161,14 +168,18 @@
 
     public void RefreshCurrentNodeData()
     {
-        if (AccountGroupsDicbyParent.TryGetValue(CurrentAccountGroup.Id, out var groups))
-            _currentNodeAccountGroups = groups.OrderBy(g => g.Code);
+        if (_accountGroupsDicbyParent.TryGetValue(CurrentAccountGroup.Id, out var groups))
+            _currentNodeAccountGroups = groups.OrderBy(g => g.Code).ToList();
+        else
+            _currentNodeAccountGroups = new();
 
-        if (AccountGroupLinksByParent.TryGetValue(CurrentAccountGroup.Id, out var accounts))
+        if (_accountGroupLinksByParent.TryGetValue(CurrentAccountGroup.Id, out var accounts))
         {
             var currentNodeAccountGroupLinksAccountIds = accounts.Select(l => l.AccountId).ToList();
-            _currentNodeAccounts = Accounts.Where(a => currentNodeAccountGroupLinksAccountIds.Contains(a.Key)).Select(a => a.Value).OrderBy(a => a.Code);
+            _currentNodeAccounts = _accounts.Where(a => currentNodeAccountGroupLinksAccountIds.Contains(a.Key)).Select(a => a.Value).OrderBy(a => a.Code).ToList();
         }
+        else
+            _currentNodeAccounts = new();
     }
 
     private void ToggleAccountGroupFolder(AccountGroupModel accountGroup)

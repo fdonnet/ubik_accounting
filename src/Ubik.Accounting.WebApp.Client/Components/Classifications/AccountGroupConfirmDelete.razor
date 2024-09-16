@@ -22,11 +22,11 @@
     [CascadingParameter(Name = "AccountGroupModel")]
     public AccountGroupModel AccountGroup { get; set; } = default!;
     [CascadingParameter(Name = "AccountGroupsDicByParent")]
-    public IDictionary<Guid, List<AccountGroupModel>> AccountGroupsDicbyParent { get; set; } = default!;
+    private IDictionary<Guid, List<AccountGroupModel>> _accountGroupsDicbyParent { get; set; } = default!;
     [CascadingParameter(Name = "AccountGroups")]
-    public List<AccountGroupModel> AccountGroups { get; set; } = default!;
+    private List<AccountGroupModel> _accountGroups { get; set; } = default!;
     [CascadingParameter(Name = "AccountLinksByParent")]
-    public Dictionary<Guid, List<AccountGroupLinkModel>> AccountsLinksByParent { get; set; } = default!;
+    private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent { get; set; } = default!;
 
     [Parameter]
     public EventCallback<bool> OnCloseAsync { get; set; }
@@ -85,11 +85,11 @@
         {
             var model = accountGroup.ToAccountGroupModel();
 
-            AccountGroupsDicbyParent.Remove(model.Id);
+            _accountGroupsDicbyParent.Remove(model.Id);
 
-            AccountGroups.RemoveAt(AccountGroups.FindIndex(a => a.Id == model.Id));
+            _accountGroups.RemoveAt(_accountGroups.FindIndex(a => a.Id == model.Id));
 
-            AccountsLinksByParent.Remove(model.Id);
+            _accountsLinksByParent.Remove(model.Id);
         }
     }
 }
