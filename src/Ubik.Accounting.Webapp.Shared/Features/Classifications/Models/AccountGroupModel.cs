@@ -3,7 +3,7 @@ using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 
-namespace Ubik.Accounting.WebApp.Client.Components.Classifications
+namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 {
     public class AccountGroupModel
     {
@@ -23,6 +23,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
         [Required]
         public Guid Version { get; set; }
         public bool IsExpand { get; set; } = true;
+        public bool IsDeleted { get; set; } = false;
 
         public AccountGroupModel Clone()
         {

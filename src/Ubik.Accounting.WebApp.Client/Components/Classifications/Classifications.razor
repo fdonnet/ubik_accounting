@@ -1,6 +1,8 @@
 ﻿@using Ubik.Accounting.Contracts.Accounts.Results
 @using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
 @using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 @using Ubik.Accounting.WebApp.Client.Components.Common.Forms
 @using Ubik.Accounting.Contracts.Classifications.Results
 @using Ubik.Accounting.Contracts.AccountGroups.Results
@@ -9,6 +11,7 @@
 
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
+@inject ClassificationStateService CurrentState
 
 @if (IsAuthorizedToRead)
 {
@@ -60,39 +63,33 @@
                     </div>
                 </div>
             }
-            @if (_accountGroupsRoot.Any())
+            @if (CurrentState.AccountGroupsRoot.Any())
             {
                 <div class="mt-2 flex w-full flex-row justify-start @(IsAuthorizedToModify ? "sm:justify-end":"") sm:mt-0">
                     <div class="mr-2">
-                        <UbikButtonAlternative Label="Expand all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>ToggleExpandHideAllAccountGroups(true)"></UbikButtonAlternative>
+                        <UbikButtonAlternative Label="Expand all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>CurrentState.ToggleExpandHideAllAccountGroups(true)"></UbikButtonAlternative>
                     </div>
                     <div>
-                        <UbikButtonAlternative Label="Hide all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>ToggleExpandHideAllAccountGroups(false)"></UbikButtonAlternative>
+                        <UbikButtonAlternative Label="Hide all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>CurrentState.ToggleExpandHideAllAccountGroups(false)"></UbikButtonAlternative>
                     </div>
                 </div>
             }
         </div>
 
-        @if (_accountGroupsRoot.Any())
+        @if (CurrentState.AccountGroupsRoot.Any())
         {
             <div class="mt-2 overflow-x-auto rounded-lg bg-white p-2 shadow-md dark:bg-gray-800">
                 <table class="w-full whitespace-nowrap">
                     <tbody>
-                        <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
-                            <CascadingValue Name="Accounts" Value="@_accounts">
-                                <CascadingValue Name="AccountGroupLinksByParent" Value="@_accountsLinksByParent">
-                                    @foreach (var node in _accountGroupsRoot)
-                                    {
-                                        <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify"
-                                                          @key="node"
-                                                          CurrentAccountGroup="@node"
-                                                          OnEditAccountGroupAsync="EditAccountGroupDialogAsync"
-                                                          OnDeleteAccountGroupAsync="DeleteAccountGroupDialogAsync">
-                                        </AccountGroupNode>
-                                    }
-                                </CascadingValue>
-                            </CascadingValue>
-                        </CascadingValue>
+                        @foreach (var node in CurrentState.AccountGroupsRoot)
+                        {
+                            <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify"
+                                              @key="node"
+                                              CurrentAccountGroup="@node"
+                                              OnEditAccountGroupAsync="EditAccountGroupDialogAsync"
+                                              OnDeleteAccountGroupAsync="DeleteAccountGroupDialogAsync">
+                            </AccountGroupNode>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -107,21 +104,16 @@
 
         @if (IsAuthorizedToModify)
         {
-            <CascadingValue Name="AccountGroupsDicByParent" Value="@_accountGroupsDicByParent">
-                <CascadingValue Name="AccountGroups" Value="@_accountGroups">
-                    <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
-                        <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
-                            <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
-                        </UbikModal>
+            <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
+                <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
+                    <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
+                </UbikModal>
 
-                        <CascadingValue Name="AccountLinksByParent" Value="@_accountsLinksByParent">
-                            <UbikModalCenter @ref="_deleteAccountGroupDialog">
-                                <AccountGroupConfirmDelete @ref="_deleteAccountGroupMsg" OnCloseAsync="CloseDeleteAccountGroupDialogAsync"></AccountGroupConfirmDelete>
-                            </UbikModalCenter>
-                        </CascadingValue>
-                    </CascadingValue>
-                </CascadingValue>
+                <UbikModalCenter @ref="_deleteAccountGroupDialog">
+                    <AccountGroupConfirmDelete @ref="_deleteAccountGroupMsg" OnCloseAsync="CloseDeleteAccountGroupDialogAsync"></AccountGroupConfirmDelete>
+                </UbikModalCenter>
             </CascadingValue>
+
             <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
                 <UbikModalCenter @ref="_deleteClassificationDialog">
                     <ClassificationConfirmDelete @ref="_deleteClassificationMsg" OnCloseAsync="CloseDeleteClassificationDialogAsync"></ClassificationConfirmDelete>
@@ -139,11 +131,6 @@
 
     private Guid? _currentClassificationId { get; set; }
     private List<ClassificationModel>? _classifications;
-    private List<AccountGroupModel> _accountGroups = default!;
-    private List<AccountGroupModel> _accountGroupsRoot = [];
-    private Dictionary<Guid, List<AccountGroupModel>> _accountGroupsDicByParent = default!;
-    private Dictionary<Guid, AccountModel> _accounts = default!;
-    private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent = default!;
     private ClassificationModel? _classificationCurrent = new();
 
     private AccountGroupModel _accountGroupCurrent = new();
@@ -183,6 +170,7 @@
         }
 
         await LoadDataAync();
+        OnClassificationChanged(null);
 
         _isLoading = false;
     }
@@ -229,7 +217,7 @@
 
     private void RefreshAccountGroupRoots()
     {
-        _accountGroupsRoot = _accountGroups.Where(ag => ag.AccountGroupClassificationId == _currentClassificationId
+        CurrentState.AccountGroupsRoot = CurrentState.AccountGroups.Where(ag => ag.AccountGroupClassificationId == _currentClassificationId
                                                        && ag.ParentAccountGroupId == null).OrderBy(root => root.Code).ToList();
     }
 
@@ -248,40 +236,20 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            _accountGroups = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>()
+            CurrentState.AccountGroups = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>()
                 ?? []).ToAccountGroupModels().ToList();
 
-            BuildAccountGrpDicByParent();
+            CurrentState.BuildAccountGrpDicByParent();
         }
         else
             await ManageError(response);
-    }
-
-    private void ToggleExpandHideAllAccountGroups(bool expand)
-    {
-        _accountGroups.ForEach(ag => ag.IsExpand = expand);
-        BuildAccountGrpDicByParent();
-    }
-
-    private void BuildAccountGrpDicByParent()
-    {
-        var withParent = _accountGroups.Where(ag => ag.ParentAccountGroupId != null);
-        _accountGroupsDicByParent = new();
-
-        foreach (var childAccountGrp in withParent)
-        {
-            if (_accountGroupsDicByParent.TryGetValue((Guid)childAccountGrp.ParentAccountGroupId!, out var value))
-                value.Add(childAccountGrp);
-            else
-                _accountGroupsDicByParent.Add((Guid)childAccountGrp.ParentAccountGroupId!, new List<AccountGroupModel> { childAccountGrp });
-        }
     }
 
     private async Task LoadAccountsAsync(HttpResponseMessage response)
     {
         if (response.IsSuccessStatusCode)
         {
-            _accounts = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>()
+            CurrentState.Accounts = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>()
                     ?? []).ToAccountModel().ToDictionary(x => x.Id);
         }
         else
@@ -295,15 +263,7 @@
             var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupLinksResult>>()
                     ?? []).ToAccountGroupLinkModel();
 
-            _accountsLinksByParent = new();
-
-            foreach (var childAccount in result)
-            {
-                if (_accountsLinksByParent.TryGetValue((Guid)childAccount.AccountGroupId!, out var value))
-                    value.Add(childAccount);
-                else
-                    _accountsLinksByParent.Add((Guid)childAccount.AccountGroupId!, new List<AccountGroupLinkModel> { childAccount });
-            }
+            CurrentState.BuildAccountLinksByParentDic(result);
         }
         else
             await ManageError(response);
@@ -408,11 +368,7 @@
     private async Task CloseDeleteAccountGroupDialogAsync(bool refresh = false)
     {
         await _deleteAccountGroupDialog.CloseDialogAsync();
-        if (refresh)
-        {
-            _accountGroupCurrent = new();
-            RefreshAccountGroupRoots();
-        }
+        RefreshAccountGroupRoots();
     }
 
 }

@@ -2,8 +2,11 @@
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons;
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.Contracts.AccountGroups.Results
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 
 @inject IAccountingApiClient Client
+@inject ClassificationStateService CurrentState
 
 <div class="p-4 text-center md:p-5">
     <svg class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -21,12 +24,12 @@
 @code {
     [CascadingParameter(Name = "AccountGroupModel")]
     public AccountGroupModel AccountGroup { get; set; } = default!;
-    [CascadingParameter(Name = "AccountGroupsDicByParent")]
-    private IDictionary<Guid, List<AccountGroupModel>> _accountGroupsDicbyParent { get; set; } = default!;
-    [CascadingParameter(Name = "AccountGroups")]
-    private List<AccountGroupModel> _accountGroups { get; set; } = default!;
-    [CascadingParameter(Name = "AccountLinksByParent")]
-    private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent { get; set; } = default!;
+    // [CascadingParameter(Name = "AccountGroupsDicByParent")]
+    // private IDictionary<Guid, List<AccountGroupModel>> _accountGroupsDicbyParent { get; set; } = default!;
+    // [CascadingParameter(Name = "AccountGroups")]
+    // private List<AccountGroupModel> _accountGroups { get; set; } = default!;
+    // [CascadingParameter(Name = "AccountLinksByParent")]
+    // private Dictionary<Guid, List<AccountGroupLinkModel>> _accountsLinksByParent { get; set; } = default!;
 
     [Parameter]
     public EventCallback<bool> OnCloseAsync { get; set; }
@@ -85,11 +88,7 @@
         {
             var model = accountGroup.ToAccountGroupModel();
 
-            _accountGroupsDicbyParent.Remove(model.Id);
-
-            _accountGroups.RemoveAt(_accountGroups.FindIndex(a => a.Id == model.Id));
-
-            _accountsLinksByParent.Remove(model.Id);
+            CurrentState.RemoveAccountGroup(accountGroup.Id);
         }
     }
 }

@@ -2,7 +2,10 @@
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Alerts;
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 
+@inject ClassificationStateService CurrentState
 @inject IAccountingApiClient Client
 
 <EditForm Model="@AccountGroup" OnSubmit="SubmitAsync" FormName="AddAccountGroup" class="p-4 md:p-5">
@@ -51,10 +54,10 @@
     //TODO: make a component for standart add/edit form (see classification form etc)
     [CascadingParameter(Name = "AccountGroupModel")]
     public AccountGroupModel AccountGroup { get; set; } = default!;
-    [CascadingParameter(Name = "AccountGroupsDicByParent")]
-    public IDictionary<Guid, List<AccountGroupModel>> AccountGroupsDicbyParent { get; set; } = default!;
-    [CascadingParameter(Name = "AccountGroups")]
-    public List<AccountGroupModel> AccountGroups { get; set; } = default!;
+    // [CascadingParameter(Name = "AccountGroupsDicByParent")]
+    // public IDictionary<Guid, List<AccountGroupModel>> AccountGroupsDicbyParent { get; set; } = default!;
+    // [CascadingParameter(Name = "AccountGroups")]
+    // public List<AccountGroupModel> AccountGroups { get; set; } = default!;
 
     [Parameter]
     public bool EditMode { get; set; } = false;
@@ -117,15 +120,7 @@
             var resultModel = result.ToAccountGroupModel();
             resultModel.IsExpand = AccountGroup.IsExpand;
 
-            if (resultModel.ParentAccountGroupId != null)
-            {
-                if (AccountGroupsDicbyParent.TryGetValue((Guid)resultModel.ParentAccountGroupId, out var current))
-                {
-                    current[current.FindIndex(a => a.Id == resultModel.Id)] = resultModel;
-                }
-            }
-
-            AccountGroups[AccountGroups.FindIndex(a => a.Id == resultModel.Id)] = resultModel;
+            CurrentState.EditAccountGroup(resultModel);
         }
         else
         {
@@ -136,10 +131,7 @@
 
             var resultModel = result.ToAccountGroupModel();
 
-            if (resultModel.ParentAccountGroupId == null)
-            {
-                AccountGroups.Add(resultModel);
-            }
+            CurrentState.AddAccountGroup(resultModel);
         }
     }
 

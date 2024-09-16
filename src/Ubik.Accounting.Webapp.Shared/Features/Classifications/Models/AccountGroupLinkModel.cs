@@ -1,6 +1,6 @@
 ﻿using Ubik.Accounting.Contracts.Accounts.Results;
 
-namespace Ubik.Accounting.WebApp.Client.Components.Classifications
+namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 {
     public class AccountGroupLinkModel
     {

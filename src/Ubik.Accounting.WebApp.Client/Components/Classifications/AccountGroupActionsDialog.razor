@@ -1,4 +1,6 @@
-﻿<div class="mt-6 text-wrap p-4 md:p-5">
+﻿@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
+
+<div class="mt-6 text-wrap p-4 md:p-5">
     <h3 class="text-lg font-normal text-gray-500 dark:text-gray-400">Choose an action for the account group (@CurrentAccountGroup.Code)</h3>
     <div class="mb-8 mt-5 flex flex-col text-blue-700 dark:text-blue-400">
         <div class="flex cursor-pointer flex-row items-center" @onclick="EditAccountGroup">
