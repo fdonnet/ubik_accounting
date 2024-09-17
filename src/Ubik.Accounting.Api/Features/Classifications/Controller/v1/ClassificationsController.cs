@@ -60,7 +60,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<GetClassificationAccountsResult>> GetAccounts(Guid id)
+        public async Task<ActionResult<IEnumerable<GetClassificationAccountsResult>>> GetAccounts(Guid id)
         {
             var result = await _serviceManager.ClassificationService.GetClassificationAccountsAsync(id);
             return result.Match(

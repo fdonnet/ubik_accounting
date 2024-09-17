@@ -65,6 +65,12 @@ namespace Ubik.Accounting.WebApp.ApiClients
             return await _client.GetAsync("Classifications");
         }
 
+        public async Task<HttpResponseMessage> GetClassificationMissingAccountsAsync(Guid id,CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            return await _client.GetAsync($"Classifications/{id}/MissingAccounts");
+        }
+
         public async Task<HttpResponseMessage> AddClassificationAsync(AddClassificationCommand classification, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();

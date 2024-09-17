@@ -171,7 +171,7 @@
         }
 
         await LoadDataAync();
-        OnClassificationChanged(null);
+        await OnClassificationChanged(null);
 
         _isLoading = false;
     }
@@ -191,9 +191,24 @@
         await LoadAccountsLinksAsync(await taskAccountsLinks);
     }
 
-    private void OnClassificationChanged(Guid? classificationId)
+    private async Task LoadClassificationMissingAccounts()
+    {
+        if(_currentClassificationId == null)
+        {
+            CurrentState.SetClassificationMissingAccounts(new());
+        }
+        else
+        {
+            var classificationMissingAccounts =  await Client.GetClassificationMissingAccountsAsync((Guid)_currentClassificationId);
+
+            await LoadAccountsMissingToCurrentClassification(classificationMissingAccounts);
+        }
+    }
+
+    private async Task OnClassificationChanged(Guid? classificationId)
     {
         _currentClassificationId = classificationId;
+        await LoadClassificationMissingAccounts();
         SelectClassification();
         CurrentState.RefreshAccountGroupsRoot(_currentClassificationId);
     }
@@ -243,7 +258,7 @@
         if (response.IsSuccessStatusCode)
         {
             CurrentState.SetAccounts((await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>()
-                    ?? []).ToAccountModel().ToDictionary(x => x.Id));
+                    ?? []).ToAccountModels().ToDictionary(x => x.Id));
         }
         else
             await ManageError(response);
@@ -257,6 +272,19 @@
                     ?? []).ToAccountGroupLinkModel();
 
             CurrentState.BuildAccountLinksByParentDic(result);
+        }
+        else
+            await ManageError(response);
+    }
+
+    private async Task LoadAccountsMissingToCurrentClassification(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetClassificationAccountsResult>>()
+                    ?? []).ToAccountModels().ToList();
+
+            CurrentState.SetClassificationMissingAccounts(result);
         }
         else
             await ManageError(response);
@@ -282,7 +310,7 @@
             _isLoading = true;
 
             await LoadDataAync();
-            OnClassificationChanged(_classificationCurrent?.Id);
+            await OnClassificationChanged(_classificationCurrent?.Id);
 
             _isLoading = false;
         }
@@ -299,7 +327,7 @@
         _dialogTitle = "Add a classification";
         _editMode = false;
         _classificationCurrent = new();
-        await _classificationDialog.ShowDialog();
+        await _classificationDialog.ShowDialogAsync();
     }
 
     private async Task EditClassificationDialogAsync()
@@ -308,7 +336,7 @@
         {
             _dialogTitle = $"Edit {_classificationCurrent.Code} classification";
             _editMode = true;
-            await _classificationDialog.ShowDialog();
+            await _classificationDialog.ShowDialogAsync();
         }
     }
 
@@ -317,7 +345,7 @@
         _dialogAccountGrpTitle = "Add a root";
         _editModeAccountGrp = false;
         _accountGroupCurrent = new();
-        await _dialogAccountGrp.ShowDialog();
+        await _dialogAccountGrp.ShowDialogAsync();
     }
 
     private async Task AddSubAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
@@ -326,7 +354,7 @@
         _editModeAccountGrp = false;
         _accountGroupCurrent = new();
         _accountGroupCurrent.ParentAccountGroupId = currentAccountGroup.Id;
-        await _dialogAccountGrp.ShowDialog();
+        await _dialogAccountGrp.ShowDialogAsync();
     }
 
     private async Task EditAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
@@ -334,7 +362,7 @@
         _editModeAccountGrp = true;
         _accountGroupCurrent = currentAccountGroup.Clone();
         _dialogAccountGrpTitle = $"Edit {_accountGroupCurrent.Code}";
-        await _dialogAccountGrp.ShowDialog();
+        await _dialogAccountGrp.ShowDialogAsync();
     }
 
     private async Task DeleteAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
@@ -361,7 +389,7 @@
             _isLoading = true;
 
             await LoadDataAync();
-            OnClassificationChanged(null);
+            await OnClassificationChanged(null);
 
             _isLoading = false;
         }

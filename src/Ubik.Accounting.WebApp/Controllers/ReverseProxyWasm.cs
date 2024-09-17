@@ -75,6 +75,15 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
+        [Authorize(Roles = "ubik_accounting_classification_read")]
+        [Authorize(Roles = "ubik_accounting_account_read")]
+        [HttpGet("/Classifications/{id}/MissingAccounts")]
+        public async Task ClassificationMissingAccountsList(Guid id)
+        {
+            var response = await client.GetClassificationMissingAccountsAsync(id);
+            await ForwardResponse(response);
+        }
+
         [Authorize(Roles = "ubik_accounting_classification_write")]
         [HttpPost("/Classifications")]
         public async Task AddClassification(AddClassificationCommand command)

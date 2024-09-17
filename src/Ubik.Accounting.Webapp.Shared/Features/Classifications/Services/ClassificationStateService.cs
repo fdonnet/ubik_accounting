@@ -16,11 +16,17 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
         public Dictionary<Guid, List<AccountGroupModel>> AccountGroupsDicByParent { get; private set; } = default!;
         public Dictionary<Guid, AccountModel> Accounts { get; private set; } = default!;
         public Dictionary<Guid, List<AccountGroupLinkModel>> AccountsLinksByParent { get; private set; } = default!;
+        public List<AccountModel> CurrentClassificationMissingAccounts { get; private set; } = default!;
 
         public void RefreshAccountGroupsRoot(Guid? classificationId)
         {
-            AccountGroupsRoot = AccountGroups.Where(ag => ag.AccountGroupClassificationId == classificationId
-                                                           && ag.ParentAccountGroupId == null).OrderBy(root => root.Code).ToList();
+            AccountGroupsRoot = [.. AccountGroups.Where(ag => ag.AccountGroupClassificationId == classificationId
+                                                           && ag.ParentAccountGroupId == null).OrderBy(root => root.Code)];
+        }
+
+        public void SetClassificationMissingAccounts(List<AccountModel> accounts)
+        {
+            CurrentClassificationMissingAccounts = accounts;
         }
 
         public void SetAccountGroups(List<AccountGroupModel> accountGroups)
@@ -42,14 +48,14 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 
         public void BuildAccountLinksByParentDic(IEnumerable<AccountGroupLinkModel> links)
         {
-            AccountsLinksByParent = new();
+            AccountsLinksByParent = [];
 
             foreach (var childAccount in links)
             {
                 if (AccountsLinksByParent.TryGetValue((Guid)childAccount.AccountGroupId!, out var value))
                     value.Add(childAccount);
                 else
-                    AccountsLinksByParent.Add((Guid)childAccount.AccountGroupId!, new List<AccountGroupLinkModel> { childAccount });
+                    AccountsLinksByParent.Add((Guid)childAccount.AccountGroupId!, [childAccount]);
             }
         }
 
@@ -62,7 +68,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
                     current.Add(accountGroup);
                 }
                 else
-                    AccountGroupsDicByParent.Add((Guid)accountGroup.ParentAccountGroupId, new() { accountGroup });
+                    AccountGroupsDicByParent.Add((Guid)accountGroup.ParentAccountGroupId, [accountGroup]);
             }
 
             AccountGroups.Add(accountGroup);
@@ -98,29 +104,23 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
         private void BuildAccountGrpDicByParent()
         {
             var withParent = AccountGroups.Where(ag => ag.ParentAccountGroupId != null);
-            AccountGroupsDicByParent = new();
+            AccountGroupsDicByParent = [];
 
             foreach (var childAccountGrp in withParent)
             {
                 if (AccountGroupsDicByParent.TryGetValue((Guid)childAccountGrp.ParentAccountGroupId!, out var value))
                     value.Add(childAccountGrp);
                 else
-                    AccountGroupsDicByParent.Add((Guid)childAccountGrp.ParentAccountGroupId!, new List<AccountGroupModel> { childAccountGrp });
+                    AccountGroupsDicByParent.Add((Guid)childAccountGrp.ParentAccountGroupId!, [childAccountGrp]);
             }
         }
 
     }
 
-    public class AccountGrpArgs : EventArgs
+    public class AccountGrpArgs(Guid accountGroupId, AccountGrpArgsType type) : EventArgs
     {
-        public Guid AccountGroupId { get; }
-        public AccountGrpArgsType Type { get; }
-
-        public AccountGrpArgs(Guid accountGroupId, AccountGrpArgsType type)
-        {
-            AccountGroupId = accountGroupId;
-            Type = type;
-        }
+        public Guid AccountGroupId { get; } = accountGroupId;
+        public AccountGrpArgsType Type { get; } = type;
     }
     public enum AccountGrpArgsType
     {

@@ -47,6 +47,11 @@ namespace Ubik.Accounting.WebApp.Client.Facades
             return await http.GetAsync("Classifications", cancellationToken: cancellationToken);
         }
 
+        public async Task<HttpResponseMessage> GetClassificationMissingAccountsAsync(Guid id,CancellationToken cancellationToken = default)
+        {
+            return await http.GetAsync($"Classifications/{id}/MissingAccounts", cancellationToken: cancellationToken);
+        }
+
         public async Task<HttpResponseMessage> AddClassificationAsync(AddClassificationCommand classification, CancellationToken cancellationToken = default)
         {
             var request = JsonSerializer.Serialize(classification);

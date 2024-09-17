@@ -168,7 +168,7 @@
             Version = currentAccount.Version
         };
         _dialogTitle = $"Edit account ({currentAccount.Code})";
-        await _dialog.ShowDialog();
+        await _dialog.ShowDialogAsync();
     }
 
     private async Task AddAccountDialogAsync()
@@ -176,7 +176,7 @@
         _dialogTitle = "Add an account";
         _editMode = false;
         _accountCurrent = new();
-        await _dialog.ShowDialog();
+        await _dialog.ShowDialogAsync();
     }
 
     private async Task CloseDialogAsync(bool refresh = false)
