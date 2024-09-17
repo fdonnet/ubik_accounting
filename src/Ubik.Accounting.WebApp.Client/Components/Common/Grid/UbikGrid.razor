@@ -66,14 +66,14 @@
     //TODO: review this part with Tailwind Apply style or safelist to avoid spagetti code
     private void RenderRow(RenderTreeBuilder __builder, int rowIndex, TGridItem item)
     {
-        <tr aria-rowindex="@rowIndex" class="@(ForceCursorPointerForRow?"cursor-pointer":"") border-t bg-white hover:bg-gray-100 focus:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 focus:hover:bg-gray-600 dark:hover:bg-gray-600">
+        <tr aria-rowindex="@rowIndex" class="border-t bg-white hover:bg-gray-100 focus:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 focus:hover:bg-gray-600 dark:hover:bg-gray-600">
             @foreach (var col in _columns)
             {
                 if (_counter == 0 && HighlightFirstColumn)
                 {
                     if(col.SmallXPadding)
                     {
-                        <th scope="row" @key="@col" class="whitespace-nowrap px-3 py-4 font-medium text-gray-900 dark:text-white">
+                        <th scope="row" @key="@col" class="@(ForceCursorPointerForRow?"cursor-pointer ":"")whitespace-nowrap px-3 py-4 font-medium text-gray-900 dark:text-white">
                             @{
                                 col.CellContent(__builder, item);
                             }
@@ -81,7 +81,7 @@
                     }
                     else
                     {
-                        <th scope="row" @key="@col" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
+                        <th scope="row" @key="@col" class="@(ForceCursorPointerForRow?"cursor-pointer ":"")whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
                             @{
                                 col.CellContent(__builder, item);
                             }
@@ -92,7 +92,7 @@
                 {
                     if (col.SmallXPadding)
                     {
-                        <td @key="@col" class="px-3 py-4">
+                        <td @key="@col" class="@(ForceCursorPointerForRow?"cursor-pointer ":"")px-3 py-4">
                             @{
                                 col.CellContent(__builder, item);
                             }
@@ -100,7 +100,7 @@
                     }
                     else
                     {
-                        <td @key="@col" class="px-6 py-4">
+                        <td @key="@col" class="@(ForceCursorPointerForRow?"cursor-pointer":"") px-6 py-4">
                             @{
                                 col.CellContent(__builder, item);
                             }
