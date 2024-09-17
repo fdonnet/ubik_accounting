@@ -21,6 +21,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
         [Parameter] public RenderFragment ChildContent { get; set; } = default!;
         [Parameter] public bool HighlightFirstColumn { get; set; } = false;
         [Parameter] public PaginationState? Pagination { get; set; }
+        [Parameter] public bool ForceCursorPointerForRow { get; set; } = false;
 
 
         private readonly InternalGridContext<TGridItem> _internalGridContext;

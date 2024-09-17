@@ -18,9 +18,9 @@
         <UbikSimpleSearchBar @bind-Value="@_searchValue" PlaceHolderMsg="Search for codes or labels" />
     </div>
     <div class="max-w-full overflow-x-auto rounded-lg shadow-md">
-        @if(_accounts != null)
+        @if (_searchedAccounts != null)
         {
-            <UbikGrid Items="@_accounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="pagination">
+            <UbikGrid ForceCursorPointerForRow="true" Items="@_searchedAccounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="pagination">
                 <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
                 <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
             </UbikGrid>
@@ -44,6 +44,23 @@
     private int _numberOfAccounts = -1;
 
     PaginationState pagination = new PaginationState { ItemsPerPage = ITEMS_PER_PAGE };
+
+    private IQueryable<AccountModel>? _searchedAccounts
+    {
+        get
+        {
+            if (_accounts == null || _searchValue == string.Empty)
+                return _accounts;
+
+            var result = _accounts;
+
+            if (_searchValue != string.Empty)
+                result = result.Where(a => a.Code.ToLower().Contains(_searchValue.ToLower())
+                                        || a.Label.ToLower().Contains(_searchValue.ToLower()));
+
+            return result;
+        }
+    }
 
     protected override void OnInitialized()
     {
