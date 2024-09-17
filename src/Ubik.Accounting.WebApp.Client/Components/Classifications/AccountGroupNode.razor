@@ -64,7 +64,8 @@
                                   CurrentRowMargin="CurrentRowMargin + 4"
                                   OnEditAccountGroupAsync="EditAccountGroupAsync"
                                   OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
-                                  OnAddSubAccountGroupAsync="AddSubAccountGroupAsync">
+                                  OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
+                                  OnAttachAccountAsync="AttachAccountAsync">
                 </AccountGroupNode>
             }
         }
@@ -116,6 +117,7 @@
                                            OnEditAccountGroupAsync="EditAccountGroupAsync"
                                            OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
                                            OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
+                                           OnAttachAccountAsync="AttachAccountAsync"
                                            OnCloseAsync="CloseActionsDialog">
                 </AccountGroupActionsDialog>
             </UbikModalCenter>
@@ -137,6 +139,8 @@
     public EventCallback<AccountGroupModel> OnDeleteAccountGroupAsync { get; set; }
     [Parameter]
     public EventCallback<AccountGroupModel> OnAddSubAccountGroupAsync { get; set; }
+    [Parameter]
+    public EventCallback<AccountGroupModel> OnAttachAccountAsync { get; set; }
 
     private bool _isLoading = false;
     private List<AccountGroupModel> _currentNodeAccountGroups = [];
@@ -218,6 +222,11 @@
     private async Task AddSubAccountGroupAsync(AccountGroupModel currentAccountGroup)
     {
         await OnAddSubAccountGroupAsync.InvokeAsync(currentAccountGroup);
+    }
+
+    private async Task AttachAccountAsync(AccountGroupModel currentAccountGroup)
+    {
+        await OnAttachAccountAsync.InvokeAsync(currentAccountGroup);
     }
 
     private async Task CloseActionsDialog()

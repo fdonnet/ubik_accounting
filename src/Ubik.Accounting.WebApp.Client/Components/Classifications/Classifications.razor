@@ -88,7 +88,8 @@
                                               CurrentAccountGroup="@node"
                                               OnEditAccountGroupAsync="EditAccountGroupDialogAsync"
                                               OnDeleteAccountGroupAsync="DeleteAccountGroupDialogAsync"
-                                              OnAddSubAccountGroupAsync="AddSubAccountGroupDialogAsync">
+                                              OnAddSubAccountGroupAsync="AddSubAccountGroupDialogAsync"
+                                              OnAttachAccountAsync="AttachAccountAsync">
                             </AccountGroupNode>
                         }
                     </tbody>
@@ -112,6 +113,10 @@
 
                 <UbikModalCenter @ref="_deleteAccountGroupDialog">
                     <AccountGroupConfirmDelete @ref="_deleteAccountGroupMsg" OnCloseAsync="CloseDeleteAccountGroupDialogAsync"></AccountGroupConfirmDelete>
+                </UbikModalCenter>
+
+                <UbikModalCenter @ref="_attachAccountDialog">
+                    <AccountGroupAccountAttach @ref="_attachAccountMsg"></AccountGroupAccountAttach>
                 </UbikModalCenter>
             </CascadingValue>
 
@@ -148,6 +153,9 @@
 
     private UbikModalCenter _deleteAccountGroupDialog = default!;
     private AccountGroupConfirmDelete _deleteAccountGroupMsg = default!;
+
+    private UbikModalCenter _attachAccountDialog = default!;
+    private AccountGroupAccountAttach _attachAccountMsg = default!;
 
     private UbikModal _dialogAccountGrp = default!;
     private bool _editModeAccountGrp = false;
@@ -355,6 +363,12 @@
         _accountGroupCurrent = new();
         _accountGroupCurrent.ParentAccountGroupId = currentAccountGroup.Id;
         await _dialogAccountGrp.ShowDialogAsync();
+    }
+
+    private async Task AttachAccountAsync(AccountGroupModel currentAccountGroup)
+    {
+        _accountGroupCurrent = currentAccountGroup.Clone();
+        await _attachAccountDialog.ShowDialogAsync();
     }
 
     private async Task EditAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
