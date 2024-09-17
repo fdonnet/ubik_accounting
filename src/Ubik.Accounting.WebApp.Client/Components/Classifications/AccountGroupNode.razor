@@ -167,7 +167,7 @@
 
         if (_firstRender)
         {
-            CurrentState.OnChange += OnStateChanged;
+            CurrentState.OnChangeData += OnStateChanged;
         }
 
         _isLoading = true;
@@ -246,6 +246,6 @@
 
     public void Dispose()
     {
-        CurrentState.OnChange -= OnStateChanged;
+        CurrentState.OnChangeData -= OnStateChanged;
     }
 }

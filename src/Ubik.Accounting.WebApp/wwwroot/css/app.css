@@ -881,12 +881,20 @@ p:is(.dark *) {
   z-index: 40;
 }
 
+.z-50 {
+  z-index: 50;
+}
+
 .col-span-1 {
   grid-column: span 1 / span 1;
 }
 
 .col-span-2 {
   grid-column: span 2 / span 2;
+}
+
+.m-4 {
+  margin: 1rem;
 }
 
 .m-auto {
@@ -970,6 +978,10 @@ p:is(.dark *) {
 
 .mt-1 {
   margin-top: 0.25rem;
+}
+
+.mt-10 {
+  margin-top: 2.5rem;
 }
 
 .mt-2 {
@@ -1870,6 +1882,10 @@ p:is(.dark *) {
 .disabled\:text-gray-300:disabled {
   --tw-text-opacity: 1;
   color: rgb(209 213 219 / var(--tw-text-opacity));
+}
+
+.dark\:border:is(.dark *) {
+  border-width: 1px;
 }
 
 .dark\:border-blue-500:is(.dark *) {

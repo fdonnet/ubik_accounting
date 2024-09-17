@@ -10,7 +10,9 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 {
     public class ClassificationStateService
     {
-        public event EventHandler<AccountGrpArgs>? OnChange;
+        public event EventHandler<AccountGrpArgs>? OnChangeData;
+        public event EventHandler? OnChangeClassification;
+
         public List<AccountGroupModel> AccountGroups { get; private set; } = default!;
         public List<AccountGroupModel> AccountGroupsRoot { get; private set; } = [];
         public Dictionary<Guid, List<AccountGroupModel>> AccountGroupsDicByParent { get; private set; } = default!;
@@ -27,6 +29,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
         public void SetClassificationMissingAccounts(List<AccountModel> accounts)
         {
             CurrentClassificationMissingAccounts = accounts;
+            NotifyClassificationChanged();
         }
 
         public void SetAccountGroups(List<AccountGroupModel> accountGroups)
@@ -99,7 +102,9 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
             NotifyStateChanged(accountGroupId, AccountGrpArgsType.Deleted);
         }
 
-        private void NotifyStateChanged(Guid accountGroupId, AccountGrpArgsType type) => OnChange?.Invoke(this, new AccountGrpArgs(accountGroupId, type));
+        private void NotifyStateChanged(Guid accountGroupId, AccountGrpArgsType type) => OnChangeData?.Invoke(this, new AccountGrpArgs(accountGroupId, type));
+
+        private void NotifyClassificationChanged() => OnChangeClassification?.Invoke(this, EventArgs.Empty);
 
         private void BuildAccountGrpDicByParent()
         {

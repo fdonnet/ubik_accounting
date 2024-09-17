@@ -1,5 +1,86 @@
-﻿<h3>AccountGroupAccountAttach</h3>
+﻿@using Ubik.Accounting.WebApp.Client.Components.Common.Search
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
+@using Ubik.Accounting.WebApp.Client.Components.Common.Grid
+@using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
+@using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Pagination
+
+@inject ClassificationStateService CurrentState
+@inject IRenderContext RenderContext
+
+@implements IDisposable
+
+<div class="m-4 flex flex-col">
+    <div class="mt-6">
+        <h3 class="text-center font-normal text-gray-500 dark:text-gray-400">Select an account to be attached to the group ()</h3>
+    </div>
+    <div class="mt-2">
+        <UbikSimpleSearchBar @bind-Value="@_searchValue" PlaceHolderMsg="Search for codes or labels" />
+    </div>
+    <div class="max-w-full overflow-x-auto rounded-lg shadow-md">
+        @if(_accounts != null)
+        {
+            <UbikGrid Items="@_accounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="pagination">
+                <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
+                <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
+            </UbikGrid>
+        }
+    </div>
+    @if (_numberOfAccounts != -1 && _numberOfAccounts > ITEMS_PER_PAGE)
+    {
+        <div class="mt-3 text-sm">
+            <UbikPaginator State="@pagination" />
+        </div>
+    }
+</div>
+
 
 @code {
+    private const int ITEMS_PER_PAGE = 5;
 
+    private string _searchValue = string.Empty;
+    private IQueryable<AccountModel>? _accounts;
+    private bool _firstRender = true;
+    private int _numberOfAccounts = -1;
+
+    PaginationState pagination = new PaginationState { ItemsPerPage = ITEMS_PER_PAGE };
+
+    protected override void OnInitialized()
+    {
+        if (RenderContext.IsPrerendering)
+        {
+            return;
+        }
+    }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        if (_firstRender)
+        {
+            CurrentState.OnChangeClassification += OnClassificationChanged;
+        }
+
+        parameters.SetParameterProperties(this);
+
+        _firstRender = false;
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+    private void LoadMissingAccounts()
+    {
+        _accounts = CurrentState.CurrentClassificationMissingAccounts.AsQueryable();
+        _numberOfAccounts = _accounts.Count();
+    }
+
+    private void OnClassificationChanged(object? sender, EventArgs e)
+    {
+        LoadMissingAccounts();
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        CurrentState.OnChangeClassification -= OnClassificationChanged;
+    }
 }

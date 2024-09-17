@@ -889,6 +889,10 @@ p:is(.dark *) {
   grid-column: span 2 / span 2;
 }
 
+.m-3 {
+  margin: 0.75rem;
+}
+
 .m-auto {
   margin: auto;
 }
@@ -970,6 +974,10 @@ p:is(.dark *) {
 
 .mt-1 {
   margin-top: 0.25rem;
+}
+
+.mt-10 {
+  margin-top: 2.5rem;
 }
 
 .mt-2 {
