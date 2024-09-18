@@ -115,9 +115,9 @@
                     <AccountGroupConfirmDelete @ref="_deleteAccountGroupMsg" OnCloseAsync="CloseDeleteAccountGroupDialogAsync"></AccountGroupConfirmDelete>
                 </UbikModalCenter>
 
-                <UbikModalCenter @ref="_attachAccountDialog" LightGrayMode="false">
+                <UbikModal @ref="_attachAccountDialog" DialogTitle="Attach account">
                     <AccountGroupAccountAttach @ref="_attachAccountMsg"></AccountGroupAccountAttach>
-                </UbikModalCenter>
+                </UbikModal>
             </CascadingValue>
 
             <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
@@ -154,7 +154,7 @@
     private UbikModalCenter _deleteAccountGroupDialog = default!;
     private AccountGroupConfirmDelete _deleteAccountGroupMsg = default!;
 
-    private UbikModalCenter _attachAccountDialog = default!;
+    private UbikModal _attachAccountDialog = default!;
     private AccountGroupAccountAttach _attachAccountMsg = default!;
 
     private UbikModal _dialogAccountGrp = default!;
