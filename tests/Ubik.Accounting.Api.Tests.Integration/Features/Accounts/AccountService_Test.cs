@@ -65,7 +65,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Act
             var result = (await _serviceManager.AccountService.GetAsync(id)).IfRight(err => default!);
             var addToAccountGroup = (await _serviceManager.AccountService
-                .AddInAccountGroupAsync(id, NewId.NextGuid())).IfRight(err => default!);
+                .AddInAccountGroupAsync(new AccountAccountGroup() { AccountId = id, AccountGroupId = NewId.NextGuid() })).IfRight(err => default!);
             var getAccountGroups = (await _serviceManager.AccountService
                 .GetAccountGroupsWithClassificationInfoAsync(NewId.NextGuid())).IfRight(err => default!);
 
@@ -216,7 +216,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         public async Task Update_AccountNotFoundException_AccountIdNotFound()
         {
             //Arrange
-            var account = new Account { Id = Guid.NewGuid(), Code = "TEST", Label = "TEST", CurrencyId =_testValuesForCurrencies.CurrencyId1 };
+            var account = new Account { Id = Guid.NewGuid(), Code = "TEST", Label = "TEST", CurrencyId = _testValuesForCurrencies.CurrencyId1 };
 
             account!.Label = "Modified";
             account.Description = "Modified";
@@ -328,8 +328,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Act
             var result = (await _serviceManager.AccountService
-                .AddInAccountGroupAsync(_testValuesForAccounts.AccountId2,
-                _testValuesForAccountGroups.AccountGroupId1)).IfLeft(r => default!);
+                .AddInAccountGroupAsync(new AccountAccountGroup()
+                {
+                    AccountId = _testValuesForAccounts.AccountId2,
+                    AccountGroupId =
+                _testValuesForAccountGroups.AccountGroupId1
+                })).IfLeft(r => default!);
 
             //Assert
             result.Should()
@@ -348,8 +352,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Act
             var result = (await _serviceManager.AccountService
-                .AddInAccountGroupAsync(_testValuesForAccounts.AccountId2,
-               Guid.NewGuid())).IfRight(r => default!);
+                .AddInAccountGroupAsync(new()
+                {
+                    AccountId = _testValuesForAccounts.AccountId2,
+                    AccountGroupId = Guid.NewGuid()
+                })).IfRight(r => default!);
 
             //Assert
             result.Should()
@@ -366,8 +373,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Act
             var result = (await _serviceManager.AccountService
-                .AddInAccountGroupAsync(_testValuesForAccounts.AccountId1,
-                _testValuesForAccountGroups.AccountGroupId2)).IfRight(r => default!);
+                .AddInAccountGroupAsync(new()
+                {
+                    AccountId = _testValuesForAccounts.AccountId1,
+                    AccountGroupId = _testValuesForAccountGroups.AccountGroupIdFirstLvl1
+                })).IfRight(r => default!);
 
             //Assert
             result.Should()

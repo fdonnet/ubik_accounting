@@ -36,9 +36,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
                 AccountId = NewId.NextGuid()
             };
 
-            _serviceManager.AccountService.AddInAccountGroupAsync(_command.AccountId,_command.AccountGroupId)
-                .Returns(new AccountAccountGroup { AccountGroupId = _command.AccountGroupId,
-                                                   AccountId = _command.AccountId });
+            _serviceManager.AccountService.AddInAccountGroupAsync(Arg.Any<AccountAccountGroup>()).Returns(new AccountAccountGroup() { AccountGroupId = _command.AccountGroupId, AccountId=_command.AccountId} );
 
             _serviceManager.AccountService.DeleteFromAccountGroupAsync(_commandDel.AccountId, _commandDel.AccountGroupId)
                 .Returns(new AccountAccountGroup

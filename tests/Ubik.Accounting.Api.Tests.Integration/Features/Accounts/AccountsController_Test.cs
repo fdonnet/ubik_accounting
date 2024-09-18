@@ -42,7 +42,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}", new StringContent("test", Encoding.UTF8, "application/json"));
 
             var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}");
-            var responseAddToGroup = await httpClient.PutAsync
+            var responseAddToGroup = await httpClient.PostAsync
                 ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId2}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId2}", null);
 
             var responseDelToGroup = await httpClient.DeleteAsync
@@ -77,7 +77,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}", new StringContent("test", Encoding.UTF8, "application/json"));
 
             var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}");
-            var responseAddToGroup = await httpClient.PutAsync
+            var responseAddToGroup = await httpClient.PostAsync
                 ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId2}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId2}", null);
 
             var responseDelToGroup = await httpClient.DeleteAsync
@@ -109,7 +109,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}", new StringContent("test", Encoding.UTF8, "application/json"));
 
             var responseDel = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}");
-            var responseAddToGroup = await httpClient.PutAsync
+            var responseAddToGroup = await httpClient.PostAsync
                 ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId2}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId2}", null);
 
             var responseDelToGroup = await httpClient.DeleteAsync
@@ -404,7 +404,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
-        public async Task PutAddToAccountGroup_AccountAccountGroup_Ok()
+        public async Task PostAddToAccountGroup_AccountAccountGroup_Ok()
         {
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
@@ -413,7 +413,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.PutAsync
+            var response = await httpClient.PostAsync
                 ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId2}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId2}", null);
 
             var result = await response.Content.ReadFromJsonAsync<AddAccountInAccountGroupResult>();
@@ -432,7 +432,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
-        public async Task PutAddToAccountGroup_ProblemDetails_AccountNotFound()
+        public async Task PostAddToAccountGroup_ProblemDetails_AccountNotFound()
         {
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
@@ -441,7 +441,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.PutAsync
+            var response = await httpClient.PostAsync
                 ($"{_baseUrlForV1}/{Guid.NewGuid()}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId2}", null);
 
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
@@ -456,7 +456,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
 
         [Fact]
-        public async Task PutAddToAccountGroup_ProblemDetails_AccountGroupNotFound()
+        public async Task PostAddToAccountGroup_ProblemDetails_AccountGroupNotFound()
         {
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
@@ -479,7 +479,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Fact]
-        public async Task PutAddToAccountGroup_ProblemDetails_AccountAlreadyExistsInClassification()
+        public async Task PostAddToAccountGroup_ProblemDetails_AccountAlreadyExistsInClassification()
         {
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
@@ -488,7 +488,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.PutAsync
+            var response = await httpClient.PostAsync
                 ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}", null);
 
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
