@@ -168,6 +168,7 @@ In program.cs, you can access the config of:
 
 - All components are able to run in auto mode (InteractiveServer or InteractiveWasm)
 - The very first business components about booking accounts management
+- NEW: The second business components to manage accounts classification
 - Authorization components (depending on authorized state)
 - Minimal common components (Alerts, Buttons, Form Inputs, Grid *(Microsoft inspired/copied)*, Modal, Spinners)
 - Tailwind Flowbite design for components
