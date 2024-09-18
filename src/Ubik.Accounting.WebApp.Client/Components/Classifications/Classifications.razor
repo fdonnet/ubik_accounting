@@ -255,7 +255,7 @@
         if (response.IsSuccessStatusCode)
         {
             CurrentState.SetAccountGroups((await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>()
-                ?? []).ToAccountGroupModels().ToList());
+                ?? []).ToAccountGroupModels());
         }
         else
             await ManageError(response);
@@ -289,7 +289,7 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetClassificationAccountsResult>>()
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetClassificationAccountsMissingResult>>()
                     ?? []).ToAccountModels().ToList();
 
             CurrentState.SetClassificationMissingAccounts(result);

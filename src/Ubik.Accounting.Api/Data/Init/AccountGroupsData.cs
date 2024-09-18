@@ -57,7 +57,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
                     ClassificationId = baseValuesForAccountGroupClassifications.ClassificationId2,
-                    ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
+                    ParentAccountGroupId = null,
                     Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                 },

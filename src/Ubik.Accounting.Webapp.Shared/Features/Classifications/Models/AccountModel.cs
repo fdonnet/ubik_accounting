@@ -58,5 +58,20 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
                 Version = x.Version
             });
         }
+
+        public static IEnumerable<AccountModel> ToAccountModels(this IEnumerable<GetClassificationAccountsMissingResult> current)
+        {
+            return current.Select(x => new AccountModel()
+            {
+                Id = x.Id,
+                Label = x.Label,
+                Description = x.Description,
+                Category = x.Category,
+                Domain = x.Domain,
+                CurrencyId = x.CurrencyId,
+                Code = x.Code,
+                Version = x.Version
+            });
+        }
     }
 }

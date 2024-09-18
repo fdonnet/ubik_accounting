@@ -27,6 +27,14 @@ namespace Ubik.Accounting.WebApp.Client.Facades
             return await http.PostAsync("Accounts", new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
         }
 
+        public async Task<HttpResponseMessage> AddAccountInAccountGroupAsync(AddAccountInAccountGroupCommand accountInAccountGrp, CancellationToken cancellationToken = default)
+        {
+            var request = JsonSerializer.Serialize(accountInAccountGrp);
+            return await http.PostAsync($"Accounts/{accountInAccountGrp.AccountId}/AccountGroups/{accountInAccountGrp.AccountGroupId}"
+                , new StringContent(request, Encoding.UTF8, "application/json"), cancellationToken: cancellationToken);
+
+        }
+
         public async Task<HttpResponseMessage> UpdateAccountAsync(Guid id, UpdateAccountCommand account, CancellationToken cancellationToken = default)
         {
             var request = JsonSerializer.Serialize(account);

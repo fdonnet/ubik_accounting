@@ -143,7 +143,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         /// <returns></returns>
         [Authorize(Roles = "ubik_accounting_account_write")]
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]
-        [HttpPut("{id}/AccountGroups/{accountGroupId}")]
+        [HttpPost("{id}/AccountGroups/{accountGroupId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]

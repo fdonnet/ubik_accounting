@@ -96,6 +96,16 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
+        public static AccountAccountGroup ToAccountAccountGroup(this AddAccountInAccountGroupCommand addAccountInAccountGroupCommand)
+        {
+            return new AccountAccountGroup()
+            {
+                Id = NewId.NextGuid(),
+                AccountId = addAccountInAccountGroupCommand.AccountId,
+                AccountGroupId = addAccountInAccountGroupCommand.AccountGroupId
+            };
+        }
+
         public static Account ToAccount(this UpdateAccountCommand updateAccountCommand, Account account)
         {
             account.Id = updateAccountCommand.Id;

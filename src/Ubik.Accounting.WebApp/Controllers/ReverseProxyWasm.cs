@@ -4,6 +4,7 @@ using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using System.Text;
 
 
 namespace Ubik.Accounting.WebApp.Controllers
@@ -40,6 +41,15 @@ namespace Ubik.Accounting.WebApp.Controllers
         public async Task AddAccount(AddAccountCommand command)
         {
             var response = await client.AddAccountAsync(command);
+            await ForwardResponse(response);
+        }
+
+        [Authorize(Roles = "ubik_accounting_account_write")]
+        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
+        [HttpPost("/Accounts/{accountId}/AccountGroups/{accountGroupId}")]
+        public async Task AddAccount(AddAccountInAccountGroupCommand command)
+        {
+            var response = await client.AddAccountInAccountGroupAsync(command);
             await ForwardResponse(response);
         }
 

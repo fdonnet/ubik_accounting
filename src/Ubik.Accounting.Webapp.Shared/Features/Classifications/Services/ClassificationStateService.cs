@@ -32,9 +32,9 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
             NotifyClassificationChanged();
         }
 
-        public void SetAccountGroups(List<AccountGroupModel> accountGroups)
+        public void SetAccountGroups(IEnumerable<AccountGroupModel> accountGroups)
         {
-            AccountGroups = accountGroups;
+            AccountGroups = accountGroups.ToList();
             BuildAccountGrpDicByParent();
         }
 

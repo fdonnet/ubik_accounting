@@ -49,12 +49,12 @@
         foreach (var item in _currentNonVirtualizedViewItems)
         {
             //reflection => see if we can to better
-            if(KeyFieldForRowClick != null)
+            if (KeyFieldForRowClick != null)
             {
                 var prop = typeof(TGridItem).GetProperty(KeyFieldForRowClick);
-                var value = prop?.GetValue(item,null);
+                var value = prop?.GetValue(item, null);
 
-                if(value!=null)
+                if (value != null)
                 {
                     _currentKeyValue = value.ToString();
                 }
@@ -78,12 +78,13 @@
     //TODO: review this part with Tailwind Apply style or safelist to avoid spagetti code
     private void RenderRow(RenderTreeBuilder __builder, int rowIndex, TGridItem item)
     {
-        <tr aria-rowindex="@rowIndex" @onclick="()=>ClickRow(_currentKeyValue)" class="@(ForceCursorPointerForRow?"cursor-pointer ":"")border-t bg-white hover:bg-gray-100 focus:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 focus:hover:bg-gray-600 dark:hover:bg-gray-600">
-            @foreach (var col in _columns)
+        var tmpKey = _currentKeyValue;
+        <tr aria-rowindex="@rowIndex" @onclick="()=>ClickRow(tmpKey)" class="@(ForceCursorPointerForRow?"cursor-pointer ":"")border-t bg-white hover:bg-gray-100 focus:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 focus:hover:bg-gray-600 dark:hover:bg-gray-600">
+        @foreach (var col in _columns)
             {
                 if (_counter == 0 && HighlightFirstColumn)
                 {
-                    if(col.SmallXPadding)
+                    if (col.SmallXPadding)
                     {
                         <th scope="row" @key="@col" class="whitespace-nowrap px-3 py-4 font-medium text-gray-900 dark:text-white">
                             @{

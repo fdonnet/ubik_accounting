@@ -37,8 +37,13 @@ else
         if (_authenticationState is not null)
         {
             var auth = await _authenticationState;
-            _isWriteAuthorized = auth.User.IsInRole("ubik_accounting_classification_write");
-            _isReadAuthorized = auth.User.IsInRole("ubik_accounting_classification_read");
+            _isWriteAuthorized = auth.User.IsInRole("ubik_accounting_classification_write")
+                && auth.User.IsInRole("ubik_accounting_account_write")
+                && auth.User.IsInRole("ubik_accounting_accountgroup_write");
+
+            _isReadAuthorized = auth.User.IsInRole("ubik_accounting_classification_read")
+                && auth.User.IsInRole("ubik_accounting_account_read")
+                && auth.User.IsInRole("ubik_accounting_accountgroup_read");
         }
     }
 }

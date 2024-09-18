@@ -889,10 +889,6 @@ p:is(.dark *) {
   grid-column: span 2 / span 2;
 }
 
-.float-right {
-  float: right;
-}
-
 .m-4 {
   margin: 1rem;
 }
@@ -1226,10 +1222,6 @@ p:is(.dark *) {
   flex-direction: column;
 }
 
-.content-end {
-  align-content: flex-end;
-}
-
 .items-start {
   align-items: flex-start;
 }
@@ -1288,10 +1280,6 @@ p:is(.dark *) {
 
 .text-wrap {
   text-wrap: wrap;
-}
-
-.text-nowrap {
-  text-wrap: nowrap;
 }
 
 .rounded {

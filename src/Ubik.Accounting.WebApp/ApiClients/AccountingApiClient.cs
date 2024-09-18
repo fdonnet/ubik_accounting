@@ -5,6 +5,7 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.WebApp.Security;
+using static System.Net.WebRequestMethods;
 
 namespace Ubik.Accounting.WebApp.ApiClients
 {
@@ -33,11 +34,21 @@ namespace Ubik.Accounting.WebApp.ApiClients
             return await _client.GetAsync("Accounts");
         }
 
-        public async Task<HttpResponseMessage> AddAccountAsync(AddAccountCommand account,CancellationToken cancellationToken = default)
+        public async Task<HttpResponseMessage> AddAccountAsync(AddAccountCommand account, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(account);
             return await _client.PostAsync("Accounts", new StringContent(request, Encoding.UTF8, "application/json"));
+        }
+
+        public async Task<HttpResponseMessage> AddAccountInAccountGroupAsync(AddAccountInAccountGroupCommand accountInAccountGrp,
+            CancellationToken cancellationToken = default)
+        {
+            await SetSecruityHeaderAsync();
+            var request = JsonSerializer.Serialize(accountInAccountGrp);
+            return await _client.PostAsync($"Accounts/{accountInAccountGrp.AccountId}/AccountGroups/{accountInAccountGrp.AccountGroupId}"
+                , new StringContent(request, Encoding.UTF8, "application/json"));
+
         }
 
         public async Task<HttpResponseMessage> UpdateAccountAsync(Guid id, UpdateAccountCommand account, CancellationToken cancellationToken = default)
@@ -65,7 +76,7 @@ namespace Ubik.Accounting.WebApp.ApiClients
             return await _client.GetAsync("Classifications");
         }
 
-        public async Task<HttpResponseMessage> GetClassificationMissingAccountsAsync(Guid id,CancellationToken cancellationToken = default)
+        public async Task<HttpResponseMessage> GetClassificationMissingAccountsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
             return await _client.GetAsync($"Classifications/{id}/MissingAccounts");
@@ -119,7 +130,7 @@ namespace Ubik.Accounting.WebApp.ApiClients
 
         private async Task SetSecruityHeaderAsync()
         {
-            var usertoken =  await _user.GetTokenAsync();
+            var usertoken = await _user.GetTokenAsync();
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {usertoken}");
         }

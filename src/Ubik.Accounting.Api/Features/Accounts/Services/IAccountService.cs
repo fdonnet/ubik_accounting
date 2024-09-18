@@ -12,7 +12,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         public Task<Either<IServiceAndFeatureError, Account>> AddAsync(Account account);
         public Task<Either<IServiceAndFeatureError, Account>> UpdateAsync(Account account);
         public Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id);
-        public Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddInAccountGroupAsync(Guid id, Guid accountGroupId);
+        public Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddInAccountGroupAsync(AccountAccountGroup accountAccountGroup);
         public Task<Either<IServiceAndFeatureError, AccountAccountGroup>> DeleteFromAccountGroupAsync(Guid id, Guid accountGroupId);
         public Task<Either<IServiceAndFeatureError, IEnumerable<AccountGroupClassification>>> GetAccountGroupsWithClassificationInfoAsync(Guid id);
         public Task<IEnumerable<AccountAccountGroup>> GetAllAccountGroupLinksAsync();
