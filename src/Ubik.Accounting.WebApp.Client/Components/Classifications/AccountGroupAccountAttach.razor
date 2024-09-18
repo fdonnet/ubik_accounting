@@ -20,7 +20,14 @@
     <div class="max-w-full overflow-x-auto rounded-lg shadow-md">
         @if (_searchedAccounts != null)
         {
-            <UbikGrid ForceCursorPointerForRow="true" Items="@_searchedAccounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="pagination">
+            <UbikGrid ForceCursorPointerForRow="true"
+                      Items="@_searchedAccounts"
+                      TGridItem="AccountModel"
+                      HighlightFirstColumn="true"
+                      Pagination="pagination"
+                      KeyFieldForRowClick="Id"
+                      OnRowClick="AttachAccount">
+
                 <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
                 <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
             </UbikGrid>
@@ -88,6 +95,11 @@
     {
         _accounts = CurrentState.CurrentClassificationMissingAccounts.AsQueryable();
         _numberOfAccounts = _accounts.Count();
+    }
+
+    private async Task AttachAccount(string accountId)
+    {
+        var accountGuid = Guid.Parse(accountId);
     }
 
     private void OnClassificationChanged(object? sender, EventArgs e)
