@@ -67,7 +67,9 @@ Login credentials:
 | testro/test | read only access |
 | testnorole/test| access the app but has no role in it |
 
-Try to log with different access rights and play with the only available "Accounts" page.
+Try to log with different access rights and play with the only available "Accounts" and "Classifications" pages.
+
+NEW: The Classification page has been added (recursive tree view and minimal state UI service between Blazor components) => far from perfect. 
 
 Now you can run your preferred code editor and start to deep dive... (see below)
 
