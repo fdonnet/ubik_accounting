@@ -414,7 +414,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
             //Act
             var response = await httpClient.PostAsync
-                ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId2}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId2}", null);
+                ($"{_baseUrlForV1}/{Guid.Parse("10070000-5d1a-0015-25ef-08dbfb1d22f2")}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId2}", null);
 
             var result = await response.Content.ReadFromJsonAsync<AddAccountInAccountGroupResult>();
 
@@ -424,11 +424,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                 .NotBeNull()
                 .And.BeOfType<AddAccountInAccountGroupResult>()
                 .And.Match<AddAccountInAccountGroupResult>(x =>
-                    x.AccountId == _testValuesForAccounts.AccountId2);
+                    x.AccountId == Guid.Parse("10070000-5d1a-0015-25ef-08dbfb1d22f2"));
 
             //Clean
             await httpClient.DeleteAsync
-                ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId2}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId2}");
+                ($"{_baseUrlForV1}/{Guid.Parse("10070000-5d1a-0015-25ef-08dbfb1d22f2")}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId2}");
         }
 
         [Fact]
@@ -465,7 +465,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.PutAsync
+            var response = await httpClient.PostAsync
                 ($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId2}/AccountGroups/{Guid.NewGuid()}", null);
 
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
@@ -765,7 +765,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
             //Clean
-            await httpClient.PutAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}",null);
+            await httpClient.PostAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountId1}/AccountGroups/{_testValuesForAccountGroups.AccountGroupId1}",null);
         }
 
         [Fact]
