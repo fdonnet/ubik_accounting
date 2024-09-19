@@ -15,6 +15,7 @@
         public Guid AccountGroupIdFirstLvl1 { get; } = Guid.Parse("1529991f-20dd-4888-88f8-428e59bbc22a");
         public Guid AccountGroupId2 { get; } = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22b");
         public Guid AccountGroupIdForDel { get; } = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbc22c");
+        public Guid AccountGroupIdForDel2 { get; } = Guid.Parse("1624f11f-20dd-4888-88f8-428e59bbc22e");
         public Guid AccountGroupIdForDelWithClass { get; } = Guid.Parse("1524f11f-20dd-4888-88f8-428e59bbcddd");
         public string AccountGroupCode1 { get; } = "102";
     }
