@@ -106,6 +106,7 @@
         if (_firstRender)
         {
             CurrentState.OnChangeClassification += OnClassificationChanged;
+            CurrentState.OnChangeData += OnDataChanged;
         }
 
         parameters.SetParameterProperties(this);
@@ -176,9 +177,16 @@
         InvokeAsync(StateHasChanged);
     }
 
+    private void OnDataChanged(object? sender, EventArgs e)
+    {
+        LoadMissingAccounts();
+        InvokeAsync(StateHasChanged);
+    }
+
     public void Dispose()
     {
         CurrentState.OnChangeClassification -= OnClassificationChanged;
+        CurrentState.OnChangeData -= OnDataChanged;
     }
 
     private async Task CloseAsync(bool withRefresh = false)

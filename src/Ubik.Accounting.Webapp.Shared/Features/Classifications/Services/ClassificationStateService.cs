@@ -12,6 +12,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
     {
         public event EventHandler<AccountGrpArgs>? OnChangeData;
         public event EventHandler? OnChangeClassification;
+        
 
         public List<AccountGroupModel> AccountGroups { get; private set; } = default!;
         public List<AccountGroupModel> AccountGroupsRoot { get; private set; } = [];
@@ -119,6 +120,8 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 
                     if (parentLink.Count == 0)
                         AccountsLinksByParent.Remove(accountGroupLink.AccountGroupId);
+
+                    NotifyStateChanged(accountGroupLink.AccountGroupId, AccountGrpArgsType.AccountRemoved);
                 }
                 else
                 {
@@ -170,7 +173,8 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
     {
         Added,
         Edited,
-        Deleted
+        Deleted,
+        AccountRemoved
     }
 
 

@@ -393,12 +393,14 @@
     private async Task AttachAccountAsync(AccountGroupModel currentAccountGroup)
     {
         _accountGroupCurrent = currentAccountGroup.Clone();
+        await _attachAccountMsg.SetInitialStatus();
         await _attachAccountDialog.ShowDialogAsync();
     }
 
     private async Task DetachAccountAsync(AccountGroupLinkModel accountGroupLink)
     {
         _detachAccountMsg.SetCurrentAccountLink(accountGroupLink);
+        await _detachAccountMsg.SetInitialStatus();
         await _detachAccountDialog.ShowDialogAsync();
     }
 
