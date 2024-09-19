@@ -956,6 +956,10 @@ p:is(.dark *) {
   margin-inline-start: 0.25rem;
 }
 
+.ms-16 {
+  margin-inline-start: 4rem;
+}
+
 .ms-2 {
   margin-inline-start: 0.5rem;
 }
@@ -994,6 +998,10 @@ p:is(.dark *) {
 
 .mt-6 {
   margin-top: 1.5rem;
+}
+
+.ms-10 {
+  margin-inline-start: 2.5rem;
 }
 
 .block {
