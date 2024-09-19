@@ -4,6 +4,7 @@ using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Webapp.Shared.Facades;
+using static System.Net.WebRequestMethods;
 
 namespace Ubik.Accounting.WebApp.Client.Facades
 {
@@ -35,6 +36,13 @@ namespace Ubik.Accounting.WebApp.Client.Facades
 
         }
 
+        public async Task<HttpResponseMessage> DeleteAccountInAccountGroupAsync(DeleteAccountInAccountGroupCommand accountInAccountGrp,
+            CancellationToken cancellationToken = default)
+        {
+            return await http.DeleteAsync($"Accounts/{accountInAccountGrp.AccountId}/AccountGroups/{accountInAccountGrp.AccountGroupId}"
+                ,  cancellationToken: cancellationToken);
+        }
+
         public async Task<HttpResponseMessage> UpdateAccountAsync(Guid id, UpdateAccountCommand account, CancellationToken cancellationToken = default)
         {
             var request = JsonSerializer.Serialize(account);
@@ -55,7 +63,7 @@ namespace Ubik.Accounting.WebApp.Client.Facades
             return await http.GetAsync("Classifications", cancellationToken: cancellationToken);
         }
 
-        public async Task<HttpResponseMessage> GetClassificationMissingAccountsAsync(Guid id,CancellationToken cancellationToken = default)
+        public async Task<HttpResponseMessage> GetClassificationMissingAccountsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await http.GetAsync($"Classifications/{id}/MissingAccounts", cancellationToken: cancellationToken);
         }

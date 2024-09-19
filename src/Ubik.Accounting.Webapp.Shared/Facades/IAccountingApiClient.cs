@@ -10,6 +10,7 @@ namespace Ubik.Accounting.Webapp.Shared.Facades
         Task<HttpResponseMessage> GetAccountAsync(Guid id, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> AddAccountAsync(AddAccountCommand account, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> AddAccountInAccountGroupAsync(AddAccountInAccountGroupCommand accountInAccountGrp, CancellationToken cancellationToken = default);
+        Task<HttpResponseMessage> DeleteAccountInAccountGroupAsync(DeleteAccountInAccountGroupCommand accountInAccountGrp, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> UpdateAccountAsync(Guid id, UpdateAccountCommand account, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> DeleteAccountAsync(Guid id, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> GetAllCurrenciesAsync(CancellationToken cancellationToken = default);

@@ -90,7 +90,8 @@
                                               OnEditAccountGroupAsync="EditAccountGroupDialogAsync"
                                               OnDeleteAccountGroupAsync="DeleteAccountGroupDialogAsync"
                                               OnAddSubAccountGroupAsync="AddSubAccountGroupDialogAsync"
-                                              OnAttachAccountAsync="AttachAccountAsync">
+                                              OnAttachAccountAsync="AttachAccountAsync"
+                                              OnDetachAccountAsync="DetachAccountAsync">
                             </AccountGroupNode>
                         }
                     </tbody>
@@ -119,6 +120,10 @@
                 <UbikModal @ref="_attachAccountDialog" DialogTitle="Attach account">
                     <AccountGroupAccountAttach @ref="_attachAccountMsg" OnCloseAsync="CloseDialogAttachAccountAsync"></AccountGroupAccountAttach>
                 </UbikModal>
+
+                <UbikModalCenter @ref="_detachAccountDialog">
+                    <AccountGroupAccountDetach @ref="_detachAccountMsg" OnCloseAsync="CloseDialogDetachAccountAsync"></AccountGroupAccountDetach>
+                </UbikModalCenter>
             </CascadingValue>
 
             <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
@@ -163,6 +168,9 @@
 
     private UbikModal _attachAccountDialog = default!;
     private AccountGroupAccountAttach _attachAccountMsg = default!;
+
+    private UbikModalCenter _detachAccountDialog = default!;
+    private AccountGroupAccountDetach _detachAccountMsg = default!;
 
     private UbikModal _dialogAccountGrp = default!;
     private bool _editModeAccountGrp = false;
@@ -340,7 +348,11 @@
     private async Task CloseDialogAttachAccountAsync(bool refresh = false)
     {
         await _attachAccountDialog.CloseDialogAsync();
+    }
 
+    private async Task CloseDialogDetachAccountAsync(bool refresh = false)
+    {
+        await _detachAccountDialog.CloseDialogAsync();
     }
 
     private async Task AddClassificationDialogAsync()
@@ -382,6 +394,12 @@
     {
         _accountGroupCurrent = currentAccountGroup.Clone();
         await _attachAccountDialog.ShowDialogAsync();
+    }
+
+    private async Task DetachAccountAsync(AccountGroupLinkModel accountGroupLink)
+    {
+        _detachAccountMsg.SetCurrentAccountLink(accountGroupLink);
+        await _detachAccountDialog.ShowDialogAsync();
     }
 
     private async Task EditAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)

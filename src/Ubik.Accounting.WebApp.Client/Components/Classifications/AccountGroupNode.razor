@@ -65,6 +65,7 @@
                                   OnEditAccountGroupAsync="EditAccountGroupAsync"
                                   OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
                                   OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
+                                  OnDetachAccountAsync="DetachAccountAsync"
                                   OnAttachAccountAsync="AttachAccountAsync">
                 </AccountGroupNode>
             }
@@ -89,7 +90,7 @@
                     @if (IsAuthorizedToModify)
                     {
                         <td class="w-24">
-                            <div class="flex justify-end gap-4 text-blue-700 dark:text-blue-400">
+                            <div class="flex justify-end gap-4 text-blue-700 dark:text-blue-400" @onclick="() => DetachAccountAsync(new(){AccountGroupId=CurrentAccountGroup.Id,AccountId = account.Id})">
                                 <div class="mr-2 flex cursor-pointer flex-row items-center">
                                     <div>
                                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -141,6 +142,8 @@
     public EventCallback<AccountGroupModel> OnAddSubAccountGroupAsync { get; set; }
     [Parameter]
     public EventCallback<AccountGroupModel> OnAttachAccountAsync { get; set; }
+    [Parameter]
+    public EventCallback<AccountGroupLinkModel> OnDetachAccountAsync { get; set; }
 
     private bool _isLoading = false;
     private List<AccountGroupModel> _currentNodeAccountGroups = [];
@@ -151,7 +154,7 @@
     private AccountGroupActionsDialog _actionsAccountGroupContent = default!;
 
     private bool _firstRender = true;
-    
+
     protected override void OnInitialized()
     {
         if (RenderContext.IsPrerendering)
@@ -226,6 +229,11 @@
     private async Task AttachAccountAsync(AccountGroupModel currentAccountGroup)
     {
         await OnAttachAccountAsync.InvokeAsync(currentAccountGroup);
+    }
+
+    private async Task DetachAccountAsync(AccountGroupLinkModel accountGroupLink)
+    {
+        await OnDetachAccountAsync.InvokeAsync(accountGroupLink);
     }
 
     private async Task CloseActionsDialog()

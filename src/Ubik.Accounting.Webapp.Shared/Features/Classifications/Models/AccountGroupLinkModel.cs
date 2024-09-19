@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Contracts.Accounts.Results;
+﻿using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 {
@@ -31,6 +32,24 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
                 AccountGroupId = current.AccountGroupId,
                 AccountId = current.AccountId,
                 Version = current.Version
+            };
+        }
+
+        public static DeleteAccountInAccountGroupCommand ToDeleteAccountInAccountGroupCommand(this AccountGroupLinkModel current)
+        {
+            return new()
+            {
+                AccountGroupId = current.AccountGroupId,
+                AccountId = current.AccountId,
+            };
+        }
+
+        public static AccountGroupLinkModel ToAccountGroupLinkModel(this DeleteAccountInAccountGroupResult current)
+        {
+            return new()
+            {
+                AccountGroupId = current.AccountGroupId,
+                AccountId = current.AccountId,
             };
         }
     }

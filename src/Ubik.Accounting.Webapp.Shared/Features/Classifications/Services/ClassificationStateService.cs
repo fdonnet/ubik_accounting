@@ -106,6 +106,33 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
             }
         }
 
+        public void DetachAccountInAccountGroup(AccountGroupLinkModel accountGroupLink)
+        {
+            if(Accounts.TryGetValue(accountGroupLink.AccountId, out var currentAccount)
+                && CurrentClassificationMissingAccounts.TryGetValue(accountGroupLink.AccountId, out var badAccount) == false)
+            {
+                CurrentClassificationMissingAccounts.Add(accountGroupLink.AccountId, currentAccount.Clone());
+
+                if (AccountsLinksByParent.TryGetValue(accountGroupLink.AccountGroupId, out var parentLink))
+                {
+                    parentLink.RemoveAt(parentLink.FindIndex(a => a.AccountId == accountGroupLink.AccountId));
+
+                    if (parentLink.Count == 0)
+                        AccountsLinksByParent.Remove(accountGroupLink.AccountGroupId);
+                }
+                else
+                {
+                    throw new InvalidOperationException($"The account {accountGroupLink.AccountId} " +
+                    $"is not attached anywhere. Pls refresh.");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException($"The account {accountGroupLink.AccountId} " +
+                    $"you are trying to attach doesn't exist locally or error in data. Pls refresh.");
+            }
+        }
+
         public void RemoveAccountGroup(Guid accountGroupId)
         {
             AccountGroupsDicByParent.Remove(accountGroupId);

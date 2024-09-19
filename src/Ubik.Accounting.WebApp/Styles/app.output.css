@@ -996,14 +996,6 @@ p:is(.dark *) {
   margin-top: 1.5rem;
 }
 
-.ms-16 {
-  margin-inline-start: 4rem;
-}
-
-.ms-10 {
-  margin-inline-start: 2.5rem;
-}
-
 .block {
   display: block;
 }

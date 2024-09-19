@@ -1,0 +1,95 @@
+﻿@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts;
+@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons;
+@using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
+@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.Contracts.Accounts.Commands
+
+@inject IAccountingApiClient Client
+@inject ClassificationStateService CurrentState
+
+<div class="p-4 text-center md:p-5">
+    <svg class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to detach this account (@_account.Code) ?</h3>
+    <UbikButtonDelete @ref="_buttonDelete" Label="Yes, I'm sure" OnClick="ConfirmDeleteAsync"></UbikButtonDelete>
+    <UbikButtonCancel AdditionalCssClass="mt-2 sm:mt-0" Label="No, Cancel" OnClick="()=>CloseAsync(false)"></UbikButtonCancel>
+    <div class="mt-3 flex flex-col text-left">
+        <MsgSuccess @ref="_successMsg" SuccessMessage="please wait, this window is closing ..."></MsgSuccess>
+        <ErrBackendApi @ref="_backendErrorMsg" MainErrorMsg="Cannot delete."></ErrBackendApi>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter(Name = "AccountGroupModel")]
+    public AccountGroupModel AccountGroup { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<bool> OnCloseAsync { get; set; }
+
+    private ErrBackendApi _backendErrorMsg = default!;
+    private MsgSuccess _successMsg = default!;
+    private UbikButtonDelete _buttonDelete = default!;
+    private AccountGroupLinkModel? _currentAccountLink = null;
+    private AccountModel _account = new();
+
+    //Strange, need to be call befor showing the window. Because it seems that when it is not a form with a submit action.
+    //The component keep other children compo status in mem... => it's a bit strange
+    //TODO: study that to do it better, maybe I don't undestand something in the render pipepline
+    public async Task SetInitialStatus()
+    {
+        await _successMsg.HideSuccessAsync();
+        await _backendErrorMsg.DismissErrorAsync();
+    }
+
+    public void SetCurrentAccountLink(AccountGroupLinkModel accountGroupLink)
+    {
+        _currentAccountLink = accountGroupLink;
+        if(CurrentState.Accounts.TryGetValue(accountGroupLink.AccountId, out var current))
+        {
+            _account = current;
+        }
+    }
+
+    private async Task CloseAsync(bool withRefresh = false)
+    {
+        await OnCloseAsync.InvokeAsync(withRefresh);
+    }
+
+    private async Task ConfirmDeleteAsync()
+    {
+        if (_currentAccountLink == null)
+            throw new ArgumentNullException("accountGroupLink param cannot be null, use SetCurrentAccountLink method before component call.");
+
+
+        //TODO: flickering here when a previous error is shown and the user is re-trying...
+        await SetInitialStatus();
+        await _buttonDelete.LoadingStateAsync();
+
+        var response = await Client.DeleteAccountInAccountGroupAsync(_currentAccountLink.ToDeleteAccountInAccountGroupCommand());
+        await _buttonDelete.LoadingStateFinishedAsync();
+
+        if (response != null && response.IsSuccessStatusCode)
+        {
+            await _successMsg.ShowSuccessAsync();
+            ManageResponseReturns(response);
+
+            StateHasChanged();
+            await Task.Delay(700);
+
+            await CloseAsync(true);
+        }
+        else
+        {
+            await _backendErrorMsg.ShowErrorAsync(response);
+            StateHasChanged();
+        }
+    }
+
+    private void ManageResponseReturns(HttpResponseMessage response)
+    {
+        CurrentState.DetachAccountInAccountGroup(_currentAccountLink!);
+    }
+}

@@ -54,6 +54,15 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]
+        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
+        [HttpDelete("/Accounts/{accountId}/AccountGroups/{accountGroupId}")]
+        public async Task DeleteAccount(Guid accountId, Guid accountGroupId)
+        {
+            var response = await client.DeleteAccountInAccountGroupAsync(new() { AccountGroupId = accountGroupId, AccountId = accountId });
+            await ForwardResponse(response);
+        }
+
+        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpPut("/Accounts/{id}")]
         public async Task UpdateAccount(Guid id, UpdateAccountCommand command)
         {
