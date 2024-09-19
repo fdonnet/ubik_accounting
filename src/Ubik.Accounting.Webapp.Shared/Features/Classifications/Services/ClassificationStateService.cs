@@ -12,7 +12,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
     {
         public event EventHandler<AccountGrpArgs>? OnChangeData;
         public event EventHandler? OnChangeClassification;
-        
+
 
         public List<AccountGroupModel> AccountGroups { get; private set; } = default!;
         public List<AccountGroupModel> AccountGroupsRoot { get; private set; } = [];
@@ -109,7 +109,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 
         public void DetachAccountInAccountGroup(AccountGroupLinkModel accountGroupLink)
         {
-            if(Accounts.TryGetValue(accountGroupLink.AccountId, out var currentAccount)
+            if (Accounts.TryGetValue(accountGroupLink.AccountId, out var currentAccount)
                 && CurrentClassificationMissingAccounts.TryGetValue(accountGroupLink.AccountId, out var badAccount) == false)
             {
                 CurrentClassificationMissingAccounts.Add(accountGroupLink.AccountId, currentAccount.Clone());
@@ -136,10 +136,23 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
             }
         }
 
+        //TODO: need some recursion here
         public void RemoveAccountGroup(Guid accountGroupId)
         {
             AccountGroupsDicByParent.Remove(accountGroupId);
             AccountGroups.RemoveAt(AccountGroups.FindIndex(a => a.Id == accountGroupId));
+
+            if (AccountsLinksByParent.TryGetValue(accountGroupId, out var accountLinks))
+            {
+                foreach (var accountLink in accountLinks)
+                {
+                    if(Accounts.TryGetValue(accountLink.AccountId, out var account))
+                    {
+                        CurrentClassificationMissingAccounts.Add(account.Id, account.Clone());
+                    }
+                }
+            }
+
             AccountsLinksByParent.Remove(accountGroupId);
             NotifyStateChanged(accountGroupId, AccountGrpArgsType.Deleted);
         }
