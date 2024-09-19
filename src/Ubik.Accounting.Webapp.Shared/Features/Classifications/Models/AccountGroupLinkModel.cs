@@ -12,7 +12,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 
     public static class AccountGroupLinkModelMappers
     {
-        public static IEnumerable<AccountGroupLinkModel> ToAccountGroupLinkModel(this IEnumerable<GetAllAccountGroupLinksResult> current)
+        public static IEnumerable<AccountGroupLinkModel> ToAccountGroupLinkModels(this IEnumerable<GetAllAccountGroupLinksResult> current)
         {
             return current.Select(x => new AccountGroupLinkModel()
             {
@@ -21,6 +21,17 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
                 AccountId = x.AccountId,    
                 Version = x.Version
             });
+        }
+
+        public static AccountGroupLinkModel ToAccountGroupLinkModel(this AddAccountInAccountGroupResult current)
+        {
+            return new()
+            {
+                Id=current.Id,
+                AccountGroupId = current.AccountGroupId,
+                AccountId = current.AccountId,
+                Version = current.Version
+            };
         }
     }
 }

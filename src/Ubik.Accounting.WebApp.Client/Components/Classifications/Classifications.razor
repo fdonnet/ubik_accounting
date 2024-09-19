@@ -116,7 +116,7 @@
                 </UbikModalCenter>
 
                 <UbikModal @ref="_attachAccountDialog" DialogTitle="Attach account">
-                    <AccountGroupAccountAttach @ref="_attachAccountMsg"></AccountGroupAccountAttach>
+                    <AccountGroupAccountAttach @ref="_attachAccountMsg" OnCloseAsync="CloseDialogAttachAccountAsync"></AccountGroupAccountAttach>
                 </UbikModal>
             </CascadingValue>
 
@@ -277,7 +277,7 @@
         if (response.IsSuccessStatusCode)
         {
             var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupLinksResult>>()
-                    ?? []).ToAccountGroupLinkModel();
+                    ?? []).ToAccountGroupLinkModels();
 
             CurrentState.BuildAccountLinksByParentDic(result);
         }
@@ -328,6 +328,12 @@
     {
         await _dialogAccountGrp.CloseDialogAsync();
         CurrentState.RefreshAccountGroupsRoot(_currentClassificationId);
+    }
+
+    private async Task CloseDialogAttachAccountAsync(bool refresh = false)
+    {
+        await _attachAccountDialog.CloseDialogAsync();
+
     }
 
     private async Task AddClassificationDialogAsync()

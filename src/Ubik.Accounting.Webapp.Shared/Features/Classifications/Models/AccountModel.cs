@@ -26,6 +26,21 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
         [Required]
         public Guid? CurrencyId { get; set; }
         public Guid Version { get; init; }
+
+        public AccountModel Clone()
+        {
+            return new()
+            {
+                Id = Id,
+                Code = Code,
+                Label = Label,
+                Description = Description,
+                Category = Category,
+                Domain = Domain,
+                CurrencyId = CurrencyId,
+                Version = Version
+            };
+        }
     }
     public static class AccountModelMappers
     {

@@ -123,7 +123,7 @@
 
     private void LoadMissingAccounts()
     {
-        _accounts = CurrentState.CurrentClassificationMissingAccounts.AsQueryable();
+        _accounts = CurrentState.CurrentClassificationMissingAccounts.Values.AsQueryable();
         _numberOfAccounts = _accounts.Count();
     }
 
@@ -141,7 +141,9 @@
         if (response != null && response.IsSuccessStatusCode)
         {
             await _successMsg.ShowSuccessAsync();
-            //await ManageResponseReturns(response);
+            await ManageResponseReturns(response);
+
+            LoadMissingAccounts();
 
             StateHasChanged();
             await Task.Delay(700);
@@ -153,6 +155,19 @@
             await _backendErrorMsg.ShowErrorAsync(response);
             StateHasChanged();
         }
+    }
+
+    private async Task ManageResponseReturns(HttpResponseMessage response)
+    {
+
+        var result = await response.Content.ReadFromJsonAsync<AddAccountInAccountGroupResult>();
+
+        if (result == null)
+            throw new ArgumentNullException("Cannot access response result for AddAccountInAccountGroupResult");
+
+        var resultModel = result.ToAccountGroupLinkModel();
+
+        CurrentState.AttachAccountInAccountGroup(resultModel);
     }
 
     private void OnClassificationChanged(object? sender, EventArgs e)

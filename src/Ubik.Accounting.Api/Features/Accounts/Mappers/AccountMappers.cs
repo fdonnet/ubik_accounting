@@ -185,8 +185,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
         {
             return new AddAccountInAccountGroupResult
             {
+                Id = accountAccountGroup.AccountId,
                 AccountId = accountAccountGroup.AccountId,
-                AccountGroupId = accountAccountGroup.AccountGroupId
+                AccountGroupId = accountAccountGroup.AccountGroupId,
+                Version = accountAccountGroup.Version,
             };
         }
 

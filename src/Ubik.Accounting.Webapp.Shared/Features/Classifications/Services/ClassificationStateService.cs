@@ -18,7 +18,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
         public Dictionary<Guid, List<AccountGroupModel>> AccountGroupsDicByParent { get; private set; } = default!;
         public Dictionary<Guid, AccountModel> Accounts { get; private set; } = default!;
         public Dictionary<Guid, List<AccountGroupLinkModel>> AccountsLinksByParent { get; private set; } = default!;
-        public List<AccountModel> CurrentClassificationMissingAccounts { get; private set; } = default!;
+        public Dictionary<Guid, AccountModel> CurrentClassificationMissingAccounts { get; private set; } = default!;
 
         public void RefreshAccountGroupsRoot(Guid? classificationId)
         {
@@ -28,7 +28,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 
         public void SetClassificationMissingAccounts(List<AccountModel> accounts)
         {
-            CurrentClassificationMissingAccounts = accounts;
+            CurrentClassificationMissingAccounts = accounts.ToDictionary(x => x.Id, x => x);
             NotifyClassificationChanged();
         }
 
@@ -92,6 +92,18 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
             AccountGroups[AccountGroups.FindIndex(a => a.Id == accountGroup.Id)] = accountGroup;
 
             NotifyStateChanged(accountGroup.Id, AccountGrpArgsType.Edited);
+        }
+
+        public void AttachAccountInAccountGroup(AccountGroupLinkModel accountGroupLink)
+        {
+            CurrentClassificationMissingAccounts.Remove(accountGroupLink.AccountId);
+
+            if (AccountsLinksByParent.TryGetValue(accountGroupLink.AccountGroupId, out var current))
+                current.Add(accountGroupLink);
+            else
+            {
+                AccountsLinksByParent.Add(accountGroupLink.AccountGroupId, [accountGroupLink]);
+            }
         }
 
         public void RemoveAccountGroup(Guid accountGroupId)
