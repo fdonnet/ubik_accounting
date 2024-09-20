@@ -46,7 +46,7 @@
 
     public record BaseValuesForCurrencies
     {
-        public Guid CurrencyId1 { get; } = Guid.Parse("ccfe1b29-6d1b-420c-ac64-fc8f1a6153a1");
-        public Guid CurrencyId2 { get; } = Guid.Parse("cc1e1b29-6d1b-420c-ac64-fc8f1a6153a2");
+        public Guid CurrencyId1 { get; } = Guid.Parse("248e0000-5dd4-0015-38c5-08dcd98e5b2d");
+        public Guid CurrencyId2 { get; } = Guid.Parse("248e0000-5dd4-0015-291d-08dcd98e55f8");
     }
 }
