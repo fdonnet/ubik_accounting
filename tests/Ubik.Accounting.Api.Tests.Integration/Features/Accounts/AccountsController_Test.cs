@@ -722,7 +722,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountIdForDel}");
+            var response = await httpClient.DeleteAsync($"{_baseUrlForV1}/{Guid.Parse("10070000-5d1a-0015-a001-08dbfb1e06dc")}");
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
