@@ -52,7 +52,26 @@
             </CascadingValue>
         }
 
-        <div class="flex w-full flex-col sm:flex-row">
+        @if (_currentClassificationId != null)
+        {
+            @if (CurrentState.CurrentClassificationMissingAccounts.Count > 0)
+            {
+                <div class="mb-4 rounded-lg bg-yellow-50 p-4 text-sm text-yellow-800 dark:bg-gray-800 dark:text-yellow-300" role="alert">
+                    <div class="font-medium">Classification not ready!</div>
+                    <div>Pls attach all the remaning accounts.</div>
+                </div>
+            }
+            else
+            {
+                <div class="mb-4 rounded-lg bg-green-50 p-4 text-sm text-green-800 dark:bg-gray-800 dark:text-green-400" role="alert">
+                    <div class="font-medium">Classification ready!</div>
+                    <div>You can now use it as accounts representation.</div>
+                </div>
+            }
+        }
+
+
+        <div class="mt-2 flex w-full flex-col sm:flex-row">
             @if (_currentClassificationId != null && IsAuthorizedToModify)
             {
                 <div class="flex w-full flex-row">
@@ -216,13 +235,13 @@
 
     private async Task LoadClassificationMissingAccounts()
     {
-        if(_currentClassificationId == null)
+        if (_currentClassificationId == null)
         {
             CurrentState.SetClassificationMissingAccounts(new());
         }
         else
         {
-            var classificationMissingAccounts =  await Client.GetClassificationMissingAccountsAsync((Guid)_currentClassificationId);
+            var classificationMissingAccounts = await Client.GetClassificationMissingAccountsAsync((Guid)_currentClassificationId);
 
             await LoadAccountsMissingToCurrentClassification(classificationMissingAccounts);
         }
