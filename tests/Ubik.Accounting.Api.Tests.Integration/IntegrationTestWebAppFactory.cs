@@ -53,7 +53,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
                 .Build();
 
             _keycloackContainer = new KeycloakBuilder()
-                                .WithImage("quay.io/keycloak/keycloak:latest")
+                                .WithImage("quay.io/keycloak/keycloak:21.1")
                                 .WithBindMount(GetWslAbsolutePath("./import"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
                                 .WithCommand(new string[] { "--import-realm" })
                                 .Build();

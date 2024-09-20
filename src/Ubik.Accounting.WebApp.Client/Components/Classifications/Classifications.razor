@@ -1,0 +1,470 @@
+﻿@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
+@using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
+@using Ubik.Accounting.WebApp.Client.Components.Common.Forms
+@using Ubik.Accounting.Contracts.Classifications.Results
+@using Ubik.Accounting.Contracts.AccountGroups.Results
+@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
+@using Ubik.Accounting.WebApp.Client.Components.Common.Modal
+@using Ubik.Accounting.WebApp.Client.Components.Common.Spinners
+
+@inject IAccountingApiClient Client
+@inject IRenderContext RenderContext
+@inject ClassificationStateService CurrentState
+
+@if (IsAuthorizedToRead)
+{
+    <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
+    @if (!_isLoading)
+    {
+        <div class="mb-5 flex items-center">
+            <div class="w-full lg:w-[520px]">
+                <UbikInputSelect Id="CurrentClassification" TValue="Guid?"
+                                 ValueExpression="@(() => _currentClassificationId)"
+                                 Value="@_currentClassificationId"
+                                 ValueChanged="@((Guid? args) => OnClassificationChanged(args))"
+                                 PlaceholderText="Select a classification"
+                                 Data="_classifications"
+                                 DataKey="Id"
+                                 DataValue="Code">
+                </UbikInputSelect>
+            </div>
+
+            @if (IsAuthorizedToModify)
+            {
+                <div class="ms-2">
+                    or
+                </div>
+                <div class="ms-2">
+                    <UbikButton Label="Add new" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddClassificationDialogAsync"></UbikButton>
+                </div>
+            }
+        </div>
+
+        @if (IsAuthorizedToModify)
+        {
+            <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
+                <UbikModal @ref="_classificationDialog" ButtonLabel="Add" DialogTitle="@_dialogTitle" CloseOnClickOutisde="false">
+                    <ClassificationForm EditMode="@_editMode" OnClassificationChange="ClassificationAddedOrEdited" OnClose="CloseClassificationDialogAsync"></ClassificationForm>
+                </UbikModal>
+            </CascadingValue>
+        }
+
+        @if (_currentClassificationId != null)
+        {
+            @if (CurrentState.CurrentClassificationMissingAccounts.Count > 0)
+            {
+                <div class="mb-4 rounded-lg bg-yellow-50 p-4 text-sm text-yellow-800 dark:bg-gray-800 dark:text-yellow-300" role="alert">
+                    <div class="font-medium">Classification not ready!</div>
+                    <div>Pls attach all the remaning accounts.</div>
+                </div>
+            }
+            else
+            {
+                <div class="mb-4 rounded-lg bg-green-50 p-4 text-sm text-green-800 dark:bg-gray-800 dark:text-green-400" role="alert">
+                    <div class="font-medium">Classification ready!</div>
+                    <div>You can now use it as accounts representation.</div>
+                </div>
+            }
+        }
+
+
+        <div class="mt-2 flex w-full flex-col sm:flex-row">
+            @if (_currentClassificationId != null && IsAuthorizedToModify)
+            {
+                <div class="flex w-full flex-row">
+                    <div>
+                        <UbikButton Label="Edit" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="EditClassificationDialogAsync"></UbikButton>
+                    </div>
+                    <div class="ms-2">
+                        <UbikButton Label="Add root" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="AddAccountGroupRootDialogAsync"></UbikButton>
+                    </div>
+                </div>
+            }
+            @if (CurrentState.AccountGroupsRoot.Any())
+            {
+                <div class="mt-2 flex w-full flex-row justify-start @(IsAuthorizedToModify ? "sm:justify-end":"") sm:mt-0">
+                    <div class="mr-2">
+                        <UbikButtonAlternative Label="Expand all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>CurrentState.ToggleExpandHideAllAccountGroups(true)"></UbikButtonAlternative>
+                    </div>
+                    <div>
+                        <UbikButtonAlternative Label="Hide all" Type="button" AdditionalCssClass="whitespace-nowrap" IsDisabled=@_isButtonsDisabled OnClick="()=>CurrentState.ToggleExpandHideAllAccountGroups(false)"></UbikButtonAlternative>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (CurrentState.AccountGroupsRoot.Any())
+        {
+            <div class="mt-2 overflow-x-auto rounded-lg bg-white p-2 shadow-md dark:bg-gray-800">
+                <table class="w-full whitespace-nowrap">
+                    <tbody>
+                        @foreach (var node in CurrentState.AccountGroupsRoot)
+                        {
+                            <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify"
+                                              @key="node"
+                                              CurrentAccountGroup="@node"
+                                              OnEditAccountGroupAsync="EditAccountGroupDialogAsync"
+                                              OnDeleteAccountGroupAsync="DeleteAccountGroupDialogAsync"
+                                              OnAddSubAccountGroupAsync="AddSubAccountGroupDialogAsync"
+                                              OnAttachAccountAsync="AttachAccountAsync"
+                                              OnDetachAccountAsync="DetachAccountAsync">
+                            </AccountGroupNode>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        @if (_currentClassificationId != null && IsAuthorizedToModify)
+        {
+            <div class="mt-4">
+                <UbikButtonDelete Label="Delete this classification" Type="buttoon" AdditionalCssClass="whitespace-nowrap" OnClick="DeleteClassificationConfirmationAsync"></UbikButtonDelete>
+            </div>
+        }
+
+        @if (IsAuthorizedToModify)
+        {
+            <CascadingValue Name="AccountGroupModel" Value="@_accountGroupCurrent">
+                <UbikModal @ref="_dialogAccountGrp" ButtonLabel="Add" DialogTitle="@_dialogAccountGrpTitle" CloseOnClickOutisde="false">
+                    <AccountGroupForm EditMode="@_editModeAccountGrp" ClassificationId="_currentClassificationId" OnClose="CloseDialogAccountGroupAsync"></AccountGroupForm>
+                </UbikModal>
+
+                <UbikModalCenter @ref="_deleteAccountGroupDialog">
+                    <AccountGroupConfirmDelete @ref="_deleteAccountGroupMsg" OnCloseAsync="CloseDeleteAccountGroupDialogAsync"></AccountGroupConfirmDelete>
+                </UbikModalCenter>
+
+                <UbikModal @ref="_attachAccountDialog" DialogTitle="Attach account">
+                    <AccountGroupAccountAttach @ref="_attachAccountMsg" OnCloseAsync="CloseDialogAttachAccountAsync"></AccountGroupAccountAttach>
+                </UbikModal>
+
+                <UbikModalCenter @ref="_detachAccountDialog">
+                    <AccountGroupAccountDetach @ref="_detachAccountMsg" OnCloseAsync="CloseDialogDetachAccountAsync"></AccountGroupAccountDetach>
+                </UbikModalCenter>
+            </CascadingValue>
+
+            <CascadingValue Name="ClassificationModel" Value="@_classificationCurrent">
+                <UbikModalCenter @ref="_deleteClassificationDialog">
+                    <ClassificationConfirmDelete @ref="_deleteClassificationMsg" OnCloseAsync="CloseDeleteClassificationDialogAsync"></ClassificationConfirmDelete>
+                </UbikModalCenter>
+            </CascadingValue>
+        }
+    }
+    else
+    {
+        <div class="ms-2">
+            <Spinner></Spinner>
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public bool IsAuthorizedToRead { get; set; } = false;
+    [Parameter]
+    public bool IsAuthorizedToModify { get; set; } = false;
+
+    private Guid? _currentClassificationId { get; set; }
+    private List<ClassificationModel>? _classifications;
+    private ClassificationModel? _classificationCurrent = new();
+
+    private AccountGroupModel _accountGroupCurrent = new();
+
+    private ErrBackendApi _backendErrorMsg = default!;
+    private bool _isLoading = false;
+
+    private UbikModal _classificationDialog = default!;
+    private bool _editMode = false;
+    private string _dialogTitle = "Add classification";
+
+    private UbikModalCenter _deleteClassificationDialog = default!;
+    private ClassificationConfirmDelete _deleteClassificationMsg = default!;
+
+    private UbikModalCenter _deleteAccountGroupDialog = default!;
+    private AccountGroupConfirmDelete _deleteAccountGroupMsg = default!;
+
+    private UbikModal _attachAccountDialog = default!;
+    private AccountGroupAccountAttach _attachAccountMsg = default!;
+
+    private UbikModalCenter _detachAccountDialog = default!;
+    private AccountGroupAccountDetach _detachAccountMsg = default!;
+
+    private UbikModal _dialogAccountGrp = default!;
+    private bool _editModeAccountGrp = false;
+    private string _dialogAccountGrpTitle = "Add account group";
+
+    private bool _isButtonsDisabled
+    {
+        get
+        {
+            return _isLoading || RenderContext.IsPrerendering;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+
+        if (RenderContext.IsPrerendering)
+        {
+            return;
+        }
+
+        await LoadDataAync();
+        await OnClassificationChanged(null);
+
+        _isLoading = false;
+    }
+
+    private async Task LoadDataAync()
+    {
+        var taskClassification = Client.GetAllClassificationsAsync();
+        var taskAccountGroups = Client.GetAllAccountGroupsAsync();
+        var taskAccounts = Client.GetAllAccountsAsync();
+        var taskAccountsLinks = Client.GetAllAccountsLinksAsync();
+
+        await Task.WhenAll(taskClassification, taskAccountGroups, taskAccounts, taskAccountsLinks);
+
+        await LoadClassificationsAsync(await taskClassification);
+        await LoadAccountGroupsAsync(await taskAccountGroups);
+        await LoadAccountsAsync(await taskAccounts);
+        await LoadAccountsLinksAsync(await taskAccountsLinks);
+    }
+
+    private async Task LoadClassificationMissingAccounts()
+    {
+        if (_currentClassificationId == null)
+        {
+            CurrentState.SetClassificationMissingAccounts(new());
+        }
+        else
+        {
+            var classificationMissingAccounts = await Client.GetClassificationMissingAccountsAsync((Guid)_currentClassificationId);
+
+            await LoadAccountsMissingToCurrentClassification(classificationMissingAccounts);
+        }
+    }
+
+    private async Task OnClassificationChanged(Guid? classificationId)
+    {
+        _currentClassificationId = classificationId;
+        await LoadClassificationMissingAccounts();
+        SelectClassification();
+        CurrentState.RefreshAccountGroupsRoot(_currentClassificationId);
+    }
+
+    private void SelectClassification()
+    {
+        if (_currentClassificationId == null)
+            _classificationCurrent = new();
+        else
+            _classificationCurrent = _classifications
+                                        ?.Where(c => c.Id == _currentClassificationId)
+                                        .Select(x => new ClassificationModel()
+                                            {
+                                                Code = x.Code,
+                                                Description = x.Description,
+                                                Id = x.Id,
+                                                Label = x.Label,
+                                                Version = x.Version
+                                            })
+                                        .FirstOrDefault();
+    }
+
+    private async Task LoadClassificationsAsync(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            _classifications = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllClassificationsResult>>()
+                ?? []).ToClassificationModel().OrderBy(c => c.Code).ToList();
+        }
+        else
+            await ManageError(response);
+    }
+
+    private async Task LoadAccountGroupsAsync(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            CurrentState.SetAccountGroups((await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>()
+                ?? []).ToAccountGroupModels());
+        }
+        else
+            await ManageError(response);
+    }
+
+    private async Task LoadAccountsAsync(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            CurrentState.SetAccounts((await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>()
+                    ?? []).ToAccountModels().ToDictionary(x => x.Id));
+        }
+        else
+            await ManageError(response);
+    }
+
+    private async Task LoadAccountsLinksAsync(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupLinksResult>>()
+                    ?? []).ToAccountGroupLinkModels();
+
+            CurrentState.BuildAccountLinksByParentDic(result);
+        }
+        else
+            await ManageError(response);
+    }
+
+    private async Task LoadAccountsMissingToCurrentClassification(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetClassificationAccountsMissingResult>>()
+                    ?? []).ToAccountModels().ToList();
+
+            CurrentState.SetClassificationMissingAccounts(result);
+        }
+        else
+            await ManageError(response);
+    }
+
+    private async Task ManageError(HttpResponseMessage response)
+    {
+        await _backendErrorMsg.ShowErrorAsync(response);
+        StateHasChanged();
+    }
+
+    private void ClassificationAddedOrEdited(ClassificationModel classification)
+    {
+        _classificationCurrent = classification;
+    }
+
+    private async Task CloseClassificationDialogAsync(bool refresh = false)
+    {
+        await _classificationDialog.CloseDialogAsync();
+
+        if (refresh)
+        {
+            _isLoading = true;
+
+            await LoadDataAync();
+            await OnClassificationChanged(_classificationCurrent?.Id);
+
+            _isLoading = false;
+        }
+    }
+
+    private async Task CloseDialogAccountGroupAsync(bool refresh = false)
+    {
+        await _dialogAccountGrp.CloseDialogAsync();
+        CurrentState.RefreshAccountGroupsRoot(_currentClassificationId);
+    }
+
+    private async Task CloseDialogAttachAccountAsync(bool refresh = false)
+    {
+        await _attachAccountDialog.CloseDialogAsync();
+    }
+
+    private async Task CloseDialogDetachAccountAsync(bool refresh = false)
+    {
+        await _detachAccountDialog.CloseDialogAsync();
+    }
+
+    private async Task AddClassificationDialogAsync()
+    {
+        _dialogTitle = "Add a classification";
+        _editMode = false;
+        _classificationCurrent = new();
+        await _classificationDialog.ShowDialogAsync();
+    }
+
+    private async Task EditClassificationDialogAsync()
+    {
+        if (_classificationCurrent != null)
+        {
+            _dialogTitle = $"Edit {_classificationCurrent.Code} classification";
+            _editMode = true;
+            await _classificationDialog.ShowDialogAsync();
+        }
+    }
+
+    private async Task AddAccountGroupRootDialogAsync()
+    {
+        _dialogAccountGrpTitle = "Add a root";
+        _editModeAccountGrp = false;
+        _accountGroupCurrent = new();
+        await _dialogAccountGrp.ShowDialogAsync();
+    }
+
+    private async Task AddSubAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
+    {
+        _dialogAccountGrpTitle = $"Add a sub grp for ({currentAccountGroup.Code})";
+        _editModeAccountGrp = false;
+        _accountGroupCurrent = new();
+        _accountGroupCurrent.ParentAccountGroupId = currentAccountGroup.Id;
+        await _dialogAccountGrp.ShowDialogAsync();
+    }
+
+    private async Task AttachAccountAsync(AccountGroupModel currentAccountGroup)
+    {
+        _accountGroupCurrent = currentAccountGroup.Clone();
+        await _attachAccountMsg.SetInitialStatus();
+        await _attachAccountDialog.ShowDialogAsync();
+    }
+
+    private async Task DetachAccountAsync(AccountGroupLinkModel accountGroupLink)
+    {
+        _detachAccountMsg.SetCurrentAccountLink(accountGroupLink);
+        await _detachAccountMsg.SetInitialStatus();
+        await _detachAccountDialog.ShowDialogAsync();
+    }
+
+    private async Task EditAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
+    {
+        _editModeAccountGrp = true;
+        _accountGroupCurrent = currentAccountGroup.Clone();
+        _dialogAccountGrpTitle = $"Edit {_accountGroupCurrent.Code}";
+        await _dialogAccountGrp.ShowDialogAsync();
+    }
+
+    private async Task DeleteAccountGroupDialogAsync(AccountGroupModel currentAccountGroup)
+    {
+        _accountGroupCurrent = currentAccountGroup.Clone();
+        await _deleteAccountGroupMsg.SetInitialStatus();
+        await _deleteAccountGroupDialog.ShowDialogAsync();
+    }
+
+    private async Task DeleteClassificationConfirmationAsync()
+    {
+        if (_classificationCurrent != null)
+        {
+            await _deleteClassificationMsg.SetInitialStatus();
+            await _deleteClassificationDialog.ShowDialogAsync();
+        }
+    }
+
+    private async Task CloseDeleteClassificationDialogAsync(bool refresh = false)
+    {
+        await _deleteClassificationDialog.CloseDialogAsync();
+        if (refresh)
+        {
+            _isLoading = true;
+
+            await LoadDataAync();
+            await OnClassificationChanged(null);
+
+            _isLoading = false;
+        }
+    }
+
+    private async Task CloseDeleteAccountGroupDialogAsync(bool refresh = false)
+    {
+        await _deleteAccountGroupDialog.CloseDialogAsync();
+        CurrentState.RefreshAccountGroupsRoot(_currentClassificationId);
+    }
+
+}

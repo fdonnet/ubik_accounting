@@ -1,4 +1,5 @@
-﻿using LanguageExt;
+﻿using Dapper;
+using LanguageExt;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
@@ -6,17 +7,20 @@ using Ubik.Accounting.Api.Features.AccountGroups.Errors;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Errors;
+using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
     public class AccountGroupService : IAccountGroupService
     {
         private readonly AccountingContext _context;
-        public AccountGroupService(AccountingContext ctx)
+        private readonly ICurrentUserService _userService;
+        public AccountGroupService(AccountingContext ctx, ICurrentUserService userService)
         {
             _context = ctx;
-
+            _userService = userService;
         }
+
         public async Task<Either<IServiceAndFeatureError, AccountGroup>> AddAsync(AccountGroup accountGroup)
         {
             return await ValidateIfNotAlreadyExistsAsync(accountGroup).ToAsync()
@@ -64,20 +68,27 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             return accountGroups;
         }
 
-        public async Task<Either<IServiceAndFeatureError, AccountGroup>> GetWithChildAccountsAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetChildAccountsAsync(Guid id)
         {
-            var accountGroup = await _context.AccountGroups
-                                    .Include(a => a.Accounts)
-                                    .FirstOrDefaultAsync(g => g.Id == id);
+            var accounts = (await GetAsync(id))
+                    .MapAsync(a =>
+                    {
+                        var p = new DynamicParameters();
+                        p.Add("@account_group_id", id);
+                        p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
 
+                        var con = _context.Database.GetDbConnection();
+                        var sql = """
+                                        SELECT a.* 
+                                        FROM accounts a
+                                        INNER JOIN accounts_account_groups aag ON a.id = aag.account_id
+                                        WHERE aag.account_group_id = @account_group_id
+                                        """;
 
+                        return con.QueryAsync<Account>(sql, p);
+                    });
 
-            if (accountGroup is null)
-                return new AccountGroupNotFoundError(id);
-
-            accountGroup.Accounts ??= new List<Account>();
-
-            return accountGroup;
+            return await accounts;
         }
 
         public async Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateAsync(AccountGroup accountGroup)

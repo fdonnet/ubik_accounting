@@ -1,0 +1,173 @@
+﻿@using Ubik.Accounting.Contracts.AccountGroups.Results
+@using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
+@using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts;
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
+
+@inject ClassificationStateService CurrentState
+@inject IAccountingApiClient Client
+
+<EditForm Model="@AccountGroup" OnSubmit="SubmitAsync" FormName="AddAccountGroup" class="p-4 md:p-5">
+    <DataAnnotationsValidator />
+    <div class="grid-cols-2 mb-4 grid gap-4">
+        <div class="col-span-2 sm:col-span-1">
+            <UbikInputText Id="AccountGrpCode" Label="Code"
+                           PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="AccountGroup.Code"
+                           ValidationFor="@(()=>AccountGroup.Code)"></UbikInputText>
+        </div>
+        <div class="col-span-2 sm:col-span-1">
+            <UbikInputText Id="AccountGrpLabel" Label="Label"
+                           PlaceholderText="Type a label (max 100 char.)" Type="text" @bind-Value="AccountGroup.Label"
+                           ValidationFor="@(()=>AccountGroup.Label)"></UbikInputText>
+        </div>
+        <div class="col-span-2">
+            <UbikInputTextArea Id="AccountGrpDescription" Label="Description"
+                               PlaceholderText="Type a description (max 700 char.)" @bind-Value="AccountGroup.Description"
+                               ValidationFor="@(()=>AccountGroup.Description)"></UbikInputTextArea>
+        </div>
+    </div>
+    <div class="mt-3 flex justify-between sm:mt-4">
+        <div>
+            @if (EditMode)
+            {
+                <UbikButton @ref="@_buttonSubmitEdit" Type="submit" Label="Save"></UbikButton>
+            }
+            else
+            {
+                <UbikButton @ref="@_buttonSubmitAdd" Type="submit" Label="Save">
+                </UbikButton>
+            }
+        </div>
+        <div>
+            <UbikButtonAlternative Type="button" Label="Close" OnClick="() => CloseAsync(false)"></UbikButtonAlternative>
+        </div>
+    </div>
+    <div class="mt-3 sm:mt-4">
+        <MsgSuccess @ref="_successMsg" SuccessMessage="please wait, this form is closing ..."></MsgSuccess>
+        <ErrCannotSubmit @ref="_cannotSubmitMsg"></ErrCannotSubmit>
+        <ErrBackendApi @ref="_backendErrorMsg"></ErrBackendApi>
+    </div>
+</EditForm>
+
+@code {
+    [CascadingParameter(Name = "AccountGroupModel")]
+    public AccountGroupModel AccountGroup { get; set; } = default!;
+
+    [Parameter]
+    public bool EditMode { get; set; } = false;
+    [Parameter]
+    public Guid? ClassificationId { get; set; } = null;
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    private UbikButton _buttonSubmitEdit = default!;
+    private UbikButton _buttonSubmitAdd = default!;
+
+    private ErrCannotSubmit _cannotSubmitMsg = default!;
+    private ErrBackendApi _backendErrorMsg = default!;
+    private MsgSuccess _successMsg = default!;
+
+    private async Task SubmitAsync(EditContext editContext)
+    {
+        await CleanErrorMsg();
+        await SetSendingStateAsync();
+
+        var valid = editContext.Validate();
+
+        if (valid)
+        {
+            var response = await SendDataAsync();
+            await SetSendingFinishedAsync();
+
+            if (response != null && response.IsSuccessStatusCode)
+            {
+                await _successMsg.ShowSuccessAsync();
+                await ManageResponseReturns(response);
+
+                StateHasChanged();
+                await Task.Delay(700);
+
+                await CloseAsync(true);
+            }
+            else
+            {
+                await _backendErrorMsg.ShowErrorAsync(response);
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            await SetSendingFinishedAsync();
+            await _cannotSubmitMsg.ShowErrorAsync();
+        }
+    }
+
+    private async Task ManageResponseReturns(HttpResponseMessage response)
+    {
+        if (EditMode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<UpdateAccountGroupResult>();
+
+            if (result == null)
+                throw new ArgumentNullException("Cannot access response result for AddAccountGroupResult");
+
+            var resultModel = result.ToAccountGroupModel();
+            resultModel.IsExpand = AccountGroup.IsExpand;
+
+            CurrentState.EditAccountGroup(resultModel);
+        }
+        else
+        {
+            var result = await response.Content.ReadFromJsonAsync<AddAccountGroupResult>();
+
+            if (result == null)
+                throw new ArgumentNullException("Cannot access response result for AddAccountGroupResult");
+
+            var resultModel = result.ToAccountGroupModel();
+
+            CurrentState.AddAccountGroup(resultModel);
+        }
+    }
+
+    private async Task CleanErrorMsg()
+    {
+        await _cannotSubmitMsg.CloseErrorAsync();
+        await _backendErrorMsg.DismissErrorAsync();
+    }
+
+    private async Task SetSendingStateAsync()
+    {
+        if (EditMode)
+            await _buttonSubmitEdit.LoadingStateAsync();
+        else
+            await _buttonSubmitAdd.LoadingStateAsync();
+    }
+
+    private async Task SetSendingFinishedAsync()
+    {
+        if (EditMode)
+            await _buttonSubmitEdit.LoadingStateFinishedAsync();
+        else
+            await _buttonSubmitAdd.LoadingStateFinishedAsync();
+    }
+
+    private async Task<HttpResponseMessage?> SendDataAsync()
+    {
+        if (EditMode)
+        {
+            return await Client.UpdateAccountGroupAsync(AccountGroup.Id, AccountGroup.ToUpdateAccountGroupCommand());
+        }
+        else
+        {
+            AccountGroup.AccountGroupClassificationId = (Guid)ClassificationId!;
+            return await Client.AddAccountGroupAsync(AccountGroup.ToAddAccountGroupCommand());
+        }
+    }
+
+    private async Task CloseAsync(bool withRefresh = false)
+    {
+        await OnClose.InvokeAsync(withRefresh);
+    }
+
+}

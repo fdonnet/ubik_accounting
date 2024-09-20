@@ -35,7 +35,7 @@ namespace Ubik.Accounting.Api.Features
         {
             get
             {
-                _accountGroupService ??= new AccountGroupService(_context);
+                _accountGroupService ??= new AccountGroupService(_context,_userService);
                 return _accountGroupService;
             }
         }

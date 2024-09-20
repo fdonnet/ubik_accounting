@@ -1,0 +1,49 @@
+﻿@page "/manage-classifications"
+@using Ubik.Accounting.WebApp.Client.Components.Classifications
+@using Ubik.Accounting.WebApp.Client.Components.Authorization
+@attribute [Authorize]
+
+<PageScript Src="./js/theme-switcher.js" />
+<PageTitle>Manage classifications</PageTitle>
+<h1>Manage classifications</h1>
+
+@if (_isReadAuthorized || _isWriteAuthorized)
+{
+    if (!_isWriteAuthorized)
+    {
+        <ReadOnlyRightPanel />
+    }
+
+    <p class="mb-2">Manage the classifications used by your accounting system.</p>
+    <p class="mb-5">It defines the account groups structure and how your booking accounts are presented.</p>
+    <p class="mb-2">You can have multiple classifications used for different purposes.</p>
+    <p class="mb-5">To be ready, your classification needs to have all the accounts attached to it.</p>
+
+    <ClassificationsModuleContainer IsAuthorizedToRead="@_isReadAuthorized" IsAuthorizedToModify="@_isWriteAuthorized"></ClassificationsModuleContainer>
+}
+else
+{
+    <NoRightPanel />
+}
+
+@code {
+    private bool _isWriteAuthorized;
+    private bool _isReadAuthorized;
+    [CascadingParameter]
+    private Task<AuthenticationState>? _authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_authenticationState is not null)
+        {
+            var auth = await _authenticationState;
+            _isWriteAuthorized = auth.User.IsInRole("ubik_accounting_classification_write")
+                && auth.User.IsInRole("ubik_accounting_account_write")
+                && auth.User.IsInRole("ubik_accounting_accountgroup_write");
+
+            _isReadAuthorized = auth.User.IsInRole("ubik_accounting_classification_read")
+                && auth.User.IsInRole("ubik_accounting_account_read")
+                && auth.User.IsInRole("ubik_accounting_accountgroup_read");
+        }
+    }
+}

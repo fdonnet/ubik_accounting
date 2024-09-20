@@ -16,6 +16,7 @@ using Ubik.Accounting.Webapp.Shared.Render;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Microsoft.AspNetCore.Components.Authorization;
 using Ubik.Accounting.WebApp.Client.Components.Accounts;
+using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -166,6 +167,7 @@ builder.Services
     .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
 
 builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
+builder.Services.AddScoped<ClassificationStateService>();
 
 var app = builder.Build();
 

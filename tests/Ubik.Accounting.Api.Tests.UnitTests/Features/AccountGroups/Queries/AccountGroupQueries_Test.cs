@@ -119,8 +119,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.AccountGroups.Queries
                 }
             };
 
-            _serviceManager.AccountGroupService.GetWithChildAccountsAsync(query.AccountGroupId)
-                .Returns(accountGroup);
+            _serviceManager.AccountGroupService.GetChildAccountsAsync(query.AccountGroupId)
+                .Returns(new List<Account>());
 
             var client = _harness.GetRequestClient<GetChildAccountsQuery>();
             var consumerHarness = _harness.GetConsumerHarness<GetChildAccountsConsumer>();

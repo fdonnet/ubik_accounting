@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
+using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Commands
@@ -16,9 +17,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Commands
         }
         public async Task Consume(ConsumeContext<AddAccountInAccountGroupCommand> context)
         {
-            var msg = context.Message;
+            var msg = context.Message.ToAccountAccountGroup();
 
-            var result = await _serviceManager.AccountService.AddInAccountGroupAsync(msg.AccountId,msg.AccountGroupId);
+            var result = await _serviceManager.AccountService.AddInAccountGroupAsync(msg);
 
             await result.Match(
                 Right: async r =>

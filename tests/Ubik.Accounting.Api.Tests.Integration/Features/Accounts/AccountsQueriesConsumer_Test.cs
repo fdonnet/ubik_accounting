@@ -31,6 +31,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                     x.AddScoped<ICurrentUserService>(us => new FakeUserService());
                     x.AddRequestClient<GetAllAccountsQuery>();
                     x.AddRequestClient<GetAccountQuery>();
+                    x.AddRequestClient<GetAllAccountGroupLinksQuery>();
                     x.UsingRabbitMq((context, configurator) =>
                     {
 
@@ -64,6 +65,21 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             result.Message.Should()
                 .BeAssignableTo<GetAllAccountsResults>()
                 .And.Match<GetAllAccountsResults>(a => a.Accounts[0] is GetAllAccountsResult);
+        }
+
+        [Fact]
+        public async Task GetAllAccountGroupLinks_AccountGroupLinks_Ok()
+        {
+            //Arrange
+            var client = _harness.GetRequestClient<GetAllAccountGroupLinksQuery>();
+
+            //Act
+            var result = await client.GetResponse<GetAllAccountGroupLinksResults>(new { });
+
+            //Assert
+            result.Message.Should()
+                .BeAssignableTo<GetAllAccountGroupLinksResults>()
+                .And.Match<GetAllAccountGroupLinksResults>(a => a.AccountGroupLinks[0] is GetAllAccountGroupLinksResult);
         }
 
 

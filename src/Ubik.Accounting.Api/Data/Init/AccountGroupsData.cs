@@ -57,7 +57,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
                     ClassificationId = baseValuesForAccountGroupClassifications.ClassificationId2,
-                    ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
+                    ParentAccountGroupId = null,
                     Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                 },
@@ -69,6 +69,21 @@ namespace Ubik.Accounting.Api.Data.Init
                     Code = "104",
                     Description = "Autres actifs for removal",
                     Label = "To be removed Autres actifs",
+                    ModifiedBy = baseValuesForUsers.UserId1,
+                    ModifiedAt = baseValuesGeneral.GenerationTime,
+                    ClassificationId = baseValuesForAccountGroupClassifications.ClassificationId1,
+                    ParentAccountGroupId = baseValuesForAccountGroups.AccountGroupIdFirstLvl1,
+                    Version = NewId.NextGuid(),
+                    TenantId = baseValuesForTenants.TenantId
+                },
+                new AccountGroup
+                {
+                    Id = baseValuesForAccountGroups.AccountGroupIdForDel2,
+                    CreatedBy = baseValuesForUsers.UserId1,
+                    CreatedAt = baseValuesGeneral.GenerationTime,
+                    Code = "1048",
+                    Description = "Remove2",
+                    Label = "Remove2",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
                     ClassificationId = baseValuesForAccountGroupClassifications.ClassificationId1,

@@ -58,10 +58,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<GetAccountGroupResult>> GetChildAccount(Guid id)
         {
-            var result = await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(id);
+            var result = await _serviceManager.AccountGroupService.GetChildAccountsAsync(id);
 
             return result.Match(
-                Right: r => Ok(r.Accounts!.ToGetChildAccountsResult()),
+                Right: r => Ok(r.ToGetChildAccountsResult()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

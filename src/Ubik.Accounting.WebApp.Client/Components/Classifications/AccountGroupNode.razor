@@ -1,0 +1,258 @@
+﻿@using Ubik.Accounting.Contracts.Accounts.Results
+@using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.WebApp.Client.Components.Common.Modal
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
+@using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
+
+@inject IAccountingApiClient Client
+@inject IRenderContext RenderContext
+@inject ClassificationStateService CurrentState
+@implements IDisposable
+
+@if (!_isLoading && !CurrentAccountGroup.IsDeleted)
+{
+    <tr class="hover:bg-gray-100 focus:bg-gray-100 focus:hover:bg-gray-600 dark:hover:bg-gray-600">
+        <td class="px-@CurrentRowMargin rounded-l">
+            <div class="mb-1 ms-2 mt-1 flex flex-row items-center" @onclick="() => ToggleAccountGroupFolder(CurrentAccountGroup)">
+                <div class="cursor-pointer text-blue-700 dark:text-blue-400">
+                    @if (CurrentAccountGroup.IsExpand)
+                    {
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13.5H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"></path>
+                        </svg>
+                    }
+                    else
+                    {
+                        <svg class="xmlns= h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+                        </svg>
+                    }
+                </div>
+                <div class="px-2 align-bottom">
+                    @CurrentAccountGroup.Code @CurrentAccountGroup.Label
+                </div>
+            </div>
+        </td>
+        @if (IsAuthorizedToModify)
+        {
+            <td class="w-24">
+                <div class="flex justify-end gap-4 text-blue-700 dark:text-blue-400" @onclick="ShowActionsAccountGroupAsync">
+                    <div class="mr-2 flex cursor-pointer flex-row items-center">
+                        <div>
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+                            </svg>
+                        </div>
+                        <div class="ms-1 text-sm">
+                            Actions
+                        </div>
+                    </div>
+                </div>
+            </td>
+        }
+    </tr>
+
+    @if (CurrentAccountGroup.IsExpand)
+    {
+        @if (_currentNodeAccountGroups.Any())
+        {
+
+            @foreach (var node in _currentNodeAccountGroups)
+            {
+                <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify"
+                                  CurrentAccountGroup="@node"
+                                  CurrentRowMargin="CurrentRowMargin + 4"
+                                  OnEditAccountGroupAsync="EditAccountGroupAsync"
+                                  OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
+                                  OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
+                                  OnDetachAccountAsync="DetachAccountAsync"
+                                  OnAttachAccountAsync="AttachAccountAsync">
+                </AccountGroupNode>
+            }
+        }
+        @if (_currentNodeAccounts.Any())
+        {
+            @foreach (var account in _currentNodeAccounts)
+            {
+                <tr class="hover:bg-gray-100 focus:bg-gray-100 focus:hover:bg-gray-600 dark:hover:bg-gray-600">
+                    <td class="px-@_currentRowMarginForAccount">
+                        <div class="mt-0 flex items-center">
+                            <div class="text-green-700 dark:text-green-400">
+                                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.49 12 3.75 3.75m0 0-3.75 3.75m3.75-3.75H3.74V4.499" />
+                                </svg>
+                            </div>
+                            <div class="mt-1 px-2 align-bottom">
+                                @account.Code @account.Label
+                            </div>
+                        </div>
+                    </td>
+                    @if (IsAuthorizedToModify)
+                    {
+                        <td class="w-24">
+                            <div class="flex justify-end gap-4 text-blue-700 dark:text-blue-400" @onclick="() => DetachAccountAsync(new(){AccountGroupId=CurrentAccountGroup.Id,AccountId = account.Id})">
+                                <div class="mr-2 flex cursor-pointer flex-row items-center">
+                                    <div>
+                                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+
+                                    </div>
+                                    <div class="ms-1 text-sm">
+                                        Detach
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    }
+
+    @if (IsAuthorizedToModify)
+    {
+        <CascadingValue Name="AccountGroupModel" Value="@CurrentAccountGroup">
+            <UbikModalCenter @ref="_actionsAccountGroupDialog">
+                <AccountGroupActionsDialog @ref="_actionsAccountGroupContent"
+                                           OnEditAccountGroupAsync="EditAccountGroupAsync"
+                                           OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
+                                           OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
+                                           OnAttachAccountAsync="AttachAccountAsync"
+                                           OnCloseAsync="CloseActionsDialog">
+                </AccountGroupActionsDialog>
+            </UbikModalCenter>
+        </CascadingValue>
+    }
+}
+
+@code {
+    [Parameter]
+    public AccountGroupModel CurrentAccountGroup { get; set; } = default!;
+    [Parameter]
+    public int CurrentRowMargin { get; set; } = 0;
+    [Parameter]
+    public bool IsAuthorizedToModify { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<AccountGroupModel> OnEditAccountGroupAsync { get; set; }
+    [Parameter]
+    public EventCallback<AccountGroupModel> OnDeleteAccountGroupAsync { get; set; }
+    [Parameter]
+    public EventCallback<AccountGroupModel> OnAddSubAccountGroupAsync { get; set; }
+    [Parameter]
+    public EventCallback<AccountGroupModel> OnAttachAccountAsync { get; set; }
+    [Parameter]
+    public EventCallback<AccountGroupLinkModel> OnDetachAccountAsync { get; set; }
+
+    private bool _isLoading = false;
+    private List<AccountGroupModel> _currentNodeAccountGroups = [];
+    private List<AccountModel> _currentNodeAccounts = [];
+    public int _currentRowMarginForAccount = 0;
+
+    private UbikModalCenter _actionsAccountGroupDialog = default!;
+    private AccountGroupActionsDialog _actionsAccountGroupContent = default!;
+
+    private bool _firstRender = true;
+
+    protected override void OnInitialized()
+    {
+        if (RenderContext.IsPrerendering)
+        {
+            return;
+        }
+    }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        parameters.SetParameterProperties(this);
+
+        if (_firstRender)
+        {
+            CurrentState.OnChangeData += OnStateChanged;
+        }
+
+        _isLoading = true;
+
+        RefreshCurrentNodeData();
+        _currentRowMarginForAccount = CurrentRowMargin + 4;
+
+        _isLoading = false;
+
+        _firstRender = false;
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+
+    public void RefreshCurrentNodeData()
+    {
+        if (CurrentState.AccountGroupsDicByParent.TryGetValue(CurrentAccountGroup.Id, out var groups))
+            _currentNodeAccountGroups = groups.OrderBy(g => g.Code).ToList();
+        else
+            _currentNodeAccountGroups = new();
+
+        if (CurrentState.AccountsLinksByParent.TryGetValue(CurrentAccountGroup.Id, out var accounts))
+        {
+            var currentNodeAccountGroupLinksAccountIds = accounts.Select(l => l.AccountId).ToList();
+            _currentNodeAccounts = CurrentState.Accounts.Where(a => currentNodeAccountGroupLinksAccountIds.Contains(a.Key)).Select(a => a.Value).OrderBy(a => a.Code).ToList();
+        }
+        else
+            _currentNodeAccounts = new();
+    }
+
+    private void ToggleAccountGroupFolder(AccountGroupModel accountGroup)
+    {
+        accountGroup.IsExpand = !accountGroup.IsExpand;
+    }
+
+    private async Task ShowActionsAccountGroupAsync()
+    {
+        await _actionsAccountGroupDialog.ShowDialogAsync();
+    }
+
+    private async Task EditAccountGroupAsync(AccountGroupModel currentAccountGroup)
+    {
+        await OnEditAccountGroupAsync.InvokeAsync(currentAccountGroup);
+    }
+
+    private async Task DeleteAccountGroupAsync(AccountGroupModel currentAccountGroup)
+    {
+        await OnDeleteAccountGroupAsync.InvokeAsync(currentAccountGroup);
+    }
+
+    private async Task AddSubAccountGroupAsync(AccountGroupModel currentAccountGroup)
+    {
+        await OnAddSubAccountGroupAsync.InvokeAsync(currentAccountGroup);
+    }
+
+    private async Task AttachAccountAsync(AccountGroupModel currentAccountGroup)
+    {
+        await OnAttachAccountAsync.InvokeAsync(currentAccountGroup);
+    }
+
+    private async Task DetachAccountAsync(AccountGroupLinkModel accountGroupLink)
+    {
+        await OnDetachAccountAsync.InvokeAsync(accountGroupLink);
+    }
+
+    private async Task CloseActionsDialog()
+    {
+        await _actionsAccountGroupDialog.CloseDialogAsync();
+    }
+
+    private void OnStateChanged(object? sender, AccountGrpArgs e)
+    {
+        if (CurrentAccountGroup!.Id == e.AccountGroupId && e.Type == AccountGrpArgsType.Edited)
+            InvokeAsync(StateHasChanged);
+
+
+        if (CurrentAccountGroup!.Id == e.AccountGroupId && e.Type == AccountGrpArgsType.Deleted)
+            CurrentAccountGroup.IsDeleted = true;
+    }
+
+    public void Dispose()
+    {
+        CurrentState.OnChangeData -= OnStateChanged;
+    }
+}

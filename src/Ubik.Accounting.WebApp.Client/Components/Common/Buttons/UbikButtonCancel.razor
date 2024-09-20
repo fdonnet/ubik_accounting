@@ -1,0 +1,26 @@
+﻿<button id="@_buttonId" disabled="@IsDisabled" title="@Label" @onclick="ClickAsync" type="button" class="@(AdditionalCssClass == string.Empty ? string.Empty : AdditionalCssClass + " ")text-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium hover:bg-gray-100 hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-200 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+    @Label
+ </button>
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = "button";
+    [Parameter]
+    public string Type { get; set; } = "button";
+    [Parameter]
+    public string AdditionalCssClass { get; set; } = string.Empty;
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; } = null;
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+    [Parameter]
+    public bool IsDisabled { get; set; } = false;
+
+    private string _contentButtonId = $"content-button-{Guid.NewGuid()}";
+    private string _buttonId = $"button-{Guid.NewGuid()}";
+
+    private async Task ClickAsync()
+    {
+        await OnClick.InvokeAsync();
+    }
+}

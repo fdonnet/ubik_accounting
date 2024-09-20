@@ -45,7 +45,7 @@ namespace Ubik.Accounting.Api.Data.Init
                 {
                     Id = NewId.NextGuid(),
                     AccountGroupId = baseValuesForAccountGroups.AccountGroupId2,
-                    AccountId= baseValuesForAccounts.AccountId1,
+                    AccountId= baseValuesForAccounts.AccountId2,
                     CreatedBy = baseValuesForUsers.UserId1,
                     CreatedAt = baseValuesGeneral.GenerationTime,
                     ModifiedBy = baseValuesForUsers.UserId1,

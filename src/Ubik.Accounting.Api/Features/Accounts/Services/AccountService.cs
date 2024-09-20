@@ -76,23 +76,16 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 });
         }
 
-        public async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddInAccountGroupAsync(Guid id, Guid accountGroupId)
+        public async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddInAccountGroupAsync(AccountAccountGroup accountAccountGroup)
         {
-            //Create new relation
-            var accountAccountGroup = new AccountAccountGroup
-            {
-                Id = NewId.NextGuid(),
-                AccountGroupId = accountGroupId,
-                AccountId = id
-            };
-
             //Validate and insert
-            return await GetAsync(id).ToAsync()
+            return await GetAsync(accountAccountGroup.AccountId).ToAsync()
                 .Bind(a => ValidateIfExistsAccountGroupIdAsync(accountAccountGroup).ToAsync())
                 .Bind(aag => ValidateIfNotExistsInTheClassificationAsync(aag).ToAsync())
                 .MapAsync(async aag =>
                 {
                     await _context.AccountsAccountGroups.AddAsync(aag);
+                    _context.SetAuditAndSpecialFields();
                     return aag;
                 });
         }
@@ -201,6 +194,13 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             return await _context.AccountGroups.AnyAsync(ag => ag.Id == accountAccountGroup.AccountGroupId)
                 ? accountAccountGroup
                 : new AccountGroupNotFoundForAccountError(accountAccountGroup.AccountGroupId);
+        }
+
+        public async Task<IEnumerable<AccountAccountGroup>> GetAllAccountGroupLinksAsync()
+        {
+            var results = await _context.AccountsAccountGroups.ToListAsync();
+
+            return results;
         }
     }
 }

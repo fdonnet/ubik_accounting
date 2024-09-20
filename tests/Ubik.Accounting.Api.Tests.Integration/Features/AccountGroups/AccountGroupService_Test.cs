@@ -68,21 +68,18 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         }
 
         [Fact]
-        public async Task Get_AccountGroup_OkWithChildAccounts()
+        public async Task Get_Accounts_OkGetChildAccounts()
         {
             //Arrange
 
             //Act
             var result = (await _serviceManager.AccountGroupService
-                .GetWithChildAccountsAsync(_testAccountGroupValues.AccountGroupId1)).IfLeft(err => default!);
+                .GetChildAccountsAsync(_testAccountGroupValues.AccountGroupId1)).IfLeft(err => default!);
 
             //Assert
             result.Should()
-                    .NotBeNull()
-                    .And.BeOfType<AccountGroup>()
-                    .And.Match<AccountGroup>(g =>
-                                g.Accounts != null &&
-                                g.Id == _testAccountGroupValues.AccountGroupId1);
+                .NotBeNull()
+                .And.AllBeOfType<Account>();
         }
 
         [Theory]

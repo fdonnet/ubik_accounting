@@ -645,7 +645,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupIdForDel}");
+            var response = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccountGroups.AccountGroupIdForDel2}");
             var result = await response.Content.ReadFromJsonAsync<IEnumerable<DeleteAccountGroupResult>>();
 
             //Assert

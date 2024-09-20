@@ -96,6 +96,16 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
+        public static AccountAccountGroup ToAccountAccountGroup(this AddAccountInAccountGroupCommand addAccountInAccountGroupCommand)
+        {
+            return new AccountAccountGroup()
+            {
+                Id = NewId.NextGuid(),
+                AccountId = addAccountInAccountGroupCommand.AccountId,
+                AccountGroupId = addAccountInAccountGroupCommand.AccountGroupId
+            };
+        }
+
         public static Account ToAccount(this UpdateAccountCommand updateAccountCommand, Account account)
         {
             account.Id = updateAccountCommand.Id;
@@ -175,8 +185,10 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
         {
             return new AddAccountInAccountGroupResult
             {
+                Id = accountAccountGroup.AccountId,
                 AccountId = accountAccountGroup.AccountId,
-                AccountGroupId = accountAccountGroup.AccountGroupId
+                AccountGroupId = accountAccountGroup.AccountGroupId,
+                Version = accountAccountGroup.Version,
             };
         }
 
@@ -203,6 +215,17 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 TenantId = account.TenantId,
                 CurrencyId = account.CurrencyId
             };
+        }
+
+        public static IEnumerable<GetAllAccountGroupLinksResult> ToGetAllAccountGroupLinkResult(this IEnumerable<AccountAccountGroup> accountGroupLinks)
+        {
+            return accountGroupLinks.Select(x => new GetAllAccountGroupLinksResult()
+            {
+                Id = x.Id,
+                AccountId = x.AccountId,
+                AccountGroupId = x.AccountGroupId,
+                Version = x.Version
+            });
         }
     }
 }

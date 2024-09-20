@@ -1,6 +1,6 @@
 ﻿//A lot of things have been take from Microsoft --- Thx for your quick grid guys !!!
 //Need to continue to transfer what I need (virtualize, sorting, filtering etc)
-//TODO: don't forget to check their sources sometimes to retrieve the new of foing thing.
+//TODO: don't forget to check their sources sometimes to retrieve the new way of doing things.
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -21,6 +21,9 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
         [Parameter] public RenderFragment ChildContent { get; set; } = default!;
         [Parameter] public bool HighlightFirstColumn { get; set; } = false;
         [Parameter] public PaginationState? Pagination { get; set; }
+        [Parameter] public bool ForceCursorPointerForRow { get; set; } = false;
+        [Parameter] public string? KeyFieldForRowClick { get; set; } = null;
+        [Parameter] public EventCallback<string> OnRowClick { get; set; }
 
 
         private readonly InternalGridContext<TGridItem> _internalGridContext;
@@ -146,7 +149,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
 
         public Task SortByColumnAsync(UbikColumnBase<TGridItem> column, SortDirection direction = SortDirection.Auto)
         {
-            if(column.IsDefaultSortColumn)
+            if (column.IsDefaultSortColumn)
                 column.ShowSortIcon = true;
 
             SortByAscending = direction switch
@@ -194,13 +197,13 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
                 startIndex, Pagination?.ItemsPerPage, SortByColumn, SortByAscending, thisLoadCts.Token);
 
             var result = await ResolveItemsRequestAsync(request);
-                if (!thisLoadCts.IsCancellationRequested)
-                {
-                    _currentNonVirtualizedViewItems = result.Items;
-                    _ariaBodyRowCount = _currentNonVirtualizedViewItems.Count;
-                    Pagination?.SetTotalItemCountAsync(result.TotalItemCount);
-                    _pendingDataLoadCancellationTokenSource = null;
-                }
+            if (!thisLoadCts.IsCancellationRequested)
+            {
+                _currentNonVirtualizedViewItems = result.Items;
+                _ariaBodyRowCount = _currentNonVirtualizedViewItems.Count;
+                Pagination?.SetTotalItemCountAsync(result.TotalItemCount);
+                _pendingDataLoadCancellationTokenSource = null;
+            }
             //}
         }
 
@@ -233,5 +236,11 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid
             => SortByColumn == column
                 ? (SortByAscending ? "ascending" : "descending")
                 : "none";
+
+        private async Task ClickRow(string? value)
+        {
+            if (value != null)
+                await OnRowClick.InvokeAsync(value);
+        }
     }
 }

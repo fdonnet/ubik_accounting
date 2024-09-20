@@ -1,0 +1,18 @@
+﻿@using Ubik.Accounting.WebApp.Client.Components.Common.Alerts
+@rendermode InteractiveAuto
+<ErrorBoundary>
+    <ChildContent>
+        <Classifications IsAuthorizedToModify="@IsAuthorizedToModify" IsAuthorizedToRead="@IsAuthorizedToRead"></Classifications>
+    </ChildContent>
+    <ErrorContent>
+        <ErrUnhandled MainErrorMsg="Classifications module in error"></ErrUnhandled>
+    </ErrorContent>
+</ErrorBoundary>
+
+
+@code {
+    [Parameter]
+    public bool IsAuthorizedToRead { get; set; } = false;
+    [Parameter]
+    public bool IsAuthorizedToModify { get; set; } = false;
+}

@@ -19,11 +19,11 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Queries
         }
         public async Task Consume(ConsumeContext<GetChildAccountsQuery> context)
         {
-            var result = await _serviceManager.AccountGroupService.GetWithChildAccountsAsync(context.Message.AccountGroupId);
+            var result = await _serviceManager.AccountGroupService.GetChildAccountsAsync(context.Message.AccountGroupId);
 
             await result
                 .Right(async r => await context.RespondAsync<GetChildAccountsResults>
-                    (new { ChildAccounts = r.Accounts!.ToGetChildAccountsResult() }))
+                    (new { ChildAccounts = r.ToGetChildAccountsResult() }))
                 .Left(async err => await context.RespondAsync(err));
         }
     }
