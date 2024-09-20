@@ -136,7 +136,6 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
             }
         }
 
-        //TODO: need some recursion here
         public void RemoveAccountGroup(Guid accountGroupId)
         {
             AccountGroupsDicByParent.Remove(accountGroupId);
@@ -146,13 +145,12 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
             {
                 foreach (var accountLink in accountLinks)
                 {
-                    if(Accounts.TryGetValue(accountLink.AccountId, out var account))
+                    if (Accounts.TryGetValue(accountLink.AccountId, out var account))
                     {
                         CurrentClassificationMissingAccounts.Add(account.Id, account.Clone());
                     }
                 }
             }
-
             AccountsLinksByParent.Remove(accountGroupId);
             NotifyStateChanged(accountGroupId, AccountGrpArgsType.Deleted);
         }
