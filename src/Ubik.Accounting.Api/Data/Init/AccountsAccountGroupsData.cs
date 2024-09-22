@@ -11,7 +11,7 @@ namespace Ubik.Accounting.Api.Data.Init
         {
             if (!context.AccountsAccountGroups.Any())
             {
-                var accountsAccountGrpsQuery = await File.ReadAllTextAsync(@"Data\Init\AccountsAccountGroupsData.sql");
+                var accountsAccountGrpsQuery = await File.ReadAllTextAsync(@"Data/Init/AccountsAccountGroupsData.sql");
                 await context.Database.ExecuteSqlAsync(FormattableStringFactory.Create(accountsAccountGrpsQuery));
             }
         }

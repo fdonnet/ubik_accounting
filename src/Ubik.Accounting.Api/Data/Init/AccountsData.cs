@@ -12,7 +12,7 @@ namespace Ubik.Accounting.Api.Data.Init
         {
             if (!context.Accounts.Any())
             {
-                var accountsQuery = await File.ReadAllTextAsync(@"Data\Init\AccountsData.sql");
+                var accountsQuery = await File.ReadAllTextAsync(@"Data/Init/AccountsData.sql");
                 await context.Database.ExecuteSqlAsync(FormattableStringFactory.Create(accountsQuery));
             }
         }
