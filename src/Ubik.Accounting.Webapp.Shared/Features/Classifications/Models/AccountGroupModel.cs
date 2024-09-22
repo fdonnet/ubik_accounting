@@ -22,7 +22,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
         public Guid AccountGroupClassificationId { get; set; }
         [Required]
         public Guid Version { get; set; }
-        public bool IsExpand { get; set; } = true;
+        public bool IsExpand { get; set; } = false;
         public bool IsDeleted { get; set; } = false;
 
         public AccountGroupModel Clone()

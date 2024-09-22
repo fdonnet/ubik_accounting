@@ -330,7 +330,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var fake = new AddClassificationCommand { Code = "SWISSPLAN", Label = "TEST" };
+            var fake = new AddClassificationCommand { Code = "SWISSPLAN-TEST2", Label = "TEST" };
 
             var postAccountJson = JsonSerializer.Serialize(fake);
             var content = new StringContent(postAccountJson.ToString(), Encoding.UTF8, "application/json");

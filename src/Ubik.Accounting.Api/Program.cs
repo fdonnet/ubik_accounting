@@ -16,12 +16,13 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Filters;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
+using System.Runtime.CompilerServices;
 
 namespace Ubik.Accounting.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -143,7 +144,7 @@ namespace Ubik.Accounting.Api
                 context.Database.EnsureCreated();
 
                 var initDb = new DbInitializer();
-                initDb.Initialize(context);
+                await initDb.InitializeAsync(context);
             }
 
             //app.UseHttpsRedirection();

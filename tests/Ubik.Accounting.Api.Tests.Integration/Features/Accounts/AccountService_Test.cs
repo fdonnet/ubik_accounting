@@ -330,9 +330,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var result = (await _serviceManager.AccountService
                 .AddInAccountGroupAsync(new AccountAccountGroup()
                 {
-                    AccountId = _testValuesForAccounts.AccountId2,
+                    AccountId = _testValuesForAccounts.AccountForAttach2,
                     AccountGroupId =
-                _testValuesForAccountGroups.AccountGroupId1
+                _testValuesForAccountGroups.AccountGroupForAttach2
                 })).IfLeft(r => default!);
 
             //Assert
@@ -340,8 +340,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                     .NotBeNull()
                     .And.BeOfType<AccountAccountGroup>()
                     .And.Match<AccountAccountGroup>(a =>
-                        a.AccountGroupId == _testValuesForAccountGroups.AccountGroupId1
-                        && a.AccountId == _testValuesForAccounts.AccountId2);
+                        a.AccountGroupId == _testValuesForAccountGroups.AccountGroupForAttach2
+                        && a.AccountId == _testValuesForAccounts.AccountForAttach2);
         }
 
 
