@@ -120,7 +120,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
         [Theory]
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "ccfe1b29-6d1b-420c-ac64-fc8f1a6153a1", null })]
+        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "248e0000-5dd4-0015-38c5-08dcd98e5b2d", null })]
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         public async Task Add_Account_Ok(Account account)
         {
@@ -137,7 +137,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory]
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "ccfe1b29-6d1b-420c-ac64-fc8f1a6153a1", "1020" })]
+        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "248e0000-5dd4-0015-38c5-08dcd98e5b2d", "1020" })]
         public async Task Add_AccountAlreadyExistsException_AccountCodeAlreadyExists(Account account)
         {
             //Arrange
@@ -175,7 +175,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
 
         [Theory]
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "ccfe1b29-6d1b-420c-ac64-fc8f1a6153a1", null })]
+        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "248e0000-5dd4-0015-38c5-08dcd98e5b2d", null })]
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         public async Task Add_AuditFieldsModified_Ok(Account account)
         {
@@ -330,9 +330,9 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var result = (await _serviceManager.AccountService
                 .AddInAccountGroupAsync(new AccountAccountGroup()
                 {
-                    AccountId = _testValuesForAccounts.AccountId2,
+                    AccountId = _testValuesForAccounts.AccountForAttach2,
                     AccountGroupId =
-                _testValuesForAccountGroups.AccountGroupId1
+                _testValuesForAccountGroups.AccountGroupForAttach2
                 })).IfLeft(r => default!);
 
             //Assert
@@ -340,8 +340,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                     .NotBeNull()
                     .And.BeOfType<AccountAccountGroup>()
                     .And.Match<AccountAccountGroup>(a =>
-                        a.AccountGroupId == _testValuesForAccountGroups.AccountGroupId1
-                        && a.AccountId == _testValuesForAccounts.AccountId2);
+                        a.AccountGroupId == _testValuesForAccountGroups.AccountGroupForAttach2
+                        && a.AccountId == _testValuesForAccounts.AccountForAttach2);
         }
 
 

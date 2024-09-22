@@ -158,7 +158,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Arrange
             var classification = new Classification
             {
-                Code = "SWISSPLAN",
+                Code = "SWISSPLAN-FULL",
                 Label = "Test"
             };
 
@@ -205,7 +205,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 
             classification!.Label = "Modified";
             classification.Description = "Modified";
-            classification.Code = "SWISSPLAN";
+            classification.Code = "SWISSPLAN-FULL";
 
             //Act
             var result = (await _serviceManager.ClassificationService.UpdateAsync(classification)).IfRight(r => default!);

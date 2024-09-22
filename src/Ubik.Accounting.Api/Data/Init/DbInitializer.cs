@@ -2,13 +2,13 @@
 {
     public class DbInitializer
     {
-        public void Initialize(AccountingContext context)
+        public async Task InitializeAsync(AccountingContext context)
         {
             CurrenciesData.Load(context);
             ClassificationsData.Load(context);
-            AccountGroupsData.Load(context);
-            AccountsData.Load(context);
-            AccountsAccountGroupsData.Load(context);
+            await AccountGroupsData.LoadAsync(context);
+            await AccountsData.LoadAsync(context);
+            await AccountsAccountGroupsData.LoadAsync(context);
         }
     }
 }

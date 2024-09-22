@@ -142,7 +142,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<GetAccountGroupResult>()
-                .And.Match<GetAccountGroupResult>(x => x.Code == "102");
+                .And.Match<GetAccountGroupResult>(x => x.Code == "100");
         }
 
         [Fact]
