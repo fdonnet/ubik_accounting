@@ -17,6 +17,7 @@ using Ubik.Accounting.Webapp.Shared.Facades;
 using Microsoft.AspNetCore.Components.Authorization;
 using Ubik.Accounting.WebApp.Client.Components.Accounts;
 using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -116,7 +117,7 @@ builder.Services.AddAuthentication(options =>
             options.ClientSecret = authOptions.ClientSecret;
             options.ClientId = authOptions.ClientId;
             options.ResponseType = "code";
-            options.SaveTokens = true;
+            options.SaveTokens = false;
             options.GetClaimsFromUserInfoEndpoint = true;
             options.Scope.Clear();
             options.Scope.Add("openid");
@@ -148,7 +149,16 @@ builder.Services.AddAuthentication(options =>
 
                     await cache.SetUserTokenAsync(token);
                 },
-                
+                //Only store the Id token for more security
+                OnTokenResponseReceived = async x =>
+                {
+                    ////Only store id_token in cookie
+                    x.Properties!.StoreTokens(new[] { new AuthenticationToken
+                        {
+                            Name = "id_token",
+                            Value = x.TokenEndpointResponse.IdToken
+                        }});
+                },
             };
         }
     });
