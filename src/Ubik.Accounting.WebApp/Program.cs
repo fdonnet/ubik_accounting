@@ -59,46 +59,50 @@ builder.Services.AddAuthentication(options =>
         {
             OnValidatePrincipal = async x =>
             {
-                // since our cookie lifetime is based on the access token one,
-                // check if we're more than halfway of the cookie lifetime
                 var now = DateTimeOffset.UtcNow;
-                var timeElapsed = now.Subtract(x.Properties.IssuedUtc!.Value);
-                var timeRemaining = x.Properties.ExpiresUtc!.Value.Subtract(now);
+                var timeElapsedForCookie = now.Subtract(x.Properties.IssuedUtc!.Value);
+                var timeRemainingForCookie = x.Properties.ExpiresUtc!.Value.Subtract(now);
 
-                if (timeElapsed > timeRemaining)
+                var userId = x.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
+                //Try to get user in cache
+                var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
+                var actualToken = await cache.GetUserTokenAsync(userId);
+
+                //If not token
+                if (actualToken == null)
+                    x.RejectPrincipal();
+                else
                 {
-                    var userId = x.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-                    var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
-                    var actualToken = await cache.GetUserTokenAsync(userId);
-
-                    if (actualToken == null)
-                        return;
-
-                    //Refresh from OpenId endpoint
-                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
+                    //Refresh token
+                    if (actualToken.ExpiresUtc > now)
                     {
-                        Address = authOptions.TokenUrl,
-                        ClientId = authOptions.ClientId,
-                        ClientSecret = authOptions.ClientSecret,
-                        RefreshToken = actualToken.RefreshToken,
-                        GrantType = "refresh_token",
-
-                    });
-
-                    if (!response.IsError)
-                    {
-                        await cache.SetUserTokenAsync(new TokenCacheEntry
+                        var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
                         {
-                            UserId = userId,
-                            RefreshToken = response.RefreshToken!,
-                            AccessToken = response.AccessToken!,
-                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo
+                            Address = authOptions.TokenUrl,
+                            ClientId = authOptions.ClientId,
+                            ClientSecret = authOptions.ClientSecret,
+                            RefreshToken = actualToken.RefreshToken,
+                            GrantType = "refresh_token",
+
                         });
 
-                        // indicate to the cookie middleware to renew the session cookie
-                        // the new lifetime will be the same as the old one, so the alignment
-                        // between cookie and access token is preserved
-                        x.ShouldRenew = true;
+                        if (!response.IsError)
+                        {
+                            await cache.SetUserTokenAsync(new TokenCacheEntry
+                            {
+                                UserId = userId,
+                                RefreshToken = response.RefreshToken!,
+                                AccessToken = response.AccessToken!,
+                                ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo
+                            });
+                        }
+                        else
+                            x.RejectPrincipal();
+
+                        //Refresh cookie
+                        if (timeElapsedForCookie > timeRemainingForCookie)
+                            x.ShouldRenew = true;
                     }
                 }
             }
@@ -112,8 +116,7 @@ builder.Services.AddAuthentication(options =>
             options.ClientSecret = authOptions.ClientSecret;
             options.ClientId = authOptions.ClientId;
             options.ResponseType = "code";
-            //TODO: not store the token in cookie, ask auth provider for initial JWT and store it (review that)
-            options.SaveTokens = true;
+            options.SaveTokens = false;
             options.GetClaimsFromUserInfoEndpoint = true;
             options.Scope.Clear();
             options.Scope.Add("openid");
@@ -141,7 +144,7 @@ builder.Services.AddAuthentication(options =>
                         ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo
                     };
                     x.Properties!.IsPersistent = true;
-                    x.Properties.ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo;
+                    x.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.CookieRefreshTimeInMinutes);
 
                     await cache.SetUserTokenAsync(token);
                 },
@@ -158,8 +161,6 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAu
 builder.Services.AddScoped<UserService>();
 builder.Services.TryAddEnumerable(
     ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
-
-//builder.Services.AddScoped<IClientContactFacade, ClientContactFacade>();
 
 //Http client (the base one for the webassembly component and other typed for external apis
 builder.Services

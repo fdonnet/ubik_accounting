@@ -1,12 +1,16 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using MassTransit.Configuration;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Ubik.ApiService.Common.Configure.Options;
 
 namespace Ubik.Accounting.WebApp.Security
 {
-    public class TokenCacheService(IDistributedCache cache)
+    public class TokenCacheService(IDistributedCache cache, IOptions<AuthServerOptions> authOptions)
     {
         private readonly IDistributedCache _cache = cache;
+        private readonly AuthServerOptions _authOptions = authOptions.Value;
         private static readonly JsonSerializerOptions _serializerOptions = new()
         {
             PropertyNamingPolicy = null,
@@ -18,12 +22,9 @@ namespace Ubik.Accounting.WebApp.Security
 
         public async Task SetUserTokenAsync(TokenCacheEntry token)
         {
-            //if (await GetUserTokenAsync(token.UserId) != null)
-            //    await _cache.RemoveAsync(token.UserId);
-
             var toCache = JsonSerializer.SerializeToUtf8Bytes(token, options: _serializerOptions);
 
-            await _cache.SetAsync(token.UserId, toCache, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(30) });
+            await _cache.SetAsync(token.UserId, toCache, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(_authOptions.CookieRefreshTimeInMinutes + 60) });
         }
 
         public async Task<TokenCacheEntry?> GetUserTokenAsync(string? userId)
