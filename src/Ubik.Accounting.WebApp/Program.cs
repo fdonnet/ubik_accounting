@@ -122,9 +122,7 @@ builder.Services.AddAuthentication(options =>
             options.Scope.Clear();
             options.Scope.Add("openid");
             options.Scope.Add("offline_access");
-
-            //TODO: change for prod
-            options.RequireHttpsMetadata = false;
+            options.RequireHttpsMetadata = authOptions.RequireHttpsMetadata;
 
             options.TokenValidationParameters = new()
             {
