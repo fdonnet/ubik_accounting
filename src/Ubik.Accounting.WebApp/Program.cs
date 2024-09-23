@@ -116,7 +116,7 @@ builder.Services.AddAuthentication(options =>
             options.ClientSecret = authOptions.ClientSecret;
             options.ClientId = authOptions.ClientId;
             options.ResponseType = "code";
-            options.SaveTokens = false;
+            options.SaveTokens = true;
             options.GetClaimsFromUserInfoEndpoint = true;
             options.Scope.Clear();
             options.Scope.Add("openid");
