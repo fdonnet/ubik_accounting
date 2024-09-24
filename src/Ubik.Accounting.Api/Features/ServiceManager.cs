@@ -7,20 +7,14 @@ using Ubik.Accounting.Api.Features.Currencies.Services;
 
 namespace Ubik.Accounting.Api.Features
 {
-    public class ServiceManager : IServiceManager
+    public class ServiceManager(AccountingDbContext context, ICurrentUserService userService) : IServiceManager
     {
-        private readonly AccountingDbContext _context;
-        private readonly ICurrentUserService _userService;
+        private readonly AccountingDbContext _context = context;
+        private readonly ICurrentUserService _userService = userService;
         private IAccountService? _accountService;
         private IAccountGroupService? _accountGroupService;
         private IClassificationService? _classificationService;
         private ICurrencyService? _currencyService;
-
-        public ServiceManager(AccountingDbContext context, ICurrentUserService userService)
-        {
-            _context = context;
-            _userService = userService;
-        }
 
         public IAccountService AccountService
         {

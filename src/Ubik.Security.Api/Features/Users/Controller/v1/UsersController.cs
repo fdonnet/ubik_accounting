@@ -1,0 +1,51 @@
+﻿using Asp.Versioning;
+using MassTransit.Futures.Contracts;
+using MassTransit;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Ubik.ApiService.Common.Errors;
+using Ubik.ApiService.Common.Exceptions;
+using Ubik.Security.Contracts.Users.Results;
+using Ubik.Security.Contracts.Users.Commands;
+using LanguageExt;
+
+namespace Ubik.Security.Api.Features.Users.Controller.v1
+{
+    /// <summary>
+    /// For all queries endpoints => call the service manager and access the data
+    /// For all commands endpoints => call the message bus
+    /// </summary>
+    [Authorize]
+    [ApiController]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    public class UsersController : ControllerBase
+    {
+        //TODO: need to be protected by captach or other stuff
+        //This API need to remain private (no public call on that)
+        [AllowAnonymous]
+        [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 409)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<AddUserResult>> Register(AddUserCommand command, IRequestClient<AddUserCommand> client)
+        {
+            var (result, error) = await client.GetResponse<AddUserResult, IServiceAndFeatureError>(command);
+
+            if (result.IsCompletedSuccessfully)
+            {
+                var added = (await result).Message;
+                //TODO: change created action
+                //return CreatedAtAction(nameof(Get), new { id = added.Id }, added);
+                return Ok(added);
+                
+            }
+            else
+            {
+                var problem = await error;
+                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
+            }
+        }
+    }
+}

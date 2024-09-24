@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ubik.Accounting.Webapp.Shared\Ubik.Accounting.Webapp.Shared.csproj" />
+    <ProjectReference Include="..\Ubik.Contracts.Common\Ubik.Contracts.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

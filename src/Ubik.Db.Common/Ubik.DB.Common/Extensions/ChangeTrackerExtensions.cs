@@ -12,11 +12,11 @@ namespace Ubik.DB.Common.Extensions
         public static void SetSpecialFields(this ChangeTracker changeTracker, ICurrentUserService currentUserService)
         {
             changeTracker.DetectChanges();
-            IEnumerable<EntityEntry> entities = changeTracker.Entries();
+            IEnumerable<EntityEntry> entries = changeTracker.Entries();
 
-            SetAuditFields(entities, currentUserService.CurrentUser);
-            SetTenantField(entities, currentUserService.CurrentUser);
-            SetConcurrencyField(entities);
+            SetAuditFields(entries, currentUserService.CurrentUser);
+            SetTenantField(entries, currentUserService.CurrentUser);
+            SetConcurrencyField(entries);
         }
 
         /// <summary>

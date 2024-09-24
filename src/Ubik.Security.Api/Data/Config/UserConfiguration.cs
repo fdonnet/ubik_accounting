@@ -16,7 +16,7 @@ namespace Ubik.Security.Api.Data.Config
 
             builder.Property(a => a.Email)
                 .IsRequired()
-                .HasMaxLength(700);
+                .HasMaxLength(200);
 
             builder.Property(a => a.Version)
                 .IsConcurrencyToken();

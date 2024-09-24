@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Webapp.Shar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Security.Api", "Ubik.Security.Api\Ubik.Security.Api.csproj", "{E323FEC9-5317-44C6-A8E0-483FD01F5179}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Contracts.Common", "Ubik.Contracts.Common\Ubik.Contracts.Common.csproj", "{0D550FA5-53E4-47B9-B3E0-E875B06867ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Security.Contracts", "Ubik.Security.Contracts\Ubik.Security.Contracts.csproj", "{960092CC-B82F-420D-94FB-58CAC0E91B99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +73,14 @@ Global
 		{E323FEC9-5317-44C6-A8E0-483FD01F5179}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E323FEC9-5317-44C6-A8E0-483FD01F5179}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E323FEC9-5317-44C6-A8E0-483FD01F5179}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D550FA5-53E4-47B9-B3E0-E875B06867ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D550FA5-53E4-47B9-B3E0-E875B06867ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D550FA5-53E4-47B9-B3E0-E875B06867ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D550FA5-53E4-47B9-B3E0-E875B06867ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{960092CC-B82F-420D-94FB-58CAC0E91B99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{960092CC-B82F-420D-94FB-58CAC0E91B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{960092CC-B82F-420D-94FB-58CAC0E91B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{960092CC-B82F-420D-94FB-58CAC0E91B99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

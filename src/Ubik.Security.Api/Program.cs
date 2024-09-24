@@ -10,16 +10,21 @@ using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
+using Ubik.Security.Contracts.Users.Commands;
+using Ubik.Security.Api.Features;
+using Ubik.Security.Api.Features.Users.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Options
+//Options used in Program.cs
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
 var msgBrokerOptions = new MessageBrokerOptions();
 builder.Configuration.GetSection(MessageBrokerOptions.Position).Bind(msgBrokerOptions);
 var swaggerUIOptions = new SwaggerUIOptions();
 builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
+var authProviderOptions =  new AuthProviderOptions();
+builder.Configuration.GetSection(AuthProviderOptions.Position).Bind(authProviderOptions);
 
 //Auth server and JWT
 builder.Services.AddAuthServerAndJwt(authOptions);
@@ -28,6 +33,12 @@ builder.Services.AddDbContextFactory<SecurityDbContext>(
      options => options.UseNpgsql(builder.Configuration.GetConnectionString("SecurityDbContext")), ServiceLifetime.Scoped);
 
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+//Auth Provider
+builder.Services.AddHttpClient<IUserAuthProviderService, UserAuthProviderServiceKeycloak>(client =>
+{
+    client.BaseAddress = new Uri(authProviderOptions.RootUrl);
+});
 
 //MessageBroker with masstransit + outbox
 builder.Services.AddMassTransit(config =>
@@ -60,6 +71,7 @@ builder.Services.AddMassTransit(config =>
     config.AddConsumers(Assembly.GetExecutingAssembly());
 
     //TODO: Add commands clients
+    config.AddRequestClient<AddUserCommand>();
     //config.AddRequestClient<AddAccountCommand>();
     //config.AddRequestClient<AddAccountInAccountGroupCommand>();
     //config.AddRequestClient<DeleteAccountInAccountGroupCommand>();
@@ -90,9 +102,11 @@ builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
 
 //Services injection
 //TODO: see if we need to integrate the user service more
-//builder.Services.AddScoped<IServiceManager, ServiceManager>();
+builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
+builder.Services.Configure<AuthProviderOptions>(
+    builder.Configuration.GetSection(AuthProviderOptions.Position));
 
 //Strandard API things
 builder.Services.AddControllers(o =>
@@ -115,8 +129,8 @@ app.UseExceptionHandler(app.Logger, app.Environment);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    //app.UseSwagger();
-    //app.UseSwaggerUIWithAuth(swaggerUIOptions);
+    app.UseSwagger();
+    app.UseSwaggerUIWithAuth(swaggerUIOptions);
 
     //DB Init on DEV
     using var scope = app.Services.CreateScope();
