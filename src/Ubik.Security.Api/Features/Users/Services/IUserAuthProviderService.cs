@@ -6,7 +6,7 @@ namespace Ubik.Security.Api.Features.Users.Services
 {
     public interface IUserAuthProviderService
     {
-        public Task<Either<IServiceAndFeatureError, User>> AddUserAsync(User user);
+        public Task<Either<IServiceAndFeatureError, bool>> AddUserAsync(User user);
 
     }
 }

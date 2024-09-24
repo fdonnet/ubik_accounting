@@ -9,16 +9,10 @@ using Ubik.Security.Api.Models;
 
 namespace Ubik.Security.Api.Features.Users.Services
 {
-    public class UserManagementService : IUserManagementService
+    public class UserManagementService(SecurityDbContext ctx, ICurrentUserService userService) : IUserManagementService
     {
-        private readonly SecurityDbContext _context;
-        private readonly ICurrentUserService _userService;
-
-        public UserManagementService(SecurityDbContext ctx, ICurrentUserService userService)
-        {
-            _context = ctx;
-            _userService = userService;
-        }
+        private readonly SecurityDbContext _context = ctx;
+        private readonly ICurrentUserService _userService = userService;
 
         public async Task<Either<IServiceAndFeatureError, User>> AddAsync(User user)
         {

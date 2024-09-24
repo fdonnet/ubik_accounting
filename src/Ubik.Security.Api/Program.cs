@@ -23,8 +23,8 @@ var msgBrokerOptions = new MessageBrokerOptions();
 builder.Configuration.GetSection(MessageBrokerOptions.Position).Bind(msgBrokerOptions);
 var swaggerUIOptions = new SwaggerUIOptions();
 builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
-var authProviderOptions =  new AuthProviderOptions();
-builder.Configuration.GetSection(AuthProviderOptions.Position).Bind(authProviderOptions);
+var authProviderOptions =  new AuthProviderKeycloakOptions();
+builder.Configuration.GetSection(AuthProviderKeycloakOptions.Position).Bind(authProviderOptions);
 
 //Auth server and JWT
 builder.Services.AddAuthServerAndJwt(authOptions);
@@ -105,8 +105,8 @@ builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
-builder.Services.Configure<AuthProviderOptions>(
-    builder.Configuration.GetSection(AuthProviderOptions.Position));
+builder.Services.Configure<AuthProviderKeycloakOptions>(
+    builder.Configuration.GetSection(AuthProviderKeycloakOptions.Position));
 
 //Strandard API things
 builder.Services.AddControllers(o =>

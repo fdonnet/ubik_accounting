@@ -2,6 +2,7 @@
 
 namespace Ubik.Security.Api.Features
 {
+
     public interface IServiceManager
     {
         IUserManagementService UserManagementService { get; }
