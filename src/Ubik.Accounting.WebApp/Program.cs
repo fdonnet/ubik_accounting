@@ -55,7 +55,9 @@ builder.Services.AddAuthentication(options =>
 })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
-        options.ExpireTimeSpan = TimeSpan.FromDays(1);
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(authOptions.CookieRefreshTimeInMinutes);
+        options.SlidingExpiration = true;
+        options.Cookie.SameSite = SameSiteMode.Strict;
         options.Events = new CookieAuthenticationEvents
         {
             OnValidatePrincipal = async x =>
