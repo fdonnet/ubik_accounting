@@ -2,7 +2,7 @@
 {
     public class DbInitializer
     {
-        public async Task InitializeAsync(AccountingContext context)
+        public async Task InitializeAsync(AccountingDbContext context)
         {
             CurrenciesData.Load(context);
             ClassificationsData.Load(context);

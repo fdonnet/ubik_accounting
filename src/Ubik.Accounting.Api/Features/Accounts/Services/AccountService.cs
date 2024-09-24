@@ -14,9 +14,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly AccountingContext _context;
+        private readonly AccountingDbContext _context;
         private readonly ICurrentUserService _userService;
-        public AccountService(AccountingContext ctx, ICurrentUserService userService)
+        public AccountService(AccountingDbContext ctx, ICurrentUserService userService)
         {
             _context = ctx;
             _userService = userService;

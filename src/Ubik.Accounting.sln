@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.WebApp.Clie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Webapp.Shared", "Ubik.Accounting.Webapp.Shared\Ubik.Accounting.Webapp.Shared.csproj", "{742D3CF1-3470-4347-8902-4E57B0ABF2C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Security.Api", "Ubik.Security.Api\Ubik.Security.Api.csproj", "{E323FEC9-5317-44C6-A8E0-483FD01F5179}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{742D3CF1-3470-4347-8902-4E57B0ABF2C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{742D3CF1-3470-4347-8902-4E57B0ABF2C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{742D3CF1-3470-4347-8902-4E57B0ABF2C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E323FEC9-5317-44C6-A8E0-483FD01F5179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E323FEC9-5317-44C6-A8E0-483FD01F5179}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E323FEC9-5317-44C6-A8E0-483FD01F5179}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E323FEC9-5317-44C6-A8E0-483FD01F5179}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

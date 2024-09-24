@@ -9,14 +9,14 @@ namespace Ubik.Accounting.Api.Features
 {
     public class ServiceManager : IServiceManager
     {
-        private readonly AccountingContext _context;
+        private readonly AccountingDbContext _context;
         private readonly ICurrentUserService _userService;
         private IAccountService? _accountService;
         private IAccountGroupService? _accountGroupService;
         private IClassificationService? _classificationService;
         private ICurrencyService? _currencyService;
 
-        public ServiceManager(AccountingContext context, ICurrentUserService userService)
+        public ServiceManager(AccountingDbContext context, ICurrentUserService userService)
         {
             _context = context;
             _userService = userService;

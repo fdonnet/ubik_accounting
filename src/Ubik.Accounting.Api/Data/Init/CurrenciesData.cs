@@ -5,7 +5,7 @@ namespace Ubik.Accounting.Api.Data.Init
 {
     internal static class CurrenciesData
     {
-        internal static void Load(AccountingContext context)
+        internal static void Load(AccountingDbContext context)
         {
             if (!context.Currencies.Any())
             {

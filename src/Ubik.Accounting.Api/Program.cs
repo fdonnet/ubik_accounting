@@ -42,7 +42,7 @@ namespace Ubik.Accounting.Api
             builder.Services.AddAuthServerAndJwt(authOptions);
 
             //DB
-            builder.Services.AddDbContextFactory<AccountingContext>(
+            builder.Services.AddDbContextFactory<AccountingDbContext>(
                  options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
 
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -67,7 +67,7 @@ namespace Ubik.Accounting.Api
                     configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
                 });
 
-                config.AddEntityFrameworkOutbox<AccountingContext>(o =>
+                config.AddEntityFrameworkOutbox<AccountingDbContext>(o =>
                 {
                     o.UsePostgres();
                     o.UseBusOutbox();
@@ -94,7 +94,7 @@ namespace Ubik.Accounting.Api
             //Api versioning
             builder.Services.AddApiVersionAndExplorer();
 
-            //Cors
+            //TODO: Cors
             builder.Services.AddCustomCors();
 
             //Tracing and metrics
@@ -139,7 +139,7 @@ namespace Ubik.Accounting.Api
                 using var scope = app.Services.CreateScope();
                 var services = scope.ServiceProvider;
 
-                var context = services.GetRequiredService<AccountingContext>();
+                var context = services.GetRequiredService<AccountingDbContext>();
                 //context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
 

@@ -13,9 +13,9 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
     public class AccountGroupService : IAccountGroupService
     {
-        private readonly AccountingContext _context;
+        private readonly AccountingDbContext _context;
         private readonly ICurrentUserService _userService;
-        public AccountGroupService(AccountingContext ctx, ICurrentUserService userService)
+        public AccountGroupService(AccountingDbContext ctx, ICurrentUserService userService)
         {
             _context = ctx;
             _userService = userService;

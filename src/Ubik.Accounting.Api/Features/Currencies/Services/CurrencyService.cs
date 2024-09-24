@@ -6,8 +6,8 @@ namespace Ubik.Accounting.Api.Features.Currencies.Services
 {
     public class CurrencyService : ICurrencyService
     {
-        private readonly AccountingContext _context;
-        public CurrencyService(AccountingContext ctx)
+        private readonly AccountingDbContext _context;
+        public CurrencyService(AccountingDbContext ctx)
         {
             _context = ctx;
 

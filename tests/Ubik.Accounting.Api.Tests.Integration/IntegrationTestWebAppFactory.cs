@@ -72,14 +72,14 @@ namespace Ubik.Accounting.Api.Tests.Integration
             builder.ConfigureTestServices(services =>
             {
                 var descriptor = services
-                    .SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<AccountingContext>));
+                    .SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<AccountingDbContext>));
 
                 if (descriptor is not null)
                 {
                     services.Remove(descriptor);
                 }
 
-                services.AddDbContext<AccountingContext>(options =>
+                services.AddDbContext<AccountingDbContext>(options =>
                     options.UseNpgsql(_dbContainer.GetConnectionString()));
 
                 services.AddScoped<ICurrentUserService, TestUserService>();

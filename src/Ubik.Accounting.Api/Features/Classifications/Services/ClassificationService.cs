@@ -14,9 +14,9 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
 {
     public class ClassificationService : IClassificationService
     {
-        private readonly AccountingContext _context;
+        private readonly AccountingDbContext _context;
         private readonly ICurrentUserService _userService;
-        public ClassificationService(AccountingContext ctx, ICurrentUserService userService)
+        public ClassificationService(AccountingDbContext ctx, ICurrentUserService userService)
         {
             _context = ctx;
             _userService = userService;

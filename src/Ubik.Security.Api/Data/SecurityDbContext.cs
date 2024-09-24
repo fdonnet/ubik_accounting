@@ -1,26 +1,26 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Ubik.Accounting.Api.Data.Config;
-using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
 using Ubik.DB.Common.Extensions;
+using Ubik.Security.Api.Data.Config;
+using Ubik.Security.Api.Models;
 
-namespace Ubik.Accounting.Api.Data
+namespace Ubik.Security.Api.Data
 {
-    public class AccountingContext(DbContextOptions<AccountingContext> options
+    public class SecurityDbContext(DbContextOptions<SecurityDbContext> options
         , ICurrentUserService userService) : DbContext(options)
     {
         private readonly ICurrentUserService _currentUserService = userService;
         private readonly Guid _tenantId = userService.CurrentUser.TenantIds[0];
 
-        public DbSet<Account> Accounts { get; set; }
-        public DbSet<AccountGroup> AccountGroups { get; set; }
-        public DbSet<AccountAccountGroup> AccountsAccountGroups { get; set; }
-        public DbSet<Classification> Classifications { get; set; }
-        public DbSet<Currency> Currencies { get; set; }
-
+        public DbSet<Tenant> Tenants { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserTenant> UsersTenants { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<Authorization> Authorizations { get; set; }
+        public DbSet<RoleAuthorization> RolesAuthorizations { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -65,42 +65,22 @@ namespace Ubik.Accounting.Api.Data
             modelBuilder.AddOutboxStateEntity();
 
             //TenantId
-            SetTenantId(modelBuilder);
+            //SetTenantId(modelBuilder);
 
             //Configure
-            new CurrencyConfiguration().Configure(modelBuilder.Entity<Currency>());
-            new ClassificationConfiguration().Configure(modelBuilder.Entity<Classification>());
-            new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
-            new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
-            new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
-
-            //TODO: Fk no cascade (but need to be checked)
-            //var cascadeFKs = modelBuilder.Model.GetEntityTypes()
-            //    .SelectMany(t => t.GetForeignKeys())
-            //    .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
-
-            //foreach (var fk in cascadeFKs)
-            //    fk.DeleteBehavior = DeleteBehavior.Restrict;
+            new TenantConfiguration().Configure(modelBuilder.Entity<Tenant>());
+            new UserConfiguration().Configure(modelBuilder.Entity<User>());
+            new UserTenantConfiguration().Configure(modelBuilder.Entity<UserTenant>());
+            new RoleConfiguration().Configure(modelBuilder.Entity<Role>());
+            new AuthorizationConfiguration().Configure(modelBuilder.Entity<Authorization>());
+            new RoleAuthorizationConfiguration().Configure(modelBuilder.Entity<RoleAuthorization>());
 
             base.OnModelCreating(modelBuilder);
         }
 
-        private void SetTenantId(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Account>()
-                .HasQueryFilter(mt => mt.TenantId == _tenantId);
-
-            modelBuilder.Entity<AccountGroup>()
-                .HasQueryFilter(mt => mt.TenantId == _tenantId);
-
-            modelBuilder.Entity<Classification>()
-                .HasQueryFilter(mt => mt.TenantId == _tenantId);
-
-            modelBuilder.Entity<AccountAccountGroup>()
-                .HasQueryFilter(mt => mt.TenantId == _tenantId);
-
-            modelBuilder.Entity<Currency>()
-                .HasQueryFilter(mt => mt.TenantId == _tenantId);
-        }
+        //private void SetTenantId(ModelBuilder modelBuilder)
+        //{
+            
+        //}
     }
 }

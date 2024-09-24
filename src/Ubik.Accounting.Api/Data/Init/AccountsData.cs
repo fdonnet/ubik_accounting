@@ -8,7 +8,7 @@ namespace Ubik.Accounting.Api.Data.Init
 {
     internal static class AccountsData
     {
-        internal static async Task LoadAsync(AccountingContext context)
+        internal static async Task LoadAsync(AccountingDbContext context)
         {
             if (!context.Accounts.Any())
             {
