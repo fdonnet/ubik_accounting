@@ -10,6 +10,7 @@ using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Api.Features.Users.Errors;
 using System.Reflection.Metadata.Ecma335;
+using Ubik.Security.Contracts.Users.Commands;
 
 namespace Ubik.Security.Api.Features.Users.Services
 {
@@ -18,7 +19,7 @@ namespace Ubik.Security.Api.Features.Users.Services
         private readonly HttpClient _httpClient = httpClient;
         private readonly AuthProviderKeycloakOptions _authProviderKeycloakOptions = authProviderOption.Value;
 
-        public async Task<Either<IServiceAndFeatureError, bool>> AddUserAsync(User user)
+        public async Task<Either<IServiceAndFeatureError, bool>> AddUserAsync(AddUserCommand user)
         {
             return await GetServiceTokenAsync().ToAsync()
                 .Bind(token => SendAddRequestToAuthProviderAsync(user, token).ToAsync()
@@ -28,7 +29,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 }));
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> SendAddRequestToAuthProviderAsync(User user, string token)
+        private async Task<Either<IServiceAndFeatureError, bool>> SendAddRequestToAuthProviderAsync(AddUserCommand user, string token)
         {
             var userPayload = new AddUserInKeycloakRealm()
             {
@@ -37,19 +38,23 @@ namespace Ubik.Security.Api.Features.Users.Services
                 EmailVerified = true,
                 Firstname = user.Firstname,
                 Lastname = user.Lastname,
-                Username = user.Email
+                Username = user.Email,
+                Enabled = true,
+                Credentials = [new() { Value = user.Password }]
             };
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
             var request = JsonSerializer.Serialize(userPayload);
-            var response = await _httpClient.PostAsync("users"
+            var response = await _httpClient.PostAsync("admin/realms/Ubik/users"
                             , new StringContent(request, Encoding.UTF8, "application/json"));
 
             return response.IsSuccessStatusCode
-            ? true
-            : new UserCannotBeAddedInAuthProvider(user);
+                ? true
+                : response.StatusCode == System.Net.HttpStatusCode.Conflict
+                    ? new UserCannotBeAddedInAuthProviderConflict(user)
+                    : new UserCannotBeAddedInAuthProviderBadParams(user);
         }
 
         private async Task<Either<IServiceAndFeatureError, string>> GetServiceTokenAsync()
@@ -63,11 +68,11 @@ namespace Ubik.Security.Api.Features.Users.Services
             };
 
 
-            HttpResponseMessage response = _httpClient.PostAsync($"protocol/openid-connect/token", new FormUrlEncodedContent(dict)).Result;
+            HttpResponseMessage response = _httpClient.PostAsync($"realms/Ubik/protocol/openid-connect/token", new FormUrlEncodedContent(dict)).Result;
             if (response.IsSuccessStatusCode)
             {
                 var token = await response.Content.ReadFromJsonAsync<GetTokenResult>();
-                return token==null
+                return token == null
                     ? new CannotGetAuthToken()
                     : token.AccessToken;
             }
@@ -91,8 +96,22 @@ namespace Ubik.Security.Api.Features.Users.Services
             public string Lastname { get; init; } = default!;
             [JsonPropertyName("emailVerified")]
             public bool EmailVerified { get; init; } = default!;
+            [JsonPropertyName("enabled")]
+            public bool Enabled { get; init; } = true;
             [JsonPropertyName("username")]
             public string Username { get; init; } = default!;
+            [JsonPropertyName("credentials")]
+            public List<Credentials> Credentials { get; init; } = default!;
+        }
+
+        private record Credentials
+        {
+            [JsonPropertyName("temporary")]
+            public bool Temporary { get; init; } = false;
+            [JsonPropertyName("type")]
+            public string Type { get; init; } = "password";
+            [JsonPropertyName("value")]
+            public string Value { get; init; } = default!;
         }
     }
 }

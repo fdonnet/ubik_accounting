@@ -11,7 +11,7 @@ namespace Ubik.Security.Api.Features.Users.Errors
         public CannotGetAuthToken()
         {
 
-            ErrorType = ServiceAndFeatureErrorType.Conflict;
+            ErrorType = ServiceAndFeatureErrorType.BadParams;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "USER_CANNOT_GET_AUTH_TOKEN",
