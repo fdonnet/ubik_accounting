@@ -2,7 +2,7 @@
 
 namespace Ubik.Security.Api.Features.Users.Errors
 {
-    public class UserAlreadyExistsError : IServiceAndFeatureError
+    public record UserAlreadyExistsError : IServiceAndFeatureError
     {
         public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }

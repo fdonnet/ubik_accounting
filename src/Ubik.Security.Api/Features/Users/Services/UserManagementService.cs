@@ -26,6 +26,25 @@ namespace Ubik.Security.Api.Features.Users.Services
                 });
         }
 
+        public async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
+        {
+            return await GetAsync(id).ToAsync()
+                .MapAsync(async ac =>
+                {
+                    await _context.Users.Where(x => x.Id == id).ExecuteDeleteAsync();
+                    return true;
+                });
+        }
+
+        public async Task<Either<IServiceAndFeatureError, User>> GetAsync(Guid id)
+        {
+            var result = await _context.Users.FindAsync(id);
+
+            return result == null
+                ? new UserNotFoundError(id)
+                : result;
+        }
+
         private async Task<Either<IServiceAndFeatureError, User>> ValidateIfNotAlreadyExistsAsync(User user)
         {
             var exists = await _context.Users.AnyAsync(a => a.Email == user.Email);

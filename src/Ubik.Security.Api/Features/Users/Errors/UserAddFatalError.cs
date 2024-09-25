@@ -1,22 +1,22 @@
 ﻿using Ubik.ApiService.Common.Errors;
-using Ubik.Security.Api.Models;
+using Ubik.Security.Contracts.Users.Commands;
 
 namespace Ubik.Security.Api.Features.Users.Errors
 {
-    public record CannotGetAuthToken : IServiceAndFeatureError
+    public record UserAddFatalError : IServiceAndFeatureError
     {
         public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public CannotGetAuthToken()
+        public UserAddFatalError()
         {
 
             ErrorType = ServiceAndFeatureErrorType.BadParams;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
-                ErrorCode = "USER_CANNOT_GET_AUTH_TOKEN",
-                ErrorFriendlyMessage = "Cannot retrieve valid token to communicate with the auth provider.",
-                ErrorValueDetails = $"Token is null."
+                ErrorCode = "USER_NOT_ADDED_IN_DB_BUT_NOT_IN_AUTH",
+                ErrorFriendlyMessage = "Fatal error, contact your admin, you will not be able to add this new user",
+                ErrorValueDetails = $""
             }};
         }
     }

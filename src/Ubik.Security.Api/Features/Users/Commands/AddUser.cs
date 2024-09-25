@@ -16,23 +16,36 @@ namespace Ubik.Security.Api.Features.Users.Commands
         public async Task Consume(ConsumeContext<AddUserCommand> context)
         {
             var msg = context.Message;
-            //TODO: delete user from auth if it's not a success in the DB (change the way)
-            // For the moment, the DB is protected but the Auth provider can have orphan users and
-            // it's not good at all. (or do the inverse)
+            //TODO: Enhance this part... dirty asf to maintain aligned systems (DB + auth)
+            //Ad the ID to be aligned with DB
 
-            //TODO: put check in place (email validation etc)
-            var result = await _userAuthProviderService.AddUserAsync(msg).ToAsync()
-                .Bind(ok => _serviceManager.UserManagementService.AddAsync(msg.ToUser()).ToAsync());
+            //First step DB
+            var result = await _serviceManager.UserManagementService.AddAsync(msg.ToUser());
 
             await result.Match(
-                Right: async r =>
+                Right: async okDb =>
                 {
-                    //Store and publish AccountAdded event
-                    await _publishEndpoint.Publish(r.ToUserAdded(), CancellationToken.None);
-                    await _serviceManager.SaveAsync();
-                    await context.RespondAsync(r.ToAddUserResult());
+                    var resultAuth = await _userAuthProviderService.AddUserAsync(msg);
+                    await result.Match(
+                        Right: async okAfterAuth =>
+                        {
+                            //Store and publish UserAdded event (auth + DB = OK)
+                            await _publishEndpoint.Publish(okAfterAuth.ToUserAdded(), CancellationToken.None);
+                            await _serviceManager.SaveAsync();
+                            await context.RespondAsync(okAfterAuth.ToAddUserResult());
+                        },
+                        Left: async errAuth =>
+                        {
+                            //Remove user from DB if auth add failed
+                            var delDbResult = await _serviceManager.UserManagementService.ExecuteDeleteAsync(okDb.Id);
+
+                            await delDbResult.Match(
+                                Right: async okDelInDb => await context.RespondAsync(errAuth),
+                                Left: async koDelInDb => await context.RespondAsync(koDelInDb));
+                        });
                 },
-                Left: async err => await context.RespondAsync(err));
+                //DB not ok
+                Left: async errDB => await context.RespondAsync(errDB));
         }
     }
 }

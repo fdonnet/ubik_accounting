@@ -4,7 +4,7 @@ using Ubik.Security.Contracts.Users.Commands;
 
 namespace Ubik.Security.Api.Features.Users.Errors
 {
-    public class UserCannotBeAddedInAuthProviderConflict : IServiceAndFeatureError
+    public record UserCannotBeAddedInAuthProviderConflict : IServiceAndFeatureError
     {
         public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
