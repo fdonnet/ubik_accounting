@@ -18,9 +18,10 @@ namespace Ubik.Security.Contracts.Users.Commands
         public string Lastname { get; init; } = default!;
         [Required]
         [MaxLength(200)]
+        [EmailAddress]
         public string Email { get; init; } = default !;
         [Required]
-        [MaxLength(200)]
+        [MaxLength(60)]
         //TODO: change min len and go with other stuff for auth
         [MinLength(4)]
         public string Password { get; init; } = default!;
