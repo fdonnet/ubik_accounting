@@ -148,9 +148,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountAlreadyExistsError>()
-                    .And.Match<AccountAlreadyExistsError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
+                    .And.BeOfType<ResourceAlreadyExistsError>();
         }
 
         [Theory]
@@ -247,9 +245,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountAlreadyExistsError>()
-                    .And.Match<AccountAlreadyExistsError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
+                    .And.BeOfType<ResourceAlreadyExistsError>();
         }
 
         [Fact]

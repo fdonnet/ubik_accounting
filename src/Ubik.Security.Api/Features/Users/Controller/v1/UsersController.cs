@@ -23,6 +23,7 @@ namespace Ubik.Security.Api.Features.Users.Controller.v1
     {
         //TODO: need to be protected by captach or other stuff
         //This API need to remain private (no public call on that)
+        //Maybe protect by domain names or other stuff but it allow a user to register
         [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(201)]

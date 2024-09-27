@@ -17,7 +17,7 @@ namespace Ubik.Security.Api.Features.Users.Commands
         {
             var msg = context.Message;
             //TODO: Enhance this part... dirty asf to maintain aligned systems (DB + auth)
-            //Ad the ID to be aligned with DB
+            //Ad the ID to be aligned with DB or use email as identifier ?
 
             //First step DB
             var result = await _serviceManager.UserManagementService.AddAsync(msg.ToUser());

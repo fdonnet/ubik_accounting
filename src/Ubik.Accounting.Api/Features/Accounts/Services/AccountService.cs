@@ -12,15 +12,10 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Services
 {
-    public class AccountService : IAccountService
+    public class AccountService(AccountingDbContext ctx, ICurrentUserService userService) : IAccountService
     {
-        private readonly AccountingDbContext _context;
-        private readonly ICurrentUserService _userService;
-        public AccountService(AccountingDbContext ctx, ICurrentUserService userService)
-        {
-            _context = ctx;
-            _userService = userService;
-        }
+        private readonly AccountingDbContext _context = ctx;
+        private readonly ICurrentUserService _userService = userService;
 
         public async Task<IEnumerable<Account>> GetAllAsync()
         {
@@ -133,7 +128,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         {
             var exists = await _context.Accounts.AnyAsync(a => a.Code == account.Code);
             return exists
-                ? new AccountAlreadyExistsError(account.Code)
+                ? new ResourceAlreadyExistsError("Account","Code",account.Code)
                 : account;
         }
 
@@ -142,7 +137,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             var exists = await _context.Accounts.AnyAsync(a => a.Code == account.Code && a.Id != account.Id);
 
             return exists
-                ? new AccountAlreadyExistsError(account.Code)
+                ? new ResourceAlreadyExistsError("Account", "Code", account.Code)
                 : account;
         }
 
