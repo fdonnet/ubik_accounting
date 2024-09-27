@@ -291,7 +291,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_ALREADY_EXISTS");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_IN_CLASSIFICATION_ALREADY_EXISTS");
         }
 
         [Fact]
@@ -313,11 +313,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_CLASSIFICATION_NOTFOUND");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
         }
 
         [Fact]
@@ -437,11 +437,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_CLASSIFICATION_NOTFOUND");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
         }
 
         [Fact]
@@ -568,7 +568,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_ALREADY_EXISTS");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_IN_CLASSIFICATION_ALREADY_EXISTS");
         }
 
         [Fact]

@@ -153,11 +153,13 @@ builder.Services.AddAuthentication(options =>
                 OnTokenResponseReceived = async x =>
                 {
                     ////Only store id_token in cookie
-                    x.Properties!.StoreTokens(new[] { new AuthenticationToken
+                    x.Properties!.StoreTokens([ new AuthenticationToken
                         {
                             Name = "id_token",
                             Value = x.TokenEndpointResponse.IdToken
-                        }});
+                        }]);
+
+                    await Task.CompletedTask;
                 },
             };
         }

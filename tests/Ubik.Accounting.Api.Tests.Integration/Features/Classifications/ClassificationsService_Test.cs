@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
-using Ubik.Accounting.Api.Features.Classifications.Errors;
 using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
@@ -68,21 +67,15 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Assert
             result.Should()
            .NotBeNull()
-           .And.BeOfType<ClassificationNotFoundError>()
-           .And.Match<ClassificationNotFoundError>(a =>
-               a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+           .And.BeOfType<ResourceNotFoundError>();
 
             resultForUpd.Should()
             .NotBeNull()
-            .And.BeOfType<ClassificationNotFoundError>()
-            .And.Match<ClassificationNotFoundError>(a =>
-            a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+            .And.BeOfType<ResourceNotFoundError>();
 
             resultForDel.Should()
             .NotBeNull()
-            .And.BeOfType<ClassificationNotFoundError>()
-            .And.Match<ClassificationNotFoundError>(a =>
-            a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+            .And.BeOfType<ResourceNotFoundError>();
         }
 
         [Fact]
@@ -168,9 +161,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<ClassificationAlreadyExistsError>()
-                    .And.Match<ClassificationAlreadyExistsError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
+                    .And.BeOfType<ResourceAlreadyExistsError>();
         }
 
         [Fact]
@@ -213,9 +204,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<ClassificationAlreadyExistsError>()
-                    .And.Match<ClassificationAlreadyExistsError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
+                    .And.BeOfType<ResourceAlreadyExistsError>();
         }
 
         [Fact]

@@ -62,9 +62,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
            .NotBeNull()
-           .And.BeOfType<AccountGroupNotFoundError>()
-           .And.Match<AccountGroupNotFoundError>(a =>
-               a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+           .And.BeOfType<ResourceNotFoundError>();
         }
 
         [Fact]
@@ -83,7 +81,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
         }
 
         [Theory]
-        [MemberData(nameof(GetAccountGroups), parameters: new object[] { 5 })]
+        [MemberData(nameof(GetAccountGroups), parameters: [5])]
         public async Task Add_AccountGroup_Ok(AccountGroup accountGroup)
         {
             //Arrange
@@ -115,9 +113,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupAlreadyExistsError>()
-                    .And.Match<AccountGroupAlreadyExistsError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
+                    .And.BeOfType<ResourceAlreadyExistsError>();
         }
 
         [Fact]
@@ -160,13 +156,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupClassificationNotFoundError>()
-                    .And.Match<AccountGroupClassificationNotFoundError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
+                    .And.BeOfType<ResourceNotFoundError>();
         }
 
         [Theory]
-        [MemberData(nameof(GetAccountGroups), parameters: new object[] { 5 })]
+        [MemberData(nameof(GetAccountGroups), parameters: [5])]
         public async Task Add_AuditFieldsModified_Ok(AccountGroup accountGroup)
         {
             //Arrange
@@ -203,9 +197,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                      .NotBeNull()
-                     .And.BeOfType<AccountGroupNotFoundError>()
-                     .And.Match<AccountGroupNotFoundError>(a =>
-                         a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+                     .And.BeOfType<ResourceNotFoundError>();
         }
 
         [Fact]
@@ -269,9 +261,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupNotFoundError>()
-                    .And.Match<AccountGroupNotFoundError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+                    .And.BeOfType<ResourceNotFoundError>();
         }
 
         [Fact]
@@ -315,9 +305,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupClassificationNotFoundError>()
-                    .And.Match<AccountGroupClassificationNotFoundError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
+                    .And.BeOfType<ResourceNotFoundError>();
         }
 
 
@@ -339,9 +327,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupAlreadyExistsError>()
-                    .And.Match<AccountGroupAlreadyExistsError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.Conflict);
+                    .And.BeOfType<ResourceAlreadyExistsError>();
         }
 
         public static IEnumerable<object[]> GeneratedGuids

@@ -307,11 +307,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_CURRENCY_NOT_FOUND");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CURRENCY_NOT_FOUND");
         }
 
         [Fact]
@@ -467,7 +467,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
@@ -639,11 +639,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_CURRENCY_NOT_FOUND");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CURRENCY_NOT_FOUND");
         }
 
         [Fact]
@@ -718,7 +718,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //Act
-            var response = await httpClient.DeleteAsync($"{_baseUrlForV1}/{_testValuesForAccounts.AccountIdForDel}");
+            var response = await httpClient.DeleteAsync($"{_baseUrlForV1}/{Guid.Parse("60520000-5dd4-0015-c1b6-08dcda58ab69")}");
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);

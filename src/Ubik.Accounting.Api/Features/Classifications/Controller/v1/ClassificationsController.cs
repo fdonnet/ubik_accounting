@@ -2,7 +2,6 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Ubik.Accounting.Api.Features.Classifications.Errors;
 using Ubik.Accounting.Api.Features.Classifications.Mappers;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.Classifications.Results;
@@ -15,22 +14,15 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class ClassificationsController : ControllerBase
+    public class ClassificationsController(IServiceManager serviceManager) : ControllerBase
     {
-        private readonly IServiceManager _serviceManager;
-
-        public ClassificationsController(IServiceManager serviceManager)
-        {
-            _serviceManager = serviceManager;
-        }
-
         [Authorize(Roles = "ubik_accounting_classification_read")]
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<GetAllClassificationsResult>>> GetAll()
         {
-            var results = (await _serviceManager.ClassificationService.GetAllAsync()).ToGetAllClassificationsResult();
+            var results = (await serviceManager.ClassificationService.GetAllAsync()).ToGetAllClassificationsResult();
             return Ok(results);
         }
 
@@ -42,7 +34,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<GetClassificationResult>> Get(Guid id)
         {
-            var result = await _serviceManager.ClassificationService.GetAsync(id);
+            var result = await serviceManager.ClassificationService.GetAsync(id);
             return result.Match(
                             Right: ok => Ok(ok.ToGetClassificationResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
@@ -62,7 +54,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<GetClassificationAccountsResult>>> GetAccounts(Guid id)
         {
-            var result = await _serviceManager.ClassificationService.GetClassificationAccountsAsync(id);
+            var result = await serviceManager.ClassificationService.GetClassificationAccountsAsync(id);
             return result.Match(
                             Right: ok => Ok(ok.ToGetClassificationAccountsResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
@@ -82,7 +74,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<GetClassificationAccountsMissingResult>> GetMissingAccounts(Guid id)
         {
-            var result = await _serviceManager.ClassificationService.GetClassificationAccountsMissingAsync(id);
+            var result = await serviceManager.ClassificationService.GetClassificationAccountsMissingAsync(id);
             return result.Match(
                             Right: ok => Ok(ok.ToGetClassificationAccountsMissingResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
@@ -102,7 +94,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<GetClassificationStatusResult>> GetStatus(Guid id)
         {
-            var result = await _serviceManager.ClassificationService.GetClassificationStatusAsync(id);
+            var result = await serviceManager.ClassificationService.GetClassificationStatusAsync(id);
             return result.Match(
                             Right: ok => Ok(ok.ToGetClassificationStatusResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
@@ -141,7 +133,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
             UpdateClassificationCommand command, IRequestClient<UpdateClassificationCommand> client)
         {
             if (command.Id != id)
-                return new ObjectResult(new ClassificationIdNotMatchForUpdError(id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchForUpdateError("Classification",id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
 

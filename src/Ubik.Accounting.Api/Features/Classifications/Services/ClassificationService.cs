@@ -3,7 +3,6 @@ using LanguageExt;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
-using Ubik.Accounting.Api.Features.Classifications.Errors;
 using Ubik.Accounting.Api.Features.Classifications.Mappers;
 using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
@@ -12,29 +11,21 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Services
 {
-    public class ClassificationService : IClassificationService
+    public class ClassificationService(AccountingDbContext ctx, ICurrentUserService userService) : IClassificationService
     {
-        private readonly AccountingDbContext _context;
-        private readonly ICurrentUserService _userService;
-        public ClassificationService(AccountingDbContext ctx, ICurrentUserService userService)
-        {
-            _context = ctx;
-            _userService = userService;
-        }
-
         public async Task<IEnumerable<Classification>> GetAllAsync()
         {
-            var result = await _context.Classifications.ToListAsync();
+            var result = await ctx.Classifications.ToListAsync();
 
             return result;
         }
 
         public async Task<Either<IServiceAndFeatureError, Classification>> GetAsync(Guid id)
         {
-            var result = await _context.Classifications.FirstOrDefaultAsync(a => a.Id == id);
+            var result = await ctx.Classifications.FirstOrDefaultAsync(a => a.Id == id);
 
             return result == null
-                ? new ClassificationNotFoundError(id)
+                ? new ResourceNotFoundError("Classification","Id",id.ToString())
                 : result;
         }
 
@@ -52,9 +43,9 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 {
                     var p = new DynamicParameters();
                     p.Add("@id", id);
-                    p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
+                    p.Add("@tenantId", userService.CurrentUser.TenantIds[0]);
 
-                    var con = _context.Database.GetDbConnection();
+                    var con = ctx.Database.GetDbConnection();
                     var sql = """
                         SELECT a.*
                         FROM classifications c
@@ -84,9 +75,9 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 {
                     var p = new DynamicParameters();
                     p.Add("@id", id);
-                    p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
+                    p.Add("@tenantId", userService.CurrentUser.TenantIds[0]);
 
-                    var con = _context.Database.GetDbConnection();
+                    var con = ctx.Database.GetDbConnection();
                     var sql = """
                         SELECT a1.*
                         FROM accounts a1
@@ -133,8 +124,8 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 .MapAsync(async c =>
                 {
                     c.Id = NewId.NextGuid();
-                    await _context.Classifications.AddAsync(c);
-                    _context.SetAuditAndSpecialFields();
+                    await ctx.Classifications.AddAsync(c);
+                    ctx.SetAuditAndSpecialFields();
 
                     return c;
                 });
@@ -147,8 +138,8 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 .Bind(c => ValidateIfNotAlreadyExistsWithOtherIdAsync(c).ToAsync())
                 .Map(c =>
                 {
-                    _context.Entry(c).State = EntityState.Modified;
-                    _context.SetAuditAndSpecialFields();
+                    ctx.Entry(c).State = EntityState.Modified;
+                    ctx.SetAuditAndSpecialFields();
 
                     return c;
                 });
@@ -159,7 +150,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             return await GetAsync(id).ToAsync()
                 .MapAsync(async c =>
                 {
-                    using var transaction = _context.Database.BeginTransaction();
+                    using var transaction = ctx.Database.BeginTransaction();
 
                     //Clean all account groups structure
                     var firstLvlAccountGroups = await GetFirstLvlAccountGroupsAsync(id);
@@ -169,11 +160,11 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                     {
                         deletedAccountGroups.Add(ag);
                         await DeleteAllChildrenAccountGroupsAsync(id, deletedAccountGroups);
-                        await _context.AccountGroups.Where(x => x.Id == ag.Id).ExecuteDeleteAsync();
+                        await ctx.AccountGroups.Where(x => x.Id == ag.Id).ExecuteDeleteAsync();
                     }
 
                     //Delete classification
-                    await _context.Classifications.Where(x => x.Id == id).ExecuteDeleteAsync();
+                    await ctx.Classifications.Where(x => x.Id == id).ExecuteDeleteAsync();
 
                     transaction.Commit();
                     return deletedAccountGroups;
@@ -182,38 +173,38 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
 
         private async Task<Either<IServiceAndFeatureError, Classification>> ValidateIfNotAlreadyExistsAsync(Classification classification)
         {
-            var exists = await _context.Classifications.AnyAsync(a => a.Code == classification.Code);
+            var exists = await ctx.Classifications.AnyAsync(a => a.Code == classification.Code);
 
             return exists
-                ? new ClassificationAlreadyExistsError(classification.Code)
+                ? new ResourceAlreadyExistsError("Classification","Code",classification.Code)
                 : classification;
         }
 
         private async Task<IEnumerable<AccountGroup>> GetFirstLvlAccountGroupsAsync(Guid classificationId)
         {
-            return await _context.AccountGroups
+            return await ctx.AccountGroups
                                     .Where(ag => ag.ClassificationId == classificationId
                                                 && ag.ParentAccountGroupId == null).ToListAsync();
         }
 
         private async Task DeleteAllChildrenAccountGroupsAsync(Guid id, List<AccountGroup> deletedAccountGroups)
         {
-            var children = await _context.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
+            var children = await ctx.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
 
             foreach (var child in children)
             {
                 await DeleteAllChildrenAccountGroupsAsync(child.Id, deletedAccountGroups);
                 deletedAccountGroups.Add(child);
-                await _context.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
+                await ctx.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
             }
         }
 
         private async Task<Either<IServiceAndFeatureError, Classification>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Classification classification)
         {
-            var exists = await _context.Classifications.AnyAsync(a => a.Code == classification.Code && a.Id != classification.Id);
+            var exists = await ctx.Classifications.AnyAsync(a => a.Code == classification.Code && a.Id != classification.Id);
 
             return exists
-                ? new ClassificationAlreadyExistsError(classification.Code)
+                ? new ResourceAlreadyExistsError("Classification", "Code", classification.Code)
                 : classification;
         }
     }

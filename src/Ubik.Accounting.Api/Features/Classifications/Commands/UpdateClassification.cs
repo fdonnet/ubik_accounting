@@ -1,6 +1,8 @@
 ﻿using MassTransit;
 using Ubik.Accounting.Api.Features.Classifications.Mappers;
 using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.ApiService.Common.Errors;
+using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Commands
 {
@@ -24,10 +26,17 @@ namespace Ubik.Accounting.Api.Features.Classifications.Commands
             await result.Match(
                 Right: async r =>
                 {
-                    //Store and publish AccountGroupAdded event
-                    await _publishEndpoint.Publish(r.ToClassificationUpdated(), CancellationToken.None);
-                    await _serviceManager.SaveAsync();
-                    await context.RespondAsync(r.ToUpdateClassificationResult());
+                    try
+                    {
+                        //Store and publish AccountGroupAdded event
+                        await _publishEndpoint.Publish(r.ToClassificationUpdated(), CancellationToken.None);
+                        await _serviceManager.SaveAsync();
+                        await context.RespondAsync(r.ToUpdateClassificationResult());
+                    }
+                    catch (UpdateDbConcurrencyException)
+                    {
+                        await context.RespondAsync(new ResourceUpdateConcurrencyError("Classification",context.Message.Version.ToString()));
+                    }
                 },
                 Left: async err => await context.RespondAsync(err));
         }

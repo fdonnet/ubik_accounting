@@ -15,22 +15,15 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class AccountGroupsController : ControllerBase
+    public class AccountGroupsController(IServiceManager serviceManager) : ControllerBase
     {
-        private readonly IServiceManager _serviceManager;
-
-        public AccountGroupsController(IServiceManager serviceManager)
-        {
-            _serviceManager = serviceManager;
-        }
-
         [Authorize(Roles = "ubik_accounting_accountgroup_read")]
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<GetAllAccountGroupsResult>>> GetAll()
         {
-            var results = (await _serviceManager.AccountGroupService.GetAllAsync()).ToGetAllAccountGroupsResult();
+            var results = (await serviceManager.AccountGroupService.GetAllAsync()).ToGetAllAccountGroupsResult();
             return Ok(results);
         }
 
@@ -42,7 +35,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<GetAccountGroupResult>> Get(Guid id)
         {
-            var result = await _serviceManager.AccountGroupService.GetAsync(id);
+            var result = await serviceManager.AccountGroupService.GetAsync(id);
 
             return result.Match(
                 Right: ok => Ok(ok.ToGetAccountGroupResult()),
@@ -58,7 +51,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<GetAccountGroupResult>> GetChildAccount(Guid id)
         {
-            var result = await _serviceManager.AccountGroupService.GetChildAccountsAsync(id);
+            var result = await serviceManager.AccountGroupService.GetChildAccountsAsync(id);
 
             return result.Match(
                 Right: r => Ok(r.ToGetChildAccountsResult()),
@@ -98,7 +91,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
             UpdateAccountGroupCommand command, IRequestClient<UpdateAccountGroupCommand> client)
         {
             if (command.Id != id)
-                return new ObjectResult(new AccountGroupIdNotMatchForUpdateError(id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchForUpdateError("AccountGroup",id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
             
 

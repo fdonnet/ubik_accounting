@@ -3,19 +3,14 @@ using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using Ubik.Accounting.Api.Features.AccountGroups.Errors;
+using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
 {
-    public class UpdateAccountGroupConsumer : IConsumer<UpdateAccountGroupCommand>
+    public class UpdateAccountGroupConsumer(IServiceManager serviceManager, IPublishEndpoint publishEndpoint) : IConsumer<UpdateAccountGroupCommand>
     {
-        private readonly IServiceManager _serviceManager;
-        private readonly IPublishEndpoint _publishEndpoint;
-
-        public UpdateAccountGroupConsumer(IServiceManager serviceManager, IPublishEndpoint publishEndpoint)
-        {
-            _serviceManager = serviceManager;
-            _publishEndpoint = publishEndpoint;
-        }
+        private readonly IServiceManager _serviceManager = serviceManager;
+        private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
 
         public async Task Consume(ConsumeContext<UpdateAccountGroupCommand> context)
         {
@@ -34,7 +29,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Commands
                     }
                     catch (UpdateDbConcurrencyException)
                     {
-                        await context.RespondAsync(new AccountGroupUpdateConcurrencyError(context.Message.Version));
+                        await context.RespondAsync(new ResourceUpdateConcurrencyError("AccountGroup",context.Message.Version.ToString()));
                     }
                 },
                 Left: async err => await context.RespondAsync(err));

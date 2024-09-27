@@ -29,7 +29,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
 
             return account == null
-                ? new AccountNotFoundError(id)
+                ? new ResourceNotFoundError("Account", "Id", id.ToString())
                 : account;
         }
 
@@ -145,7 +145,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         {
             return await _context.Currencies.AnyAsync(c => c.Id == account.CurrencyId)
                 ? account
-                : new AccountCurrencyNotFoundError(account.CurrencyId);
+                : new ResourceNotFoundError("Currency", "CurrencyId", account.CurrencyId.ToString());
         }
 
         private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> GetExistingAccountGroupRelationAsync(Guid id, Guid accountGroupId)
@@ -190,7 +190,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         {
             return await _context.AccountGroups.AnyAsync(ag => ag.Id == accountAccountGroup.AccountGroupId)
                 ? accountAccountGroup
-                : new AccountGroupNotFoundForAccountError(accountAccountGroup.AccountGroupId);
+                : new ResourceNotFoundError("AccountGroup","Id", accountAccountGroup.AccountGroupId.ToString());
         }
 
         public async Task<IEnumerable<AccountAccountGroup>> GetAllAccountGroupLinksAsync()

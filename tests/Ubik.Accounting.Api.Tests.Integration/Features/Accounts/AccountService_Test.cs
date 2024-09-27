@@ -72,22 +72,16 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotFoundError>()
-                    .And.Match<AccountNotFoundError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+                    .And.BeOfType<ResourceNotFoundError>();
 
             addToAccountGroup.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotFoundError>()
-                    .And.Match<AccountNotFoundError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+                    .And.BeOfType<ResourceNotFoundError>();
 
 
             getAccountGroups.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotFoundError>()
-                    .And.Match<AccountNotFoundError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+                    .And.BeOfType<ResourceNotFoundError>();
         }
 
         [Fact]
@@ -119,9 +113,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory]
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "248e0000-5dd4-0015-38c5-08dcd98e5b2d", null })]
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        [MemberData(nameof(GetAccounts), parameters: [5, "248e0000-5dd4-0015-38c5-08dcd98e5b2d", null])]
         public async Task Add_Account_Ok(Account account)
         {
             //Arrange
@@ -137,7 +129,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory]
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "248e0000-5dd4-0015-38c5-08dcd98e5b2d", "1020" })]
+        [MemberData(nameof(GetAccounts), parameters: [5, "248e0000-5dd4-0015-38c5-08dcd98e5b2d", "1020"])]
         public async Task Add_AccountAlreadyExistsException_AccountCodeAlreadyExists(Account account)
         {
             //Arrange
@@ -152,9 +144,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
         }
 
         [Theory]
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "ccfe1b29-6d1b-420c-ac64-fc8f1a6153a7", null })]
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        [MemberData(nameof(GetAccounts), parameters: [5, "ccfe1b29-6d1b-420c-ac64-fc8f1a6153a7", null])]
         public async Task Add_AccountCurrencyNotFoundException_CurrencyIdNotFound(Account account)
         {
             //Arrange
@@ -165,16 +155,12 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountCurrencyNotFoundError>()
-                    .And.Match<AccountCurrencyNotFoundError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
+                    .And.BeOfType<ResourceNotFoundError>();
         }
 
 
         [Theory]
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        [MemberData(nameof(GetAccounts), parameters: new object[] { 5, "248e0000-5dd4-0015-38c5-08dcd98e5b2d", null })]
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        [MemberData(nameof(GetAccounts), parameters: [5, "248e0000-5dd4-0015-38c5-08dcd98e5b2d", null])]
         public async Task Add_AuditFieldsModified_Ok(Account account)
         {
             //Arrange
@@ -225,9 +211,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountNotFoundError>()
-                    .And.Match<AccountNotFoundError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+                    .And.BeOfType<ResourceNotFoundError>();
         }
 
         [Fact]
@@ -263,9 +247,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountCurrencyNotFoundError>()
-                    .And.Match<AccountCurrencyNotFoundError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
+                    .And.BeOfType<ResourceNotFoundError>();
         }
 
         [Fact]
@@ -312,9 +294,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                      .NotBeNull()
-                     .And.BeOfType<AccountNotFoundError>()
-                     .And.Match<AccountNotFoundError>(a =>
-                         a.ErrorType == ServiceAndFeatureErrorType.NotFound);
+                     .And.BeOfType<ResourceNotFoundError>();
         }
 
         [Fact]
@@ -357,9 +337,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<AccountGroupNotFoundForAccountError>()
-                    .And.Match<AccountGroupNotFoundForAccountError>(a =>
-                        a.ErrorType == ServiceAndFeatureErrorType.BadParams);
+                    .And.BeOfType<ResourceNotFoundError>();
         }
 
         [Fact]

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ubik.ApiService.Common.Errors
 {
-    public class ResourceAlreadyExistsError : IServiceAndFeatureError
+    public record ResourceAlreadyExistsError : IServiceAndFeatureError
     {
         public ServiceAndFeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }

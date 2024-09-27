@@ -41,7 +41,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             var result = await _context.Users.FindAsync(id);
 
             return result == null
-                ? new UserNotFoundError(id)
+                ? new ResourceNotFoundError("User","Id",id.ToString())
                 : result;
         }
 
@@ -49,7 +49,7 @@ namespace Ubik.Security.Api.Features.Users.Services
         {
             var exists = await _context.Users.AnyAsync(a => a.Email == user.Email);
             return exists
-                ? new UserAlreadyExistsError(user.Email)
+                ? new ResourceAlreadyExistsError("User","Email",user.Email)
                 : user;
         }
 

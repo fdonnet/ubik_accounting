@@ -117,7 +117,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
             UpdateAccountCommand command, IRequestClient<UpdateAccountCommand> client)
         {
             if (command.Id != id)
-                return new ObjectResult(new AccountIdNotMatchForUpdateError(id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchForUpdateError("Account",id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
             var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureError>(command);

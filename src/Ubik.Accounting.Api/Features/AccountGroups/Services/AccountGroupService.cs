@@ -11,15 +11,10 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
-    public class AccountGroupService : IAccountGroupService
+    public class AccountGroupService(AccountingDbContext ctx, ICurrentUserService userService) : IAccountGroupService
     {
-        private readonly AccountingDbContext _context;
-        private readonly ICurrentUserService _userService;
-        public AccountGroupService(AccountingDbContext ctx, ICurrentUserService userService)
-        {
-            _context = ctx;
-            _userService = userService;
-        }
+        private readonly AccountingDbContext _context = ctx;
+        private readonly ICurrentUserService _userService = userService;
 
         public async Task<Either<IServiceAndFeatureError, AccountGroup>> AddAsync(AccountGroup accountGroup)
         {
@@ -57,7 +52,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             var accountGroup = await _context.AccountGroups.FirstOrDefaultAsync(a => a.Id == id);
 
             return accountGroup == null
-                ? new AccountGroupNotFoundError(id)
+                ? new ResourceNotFoundError("AccountGroup", "Id", id.ToString())
                 : accountGroup;
         }
 
@@ -120,7 +115,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
         {
             return await _context.Classifications.AnyAsync(a => a.Id == accountGroup.ClassificationId)
                 ? accountGroup
-                : new AccountGroupClassificationNotFoundError(accountGroup.ClassificationId);
+                : new ResourceNotFoundError("Classification","Id", accountGroup.ClassificationId.ToString());
         }
 
         private async Task DeleteAllChildrenOfAsync(Guid id, List<AccountGroup> deletedAccountGroups)
@@ -141,7 +136,8 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                         && a.ClassificationId == accountGroup.ClassificationId);
 
             return exists
-                ? new AccountGroupAlreadyExistsError(accountGroup.Code, accountGroup.ClassificationId)
+                ? new ResourceAlreadyExistsError("AccountGroup_In_Classification",
+                    "Code/ClassificationId", $"{accountGroup.Code}/{accountGroup.ClassificationId}")
                 : accountGroup;
         }
 
@@ -152,7 +148,8 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                         && a.Id != accountGroup.Id);
 
             return exists
-                ? new AccountGroupAlreadyExistsError(accountGroup.Code, accountGroup.ClassificationId)
+                ? new ResourceAlreadyExistsError("AccountGroup_In_Classification",
+                    "Code/ClassificationId/Id", $"{accountGroup.Code}/{accountGroup.ClassificationId}/{accountGroup.Id}")
                 : accountGroup;
         }
     }
