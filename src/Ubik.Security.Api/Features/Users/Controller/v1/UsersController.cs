@@ -1,5 +1,4 @@
 ﻿using Asp.Versioning;
-using MassTransit.Futures.Contracts;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,6 @@ using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Contracts.Users.Results;
 using Ubik.Security.Contracts.Users.Commands;
-using LanguageExt;
 
 namespace Ubik.Security.Api.Features.Users.Controller.v1
 {

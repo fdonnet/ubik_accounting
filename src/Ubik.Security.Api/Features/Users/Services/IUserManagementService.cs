@@ -1,5 +1,4 @@
 ﻿using LanguageExt;
-using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Api.Models;
 

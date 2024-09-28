@@ -2,7 +2,6 @@
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
-using Ubik.Accounting.Api.Features.AccountGroups.Errors;
 using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Commands

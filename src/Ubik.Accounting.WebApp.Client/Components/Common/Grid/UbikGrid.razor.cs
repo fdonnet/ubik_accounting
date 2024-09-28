@@ -2,8 +2,6 @@
 //Need to continue to transfer what I need (virtualize, sorting, filtering etc)
 //TODO: don't forget to check their sources sometimes to retrieve the new way of doing things.
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
 using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns;
 using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Pagination;
 using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils;

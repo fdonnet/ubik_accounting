@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using Ubik.Accounting.Api.Features.Accounts.Errors;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Errors;

@@ -1,10 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.Accounting.Contracts.Accounts.Commands;
-using Ubik.Accounting.Contracts.Accounts.Enums;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.Classifications.Results;
-using Ubik.Accounting.WebApp.Client.Components.Accounts;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Classifications
 {

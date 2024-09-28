@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ubik.ApiService.Common.Errors
+﻿namespace Ubik.ApiService.Common.Errors
 {
     public record ResourceNotFoundError : IServiceAndFeatureError
     {

@@ -1,15 +1,10 @@
 ﻿using LanguageExt;
-using LanguageExt.Pipes;
-using MassTransit.Configuration;
 using Microsoft.Extensions.Options;
-using System;
 using System.Text.Json;
 using System.Text;
 using System.Text.Json.Serialization;
 using Ubik.ApiService.Common.Errors;
-using Ubik.Security.Api.Models;
 using Ubik.Security.Api.Features.Users.Errors;
-using System.Reflection.Metadata.Ecma335;
 using Ubik.Security.Contracts.Users.Commands;
 
 namespace Ubik.Security.Api.Features.Users.Services

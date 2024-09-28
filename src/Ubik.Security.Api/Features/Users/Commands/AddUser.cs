@@ -1,5 +1,4 @@
-﻿using LanguageExt;
-using MassTransit;
+﻿using MassTransit;
 using Ubik.Security.Api.Features.Users.Mappers;
 using Ubik.Security.Api.Features.Users.Services;
 using Ubik.Security.Contracts.Users.Commands;

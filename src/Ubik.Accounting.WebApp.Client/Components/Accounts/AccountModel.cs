@@ -2,7 +2,6 @@
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Enums;
 using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.Accounting.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Accounts
 {

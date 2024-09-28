@@ -16,7 +16,6 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Filters;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
-using System.Runtime.CompilerServices;
 
 namespace Ubik.Accounting.Api
 {

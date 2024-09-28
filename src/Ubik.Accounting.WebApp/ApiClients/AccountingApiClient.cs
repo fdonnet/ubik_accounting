@@ -5,7 +5,6 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.WebApp.Security;
-using static System.Net.WebRequestMethods;
 
 namespace Ubik.Accounting.WebApp.ApiClients
 {

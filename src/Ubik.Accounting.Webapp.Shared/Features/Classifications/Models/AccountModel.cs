@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Accounts.Enums;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.Classifications.Results;

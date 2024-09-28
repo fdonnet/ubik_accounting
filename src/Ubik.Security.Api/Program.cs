@@ -3,7 +3,6 @@ using Ubik.ApiService.Common.Configure;
 using Ubik.Security.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
-using Ubik.ApiService.Common.Filters;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Ubik.ApiService.Common.Exceptions;

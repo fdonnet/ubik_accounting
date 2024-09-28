@@ -1,9 +1,4 @@
-﻿using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.Accounting.Contracts.Classifications.Results;
-using Ubik.Accounting.Webapp.Shared.Facades;
-using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models;
+﻿using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models;
 
 
 namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
