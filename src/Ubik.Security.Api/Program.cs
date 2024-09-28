@@ -71,18 +71,10 @@ builder.Services.AddMassTransit(config =>
     //Add all consumers
     config.AddConsumers(Assembly.GetExecutingAssembly());
 
-    //TODO: Add commands clients
+    //Add commands clients
     config.AddRequestClient<AddUserCommand>();
     config.AddRequestClient<AddAuthorizationCommand>();
-    //config.AddRequestClient<AddAccountInAccountGroupCommand>();
-    //config.AddRequestClient<DeleteAccountInAccountGroupCommand>();
-    //config.AddRequestClient<DeleteAccountCommand>();
-    //config.AddRequestClient<UpdateAccountCommand>();
-    //config.AddRequestClient<AddAccountGroupCommand>();
-    //config.AddRequestClient<DeleteAccountGroupCommand>();
-    //config.AddRequestClient<UpdateAccountGroupCommand>();
-    //config.AddRequestClient<AddClassificationCommand>();
-    //config.AddRequestClient<UpdateClassificationCommand>();
+
 
 });
 
