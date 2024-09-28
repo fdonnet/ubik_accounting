@@ -39,7 +39,7 @@ namespace Ubik.Security.Api.Features.Authorizations.Mappers
                 Description = current.Description,
                 IsOnlyForMegaAdmin = current.IsOnlyForMegaAdmin,
                 Version = current.Version,
-                Id = current.Id,
+                Id = current.Id
             };
         }
     }

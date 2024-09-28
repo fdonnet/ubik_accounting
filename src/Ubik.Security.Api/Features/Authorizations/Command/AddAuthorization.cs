@@ -19,7 +19,6 @@ namespace Ubik.Security.Api.Features.Authorizations.Command
             await result.Match(
                 Right: async r =>
                 {
-                    //Store and publish AccountGroupAdded event
                     await _publishEndpoint.Publish(r.ToAuthorizationAdded(), CancellationToken.None);
                     await _serviceManager.SaveAsync();
                     await context.RespondAsync(r.ToAddAuthorizationResult());

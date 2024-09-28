@@ -12,6 +12,8 @@ using System.Text.Json.Serialization;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Api.Features;
 using Ubik.Security.Api.Features.Users.Services;
+using Ubik.Security.Contracts.Authorizations.Commands;
+using Ubik.Security.Api.Data.Init;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,7 +73,7 @@ builder.Services.AddMassTransit(config =>
 
     //TODO: Add commands clients
     config.AddRequestClient<AddUserCommand>();
-    //config.AddRequestClient<AddAccountCommand>();
+    config.AddRequestClient<AddAuthorizationCommand>();
     //config.AddRequestClient<AddAccountInAccountGroupCommand>();
     //config.AddRequestClient<DeleteAccountInAccountGroupCommand>();
     //config.AddRequestClient<DeleteAccountCommand>();
@@ -139,8 +141,8 @@ if (app.Environment.IsDevelopment())
     //context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
 
-    //var initDb = new DbInitializer();
-    //await initDb.InitializeAsync(context);
+    var initDb = new DbInitializer();
+    await initDb.InitializeAsync(context);
 }
 
 //app.UseHttpsRedirection();
