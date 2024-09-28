@@ -156,7 +156,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<ResourceNotFoundError>();
+                    .And.BeOfType<BadParamExternalResourceNotFound>();
         }
 
         [Theory]
@@ -305,7 +305,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             //Assert
             result.Should()
                     .NotBeNull()
-                    .And.BeOfType<ResourceNotFoundError>();
+                    .And.BeOfType<BadParamExternalResourceNotFound>();
         }
 
 

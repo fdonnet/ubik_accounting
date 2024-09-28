@@ -313,11 +313,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_CLASSIFICATION_NOT_FOUND");
         }
 
         [Fact]
@@ -437,11 +437,11 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_CLASSIFICATION_NOT_FOUND");
         }
 
         [Fact]

@@ -115,7 +115,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
         {
             return await _context.Classifications.AnyAsync(a => a.Id == accountGroup.ClassificationId)
                 ? accountGroup
-                : new ResourceNotFoundError("Classification","Id", accountGroup.ClassificationId.ToString());
+                : new BadParamExternalResourceNotFound("AccountGroup","Classification", "ClassificationId", accountGroup.ClassificationId.ToString());
         }
 
         private async Task DeleteAllChildrenOfAsync(Guid id, List<AccountGroup> deletedAccountGroups)
