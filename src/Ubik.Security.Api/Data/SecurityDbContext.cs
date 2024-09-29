@@ -13,7 +13,8 @@ namespace Ubik.Security.Api.Data
         , ICurrentUserService userService) : DbContext(options)
     {
         private readonly ICurrentUserService _currentUserService = userService;
-        private readonly Guid _tenantId = userService.CurrentUser.TenantIds[0];
+        //TODO: TENANT
+        private readonly Guid _tenantId = Guid.NewGuid();
 
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<User> Users { get; set; }

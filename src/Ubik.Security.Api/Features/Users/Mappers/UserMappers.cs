@@ -19,6 +19,18 @@ namespace Ubik.Security.Api.Features.Users.Mappers
             };
         }
 
+        public static GetUserResult ToGetUserResult(this User current)
+        {
+            return new GetUserResult()
+            {
+                Id = current.Id,
+                Firstname = current.Firstname,
+                Lastname = current.Lastname,
+                Email = current.Email,
+                IsActivated = current.IsActivated,
+                Version = current.Version,
+            };
+        }
         public static UserAdded ToUserAdded(this User current)
         {
             return new UserAdded()

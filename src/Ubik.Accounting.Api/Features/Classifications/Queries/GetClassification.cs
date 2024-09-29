@@ -4,17 +4,11 @@ using Ubik.Accounting.Contracts.Classifications.Queries;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Queries
 {
-    public class GetClassificationConsumer : IConsumer<GetClassificationQuery>
+    public class GetClassificationConsumer(IServiceManager serviceManager) : IConsumer<GetClassificationQuery>
     {
-        private readonly IServiceManager _serviceManager;
-
-        public GetClassificationConsumer(IServiceManager serviceManager)
-        {
-            _serviceManager = serviceManager;
-        }
         public async Task Consume(ConsumeContext<GetClassificationQuery> context)
         {
-            var result = await _serviceManager.ClassificationService.GetAsync(context.Message.Id);
+            var result = await serviceManager.ClassificationService.GetAsync(context.Message.Id);
 
             await result.Match(
                 Right: async ok => await context.RespondAsync(ok.ToGetClassificationResult()),
