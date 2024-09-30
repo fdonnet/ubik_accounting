@@ -40,6 +40,12 @@ namespace Ubik.Accounting.Api
             //Auth server and JWT
             builder.Services.AddAuthServerAndJwt(authOptions);
 
+            //Default httpclient
+            builder.Services.ConfigureHttpClientDefaults(http =>
+            {
+                http.AddStandardResilienceHandler();
+            });
+
             //DB
             builder.Services.AddDbContextFactory<AccountingDbContext>(
                  options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
@@ -97,6 +103,12 @@ namespace Ubik.Accounting.Api
             builder.Services.AddCustomCors();
 
             //Tracing and metrics
+            builder.Logging.AddOpenTelemetry(logging =>
+            {
+                logging.IncludeFormattedMessage = true;
+                logging.IncludeScopes = true;
+            });
+
             builder.Services.AddTracingAndMetrics();
 
             //Swagger config

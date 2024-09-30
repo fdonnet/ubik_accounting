@@ -29,11 +29,18 @@ builder.Configuration.GetSection(AuthProviderKeycloakOptions.Position).Bind(auth
 
 //Auth server and JWT
 builder.Services.AddAuthServerAndJwt(authOptions);
+
 //DB
 builder.Services.AddDbContextFactory<SecurityDbContext>(
      options => options.UseNpgsql(builder.Configuration.GetConnectionString("SecurityDbContext")), ServiceLifetime.Scoped);
 
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+//Default httpclient
+builder.Services.ConfigureHttpClientDefaults(http =>
+{
+    http.AddStandardResilienceHandler();
+});
 
 //Auth Provider
 builder.Services.AddHttpClient<IUserAuthProviderService, UserAuthProviderServiceKeycloak>(client =>
@@ -84,7 +91,13 @@ builder.Services.AddApiVersionAndExplorer();
 //TODO: Cors
 builder.Services.AddCustomCors();
 
-//Tracing and metrics
+//Logs tracing and metrics
+builder.Logging.AddOpenTelemetry(logging =>
+{
+    logging.IncludeFormattedMessage = true;
+    logging.IncludeScopes = true;
+});
+
 builder.Services.AddTracingAndMetrics();
 
 //Swagger config
