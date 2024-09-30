@@ -27,8 +27,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Contracts.Common", "Ub
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Security.Contracts", "Ubik.Security.Contracts\Ubik.Security.Contracts.csproj", "{960092CC-B82F-420D-94FB-58CAC0E91B99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Aspire", "Ubik.Aspire\Ubik.Aspire.csproj", "{300A6006-EE45-494D-93A2-D13AE106A266}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,10 +81,6 @@ Global
 		{960092CC-B82F-420D-94FB-58CAC0E91B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{960092CC-B82F-420D-94FB-58CAC0E91B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{960092CC-B82F-420D-94FB-58CAC0E91B99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{300A6006-EE45-494D-93A2-D13AE106A266}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{300A6006-EE45-494D-93A2-D13AE106A266}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{300A6006-EE45-494D-93A2-D13AE106A266}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{300A6006-EE45-494D-93A2-D13AE106A266}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
