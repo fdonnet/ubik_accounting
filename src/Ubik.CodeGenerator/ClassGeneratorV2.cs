@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Ubik.Security.Api.Data;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Ubik.CodeGenerator
 {
     internal class ClassGeneratorV2(SecurityDbContext dbContext)
     {
-        public void GenerateClassesContractAddCommand(bool writeFiles)
+        public void GenerateClassesContractAddCommand(bool writeFiles, string? folderPath)
         {
             var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
                                                                       && e.ClrType.Name != "OutboxMessage"
@@ -37,7 +38,50 @@ namespace Ubik.CodeGenerator
                 var classContent = GetTemplateForContractCommandAdd().Replace("{ClassName}", className)
                                                                     .Replace("{Properties}", properties);
 
-                Console.WriteLine(classContent);
+                if (writeFiles)
+                {
+                    var filePath = $"{folderPath}/{className}s/Commands/Add{className}Command.cs";
+                    WriteClassToFile(filePath, classContent);
+                }
+                else
+                    Console.WriteLine(classContent);
+            }
+        }
+
+        private static void WriteClassToFile(string? filePath,string content)
+        {
+            if (filePath == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Error, cannot detect file.");
+                Console.ResetColor();
+            }
+            else
+            {
+                string directoryPath = Path.GetDirectoryName(filePath)!;
+                string fileName = Path.GetFileName(filePath);
+
+                if (!Directory.Exists(directoryPath))
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Directory.CreateDirectory(directoryPath);
+                    Console.WriteLine($"Folder'{directoryPath}' has been created.");
+                    Console.ResetColor();
+                }
+
+                if (File.Exists(filePath))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"The file '{fileName}' already exists. Cannot write a new one.");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    File.WriteAllText(filePath, content);
+                    Console.WriteLine(($"Success : file '{filePath}' created."));
+                    Console.ResetColor();
+                }
             }
         }
 

@@ -20,9 +20,7 @@ var serviceProvider = new ServiceCollection()
 
 var myApp = serviceProvider.GetRequiredService<ClassGeneratorV2>();
 
-myApp.GenerateClassesContractAddCommand(false);
-
-
+myApp.GenerateClassesContractAddCommand(true, @"F:/Dev/ubik/src/Ubik.Security.Contracts");
 
 
 //FAKER to use the DBcontext
