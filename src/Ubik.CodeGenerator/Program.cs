@@ -1,13 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using MassTransit;
-using MassTransit.JobService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Security.Claims;
 using Ubik.ApiService.Common.Services;
 using Ubik.CodeGenerator;
 using Ubik.Security.Api.Data;
-using static System.Net.Mime.MediaTypeNames;
 
 
 var serviceProvider = new ServiceCollection()
@@ -42,9 +39,4 @@ internal class FakeUserService : ICurrentUserService
         };
 }
 
-//builder.Services.AddDbContextFactory<SecurityDbContext>(
-//     options => options.UseNpgsql(builder.Configuration.GetConnectionString("SecurityDbContext")), ServiceLifetime.Scoped);
 
-//var dbContext = new SecurityDbContext();
-//var generator = new ClassGeneratorV2();
-//generator.GenerateClassesContractAddCommand();
