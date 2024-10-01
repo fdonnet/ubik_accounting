@@ -13,14 +13,14 @@ using static System.Net.Mime.MediaTypeNames;
 var serviceProvider = new ServiceCollection()
     .AddSingleton<ICurrentUserService, FakeUserService>()
     .AddDbContextFactory<SecurityDbContext>(
-        options => options.UseNpgsql("Host=localhost;Port=5435;Database=ubik_security;Username=postgres;Password=test01"))
+        options => options.UseNpgsql("x"))
     .AddSingleton<ClassGeneratorV2>()
     .BuildServiceProvider();
 
 
 var myApp = serviceProvider.GetRequiredService<ClassGeneratorV2>();
 
-myApp.GenerateClassesContractAddCommand();
+myApp.GenerateClassesContractAddCommand(false);
 
 
 
@@ -30,20 +30,18 @@ internal class FakeUserService : ICurrentUserService
 {
     public ICurrentUser CurrentUser
     {
-        get { return GetCurrentUser(); }
+        get { return CurrentUserTmp; }
     }
-    private ICurrentUser GetCurrentUser()
-    {
+    private static ICurrentUser CurrentUserTmp =>
 
         //TODO: remove and adapt => cannot keep this fake return
-        return new CurrentUser()
+        new CurrentUser()
         {
             Email = "",
             Name = "",
-            TenantIds = new Guid[] { Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d") },
+            TenantIds = [NewId.NextGuid()],
             Id = NewId.NextGuid()
         };
-    }
 }
 
 //builder.Services.AddDbContextFactory<SecurityDbContext>(

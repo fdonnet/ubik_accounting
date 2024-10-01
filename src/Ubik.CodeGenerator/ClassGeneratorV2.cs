@@ -13,9 +13,11 @@ namespace Ubik.CodeGenerator
 {
     internal class ClassGeneratorV2(SecurityDbContext dbContext)
     {
-        public void GenerateClassesContractAddCommand()
+        public void GenerateClassesContractAddCommand(bool writeFiles)
         {
-            var entityTypes = dbContext.Model.GetEntityTypes();
+            var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
+                                                                      && e.ClrType.Name != "OutboxMessage"
+                                                                      && e.ClrType.Name != "OutboxState");
 
             foreach (var entityType in entityTypes)
             {
@@ -27,7 +29,8 @@ namespace Ubik.CodeGenerator
                     "ModifiedAt",
                     "ModifiedBy",
                     "Id",
-                    "Version"
+                    "Version",
+                    "TenantId"
                 };
 
                 var properties = GenerateProperties(entityType, true, excludedFiels);
@@ -44,7 +47,7 @@ namespace Ubik.CodeGenerator
             var sb = new StringBuilder();
 
             var i = 1;
-            foreach (var property in properties)
+            foreach (var property in properties.OrderBy(x => x.PropertyInfo?.MetadataToken))
             {
                 if (!excludedFiedls.Contains(property.Name))
                 {
@@ -111,7 +114,6 @@ namespace Ubik.CodeGenerator
                     sb.Append($"        ");
 
                 sb.AppendLine($"[MaxLength({maxLength.Value})]");
-                alreadyFoundOneAnnotation = true;
             }
 
             // Add other annotations as needed
@@ -134,7 +136,20 @@ namespace Ubik.CodeGenerator
                 return $"{genericType.Name.Split('`')[0]}<{genericArgumentsString}>";
             }
 
-            return type.Name;
+            var convertedType = type.Name switch
+            {
+                "Boolean" => "bool",
+                "String" => "string",
+                "Byte" => "byte",
+                "SByte" => "sbyte",
+                _ => string.Empty
+            };
+
+            return convertedType switch
+            {
+                "string" => $"required {convertedType}",
+                _ => convertedType == string.Empty ? type.Name : convertedType,
+            };
         }
 
         public static string GetTemplateForContractCommandAdd()
