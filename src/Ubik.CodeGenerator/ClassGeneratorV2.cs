@@ -1,31 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using System.Text;
+using Ubik.Security.Api.Data;
 
 namespace Ubik.CodeGenerator
 {
-    internal class ClassGenerator(Type dbContextType)
+    internal class ClassGeneratorV2(SecurityDbContext dbContext)
     {
         public void GenerateClassesContractAddCommand()
         {
-            var entityTypes = dbContextType.GetProperties()
-                .Where(p => p.PropertyType.IsGenericType &&
-                            p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
-                .Select(p => p.PropertyType.GetGenericArguments().First())
-                .ToList();
+            var entityTypes = dbContext.Model.GetEntityTypes();
 
             foreach (var entityType in entityTypes)
             {
-                var className = entityType.Name;
+                var className = entityType.ClrType.Name;
                 var excludedFiels = new List<string>()
                 {
                     "CreatedAt",
                     "CreatedBy",
                     "ModifiedAt",
                     "ModifiedBy",
-                    "Id"
+                    "Id",
+                    "Version"
                 };
+
                 var properties = GenerateProperties(entityType, true, excludedFiels);
                 var classContent = GetTemplateForContractCommandAdd().Replace("{ClassName}", className)
                                                                     .Replace("{Properties}", properties);
@@ -34,7 +38,7 @@ namespace Ubik.CodeGenerator
             }
         }
 
-        private string GenerateProperties(Type entityType, bool withAnnotations, List<string>excludedFiedls)
+        private string GenerateProperties(IEntityType entityType, bool withAnnotations, List<string> excludedFiedls)
         {
             var properties = entityType.GetProperties();
             var sb = new StringBuilder();
@@ -44,7 +48,6 @@ namespace Ubik.CodeGenerator
             {
                 if (!excludedFiedls.Contains(property.Name))
                 {
-                    var propertyType = GetFriendlyTypeName(property.PropertyType);
                     if (i == 1)
                     {
                         if (withAnnotations)
@@ -62,17 +65,18 @@ namespace Ubik.CodeGenerator
                     i++;
                 }
             }
+
             return sb.ToString();
         }
 
-        private string GenerateProperty(PropertyInfo property, bool firstLine, bool withAnnotations)
+        private string GenerateProperty(IProperty property, bool firstLine, bool withAnnotations)
         {
             var sb = new StringBuilder();
-            var propertyType = GetFriendlyTypeName(property.PropertyType);
+            var propertyType = GetFriendlyTypeName(property.ClrType);
 
             if (firstLine)
                 if (withAnnotations)
-                    if(String.IsNullOrEmpty(GenerateAnnotations(property, true)))
+                    if (String.IsNullOrEmpty(GenerateAnnotations(property, true)))
                         sb.AppendLine($"public {propertyType} {property.Name} {{ get; init; }}");
                     else
                         sb.AppendLine($"        public {propertyType} {property.Name} {{ get; init; }}");
@@ -84,13 +88,13 @@ namespace Ubik.CodeGenerator
             return sb.ToString();
         }
 
-        private static string GenerateAnnotations(PropertyInfo property, bool firstLine)
+        private static string GenerateAnnotations(IProperty property, bool firstLine)
         {
             var sb = new StringBuilder();
             var alreadyFoundOneAnnotation = false;
 
-            // Check for [Required] attribute
-            if (property.GetCustomAttribute(typeof(RequiredAttribute)) != null)
+            // Check for required property
+            if (!property.IsNullable)
             {
                 if (!firstLine)
                     sb.Append($"        ");
@@ -99,43 +103,29 @@ namespace Ubik.CodeGenerator
                 alreadyFoundOneAnnotation = true;
             }
 
-            // Check for [MaxLength] attribute
-            var maxLengthAttr = property.GetCustomAttribute(typeof(MaxLengthAttribute));
-            if (maxLengthAttr != null)
+            // Check for max length
+            var maxLength = property.GetMaxLength();
+            if (maxLength.HasValue)
             {
-                var length = ((MaxLengthAttribute)(maxLengthAttr)).Length;
                 if (!firstLine || alreadyFoundOneAnnotation)
                     sb.Append($"        ");
 
-                sb.AppendLine($"[MaxLength({length})]");
+                sb.AppendLine($"[MaxLength({maxLength.Value})]");
                 alreadyFoundOneAnnotation = true;
             }
 
-            var minLengthAttr = property.GetCustomAttribute(typeof(MinLengthAttribute));
-            if (minLengthAttr != null)
-            {
-                var length = ((MinLengthAttribute)(minLengthAttr)).Length;
-                if (!firstLine || alreadyFoundOneAnnotation)
-                    sb.Append($"        ");
-
-                sb.AppendLine($"[MinLength({length})]");
-                alreadyFoundOneAnnotation = true;
-            }
-
-            // Check for [EmailAddress] attribute
-            if (property.GetCustomAttribute(typeof(EmailAddressAttribute)) != null)
-            {
-                if (!firstLine || alreadyFoundOneAnnotation)
-                    sb.Append($"        ");
-
-                sb.AppendLine("[EmailAddress]");
-            }
+            // Add other annotations as needed
 
             return sb.ToString();
         }
 
         private string GetFriendlyTypeName(Type type)
         {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                return $"{GetFriendlyTypeName(type.GetGenericArguments()[0])}?";
+            }
+
             if (type.IsGenericType)
             {
                 var genericType = type.GetGenericTypeDefinition();
