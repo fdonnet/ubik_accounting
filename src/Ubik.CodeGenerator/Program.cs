@@ -17,7 +17,7 @@ var serviceProvider = new ServiceCollection()
 
 var myApp = serviceProvider.GetRequiredService<ContractsGenerator>();
 
-myApp.GenerateContractAddCommand(false, @"F:/Dev/ubik/src/Ubik.Security.Contracts");
+myApp.GenerateContractAddCommand(true, @"C:/Dev/gitPriv/ubik_accounting/src/Ubik.Security.Contracts");
 //myApp.GenerateContractAddedEvent(false, @"F:/Dev/ubik/src/Ubik.Security.Contracts");
 
 
