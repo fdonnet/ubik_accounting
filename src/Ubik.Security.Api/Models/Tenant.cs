@@ -8,7 +8,7 @@ namespace Ubik.Security.Api.Models
         public Guid Id { get; set; }
         public required string Code { get; set; }
         public required string Label { get; set; }
-         public required string Description { get; set; }
+        public required string Description { get; set; }
         public Guid Version { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid CreatedBy { get; set; }

@@ -12,7 +12,5 @@ namespace Ubik.Security.Contracts.Authorizations.Commands
         public required string Label { get; init; }
         [MaxLength(700)]
         public string? Description { get; init; }
-        [Required]
-        public Boolean IsOnlyForMegaAdmin { get; init; }
     }
 }

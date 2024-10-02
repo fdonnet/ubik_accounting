@@ -14,7 +14,6 @@ namespace Ubik.Security.Api.Features.Authorizations.Mappers
                 Code = current.Code,
                 Label = current.Label,
                 Description = current.Description,
-                IsOnlyForMegaAdmin = current.IsOnlyForMegaAdmin,
             };
         }
         public static AuthorizationAdded ToAuthorizationAdded(this Authorization current)
@@ -37,7 +36,6 @@ namespace Ubik.Security.Api.Features.Authorizations.Mappers
                 Code = current.Code,
                 Label = current.Label,
                 Description = current.Description,
-                IsOnlyForMegaAdmin = current.IsOnlyForMegaAdmin,
                 Version = current.Version,
                 Id = current.Id
             };

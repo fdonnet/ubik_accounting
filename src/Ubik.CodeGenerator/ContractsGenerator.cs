@@ -14,6 +14,38 @@ namespace Ubik.CodeGenerator
 {
     internal class ContractsGenerator(SecurityDbContext dbContext)
     {
+        public void GenerateContractAddResult(bool writeFiles, string? folderPath)
+        {
+            var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
+                                                                                  && e.ClrType.Name != "OutboxMessage"
+                                                                                  && e.ClrType.Name != "OutboxState");
+
+            foreach (var entityType in entityTypes)
+            {
+                var className = entityType.ClrType.Name;
+                var excludedFiels = new List<string>()
+                {
+                    "CreatedAt",
+                    "CreatedBy",
+                    "ModifiedAt",
+                    "ModifiedBy",
+                    "IsOnlyForMegaAdmin",
+                    "TenantId"
+                };
+
+                var properties = GenerateProperties(entityType, false, excludedFiels);
+                var classContent = GetTemplateForContractResultAdd().Replace("{ClassName}", className)
+                                                                    .Replace("{Properties}", properties);
+
+                if (writeFiles)
+                {
+                    var filePath = $"{folderPath}/{className}s/Results/Add{className}Result.cs";
+                    WriteClassToFile(filePath, classContent);
+                }
+                else
+                    Console.WriteLine(classContent);
+            }
+        }
         public void GenerateContractAddedEvent(bool writeFiles, string? folderPath)
         {
             var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
@@ -63,7 +95,8 @@ namespace Ubik.CodeGenerator
                     "ModifiedBy",
                     "Id",
                     "Version",
-                    "TenantId"
+                    "TenantId",
+                    "IsOnlyForMegaAdmin"
                 };
 
                 var properties = GenerateProperties(entityType, true, excludedFiels);
@@ -117,7 +150,7 @@ namespace Ubik.CodeGenerator
             }
         }
 
-        private string GenerateProperties(IEntityType entityType, bool withAnnotations, List<string> excludedFiedls)
+        private static string GenerateProperties(IEntityType entityType, bool withAnnotations, List<string> excludedFiedls)
         {
             var properties = entityType.GetProperties();
             var sb = new StringBuilder();
@@ -148,7 +181,7 @@ namespace Ubik.CodeGenerator
             return sb.ToString();
         }
 
-        private string GenerateProperty(IProperty property, bool firstLine, bool withAnnotations)
+        private static string GenerateProperty(IProperty property, bool firstLine, bool withAnnotations)
         {
             var sb = new StringBuilder();
             var propertyType = GetFriendlyTypeName(property, property.ClrType);
@@ -197,7 +230,7 @@ namespace Ubik.CodeGenerator
             return sb.ToString();
         }
 
-        private string GetFriendlyTypeName(IProperty property, Type type)
+        private static string GetFriendlyTypeName(IProperty property, Type type)
         {
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
@@ -214,10 +247,7 @@ namespace Ubik.CodeGenerator
 
             var tmpType = string.Empty;
 
-            if (property.IsNullable && !type.IsValueType)
-                tmpType = $"{type.Name}?";
-            else
-                tmpType = type.Name;
+            tmpType = property.IsNullable && !type.IsValueType ? $"{type.Name}?" : type.Name;
 
             var convertedType = tmpType switch
             {
@@ -258,6 +288,19 @@ namespace Ubik.CodeGenerator
                 namespace Ubik.Security.Contracts.{ClassName}s.Events
                 {
                     public record {ClassName}Added
+                    {
+                        {Properties}    }
+                }
+                """;
+        }
+
+        public static string GetTemplateForContractResultAdd()
+        {
+            return
+                """
+                namespace Ubik.Security.Contracts.{ClassName}s.Events
+                {
+                    public record Add{ClassName}Result
                     {
                         {Properties}    }
                 }
