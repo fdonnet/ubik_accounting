@@ -6,12 +6,12 @@ namespace Ubik.Security.Contracts.Authorizations.Commands
     {
         [Required]
         [MaxLength(50)]
-        public required String Code { get; init; }
+        public required string Code { get; init; }
         [Required]
         [MaxLength(100)]
-        public required String Label { get; init; }
+        public required string Label { get; init; }
         [MaxLength(700)]
-        public required String Description { get; init; }
+        public string? Description { get; init; }
         [Required]
         public Boolean IsOnlyForMegaAdmin { get; init; }
     }

@@ -12,9 +12,41 @@ using System.Diagnostics.Eventing.Reader;
 
 namespace Ubik.CodeGenerator
 {
-    internal class ClassGeneratorV2(SecurityDbContext dbContext)
+    internal class ContractsGenerator(SecurityDbContext dbContext)
     {
-        public void GenerateClassesContractAddCommand(bool writeFiles, string? folderPath)
+        public void GenerateContractAddedEvent(bool writeFiles, string? folderPath)
+        {
+            var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
+                                                                                  && e.ClrType.Name != "OutboxMessage"
+                                                                                  && e.ClrType.Name != "OutboxState");
+
+            foreach (var entityType in entityTypes)
+            {
+                var className = entityType.ClrType.Name;
+                var excludedFiels = new List<string>()
+                {
+                    "CreatedAt",
+                    "CreatedBy",
+                    "ModifiedAt",
+                    "ModifiedBy",
+                    "TenantId"
+                };
+
+                var properties = GenerateProperties(entityType, false, excludedFiels);
+                var classContent = GetTemplateForContractEventAdded().Replace("{ClassName}", className)
+                                                                    .Replace("{Properties}", properties);
+
+                if (writeFiles)
+                {
+                    var filePath = $"{folderPath}/{className}s/Events/{className}Added.cs";
+                    WriteClassToFile(filePath, classContent);
+                }
+                else
+                    Console.WriteLine(classContent);
+            }
+        }
+
+        public void GenerateContractAddCommand(bool writeFiles, string? folderPath)
         {
             var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
                                                                       && e.ClrType.Name != "OutboxMessage"
@@ -48,7 +80,7 @@ namespace Ubik.CodeGenerator
             }
         }
 
-        private static void WriteClassToFile(string? filePath,string content)
+        private static void WriteClassToFile(string? filePath, string content)
         {
             if (filePath == null)
             {
@@ -119,7 +151,7 @@ namespace Ubik.CodeGenerator
         private string GenerateProperty(IProperty property, bool firstLine, bool withAnnotations)
         {
             var sb = new StringBuilder();
-            var propertyType = GetFriendlyTypeName(property.ClrType);
+            var propertyType = GetFriendlyTypeName(property, property.ClrType);
 
             if (firstLine)
                 if (withAnnotations)
@@ -165,25 +197,33 @@ namespace Ubik.CodeGenerator
             return sb.ToString();
         }
 
-        private string GetFriendlyTypeName(Type type)
+        private string GetFriendlyTypeName(IProperty property, Type type)
         {
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                return $"{GetFriendlyTypeName(type.GetGenericArguments()[0])}?";
+                return $"{GetFriendlyTypeName(property, type.GetGenericArguments()[0])}?";
             }
 
             if (type.IsGenericType)
             {
                 var genericType = type.GetGenericTypeDefinition();
                 var genericArguments = type.GetGenericArguments();
-                var genericArgumentsString = string.Join(", ", genericArguments.Select(GetFriendlyTypeName));
+                var genericArgumentsString = string.Join(", ", genericArguments.Select(t => GetFriendlyTypeName(property, t)));
                 return $"{genericType.Name.Split('`')[0]}<{genericArgumentsString}>";
             }
 
-            var convertedType = type.Name switch
+            var tmpType = string.Empty;
+
+            if (property.IsNullable && !type.IsValueType)
+                tmpType = $"{type.Name}?";
+            else
+                tmpType = type.Name;
+
+            var convertedType = tmpType switch
             {
                 "Boolean" => "bool",
                 "String" => "string",
+                "String?" => "string?",
                 "Byte" => "byte",
                 "SByte" => "sbyte",
                 _ => string.Empty
@@ -205,6 +245,19 @@ namespace Ubik.CodeGenerator
                 namespace Ubik.Security.Contracts.{ClassName}s.Commands
                 {
                     public record Add{ClassName}Command
+                    {
+                        {Properties}    }
+                }
+                """;
+        }
+
+        public static string GetTemplateForContractEventAdded()
+        {
+            return
+                """
+                namespace Ubik.Security.Contracts.{ClassName}s.Events
+                {
+                    public record {ClassName}Added
                     {
                         {Properties}    }
                 }

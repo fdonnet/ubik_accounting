@@ -11,13 +11,14 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton<ICurrentUserService, FakeUserService>()
     .AddDbContextFactory<SecurityDbContext>(
         options => options.UseNpgsql("x"))
-    .AddSingleton<ClassGeneratorV2>()
+    .AddSingleton<ContractsGenerator>()
     .BuildServiceProvider();
 
 
-var myApp = serviceProvider.GetRequiredService<ClassGeneratorV2>();
+var myApp = serviceProvider.GetRequiredService<ContractsGenerator>();
 
-myApp.GenerateClassesContractAddCommand(true, @"F:/Dev/ubik/src/Ubik.Security.Contracts");
+myApp.GenerateContractAddCommand(false, @"F:/Dev/ubik/src/Ubik.Security.Contracts");
+//myApp.GenerateContractAddedEvent(false, @"F:/Dev/ubik/src/Ubik.Security.Contracts");
 
 
 //FAKER to use the DBcontext
