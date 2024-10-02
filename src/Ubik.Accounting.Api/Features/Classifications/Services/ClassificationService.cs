@@ -22,7 +22,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
 
         public async Task<Either<IServiceAndFeatureError, Classification>> GetAsync(Guid id)
         {
-            var result = await ctx.Classifications.FirstOrDefaultAsync(a => a.Id == id);
+            var result = await ctx.Classifications.FindAsync(id);
 
             return result == null
                 ? new ResourceNotFoundError("Classification","Id",id.ToString())

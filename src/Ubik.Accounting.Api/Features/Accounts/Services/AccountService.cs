@@ -26,7 +26,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
 
         public async Task<Either<IServiceAndFeatureError, Account>> GetAsync(Guid id)
         {
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
+            var account = await _context.Accounts.FindAsync(id);
 
             return account == null
                 ? new ResourceNotFoundError("Account", "Id", id.ToString())

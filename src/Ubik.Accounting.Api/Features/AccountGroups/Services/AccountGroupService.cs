@@ -49,7 +49,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 
         public async Task<Either<IServiceAndFeatureError, AccountGroup>> GetAsync(Guid id)
         {
-            var accountGroup = await _context.AccountGroups.FirstOrDefaultAsync(a => a.Id == id);
+            var accountGroup = await _context.AccountGroups.FindAsync(id);
 
             return accountGroup == null
                 ? new ResourceNotFoundError("AccountGroup", "Id", id.ToString())
