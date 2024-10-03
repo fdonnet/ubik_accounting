@@ -20,7 +20,7 @@ namespace Ubik.Security.Api.Features.Users.Controller.v1
     [Route("api/v{version:apiVersion}/[controller]")]
     public class UsersController(IServiceManager serviceManager) : ControllerBase
     {
-        //[Authorize(Roles = "ubik_accounting_classification_read")]
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
