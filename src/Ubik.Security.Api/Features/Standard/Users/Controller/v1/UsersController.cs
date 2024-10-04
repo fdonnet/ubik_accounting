@@ -1,14 +1,13 @@
 ﻿using Asp.Versioning;
-using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Contracts.Users.Results;
 using Ubik.Security.Contracts.Users.Commands;
-using Ubik.Security.Api.Features.Users.Mappers;
+using Ubik.Security.Api.Features.Standard.Users.Services;
+using Ubik.Security.Api.Features.Standard.Users.Mappers;
 
-namespace Ubik.Security.Api.Features.Users.Controller.v1
+namespace Ubik.Security.Api.Features.Standard.Users.Controller.v1
 {
     /// <summary>
     /// For all queries endpoints => call the service manager and access the data
@@ -18,7 +17,7 @@ namespace Ubik.Security.Api.Features.Users.Controller.v1
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class UsersController(IServiceManager serviceManager) : ControllerBase
+    public class UsersController(IUsersCommandsService commandService, IUsersQueriesService queryService) : ControllerBase
     {
         [AllowAnonymous]
         [HttpGet("{id}")]
@@ -28,7 +27,7 @@ namespace Ubik.Security.Api.Features.Users.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<GetUserResult>> Get(Guid id)
         {
-            var result = await serviceManager.UserManagementService.GetAsync(id);
+            var result = await queryService.GetAsync(id);
             return result.Match(
                             Right: ok => Ok(ok.ToGetUserResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
@@ -43,21 +42,13 @@ namespace Ubik.Security.Api.Features.Users.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AddUserResult>> Register(AddUserCommand command, IRequestClient<AddUserCommand> client)
+        public async Task<ActionResult<AddUserResult>> Register(AddUserCommand command)
         {
-            var (result, error) = await client.GetResponse<AddUserResult, IServiceAndFeatureError>(command);
+            var result = await commandService.AddAsync(command);
 
-            if (result.IsCompletedSuccessfully)
-            {
-                var added = (await result).Message;
-
-                return CreatedAtAction(nameof(Get), new { id = added.Id }, added);
-            }
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match(
+                Right: ok => CreatedAtAction(nameof(Get), new { id = ok.Id }, ok),
+                Left: ko => new ObjectResult(ko.ToValidationProblemDetails(HttpContext)));
         }
     }
 }

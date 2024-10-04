@@ -4,10 +4,10 @@ using System.Text.Json;
 using System.Text;
 using System.Text.Json.Serialization;
 using Ubik.ApiService.Common.Errors;
-using Ubik.Security.Api.Features.Users.Errors;
 using Ubik.Security.Contracts.Users.Commands;
+using Ubik.Security.Api.Features.Standard.Users.Errors;
 
-namespace Ubik.Security.Api.Features.Users.Services
+namespace Ubik.Security.Api.Features.Standard.Users.Services
 {
     public class UserAuthProviderServiceKeycloak(HttpClient httpClient, IOptions<AuthProviderKeycloakOptions> authProviderOption) : IUserAuthProviderService
     {
@@ -17,14 +17,14 @@ namespace Ubik.Security.Api.Features.Users.Services
         public async Task<Either<IServiceAndFeatureError, bool>> AddUserAsync(AddUserCommand user)
         {
             return await GetServiceTokenAsync().ToAsync()
-                .Bind(token => SendAddRequestToAuthProviderAsync(user,token).ToAsync()
+                .Bind(token => SendAddRequestToAuthProviderAsync(user, token).ToAsync()
                 .Map(isOk =>
                 {
                     return isOk;
                 }));
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> SendAddRequestToAuthProviderAsync(AddUserCommand user,string token)
+        private async Task<Either<IServiceAndFeatureError, bool>> SendAddRequestToAuthProviderAsync(AddUserCommand user, string token)
         {
             var userPayload = new AddUserInKeycloakRealm()
             {

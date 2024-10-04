@@ -2,7 +2,7 @@
 using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Contracts.Users.Commands;
 
-namespace Ubik.Security.Api.Features.Users.Services
+namespace Ubik.Security.Api.Features.Standard.Users.Services
 {
     public interface IUserAuthProviderService
     {

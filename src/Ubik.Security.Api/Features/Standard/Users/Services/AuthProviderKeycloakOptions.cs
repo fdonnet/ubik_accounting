@@ -1,6 +1,6 @@
 ﻿using Ubik.ApiService.Common.Configure.Options;
 
-namespace Ubik.Security.Api.Features.Users.Services
+namespace Ubik.Security.Api.Features.Standard.Users.Services
 {
     public class AuthProviderKeycloakOptions : IOptionsPosition
     {

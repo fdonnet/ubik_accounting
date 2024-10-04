@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Admin\Users\" />
     <Folder Include="Features\Authorizations\Errors\" />
     <Folder Include="Features\Authorizations\Queries\" />
   </ItemGroup>

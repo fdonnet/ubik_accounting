@@ -11,24 +11,20 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Api.Features;
-using Ubik.Security.Api.Features.Users.Services;
 using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Api.Data.Init;
+using Ubik.ApiService.Common.Configure.Options.Swagger;
+using Ubik.Security.Api.Features.Standard.Users.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Options used in Program.cs
-var authOptions = new AuthServerOptions();
-builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
 var msgBrokerOptions = new MessageBrokerOptions();
 builder.Configuration.GetSection(MessageBrokerOptions.Position).Bind(msgBrokerOptions);
 var swaggerUIOptions = new SwaggerUIOptions();
 builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
 var authProviderOptions =  new AuthProviderKeycloakOptions();
 builder.Configuration.GetSection(AuthProviderKeycloakOptions.Position).Bind(authProviderOptions);
-
-//Auth server and JWT
-builder.Services.AddAuthServerAndJwt(authOptions);
 
 //DB
 builder.Services.AddDbContextFactory<SecurityDbContext>(
@@ -104,11 +100,17 @@ builder.Services.AddTracingAndMetrics();
 var xmlPath = Path.Combine(AppContext.BaseDirectory,
     $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
-builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
+builder.Services.AddSwaggerGen(c =>
+{
+    c.OperationFilter<SwaggerDefaultValues>();
+    c.IncludeXmlComments(xmlPath);
+});
 
 //Services injection
 //TODO: see if we need to integrate the user service more
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
+builder.Services.AddScoped<IUsersCommandsService, UsersCommandsService>();
+builder.Services.AddScoped<IUsersQueriesService, UsersQueriesService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 builder.Services.Configure<AuthProviderKeycloakOptions>(
@@ -151,8 +153,8 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
