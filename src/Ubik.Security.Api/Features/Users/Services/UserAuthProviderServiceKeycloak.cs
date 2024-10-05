@@ -5,9 +5,9 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Contracts.Users.Commands;
-using Ubik.Security.Api.Features.Standard.Users.Errors;
+using Ubik.Security.Api.Features.Users.Standard.Errors;
 
-namespace Ubik.Security.Api.Features.Standard.Users.Services
+namespace Ubik.Security.Api.Features.Users.Services
 {
     public class UserAuthProviderServiceKeycloak(HttpClient httpClient, IOptions<AuthProviderKeycloakOptions> authProviderOption) : IUserAuthProviderService
     {

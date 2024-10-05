@@ -1,6 +1,6 @@
 ﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Security.Api.Features.Standard.Users.Errors
+namespace Ubik.Security.Api.Features.Users.Standard.Errors
 {
     public record UserAddFatalError : IServiceAndFeatureError
     {

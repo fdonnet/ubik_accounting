@@ -10,6 +10,7 @@ namespace Ubik.Security.Api.Models
         public required string Lastname { get; set; }
         public required string Email { get; set; }
         public bool IsActivated { get; set; } = true;
+        public bool IsMegaAdmin { get; set; } = false;
         public Guid Version { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid CreatedBy { get; set; }

@@ -14,7 +14,7 @@ using Ubik.Security.Api.Features;
 using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Api.Data.Init;
 using Ubik.ApiService.Common.Configure.Options.Swagger;
-using Ubik.Security.Api.Features.Standard.Users.Services;
+using Ubik.Security.Api.Features.Users.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -145,7 +145,7 @@ if (app.Environment.IsDevelopment())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<SecurityDbContext>();
-    context.Database.EnsureDeleted();
+    //context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
 
     var initDb = new DbInitializer();

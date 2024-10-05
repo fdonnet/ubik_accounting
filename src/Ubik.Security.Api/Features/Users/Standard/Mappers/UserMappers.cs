@@ -4,7 +4,7 @@ using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Events;
 using Ubik.Security.Contracts.Users.Results;
 
-namespace Ubik.Security.Api.Features.Standard.Users.Mappers
+namespace Ubik.Security.Api.Features.Users.Standard.Mappers
 {
     public static class UserMappers
     {
@@ -19,9 +19,9 @@ namespace Ubik.Security.Api.Features.Standard.Users.Mappers
             };
         }
 
-        public static GetUserResult ToGetUserResult(this User current)
+        public static UserStandardResult ToUserStandardResult(this User current)
         {
-            return new GetUserResult()
+            return new UserStandardResult()
             {
                 Id = current.Id,
                 Firstname = current.Firstname,
@@ -31,21 +31,24 @@ namespace Ubik.Security.Api.Features.Standard.Users.Mappers
                 Version = current.Version,
             };
         }
-        public static UserAdded ToUserAdded(this User current)
+
+        public static UserAdminResult ToUserAdminResult(this User current)
         {
-            return new UserAdded()
+            return new UserAdminResult()
             {
                 Id = current.Id,
                 Firstname = current.Firstname,
                 Lastname = current.Lastname,
                 Email = current.Email,
+                IsActivated = current.IsActivated,
+                IsMegaAdmin = current.IsMegaAdmin,
                 Version = current.Version,
             };
         }
 
-        public static AddUserResult ToAddUserResult(this User current)
+        public static UserAdded ToUserAdded(this User current)
         {
-            return new AddUserResult()
+            return new UserAdded()
             {
                 Id = current.Id,
                 Firstname = current.Firstname,

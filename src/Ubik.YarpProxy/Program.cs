@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Ubik.ApiService.Common.Configure.Options;
+using Ubik.YarpProxy.Authorizations;
+using Ubik.YarpProxy.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,30 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 o.Audience = authOptions.Audience;
                 o.RequireHttpsMetadata = authOptions.RequireHttpsMetadata;
             });
+
+//Cache
+var redisOptions = new RedisOptions();
+builder.Configuration.GetSection(RedisOptions.Position).Bind(redisOptions);
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = redisOptions.ConnectionString;
+});
+
+//Httpclient for userService
+builder.Services.AddHttpClient<UserService>(client =>
+{
+    //TODO: change hardcoded
+    client.BaseAddress = new Uri("https://localhost:7051/");
+});
+
+builder.Services.AddScoped<IAuthorizationHandler, UserInfoOkHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, UserIsMegaAdminHandler>();
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("UserInfoOk", policy =>
+        policy.Requirements.Add(new UserInfoOkRequirement()))
+    .AddPolicy("IsMegaAdmin", policy =>
+        policy.Requirements.Add(new UserIsMegaAdminRequirement()));
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));

@@ -100,10 +100,10 @@ services:
     volumes:
       - "ubik-rabbitmq-vol:/var/lib/rabbitmq"
 
-  redis-stack:
+  ubik-webapp-client-cache:
     command:
       - "/entrypoint.sh"
-    container_name: "ubik-redis-stack"
+    container_name: "ubik-webapp-client-cache"
     environment:
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       - "REDISBLOOM_ARGS="
@@ -120,6 +120,27 @@ services:
     ports:
       - "6379:6379/tcp"
       - "8001:8001/tcp"
+
+  ubik-proxy-cache:
+    command:
+      - "/entrypoint.sh"
+    container_name: "ubik-proxy-cache"
+    environment:
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "REDISBLOOM_ARGS="
+      - "REDISEARCH_ARGS="
+      - "REDISJSON_ARGS="
+      - "REDISTIMESERIES_ARGS="
+      - "REDIS_ARGS="
+    image: "redis/redis-stack:latest"
+    ipc: "private"
+    logging:
+      driver: "json-file"
+      options: {}
+    network_mode: "bridge"
+    ports:
+      - "6380:6379/tcp"
+      - "8004:8001/tcp"
 
   ubik-postgres:
     command:

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ubik.Security.Contracts.Users.Results
 {
-    public record GetUserResult
+    public record UserStandardResult
     {
         public Guid Id { get; init; }
         public required string Firstname { get; init; }

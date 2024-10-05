@@ -8,17 +8,17 @@ using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Services;
 using Ubik.Security.Api.Data;
-using Ubik.Security.Api.Features.Standard.Users.Mappers;
+using Ubik.Security.Api.Features.Users.Standard.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Results;
 
-namespace Ubik.Security.Api.Features.Standard.Users.Services
+namespace Ubik.Security.Api.Features.Users.Services
 {
     public class UsersCommandsService(SecurityDbContext ctx, IUserAuthProviderService authUserProviderService, IPublishEndpoint publishEndpoint)
         : IUsersCommandsService
     {
-        public async Task<Either<IServiceAndFeatureError, AddUserResult>> AddAsync(AddUserCommand userCommand)
+        public async Task<Either<IServiceAndFeatureError, UserStandardResult>> AddAsync(AddUserCommand userCommand)
         {
             //TODO: Enhance this part... dirty asf to maintain aligned systems (DB + auth)
             //Ad the ID to be aligned with DB or use email as identifier ?
@@ -31,13 +31,13 @@ namespace Ubik.Security.Api.Features.Standard.Users.Services
                 {
                     var resultAuth = await authUserProviderService.AddUserAsync(userCommand);
 
-                    return await resultAuth.MatchAsync<Either<IServiceAndFeatureError, AddUserResult>>(
+                    return await resultAuth.MatchAsync<Either<IServiceAndFeatureError, UserStandardResult>>(
                         RightAsync: async okAfterAuth =>
                         {
                             //Store and publish UserAdded event (auth + DB = OK)
                             await publishEndpoint.Publish(okDb.ToUserAdded(), CancellationToken.None);
                             await ctx.SaveChangesAsync();
-                            return okDb.ToAddUserResult();
+                            return okDb.ToUserStandardResult();
                         },
                         LeftAsync: async errAuth =>
                         {
