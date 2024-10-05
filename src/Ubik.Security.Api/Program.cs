@@ -15,6 +15,7 @@ using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Api.Data.Init;
 using Ubik.ApiService.Common.Configure.Options.Swagger;
 using Ubik.Security.Api.Features.Users.Services;
+using Ubik.Security.Api.Features.Authorizations.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -108,9 +109,9 @@ builder.Services.AddSwaggerGen(c =>
 
 //Services injection
 //TODO: see if we need to integrate the user service more
-builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<IUsersCommandsService, UsersCommandsService>();
 builder.Services.AddScoped<IUsersQueriesService, UsersQueriesService>();
+builder.Services.AddScoped<IAuthorizationsCommandsService, AuthorizationsCommandsService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 builder.Services.Configure<AuthProviderKeycloakOptions>(

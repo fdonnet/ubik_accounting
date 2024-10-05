@@ -22,6 +22,7 @@ namespace Ubik.Security.Api.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<Authorization> Authorizations { get; set; }
         public DbSet<RoleAuthorization> RolesAuthorizations { get; set; }
+        public DbSet<UserRoleByTenant> UserRolesByTenants { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -13,13 +13,11 @@ namespace Ubik.Security.Api.Features.Users.Standard.Controller.v1
     /// For all queries endpoints => call the service manager and access the data
     /// For all commands endpoints => call the message bus
     /// </summary>
-    [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class UsersController(IUsersCommandsService commandService, IUsersQueriesService queryService) : ControllerBase
     {
-        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -36,7 +34,6 @@ namespace Ubik.Security.Api.Features.Users.Standard.Controller.v1
         //TODO: need to be protected by captach or other stuff
         //This API need to remain private (no public call on that)
         //Maybe protect by domain names or other stuff but it allow a user to register
-        [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]

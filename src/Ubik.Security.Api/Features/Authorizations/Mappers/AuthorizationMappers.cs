@@ -29,9 +29,9 @@ namespace Ubik.Security.Api.Features.Authorizations.Mappers
             };
         }
 
-        public static AddAuthorizationResult ToAddAuthorizationResult(this Authorization current)
+        public static AuthorizationStandardResult ToAuthorizationStandardResult(this Authorization current)
         {
-            return new AddAuthorizationResult()
+            return new AuthorizationStandardResult()
             {
                 Code = current.Code,
                 Label = current.Label,

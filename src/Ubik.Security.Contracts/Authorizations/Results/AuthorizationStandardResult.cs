@@ -1,6 +1,6 @@
 ﻿namespace Ubik.Security.Contracts.Authorizations.Results
 {
-    public record AddAuthorizationResult
+    public record AuthorizationStandardResult
     {
         public Guid Id { get; init; }
         public required string Code { get; init; }
