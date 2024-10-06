@@ -36,14 +36,13 @@ builder.Services.AddHttpClient<UserService>(client =>
 
 //Authorization handlers
 builder.Services.AddScoped<IAuthorizationHandler, UserInfoOkHandler>();
-builder.Services.AddScoped<IAuthorizationHandler, UserIsMegaAdminHandler>();
 
 //Available policy
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("UserInfoOk", policy =>
-        policy.Requirements.Add(new UserInfoOkRequirement()))
+    .AddPolicy("IsUser", policy =>
+        policy.Requirements.Add(new UserInfoOkRequirement(false)))
     .AddPolicy("IsMegaAdmin", policy =>
-        policy.Requirements.Add(new UserIsMegaAdminRequirement()));
+        policy.Requirements.Add(new UserInfoOkRequirement(true)));
 
 //Proxy
 builder.Services.AddReverseProxy()

@@ -4,7 +4,7 @@ using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Events;
 using Ubik.Security.Contracts.Users.Results;
 
-namespace Ubik.Security.Api.Features.Users.Standard.Mappers
+namespace Ubik.Security.Api.Features.Users.Mappers
 {
     public static class UserMappers
     {

@@ -1,6 +1,6 @@
 ﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Security.Api.Features.Users.Standard.Errors
+namespace Ubik.Security.Api.Features.Users.Errors
 {
     public record CannotGetAuthToken : IServiceAndFeatureError
     {

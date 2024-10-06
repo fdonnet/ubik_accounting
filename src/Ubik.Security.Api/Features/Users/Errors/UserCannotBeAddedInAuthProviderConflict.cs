@@ -1,7 +1,7 @@
 ﻿using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Contracts.Users.Commands;
 
-namespace Ubik.Security.Api.Features.Users.Standard.Errors
+namespace Ubik.Security.Api.Features.Users.Errors
 {
     public record UserCannotBeAddedInAuthProviderConflict : IServiceAndFeatureError
     {

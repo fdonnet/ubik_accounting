@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using Ubik.ApiService.Common.Exceptions;
+using Ubik.Security.Api.Features.Users.Mappers;
 using Ubik.Security.Api.Features.Users.Services;
-using Ubik.Security.Api.Features.Users.Standard.Mappers;
 using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Security.Api.Features.Users.Admin.Controller.v1

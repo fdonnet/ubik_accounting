@@ -7,9 +7,9 @@ using Ubik.YarpProxy.Services;
 
 namespace Ubik.YarpProxy.Authorizations
 {
-    public class UserInfoOkRequirement : IAuthorizationRequirement
+    public class UserInfoOkRequirement(bool needsMegaAdminRight) : IAuthorizationRequirement
     {
-
+        public bool NeedsMegaAdminRight { get; set; } = needsMegaAdminRight;
     }
     public class UserInfoOkHandler(UserService userService) : AuthorizationHandler<UserInfoOkRequirement>
     {
@@ -20,13 +20,23 @@ namespace Ubik.YarpProxy.Authorizations
             if (email != null)
             {
                 var userInfo = await userService.GetUserInfoAsync(email);
-                if (userInfo != null && userInfo.IsActivated)
+                if (!requirement.NeedsMegaAdminRight)
                 {
-                    context.Succeed(requirement);
-                    return;
+                    if (userInfo != null && userInfo.IsActivated)
+                    {
+                        context.Succeed(requirement);
+                        return;
+                    }
+                }
+                else
+                {
+                    if (userInfo != null && userInfo.IsActivated && userInfo.IsMegaAdmin)
+                    {
+                        context.Succeed(requirement);
+                        return;
+                    }
                 }
             }
-
             context.Fail();
             return;
         }

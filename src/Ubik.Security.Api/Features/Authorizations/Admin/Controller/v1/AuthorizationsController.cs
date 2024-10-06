@@ -11,11 +11,11 @@ using Ubik.Security.Api.Features.Users.Services;
 using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Contracts.Authorizations.Results;
 
-namespace Ubik.Security.Api.Features.Authorizations.Controller.v1
+namespace Ubik.Security.Api.Features.Authorizations.Admin.Controller.v1
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("admin/api/v{version:apiVersion}/[controller]")]
     public class AuthorizationsController(IAuthorizationsCommandsService commandService) : ControllerBase
     {
         //TODO: remove anonymous access

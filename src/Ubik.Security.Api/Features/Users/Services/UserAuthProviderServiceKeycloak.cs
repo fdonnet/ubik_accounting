@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Contracts.Users.Commands;
-using Ubik.Security.Api.Features.Users.Standard.Errors;
+using Ubik.Security.Api.Features.Users.Errors;
 
 namespace Ubik.Security.Api.Features.Users.Services
 {

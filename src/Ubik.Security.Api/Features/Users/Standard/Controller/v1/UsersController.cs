@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Contracts.Users.Results;
 using Ubik.Security.Contracts.Users.Commands;
-using Ubik.Security.Api.Features.Users.Standard.Mappers;
 using Ubik.Security.Api.Features.Users.Services;
+using Ubik.Security.Api.Features.Users.Mappers;
 
 namespace Ubik.Security.Api.Features.Users.Standard.Controller.v1
 {
