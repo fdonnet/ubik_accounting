@@ -2,6 +2,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 using Ubik.ApiService.Common.Services;
 using Ubik.CodeGenerator;
 using Ubik.Security.Api.Data;
@@ -19,6 +20,7 @@ var myContractsGenerator = serviceProvider.GetRequiredService<ContractsGenerator
 
 //GenerateForAddContract(true,@"F:/Dev/ubik/src/ubik_accounting/src/Ubik.Security.Contracts");
 //GenerateForAddContract(true,@"C:/Dev/gitPriv/ubik_accounting/src/Ubik.Security.Contracts");
+myContractsGenerator.GenerateContractUpdateCommand(false, string.Empty);
 
 
 //void GenerateForAddContract(bool writeFile,string path)

@@ -6,7 +6,7 @@ namespace Ubik.CodeGenerator
 {
     internal class ContractsGenerator(SecurityDbContext dbContext)
     {
-        public void GenerateContractAddResult(bool writeFiles, string? folderPath)
+        public void GenerateContractStandardResult(bool writeFiles, string? folderPath)
         {
             var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
                                                                                   && e.ClrType.Name != "OutboxMessage"
@@ -93,6 +93,38 @@ namespace Ubik.CodeGenerator
 
                 var properties = GenerateProperties(entityType, true, excludedFiels);
                 var classContent = GetTemplateForContractCommandAdd().Replace("{ClassName}", className)
+                                                                    .Replace("{Properties}", properties);
+
+                if (writeFiles)
+                {
+                    var filePath = $"{folderPath}/{className}s/Commands/Add{className}Command.cs";
+                    WriteClassToFile(filePath, classContent);
+                }
+                else
+                    Console.WriteLine(classContent);
+            }
+        }
+
+        public void GenerateContractUpdateCommand(bool writeFiles, string? folderPath)
+        {
+            var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
+                                                                      && e.ClrType.Name != "OutboxMessage"
+                                                                      && e.ClrType.Name != "OutboxState");
+
+            foreach (var entityType in entityTypes)
+            {
+                var className = entityType.ClrType.Name;
+                var excludedFiels = new List<string>()
+                {
+                    "CreatedAt",
+                    "CreatedBy",
+                    "ModifiedAt",
+                    "ModifiedBy",
+                    "TenantId"
+                };
+
+                var properties = GenerateProperties(entityType, true, excludedFiels);
+                var classContent = GetTemplateForContractCommandUpdate().Replace("{ClassName}", className)
                                                                     .Replace("{Properties}", properties);
 
                 if (writeFiles)
@@ -267,6 +299,21 @@ namespace Ubik.CodeGenerator
                 namespace Ubik.Security.Contracts.{ClassName}s.Commands
                 {
                     public record Add{ClassName}Command
+                    {
+                        {Properties}    }
+                }
+                """;
+        }
+
+        public static string GetTemplateForContractCommandUpdate()
+        {
+            return
+                """
+                using System.ComponentModel.DataAnnotations;
+
+                namespace Ubik.Security.Contracts.{ClassName}s.Commands
+                {
+                    public record Update{ClassName}Command
                     {
                         {Properties}    }
                 }

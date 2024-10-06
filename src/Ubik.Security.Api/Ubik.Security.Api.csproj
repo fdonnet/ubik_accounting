@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Authorizations\Errors\" />
-    <Folder Include="Features\Authorizations\Services\" />
     <Folder Include="Features\Authorizations\Standard\" />
   </ItemGroup>
 
