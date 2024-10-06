@@ -20,9 +20,10 @@ namespace Ubik.YarpProxy.Authorizations
             if (email != null)
             {
                 var userInfo = await userService.GetUserInfoAsync(email);
-                if (!requirement.NeedsMegaAdminRight)
+
+                if (requirement.NeedsMegaAdminRight)
                 {
-                    if (userInfo != null && userInfo.IsActivated)
+                    if (userInfo != null && userInfo.IsActivated && userInfo.IsMegaAdmin)
                     {
                         context.Succeed(requirement);
                         return;
@@ -30,7 +31,7 @@ namespace Ubik.YarpProxy.Authorizations
                 }
                 else
                 {
-                    if (userInfo != null && userInfo.IsActivated && userInfo.IsMegaAdmin)
+                    if (userInfo != null && userInfo.IsActivated)
                     {
                         context.Succeed(requirement);
                         return;
