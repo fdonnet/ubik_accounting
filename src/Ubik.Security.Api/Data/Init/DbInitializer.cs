@@ -6,6 +6,7 @@
         {
             await UsersData.LoadAsync(context);
             await AuthorizationsData.LoadAsync(context);
+            await RolesData.LoadAsync(context);
         }
     }
 }

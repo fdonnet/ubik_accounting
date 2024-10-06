@@ -1,5 +1,6 @@
 ﻿using LanguageExt;
 using MassTransit;
+using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
@@ -7,6 +8,7 @@ using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Features.Authorizations.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Authorizations.Commands;
+using Ubik.Security.Contracts.Authorizations.Events;
 
 
 namespace Ubik.Security.Api.Features.Authorizations.Admin.Services
@@ -49,6 +51,24 @@ namespace Ubik.Security.Api.Features.Authorizations.Admin.Services
                     {
                         return new ResourceUpdateConcurrencyError("Authorization", r.Version.ToString());
                     }
+                },
+                Left: err =>
+                {
+                    return Prelude.Left(err);
+                });
+        }
+
+
+        public async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
+        {
+            var res = await ExecuteDeleteAuthorizationAsync(id);
+
+            return await res.MatchAsync<Either<IServiceAndFeatureError, bool>>(
+                RightAsync: async r =>
+                {
+                    await publishEndpoint.Publish(new AuthorizationDeleted { Id = id }, CancellationToken.None);
+                    await ctx.SaveChangesAsync();
+                    return true;
                 },
                 Left: err =>
                 {
@@ -105,6 +125,16 @@ namespace Ubik.Security.Api.Features.Authorizations.Admin.Services
             return exists
                 ? new ResourceAlreadyExistsError("Authorization", "Code", auth.Code)
                 : auth;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAuthorizationAsync(Guid id)
+        {
+            return await GetAsync(id).ToAsync()
+                    .MapAsync(async ac =>
+                    {
+                        await ctx.Roles.Where(x => x.Id == id).ExecuteDeleteAsync();
+                        return true;
+                    });
         }
     }
 }

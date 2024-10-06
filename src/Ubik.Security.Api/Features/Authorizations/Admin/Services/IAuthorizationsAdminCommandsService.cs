@@ -9,5 +9,6 @@ namespace Ubik.Security.Api.Features.Authorizations.Admin.Services
     {
         public Task<Either<IServiceAndFeatureError, Authorization>> AddAsync(AddAuthorizationCommand authorizationCommand);
         public Task<Either<IServiceAndFeatureError, Authorization>> UpdateAsync(UpdateAuthorizationCommand authorizationCommand);
+        public Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id);
     }
 }

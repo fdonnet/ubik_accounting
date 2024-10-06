@@ -1,4 +1,6 @@
 ﻿using Asp.Versioning;
+using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
@@ -67,6 +69,20 @@ namespace Ubik.Security.Api.Features.Authorizations.Admin.Controller.v1
 
             return result.Match(
                 Right: ok => Ok(ok.ToAuthorizationStandardResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            var result = await commandService.ExecuteDeleteAsync(id);
+
+            return result.Match<ActionResult>(
+                Right: ok => NoContent(),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
     }
