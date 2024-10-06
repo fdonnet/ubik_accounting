@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.YarpProxy.Services

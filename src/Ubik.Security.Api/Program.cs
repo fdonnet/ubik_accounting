@@ -10,12 +10,11 @@ using Ubik.ApiService.Common.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using Ubik.Security.Contracts.Users.Commands;
-using Ubik.Security.Api.Features;
 using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Api.Data.Init;
 using Ubik.ApiService.Common.Configure.Options.Swagger;
 using Ubik.Security.Api.Features.Users.Services;
-using Ubik.Security.Api.Features.Authorizations.Services;
+using Ubik.Security.Api.Features.Authorizations.Admin.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -111,8 +110,8 @@ builder.Services.AddSwaggerGen(c =>
 //TODO: see if we need to integrate the user service more
 builder.Services.AddScoped<IUsersCommandsService, UsersCommandsService>();
 builder.Services.AddScoped<IUsersQueriesService, UsersQueriesService>();
-builder.Services.AddScoped<IAuthorizationsCommandsService, AuthorizationsCommandsService>();
-builder.Services.AddScoped<IAuthorizationsQueriesService, AuthorizationsQueriesService>();
+builder.Services.AddScoped<IAuthorizationsAdminCommandsService, AuthorizationsAdminCommandsService>();
+builder.Services.AddScoped<IAuthorizationsAdminQueriesService, AuthorizationsAdminQueriesService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 builder.Services.Configure<AuthProviderKeycloakOptions>(

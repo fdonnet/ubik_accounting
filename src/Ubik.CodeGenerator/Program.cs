@@ -2,7 +2,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Ubik.ApiService.Common.Services;
 using Ubik.CodeGenerator;
 using Ubik.Security.Api.Data;
@@ -19,15 +18,15 @@ var serviceProvider = new ServiceCollection()
 var myContractsGenerator = serviceProvider.GetRequiredService<ContractsGenerator>();
 
 //GenerateForAddContract(true,@"F:/Dev/ubik/src/ubik_accounting/src/Ubik.Security.Contracts");
-GenerateForAddContract(true,@"C:/Dev/gitPriv/ubik_accounting/src/Ubik.Security.Contracts");
+//GenerateForAddContract(true,@"C:/Dev/gitPriv/ubik_accounting/src/Ubik.Security.Contracts");
 
 
-void GenerateForAddContract(bool writeFile,string path)
-{
-    myContractsGenerator.GenerateContractAddCommand(writeFile, path);
-    myContractsGenerator.GenerateContractAddedEvent(writeFile, path);
-    myContractsGenerator.GenerateContractAddResult(writeFile, path);
-}
+//void GenerateForAddContract(bool writeFile,string path)
+//{
+//    myContractsGenerator.GenerateContractAddCommand(writeFile, path);
+//    myContractsGenerator.GenerateContractAddedEvent(writeFile, path);
+//    myContractsGenerator.GenerateContractAddResult(writeFile, path);
+//}
 
 //FAKER to use the DBcontext
 internal class FakeUserService : ICurrentUserService

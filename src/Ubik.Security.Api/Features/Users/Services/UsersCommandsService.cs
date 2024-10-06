@@ -1,17 +1,11 @@
 ﻿using LanguageExt;
-using LanguageExt.Pipes;
 using MassTransit;
-using MassTransit.Transports;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
-using Ubik.ApiService.Common.Services;
 using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Features.Users.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Users.Commands;
-using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Security.Api.Features.Users.Services
 {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ubik.Security.Contracts.Users.Results
+﻿namespace Ubik.Security.Contracts.Users.Results
 {
     public record UserStandardResult
     {

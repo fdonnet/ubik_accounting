@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Ubik.DB.Common;
+﻿using Ubik.DB.Common;
 
 namespace Ubik.Security.Api.Models
 {

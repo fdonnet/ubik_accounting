@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Authorizations\Commands\" />
     <Folder Include="Tenants\Commands\" />
     <Folder Include="RoleAuthorizations\Commands\" />
     <Folder Include="Roles\Commands\" />

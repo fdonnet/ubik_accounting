@@ -1,12 +1,12 @@
 ﻿using LanguageExt;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Api.Models;
-using Ubik.Security.Contracts.Authorizations.Results;
 
-namespace Ubik.Security.Api.Features.Authorizations.Services
+namespace Ubik.Security.Api.Features.Authorizations.Admin.Services
 {
-    public interface IAuthorizationsQueriesService
+    public interface IAuthorizationsAdminQueriesService
     {
         Task<Either<IServiceAndFeatureError, Authorization>> GetAsync(Guid id);
+        Task<IEnumerable<Authorization>> GetAllAsync();
     }
 }

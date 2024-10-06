@@ -1,7 +1,5 @@
 ﻿using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Api.Features.Users.Mappers;
 using Ubik.Security.Api.Features.Users.Services;

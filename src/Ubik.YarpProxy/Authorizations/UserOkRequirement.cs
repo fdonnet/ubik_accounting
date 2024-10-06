@@ -1,7 +1,4 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using System.Net.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Ubik.YarpProxy.Services;
 
