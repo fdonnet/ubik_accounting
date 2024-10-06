@@ -1,7 +1,9 @@
 ﻿using LanguageExt;
 using MassTransit;
+using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
+using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Features.Authorizations.Mappers;
 using Ubik.Security.Api.Features.Roles.Mappers;
@@ -12,16 +14,48 @@ using Ubik.Security.Contracts.Roles.Commands;
 
 namespace Ubik.Security.Api.Features.Roles.Admin.Services
 {
-    public class RolesAdminCommandsService(SecurityDbContext ctx) : IRolesAdminCommandsService
+    public class RolesAdminCommandsService(SecurityDbContext ctx, IPublishEndpoint publishEndpoint) : IRolesAdminCommandsService
     {
-        public Task<Either<IServiceAndFeatureError, Role>> AddAsync(AddRoleCommand authorizationCommand)
+        public async Task<Either<IServiceAndFeatureError, Role>> AddAsync(AddRoleCommand command)
         {
-            throw new NotImplementedException();
+            var result = await AddRoleAsync(command.ToRole());
+
+            return await result.MatchAsync<Either<IServiceAndFeatureError, Role>>(
+            RightAsync: async r =>
+            {
+                await publishEndpoint.Publish(r.ToRoleAdded(), CancellationToken.None);
+                await ctx.SaveChangesAsync();
+                return r;
+            },
+            Left: err =>
+            {
+                return Prelude.Left(err);
+            });
         }
 
-        public Task<Either<IServiceAndFeatureError, Role>> UpdateAsync(UpdateRoleCommand authorizationCommand)
+        public async Task<Either<IServiceAndFeatureError, Role>> UpdateAsync(UpdateRoleCommand command)
         {
-            throw new NotImplementedException();
+            var result = await UpdateRoleAsync(command.ToRole());
+
+            return await result.MatchAsync<Either<IServiceAndFeatureError, Role>>(
+                RightAsync: async r =>
+                {
+                    try
+                    {
+                        //Store and publish AccountGroupAdded event
+                        await publishEndpoint.Publish(r.ToRoleUpdated(), CancellationToken.None);
+                        await ctx.SaveChangesAsync();
+                        return r;
+                    }
+                    catch (UpdateDbConcurrencyException)
+                    {
+                        return new ResourceUpdateConcurrencyError("Role", r.Version.ToString());
+                    }
+                },
+                Left: err =>
+                {
+                    return Prelude.Left(err);
+                });
         }
 
         public async Task<Either<IServiceAndFeatureError, Role>> GetAsync(Guid id)
@@ -60,7 +94,7 @@ namespace Ubik.Security.Api.Features.Roles.Admin.Services
 
         private async Task<Either<IServiceAndFeatureError, Role>> ValidateIfNotAlreadyExistsAsync(Role current)
         {
-            var exists = await ctx.Roles.AnyAsync(a => a.Code == current.Code);
+            var exists = await ctx.Roles.AnyAsync(a => a.Code == current.Code && a.TenantId == null);
             return exists
                 ? new ResourceAlreadyExistsError("Role", "Code", current.Code)
                 : current;
@@ -68,7 +102,7 @@ namespace Ubik.Security.Api.Features.Roles.Admin.Services
 
         private async Task<Either<IServiceAndFeatureError, Role>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Role current)
         {
-            var exists = await ctx.Roles.AnyAsync(a => a.Code == current.Code && a.Id != current.Id);
+            var exists = await ctx.Roles.AnyAsync(a => a.Code == current.Code && a.Id != current.Id && a.TenantId == null);
 
             return exists
                 ? new ResourceAlreadyExistsError("Role", "Code", current.Code)

@@ -1,6 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace Ubik.Security.Contracts.Roles.Events
 {
-    public record RoleAdded
+    public record RoleUpdated
     {
         public Guid Id { get; init; }
         public required string Code { get; init; }

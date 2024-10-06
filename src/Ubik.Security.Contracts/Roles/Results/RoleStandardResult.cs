@@ -1,6 +1,6 @@
-namespace Ubik.Security.Contracts.Roles.Events
+namespace Ubik.Security.Contracts.Roles.Results
 {
-    public record AddRoleResult
+    public record RoleStandardResult
     {
         public Guid Id { get; init; }
         public required string Code { get; init; }
