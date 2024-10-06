@@ -112,6 +112,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<IUsersCommandsService, UsersCommandsService>();
 builder.Services.AddScoped<IUsersQueriesService, UsersQueriesService>();
 builder.Services.AddScoped<IAuthorizationsCommandsService, AuthorizationsCommandsService>();
+builder.Services.AddScoped<IAuthorizationsQueriesService, AuthorizationsQueriesService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 builder.Services.Configure<AuthProviderKeycloakOptions>(

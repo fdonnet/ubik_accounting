@@ -8,7 +8,7 @@ namespace Ubik.Security.Api.Features.Users.Services
 {
     public interface IUsersCommandsService
     {
-        Task<Either<IServiceAndFeatureError, UserStandardResult>> AddAsync(AddUserCommand userCommand);
+        Task<Either<IServiceAndFeatureError, User>> AddAsync(AddUserCommand userCommand);
 
     }
 }

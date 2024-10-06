@@ -4,6 +4,7 @@ using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Services;
 using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Models;
+using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Security.Api.Features.Users.Services
 {

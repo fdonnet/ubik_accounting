@@ -19,9 +19,6 @@ namespace Ubik.Security.Api.Data.Config
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(a => a.IsOnlyForMegaAdmin)
-                .IsRequired();
-
             builder.Property(a => a.Description)
                 .HasMaxLength(700);
 

@@ -18,7 +18,7 @@ namespace Ubik.Security.Api.Features.Users.Services
     public class UsersCommandsService(SecurityDbContext ctx, IUserAuthProviderService authUserProviderService, IPublishEndpoint publishEndpoint)
         : IUsersCommandsService
     {
-        public async Task<Either<IServiceAndFeatureError, UserStandardResult>> AddAsync(AddUserCommand userCommand)
+        public async Task<Either<IServiceAndFeatureError, User>> AddAsync(AddUserCommand userCommand)
         {
             //TODO: Enhance this part... dirty asf to maintain aligned systems (DB + auth)
             //Ad the ID to be aligned with DB or use email as identifier ?
@@ -31,13 +31,13 @@ namespace Ubik.Security.Api.Features.Users.Services
                 {
                     var resultAuth = await authUserProviderService.AddUserAsync(userCommand);
 
-                    return await resultAuth.MatchAsync<Either<IServiceAndFeatureError, UserStandardResult>>(
+                    return await resultAuth.MatchAsync<Either<IServiceAndFeatureError, User>>(
                         RightAsync: async okAfterAuth =>
                         {
                             //Store and publish UserAdded event (auth + DB = OK)
                             await publishEndpoint.Publish(okDb.ToUserAdded(), CancellationToken.None);
                             await ctx.SaveChangesAsync();
-                            return okDb.ToUserStandardResult();
+                            return okDb;
                         },
                         LeftAsync: async errAuth =>
                         {

@@ -44,7 +44,7 @@ namespace Ubik.Security.Api.Features.Users.Standard.Controller.v1
             var result = await commandService.AddAsync(command);
 
             return result.Match(
-                Right: ok => CreatedAtAction(nameof(Get), new { id = ok.Id }, ok),
+                Right: ok => CreatedAtAction(nameof(Get), new { id = ok.Id }, ok.ToUserStandardResult()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
     }

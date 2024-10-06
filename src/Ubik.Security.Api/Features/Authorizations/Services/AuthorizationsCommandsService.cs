@@ -8,7 +8,6 @@ using Ubik.Security.Api.Features.Authorizations.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Contracts.Authorizations.Results;
-using Ubik.Security.Contracts.Users.Results;
 
 
 namespace Ubik.Security.Api.Features.Authorizations.Services
@@ -16,16 +15,16 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
     public class AuthorizationsCommandsService(SecurityDbContext ctx, IPublishEndpoint publishEndpoint) : IAuthorizationsCommandsService
     {
 
-        public async Task<Either<IServiceAndFeatureError, AuthorizationStandardResult>> AddAsync(AddAuthorizationCommand authorizationCommand)
+        public async Task<Either<IServiceAndFeatureError, Authorization>> AddAsync(AddAuthorizationCommand authorizationCommand)
         {
             var result = await AddAuthorizationAsync(authorizationCommand.ToAuthorization());
 
-            return await result.MatchAsync<Either<IServiceAndFeatureError, AuthorizationStandardResult>>(
+            return await result.MatchAsync<Either<IServiceAndFeatureError, Authorization>>(
             RightAsync: async r =>
             {
                 await publishEndpoint.Publish(r.ToAuthorizationAdded(), CancellationToken.None);
                 await ctx.SaveChangesAsync();
-                return r.ToAuthorizationStandardResult();
+                return r;
             },
             Left: err =>
             {
