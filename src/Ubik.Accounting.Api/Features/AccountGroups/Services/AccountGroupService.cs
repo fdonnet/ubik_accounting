@@ -66,7 +66,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
         public async Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetChildAccountsAsync(Guid id)
         {
             var accounts = (await GetAsync(id))
-                    .MapAsync(a =>
+                    .MapAsync(async a =>
                     {
                         var p = new DynamicParameters();
                         p.Add("@account_group_id", id);
@@ -80,7 +80,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                                         WHERE aag.account_group_id = @account_group_id
                                         """;
 
-                        return con.QueryAsync<Account>(sql, p);
+                        return await con.QueryAsync<Account>(sql, p);
                     });
 
             return await accounts;
