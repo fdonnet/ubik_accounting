@@ -42,39 +42,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddApiVersionAndExplorer();
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, YarpSwaggerConfigOptions>();
 
-builder.Services.AddSwaggerGen(c =>
-{
-    c.AddSecurityDefinition(
-                    "oauth2",
-                    new OpenApiSecurityScheme
-                    {
-                        Type = SecuritySchemeType.OAuth2,
-                        Flows = new OpenApiOAuthFlows
-                        {
-                            AuthorizationCode = new OpenApiOAuthFlow
-                            {
-                                AuthorizationUrl = new Uri(authOptions.AuthorizationUrl),
-                                TokenUrl = new Uri(authOptions.TokenUrl),
-                                Scopes = new Dictionary<string, string> { }
-                            }
-                        },
-                    });
-
-    c.AddSecurityRequirement(
-        new OpenApiSecurityRequirement
-        {
-                    {
-                        new OpenApiSecurityScheme{
-                            Reference = new OpenApiReference{
-                                Id = "oauth2", //The name of the previously defined security scheme.
-                                Type = ReferenceType.SecurityScheme
-                            }
-                        },
-                            new List<string>()
-                    }
-        });
-    c.OperationFilter<SwaggerDefaultValues>();
-});
+builder.Services.AddSwaggerGen();
 
 //Httpclient for userService (called to retrive auth/authorize the request sent)
 //Internal ip or domain not exposed to public accesses

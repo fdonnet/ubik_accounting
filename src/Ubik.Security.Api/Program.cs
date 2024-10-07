@@ -12,7 +12,6 @@ using System.Text.Json.Serialization;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Api.Data.Init;
-using Ubik.ApiService.Common.Configure.Options.Swagger;
 using Ubik.Security.Api.Features.Users.Services;
 using Ubik.Security.Api.Features.Authorizations.Admin.Services;
 using Ubik.Security.Api.Features.Roles.Admin.Services;
@@ -27,6 +26,9 @@ var swaggerUIOptions = new SwaggerUIOptions();
 builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
 var authProviderOptions =  new AuthProviderKeycloakOptions();
 builder.Configuration.GetSection(AuthProviderKeycloakOptions.Position).Bind(authProviderOptions);
+//Only used by swagger to report auth info to Yarp Proxy
+var authOptions = new AuthServerOptions();
+builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
 
 //DB
 builder.Services.AddDbContextFactory<SecurityDbContext>(
@@ -79,8 +81,6 @@ builder.Services.AddMassTransit(config =>
     //Add commands clients
     config.AddRequestClient<AddUserCommand>();
     config.AddRequestClient<AddAuthorizationCommand>();
-
-
 });
 
 //Api versioning
@@ -102,11 +102,8 @@ builder.Services.AddTracingAndMetrics();
 var xmlPath = Path.Combine(AppContext.BaseDirectory,
     $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
-builder.Services.AddSwaggerGen(c =>
-{
-    c.OperationFilter<SwaggerDefaultValues>();
-    c.IncludeXmlComments(xmlPath);
-});
+builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
+
 
 //Services injection
 //Business
