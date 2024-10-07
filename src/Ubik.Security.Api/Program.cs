@@ -16,6 +16,7 @@ using Ubik.ApiService.Common.Configure.Options.Swagger;
 using Ubik.Security.Api.Features.Users.Services;
 using Ubik.Security.Api.Features.Authorizations.Admin.Services;
 using Ubik.Security.Api.Features.Roles.Admin.Services;
+using Ubik.Security.Api.Features.RolesAuthorizations.Admin.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -115,6 +116,8 @@ builder.Services.AddScoped<IAuthorizationsAdminCommandsService, AuthorizationsAd
 builder.Services.AddScoped<IAuthorizationsAdminQueriesService, AuthorizationsAdminQueriesService>();
 builder.Services.AddScoped<IRolesAdminCommandsService, RolesAdminCommandsService>();
 builder.Services.AddScoped<IRolesAdminQueriesService, RolesAdminQueriesService>();
+builder.Services.AddScoped<IRolesAuthorizationsAdminCommandsService, RolesAuthorizationsAdminCommandsService>();
+builder.Services.AddScoped<IRolesAuthorizationsAdminQueriesService, RolesAuthorizationsAdminQueriesService>();
 
 //General
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();

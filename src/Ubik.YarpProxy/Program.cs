@@ -28,6 +28,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 
 //Httpclient for userService (called to retrive auth/authorize the request sent)
+//Internal ip or domain not exposed to public accesses
 builder.Services.AddHttpClient<UserService>(client =>
 {
     //TODO: change hardcoded

@@ -14,19 +14,20 @@ var serviceProvider = new ServiceCollection()
         options => options.UseNpgsql("x"))
     .AddSingleton<ContractsGenerator>()
     .AddSingleton<MappersGenerator>()
+    .AddSingleton<ServicesGenerator>()
+    .AddSingleton<ControllerGenerator>()
     .BuildServiceProvider();
 
 
 var myContractsGenerator = serviceProvider.GetRequiredService<ContractsGenerator>();
 var myMappersGenerator = serviceProvider.GetRequiredService<MappersGenerator>();
+var myServicesGenerator = serviceProvider.GetRequiredService<ServicesGenerator>();
+var myControllerGenerator = serviceProvider.GetRequiredService<ControllerGenerator>();
 
-//GenerateForAddContract(true,@"F:/Dev/ubik/src/ubik_accounting/src/Ubik.Security.Contracts");
-//GenerateForAddContract(true,@"C:/Dev/gitPriv/ubik_accounting/src/Ubik.Security.Contracts");
 //myContractsGenerator.GenerateAllContracts(false, string.Empty, "RoleAuthorization");
-myMappersGenerator.GenerateMappers("RoleAuthorization");
-
-
-
+//myMappersGenerator.GenerateMappers("RoleAuthorization");
+//myServicesGenerator.GenerateAllServicesAndInterfaces("RoleAuthorization");
+myControllerGenerator.GenerateController("RoleAuthorization");
 
 //FAKER to use the DBcontext
 internal class FakeUserService : ICurrentUserService
