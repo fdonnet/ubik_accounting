@@ -71,5 +71,20 @@ namespace Ubik.Security.Api.Features.Roles.Admin.Controller.v1
                 Right: ok => Ok(ok.ToRoleStandardResult()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            var result = await commandService.ExecuteDeleteAsync(id);
+
+            return result.Match<ActionResult>(
+                Right: ok => NoContent(),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
     }
 }

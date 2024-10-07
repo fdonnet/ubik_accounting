@@ -10,14 +10,14 @@ namespace Ubik.Security.Api.Features.Roles.Admin.Services
     {
         public async Task<IEnumerable<Role>> GetAllAsync()
         {
-            var result = await ctx.Roles.ToListAsync();
+            var result = await ctx.Roles.Where(r=>r.TenantId == null).ToListAsync();
 
             return result;
         }
 
         public async Task<Either<IServiceAndFeatureError, Role>> GetAsync(Guid id)
         {
-            var result = await ctx.Roles.FindAsync(id);
+            var result = await ctx.Roles.FirstOrDefaultAsync(r=>r.Id==id && r.TenantId == null);
 
             return result == null
                 ? new ResourceNotFoundError("Role", "Id", id.ToString())

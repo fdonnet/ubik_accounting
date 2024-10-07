@@ -20,15 +20,19 @@ var myContractsGenerator = serviceProvider.GetRequiredService<ContractsGenerator
 
 //GenerateForAddContract(true,@"F:/Dev/ubik/src/ubik_accounting/src/Ubik.Security.Contracts");
 //GenerateForAddContract(true,@"C:/Dev/gitPriv/ubik_accounting/src/Ubik.Security.Contracts");
-myContractsGenerator.GenerateContractUpdateCommand(false, string.Empty);
+GenerateContracts(false, string.Empty, "RoleAuthorization");
 
 
-//void GenerateForAddContract(bool writeFile,string path)
-//{
-//    myContractsGenerator.GenerateContractAddCommand(writeFile, path);
-//    myContractsGenerator.GenerateContractAddedEvent(writeFile, path);
-//    myContractsGenerator.GenerateContractAddResult(writeFile, path);
-//}
+
+void GenerateContracts(bool writeFile, string path, string? type)
+{
+    myContractsGenerator.GenerateContractStandardResult(false, string.Empty, type);
+    myContractsGenerator.GenerateContractAddCommand(false, string.Empty, type);
+    myContractsGenerator.GenerateContractUpdateCommand(false, string.Empty, type);
+    myContractsGenerator.GenerateContractAddedEvent(false, string.Empty, type);
+    myContractsGenerator.GenerateContractUpdatedEvent(false, string.Empty, type);
+    myContractsGenerator.GenerateContractDeletedEvent(false, string.Empty, type);
+}
 
 //FAKER to use the DBcontext
 internal class FakeUserService : ICurrentUserService

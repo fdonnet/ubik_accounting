@@ -9,8 +9,10 @@ using Ubik.Security.Api.Features.Authorizations.Mappers;
 using Ubik.Security.Api.Features.Roles.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Authorizations.Commands;
+using Ubik.Security.Contracts.Authorizations.Events;
 using Ubik.Security.Contracts.RoleAuthorizations.Commands;
 using Ubik.Security.Contracts.Roles.Commands;
+using Ubik.Security.Contracts.Roles.Events;
 
 namespace Ubik.Security.Api.Features.Roles.Admin.Services
 {
@@ -58,9 +60,26 @@ namespace Ubik.Security.Api.Features.Roles.Admin.Services
                 });
         }
 
-        public async Task<Either<IServiceAndFeatureError, Role>> GetAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
         {
-            var result = await ctx.Roles.FindAsync(id);
+            var res = await ExecuteDeleteRoleAsync(id);
+
+            return await res.MatchAsync<Either<IServiceAndFeatureError, bool>>(
+                RightAsync: async r =>
+                {
+                    await publishEndpoint.Publish(new RoleDeleted { Id = id }, CancellationToken.None);
+                    await ctx.SaveChangesAsync();
+                    return true;
+                },
+                Left: err =>
+                {
+                    return Prelude.Left(err);
+                });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Role>> GetAsync(Guid id)
+        {
+            var result = await ctx.Roles.FirstOrDefaultAsync(r=>r.Id == id && r.TenantId == null);
 
             return result == null
                 ? new ResourceNotFoundError("Role", "Id", id.ToString())
@@ -107,6 +126,16 @@ namespace Ubik.Security.Api.Features.Roles.Admin.Services
             return exists
                 ? new ResourceAlreadyExistsError("Role", "Code", current.Code)
                 : current;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteRoleAsync(Guid id)
+        {
+            return await GetAsync(id).ToAsync()
+                    .MapAsync(async ac =>
+                    {
+                        await ctx.Roles.Where(x => x.Id == id).ExecuteDeleteAsync();
+                        return true;
+                    });
         }
     }
 }

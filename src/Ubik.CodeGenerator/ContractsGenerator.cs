@@ -6,11 +6,13 @@ namespace Ubik.CodeGenerator
 {
     internal class ContractsGenerator(SecurityDbContext dbContext)
     {
-        public void GenerateContractStandardResult(bool writeFiles, string? folderPath)
+        public void GenerateContractStandardResult(bool writeFiles, string? folderPath, string? type = null)
         {
             var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
                                                                                   && e.ClrType.Name != "OutboxMessage"
                                                                                   && e.ClrType.Name != "OutboxState");
+            if (type != null)
+                entityTypes = entityTypes.Where(e => e.ClrType.Name == type);
 
             foreach (var entityType in entityTypes)
             {
@@ -26,23 +28,26 @@ namespace Ubik.CodeGenerator
                 };
 
                 var properties = GenerateProperties(entityType, false, excludedFiels);
-                var classContent = GetTemplateForContractResultAdd().Replace("{ClassName}", className)
+                var classContent = GetTemplateForContractStandardResult().Replace("{ClassName}", className)
                                                                     .Replace("{Properties}", properties);
 
                 if (writeFiles)
                 {
-                    var filePath = $"{folderPath}/{className}s/Results/Add{className}Result.cs";
+                    var filePath = $"{folderPath}/{className}s/Results/{className}StandardResult.cs";
                     WriteClassToFile(filePath, classContent);
                 }
                 else
                     Console.WriteLine(classContent);
             }
         }
-        public void GenerateContractAddedEvent(bool writeFiles, string? folderPath)
+        public void GenerateContractAddedEvent(bool writeFiles, string? folderPath, string? type = null)
         {
             var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
                                                                                   && e.ClrType.Name != "OutboxMessage"
                                                                                   && e.ClrType.Name != "OutboxState");
+
+            if (type != null)
+                entityTypes = entityTypes.Where(e => e.ClrType.Name == type);
 
             foreach (var entityType in entityTypes)
             {
@@ -70,11 +75,84 @@ namespace Ubik.CodeGenerator
             }
         }
 
-        public void GenerateContractAddCommand(bool writeFiles, string? folderPath)
+        public void GenerateContractUpdatedEvent(bool writeFiles, string? folderPath, string? type = null)
+        {
+            var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
+                                                                                  && e.ClrType.Name != "OutboxMessage"
+                                                                                  && e.ClrType.Name != "OutboxState");
+
+            if (type != null)
+                entityTypes = entityTypes.Where(e => e.ClrType.Name == type);
+
+            foreach (var entityType in entityTypes)
+            {
+                var className = entityType.ClrType.Name;
+                var excludedFiels = new List<string>()
+                {
+                    "CreatedAt",
+                    "CreatedBy",
+                    "ModifiedAt",
+                    "ModifiedBy",
+                    "TenantId"
+                };
+
+                var properties = GenerateProperties(entityType, false, excludedFiels);
+                var classContent = GetTemplateForContractEventUpdated().Replace("{ClassName}", className)
+                                                                    .Replace("{Properties}", properties);
+
+                if (writeFiles)
+                {
+                    var filePath = $"{folderPath}/{className}s/Events/{className}Updated.cs";
+                    WriteClassToFile(filePath, classContent);
+                }
+                else
+                    Console.WriteLine(classContent);
+            }
+        }
+
+        public void GenerateContractDeletedEvent(bool writeFiles, string? folderPath, string? type = null)
+        {
+            var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
+                                                                                  && e.ClrType.Name != "OutboxMessage"
+                                                                                  && e.ClrType.Name != "OutboxState");
+
+            if (type != null)
+                entityTypes = entityTypes.Where(e => e.ClrType.Name == type);
+
+            foreach (var entityType in entityTypes)
+            {
+                var className = entityType.ClrType.Name;
+                var excludedFiels = new List<string>()
+                {
+                    "CreatedAt",
+                    "CreatedBy",
+                    "ModifiedAt",
+                    "ModifiedBy",
+                    "TenantId"
+                };
+
+                var properties = GenerateProperties(entityType, false, excludedFiels);
+                var classContent = GetTemplateForContractEventDeleted().Replace("{ClassName}", className)
+                                                                    .Replace("{Properties}", properties);
+
+                if (writeFiles)
+                {
+                    var filePath = $"{folderPath}/{className}s/Events/{className}Deleted.cs";
+                    WriteClassToFile(filePath, classContent);
+                }
+                else
+                    Console.WriteLine(classContent);
+            }
+        }
+
+        public void GenerateContractAddCommand(bool writeFiles, string? folderPath, string? type = null)
         {
             var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
                                                                       && e.ClrType.Name != "OutboxMessage"
                                                                       && e.ClrType.Name != "OutboxState");
+
+            if (type != null)
+                entityTypes = entityTypes.Where(e => e.ClrType.Name == type);
 
             foreach (var entityType in entityTypes)
             {
@@ -105,11 +183,14 @@ namespace Ubik.CodeGenerator
             }
         }
 
-        public void GenerateContractUpdateCommand(bool writeFiles, string? folderPath)
+        public void GenerateContractUpdateCommand(bool writeFiles, string? folderPath, string? type = null)
         {
             var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
                                                                       && e.ClrType.Name != "OutboxMessage"
                                                                       && e.ClrType.Name != "OutboxState");
+
+            if (type != null)
+                entityTypes = entityTypes.Where(e => e.ClrType.Name == type);
 
             foreach (var entityType in entityTypes)
             {
@@ -129,7 +210,7 @@ namespace Ubik.CodeGenerator
 
                 if (writeFiles)
                 {
-                    var filePath = $"{folderPath}/{className}s/Commands/Add{className}Command.cs";
+                    var filePath = $"{folderPath}/{className}s/Commands/Update{className}Command.cs";
                     WriteClassToFile(filePath, classContent);
                 }
                 else
@@ -333,15 +414,42 @@ namespace Ubik.CodeGenerator
                 """;
         }
 
-        public static string GetTemplateForContractResultAdd()
+        public static string GetTemplateForContractEventUpdated()
         {
             return
                 """
                 namespace Ubik.Security.Contracts.{ClassName}s.Events
                 {
-                    public record Add{ClassName}Result
+                    public record {ClassName}Updated
                     {
                         {Properties}    }
+                }
+                """;
+        }
+
+        public static string GetTemplateForContractStandardResult()
+        {
+            return
+                """
+                namespace Ubik.Security.Contracts.{ClassName}s.Events
+                {
+                    public record {ClassName}StandardResult
+                    {
+                        {Properties}    }
+                }
+                """;
+        }
+
+        public static string GetTemplateForContractEventDeleted()
+        {
+            return
+                """
+                namespace Ubik.Security.Contracts.{ClassName}s.Events
+                {
+                    public record {ClassName}Deleted
+                    {
+                        public Guid Id { get; init; }
+                    }
                 }
                 """;
         }

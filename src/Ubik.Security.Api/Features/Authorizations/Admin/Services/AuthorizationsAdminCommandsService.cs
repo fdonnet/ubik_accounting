@@ -132,7 +132,7 @@ namespace Ubik.Security.Api.Features.Authorizations.Admin.Services
             return await GetAsync(id).ToAsync()
                     .MapAsync(async ac =>
                     {
-                        await ctx.Roles.Where(x => x.Id == id).ExecuteDeleteAsync();
+                        await ctx.Authorizations.Where(x => x.Id == id).ExecuteDeleteAsync();
                         return true;
                     });
         }

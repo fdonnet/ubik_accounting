@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Tenants\Commands\" />
-    <Folder Include="RoleAuthorizations\Commands\" />
     <Folder Include="UserTenants\Commands\" />
   </ItemGroup>
 
