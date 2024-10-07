@@ -6,6 +6,16 @@ namespace Ubik.CodeGenerator
 {
     internal class ContractsGenerator(SecurityDbContext dbContext)
     {
+        public void GenerateAllContracts(bool writeFiles, string? folderPath, string? type = null)
+        {
+            GenerateContractStandardResult(writeFiles, folderPath, type);
+            GenerateContractAddCommand(writeFiles, folderPath, type);
+            GenerateContractUpdateCommand(writeFiles, folderPath, type);
+            GenerateContractAddedEvent(writeFiles, folderPath, type);
+            GenerateContractUpdatedEvent(writeFiles, folderPath, type);
+            GenerateContractDeletedEvent(writeFiles, folderPath, type);
+        }
+
         public void GenerateContractStandardResult(bool writeFiles, string? folderPath, string? type = null)
         {
             var entityTypes = dbContext.Model.GetEntityTypes().Where(e => e.ClrType.Name != "InboxState"
@@ -371,7 +381,7 @@ namespace Ubik.CodeGenerator
             };
         }
 
-        public static string GetTemplateForContractCommandAdd()
+        private static string GetTemplateForContractCommandAdd()
         {
             return
                 """
@@ -386,7 +396,7 @@ namespace Ubik.CodeGenerator
                 """;
         }
 
-        public static string GetTemplateForContractCommandUpdate()
+        private static string GetTemplateForContractCommandUpdate()
         {
             return
                 """
@@ -401,7 +411,7 @@ namespace Ubik.CodeGenerator
                 """;
         }
 
-        public static string GetTemplateForContractEventAdded()
+        private static string GetTemplateForContractEventAdded()
         {
             return
                 """
@@ -414,7 +424,7 @@ namespace Ubik.CodeGenerator
                 """;
         }
 
-        public static string GetTemplateForContractEventUpdated()
+        private static string GetTemplateForContractEventUpdated()
         {
             return
                 """
@@ -427,7 +437,7 @@ namespace Ubik.CodeGenerator
                 """;
         }
 
-        public static string GetTemplateForContractStandardResult()
+        private static string GetTemplateForContractStandardResult()
         {
             return
                 """
@@ -440,7 +450,7 @@ namespace Ubik.CodeGenerator
                 """;
         }
 
-        public static string GetTemplateForContractEventDeleted()
+        private static string GetTemplateForContractEventDeleted()
         {
             return
                 """
