@@ -1,8 +1,19 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Ubik.ApiService.Common.Configure.Options;
+using Ubik.ApiService.Common.Configure.Options.Swagger;
 using Ubik.YarpProxy.Authorizations;
 using Ubik.YarpProxy.Services;
+using Yarp.ReverseProxy.Swagger;
+using Yarp.ReverseProxy.Swagger.Extensions;
+using Ubik.YarpProxy.Extensions;
+using Ubik.YarpProxy.Config;
+using Ubik.ApiService.Common.Configure;
+using Microsoft.OpenApi.Models;
+using static IdentityModel.ClaimComparer;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,8 +38,51 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = redisOptions.ConnectionString;
 });
 
+//Swagger
+builder.Services.AddApiVersionAndExplorer();
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, YarpSwaggerConfigOptions>();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition(
+                    "oauth2",
+                    new OpenApiSecurityScheme
+                    {
+                        Type = SecuritySchemeType.OAuth2,
+                        Flows = new OpenApiOAuthFlows
+                        {
+                            AuthorizationCode = new OpenApiOAuthFlow
+                            {
+                                AuthorizationUrl = new Uri(authOptions.AuthorizationUrl),
+                                TokenUrl = new Uri(authOptions.TokenUrl),
+                                Scopes = new Dictionary<string, string> { }
+                            }
+                        },
+                    });
+
+    c.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
+                    {
+                        new OpenApiSecurityScheme{
+                            Reference = new OpenApiReference{
+                                Id = "oauth2", //The name of the previously defined security scheme.
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        },
+                            new List<string>()
+                    }
+        });
+    c.OperationFilter<SwaggerDefaultValues>();
+});
+
 //Httpclient for userService (called to retrive auth/authorize the request sent)
 //Internal ip or domain not exposed to public accesses
+builder.Services.ConfigureHttpClientDefaults(http =>
+{
+    http.AddStandardResilienceHandler();
+});
+
 builder.Services.AddHttpClient<UserService>(client =>
 {
     //TODO: change hardcoded
@@ -46,11 +100,29 @@ builder.Services.AddAuthorizationBuilder()
         policy.Requirements.Add(new UserInfoOkRequirement(true)));
 
 //Proxy
+var configProxy = builder.Configuration.GetSection("ReverseProxy");
 builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+    .LoadFromConfig(configProxy)
+    .AddSwagger(configProxy);
 
 //Build
 var app = builder.Build();
+
+//Swagger
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(o =>
+    {
+        var config = app.Services.GetRequiredService<IOptionsMonitor<ReverseProxyDocumentFilterConfig>>().CurrentValue;
+        o.ConfigureSwaggerEndpoints(config);
+        o.EnableTryItOutByDefault();
+
+        //TODO: change all this value in PROD and don't expose that
+        o.OAuthClientId(authOptions.ClientId);
+        o.OAuthClientSecret(authOptions.ClientSecret);
+    });
+}
 
 app.UseAuthentication();
 app.UseAuthorization();

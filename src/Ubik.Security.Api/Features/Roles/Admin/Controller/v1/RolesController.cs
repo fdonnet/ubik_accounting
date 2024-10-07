@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
