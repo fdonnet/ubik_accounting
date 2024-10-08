@@ -24,10 +24,10 @@ var myMappersGenerator = serviceProvider.GetRequiredService<MappersGenerator>();
 var myServicesGenerator = serviceProvider.GetRequiredService<ServicesGenerator>();
 var myControllerGenerator = serviceProvider.GetRequiredService<ControllerGenerator>();
 
-//myContractsGenerator.GenerateAllContracts(false, string.Empty, "RoleAuthorization");
-//myMappersGenerator.GenerateMappers("RoleAuthorization");
-//myServicesGenerator.GenerateAllServicesAndInterfaces("RoleAuthorization");
-myControllerGenerator.GenerateController("RoleAuthorization");
+//myContractsGenerator.GenerateAllContracts(false, string.Empty, "Tenant");
+//myMappersGenerator.GenerateMappers("Tenant");
+myServicesGenerator.GenerateAllServicesAndInterfaces("Tenant");
+//myControllerGenerator.GenerateController("Tenant");
 
 //FAKER to use the DBcontext
 internal class FakeUserService : ICurrentUser

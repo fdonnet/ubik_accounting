@@ -1,6 +1,6 @@
 namespace Ubik.Security.Contracts.Tenants.Events
 {
-    public record AddTenantResult
+    public record TenantStandardResult
     {
         public Guid Id { get; init; }
         public required string Code { get; init; }

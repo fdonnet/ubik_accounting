@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Tenants\Commands\" />
     <Folder Include="UserTenants\Commands\" />
   </ItemGroup>
 
