@@ -8,6 +8,10 @@ namespace Ubik.ApiService.Common.Configure.Options.Swagger
 {
     public class SwaggerDefaultValues : IOperationFilter
     {
+        //TODO: change that by a config option
+        //When false the header x-user-id and x-tenant-id are not showed in Swagger but needed (the proxy take care of THAT)
+        //When true the header x-user-id and x-tenant-id is showed (can be call internally with direct values, via postman or other services)
+        private static bool ShowHeaderParam = false;
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var apiDescription = context.ApiDescription;
@@ -28,9 +32,7 @@ namespace Ubik.ApiService.Common.Configure.Options.Swagger
             }
 
             if (operation.Parameters == null)
-            {
                 return;
-            }
 
             foreach (var parameter in operation.Parameters)
             {
@@ -49,6 +51,24 @@ namespace Ubik.ApiService.Common.Configure.Options.Swagger
                 }
 
                 parameter.Required |= description.IsRequired;
+            }
+
+            //Add header param
+            if(ShowHeaderParam)
+            {
+                operation.Parameters.Add(new OpenApiParameter()
+                {
+                    Name = "x-user-id",
+                    In = ParameterLocation.Header,
+                    Required = false
+                });
+
+                operation.Parameters.Add(new OpenApiParameter()
+                {
+                    Name = "x-tenant-id",
+                    In = ParameterLocation.Header,
+                    Required = false
+                });
             }
         }
     }

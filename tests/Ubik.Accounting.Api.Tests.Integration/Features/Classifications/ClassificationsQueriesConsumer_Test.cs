@@ -12,23 +12,18 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
 {
-    public class ClassificationsQueriesConsumer_Test : BaseIntegrationTest, IAsyncLifetime
+    public class ClassificationsQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
-        private readonly BaseValuesForClassifications _testValuesForClassifications;
-
-        public ClassificationsQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : base(factory)
-        {
-            _testValuesForClassifications = new BaseValuesForClassifications();
-        }
+        private readonly BaseValuesForClassifications _testValuesForClassifications = new();
 
         public async Task InitializeAsync()
         {
             _provider = new ServiceCollection()
                 .AddMassTransitTestHarness(x =>
                 {
-                    x.AddScoped<ICurrentUserService>(us => new FakeUserService());
+                    x.AddScoped<ICurrentUser>(us => new FakeUserService());
                     x.AddRequestClient<GetAllClassificationsQuery>();
                     x.UsingRabbitMq((context, configurator) =>
                     {

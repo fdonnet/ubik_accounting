@@ -4,17 +4,10 @@ using Ubik.ApiService.Common.Services;
 //TODO: change to be adapted to select tenantId not first tenantid of the list
 namespace Ubik.ApiService.Common.Filters
 {
-    public class TenantIdSendFilter<T> :
+    public class TenantIdSendFilter<T>(ICurrentUser currentUse) :
         IFilter<SendContext<T>>
         where T : class
     {
-        private ICurrentUserService _userService;
-
-        public TenantIdSendFilter(ICurrentUserService userService)
-        {
-            _userService = userService;
-        }
-
         public void Probe(ProbeContext context)
         {
 
@@ -22,7 +15,7 @@ namespace Ubik.ApiService.Common.Filters
 
         public Task Send(SendContext<T> context, IPipe<SendContext<T>> next)
         {
-            context.Headers.Set("TenantId", _userService.CurrentUser.TenantIds[0].ToString());
+            context.Headers.Set("TenantId", currentUse.TenantId.ToString());
 
             return next.Send(context);
         }

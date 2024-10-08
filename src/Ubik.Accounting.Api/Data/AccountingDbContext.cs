@@ -10,10 +10,9 @@ using Ubik.DB.Common.Extensions;
 namespace Ubik.Accounting.Api.Data
 {
     public class AccountingDbContext(DbContextOptions<AccountingDbContext> options
-        , ICurrentUserService userService) : DbContext(options)
+        , ICurrentUser userService) : DbContext(options)
     {
-        private readonly ICurrentUserService _currentUserService = userService;
-        private readonly Guid _tenantId = userService.CurrentUser.TenantIds[0];
+        private readonly ICurrentUser _currentUser = userService;
 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountGroup> AccountGroups { get; set; }
@@ -54,7 +53,7 @@ namespace Ubik.Accounting.Api.Data
 
         public void SetAuditAndSpecialFields()
         {
-            ChangeTracker.SetSpecialFields(_currentUserService);
+            ChangeTracker.SetSpecialFields(_currentUser);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -80,19 +79,19 @@ namespace Ubik.Accounting.Api.Data
         private void SetTenantId(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Account>()
-                .HasQueryFilter(mt => mt.TenantId == _tenantId);
+                .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
 
             modelBuilder.Entity<AccountGroup>()
-                .HasQueryFilter(mt => mt.TenantId == _tenantId);
+                .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
 
             modelBuilder.Entity<Classification>()
-                .HasQueryFilter(mt => mt.TenantId == _tenantId);
+                .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
 
             modelBuilder.Entity<AccountAccountGroup>()
-                .HasQueryFilter(mt => mt.TenantId == _tenantId);
+                .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
 
             modelBuilder.Entity<Currency>()
-                .HasQueryFilter(mt => mt.TenantId == _tenantId);
+                .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
         }
     }
 }

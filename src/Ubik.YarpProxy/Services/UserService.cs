@@ -16,14 +16,17 @@ namespace Ubik.YarpProxy.Services
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
-        public async Task<UserAdminResult?> GetUserInfoAsync(string email)
+        public async Task<UserAdminResult?> GetUserInfoAsync(string? email)
         {
+            if (email == null) return null;
+
             //Try cache
             var user = await cache.GetAsync(email);
 
             if (user == null)
             {
-                //No cache
+                //TODO: hard coded megaAdmin user_ID => change that
+                httpClient.DefaultRequestHeaders.Add("x-user-id", "5c5e0000-3c36-7456-b9da-08dcdf9832e2");
                 var response = await httpClient.GetAsync($"admin/api/v1/users?email={email}");
 
                 if (response.IsSuccessStatusCode)

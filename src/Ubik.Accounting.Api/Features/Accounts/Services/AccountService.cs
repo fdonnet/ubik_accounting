@@ -12,10 +12,10 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Services
 {
-    public class AccountService(AccountingDbContext ctx, ICurrentUserService userService) : IAccountService
+    public class AccountService(AccountingDbContext ctx, ICurrentUser currentUser) : IAccountService
     {
         private readonly AccountingDbContext _context = ctx;
-        private readonly ICurrentUserService _userService = userService;
+        private readonly ICurrentUser _currentUser = currentUser;
 
         public async Task<IEnumerable<Account>> GetAllAsync()
         {
@@ -102,7 +102,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 {
                     var p = new DynamicParameters();
                     p.Add("@id", id);
-                    p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
+                    p.Add("@tenantId", _currentUser.TenantId);
 
                     var con = _context.Database.GetDbConnection();
 
@@ -164,7 +164,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             var p = new DynamicParameters();
             p.Add("@id", accountAccountGroup.AccountId);
             p.Add("@accountGroupId", accountAccountGroup.AccountGroupId);
-            p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
+            p.Add("@tenantId", _currentUser.TenantId);
 
             var con = _context.Database.GetDbConnection();
             var sql = """

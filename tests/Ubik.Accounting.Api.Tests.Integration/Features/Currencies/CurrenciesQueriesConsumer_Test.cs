@@ -11,22 +11,17 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.Currencies
 {
-    public class CurrenciesQueriesConsumer_Test : BaseIntegrationTest, IAsyncLifetime
+    public class CurrenciesQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
-        private readonly BaseValuesForCurrencies _testValuesForCurrencies;
-        public CurrenciesQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : base(factory)
-        {
-            _testValuesForCurrencies = new BaseValuesForCurrencies();
-        }
 
         public async Task InitializeAsync()
         {
             _provider = new ServiceCollection()
                 .AddMassTransitTestHarness(x =>
                 {
-                    x.AddScoped<ICurrentUserService>(us => new FakeUserService());
+                    x.AddScoped<ICurrentUser>(us => new FakeUserService());
                     x.AddRequestClient<GetAllCurrenciesQuery>();
                     x.UsingRabbitMq((context, configurator) =>
                     {

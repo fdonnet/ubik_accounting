@@ -11,10 +11,10 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
-    public class AccountGroupService(AccountingDbContext ctx, ICurrentUserService userService) : IAccountGroupService
+    public class AccountGroupService(AccountingDbContext ctx, ICurrentUser currentUser) : IAccountGroupService
     {
         private readonly AccountingDbContext _context = ctx;
-        private readonly ICurrentUserService _userService = userService;
+        private readonly ICurrentUser _userService = currentUser;
 
         public async Task<Either<IServiceAndFeatureError, AccountGroup>> AddAsync(AccountGroup accountGroup)
         {
@@ -70,7 +70,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                     {
                         var p = new DynamicParameters();
                         p.Add("@account_group_id", id);
-                        p.Add("@tenantId", _userService.CurrentUser.TenantIds[0]);
+                        p.Add("@tenantId", _userService.TenantId);
 
                         var con = _context.Database.GetDbConnection();
                         var sql = """

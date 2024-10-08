@@ -11,7 +11,7 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Features.Classifications.Services
 {
-    public class ClassificationService(AccountingDbContext ctx, ICurrentUserService userService) : IClassificationService
+    public class ClassificationService(AccountingDbContext ctx, ICurrentUser currentUser) : IClassificationService
     {
         public async Task<IEnumerable<Classification>> GetAllAsync()
         {
@@ -43,7 +43,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 {
                     var p = new DynamicParameters();
                     p.Add("@id", id);
-                    p.Add("@tenantId", userService.CurrentUser.TenantIds[0]);
+                    p.Add("@tenantId", currentUser.TenantId);
 
                     var con = ctx.Database.GetDbConnection();
                     var sql = """
@@ -75,7 +75,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 {
                     var p = new DynamicParameters();
                     p.Add("@id", id);
-                    p.Add("@tenantId", userService.CurrentUser.TenantIds[0]);
+                    p.Add("@tenantId", currentUser.TenantId);
 
                     var con = ctx.Database.GetDbConnection();
                     var sql = """

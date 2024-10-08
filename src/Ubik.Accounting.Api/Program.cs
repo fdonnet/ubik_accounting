@@ -120,7 +120,7 @@ namespace Ubik.Accounting.Api
             //Services injection
             //TODO: see if we need to integrate the user service more
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
-            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
             //Strandard API things

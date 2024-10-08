@@ -14,6 +14,9 @@ using Ubik.ApiService.Common.Configure;
 using Microsoft.OpenApi.Models;
 using static IdentityModel.ClaimComparer;
 using System.Reflection;
+using Yarp.ReverseProxy.Transforms;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,7 +74,27 @@ builder.Services.AddAuthorizationBuilder()
 var configProxy = builder.Configuration.GetSection("ReverseProxy");
 builder.Services.AddReverseProxy()
     .LoadFromConfig(configProxy)
-    .AddSwagger(configProxy);
+    .AddSwagger(configProxy)
+    .AddTransforms(builderContext =>
+    {
+        var serviceProvider = builderContext.Services;
+
+        builderContext.AddRequestTransform(async transformContext =>
+        {
+            var userService = serviceProvider.GetRequiredService<UserService>();
+            var user = await userService.GetUserInfoAsync(transformContext.HttpContext.User.FindFirst(ClaimTypes.Email)?.Value);
+
+            if (user != null)
+            {
+                transformContext.ProxyRequest.Headers.Add("x-user-id", user.Id.ToString());
+
+                //TODO: pass tenant value via proxy too
+                //transformContext.ProxyRequest.Headers.Add("x-tenant-id", tenantId);
+
+            }
+        });
+    });
+
 
 //Build
 var app = builder.Build();

@@ -16,8 +16,12 @@ using Ubik.Security.Api.Features.Users.Services;
 using Ubik.Security.Api.Features.Authorizations.Admin.Services;
 using Ubik.Security.Api.Features.Roles.Admin.Services;
 using Ubik.Security.Api.Features.RolesAuthorizations.Admin.Services;
+using Ubik.ApiService.Common.Middlewares;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 //Options used in Program.cs
 var msgBrokerOptions = new MessageBrokerOptions();
@@ -29,6 +33,8 @@ builder.Configuration.GetSection(AuthProviderKeycloakOptions.Position).Bind(auth
 //Only used by swagger to report auth info to Yarp Proxy
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
+
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
 //DB
 builder.Services.AddDbContextFactory<SecurityDbContext>(
@@ -117,7 +123,6 @@ builder.Services.AddScoped<IRolesAuthorizationsAdminCommandsService, RolesAuthor
 builder.Services.AddScoped<IRolesAuthorizationsAdminQueriesService, RolesAuthorizationsAdminQueriesService>();
 
 //General
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 builder.Services.Configure<AuthProviderKeycloakOptions>(
     builder.Configuration.GetSection(AuthProviderKeycloakOptions.Position));
@@ -161,6 +166,17 @@ if (app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 //app.UseAuthentication();
 //app.UseAuthorization();
+
+//Middlewares config
+app.UseWhen(
+    httpContext => httpContext.Request.Path.StartsWithSegments("/admin"),
+    subApp => subApp.UseMiddleware<MegaAdminUserInHeaderMiddleware>()
+);
+
+app.UseWhen(
+    httpContext => !httpContext.Request.Path.StartsWithSegments("/admin") && !httpContext.Request.Path.StartsWithSegments("/swagger"),
+    subApp => subApp.UseMiddleware<UserInHeaderMiddleware>()
+);
 
 app.MapControllers();
 app.Run();

@@ -66,7 +66,7 @@ namespace Ubik.Security.Api.Features.RolesAuthorizations.Admin.Services
                {
                    ac.Id = NewId.NextGuid();
                    await ctx.RolesAuthorizations.AddAsync(ac);
-                   ctx.SetAuditAndSpecialFields();
+                   ctx.SetAuditAndSpecialFieldsForAdmin();
                    return ac;
                });
         }

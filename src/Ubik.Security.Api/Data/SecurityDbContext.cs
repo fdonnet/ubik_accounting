@@ -10,9 +10,9 @@ using Ubik.Security.Api.Models;
 namespace Ubik.Security.Api.Data
 {
     public class SecurityDbContext(DbContextOptions<SecurityDbContext> options
-        , ICurrentUserService userService) : DbContext(options)
+        , ICurrentUser currentUser) : DbContext(options)
     {
-        private readonly ICurrentUserService _currentUserService = userService;
+        private readonly ICurrentUser _currentUser = currentUser;
         //TODO: TENANT
         private readonly Guid _tenantId = Guid.NewGuid();
 
@@ -56,7 +56,12 @@ namespace Ubik.Security.Api.Data
 
         public void SetAuditAndSpecialFields()
         {
-            ChangeTracker.SetSpecialFields(_currentUserService);
+            ChangeTracker.SetSpecialFields(_currentUser);
+        }
+
+        public void SetAuditAndSpecialFieldsForAdmin()
+        {
+            ChangeTracker.SetSpecialFieldsForAdminUser(_currentUser);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

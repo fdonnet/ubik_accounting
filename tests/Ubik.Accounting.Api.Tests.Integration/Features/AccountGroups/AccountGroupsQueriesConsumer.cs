@@ -12,23 +12,18 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
 {
-    public  class AccountGroupsQueriesConsumer : BaseIntegrationTest, IAsyncLifetime
+    public  class AccountGroupsQueriesConsumer(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
-        private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
-
-        public AccountGroupsQueriesConsumer(IntegrationTestWebAppFactory factory) : base(factory)
-        {
-            _testValuesForAccountGroups = new BaseValuesForAccountGroups();
-        }
+        private readonly BaseValuesForAccountGroups _testValuesForAccountGroups = new();
 
         public async Task InitializeAsync()
         {
             _provider = new ServiceCollection()
                 .AddMassTransitTestHarness(x =>
                 {
-                    x.AddScoped<ICurrentUserService>(us => new FakeUserService());
+                    x.AddScoped<ICurrentUser>(us => new FakeUserService());
                     x.AddRequestClient<GetAllAccountGroupsQuery>();
                     x.AddRequestClient<GetAccountGroupQuery>();
                     x.AddRequestClient<GetChildAccountsQuery>();

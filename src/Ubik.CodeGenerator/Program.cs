@@ -9,7 +9,7 @@ using Ubik.Security.Api.Data;
 
 
 var serviceProvider = new ServiceCollection()
-    .AddSingleton<ICurrentUserService, FakeUserService>()
+    .AddSingleton<ICurrentUser, FakeUserService>()
     .AddDbContextFactory<SecurityDbContext>(
         options => options.UseNpgsql("x"))
     .AddSingleton<ContractsGenerator>()
@@ -30,22 +30,11 @@ var myControllerGenerator = serviceProvider.GetRequiredService<ControllerGenerat
 myControllerGenerator.GenerateController("RoleAuthorization");
 
 //FAKER to use the DBcontext
-internal class FakeUserService : ICurrentUserService
+internal class FakeUserService : ICurrentUser
 {
-    public ICurrentUser CurrentUser
-    {
-        get { return CurrentUserTmp; }
-    }
-    private static ICurrentUser CurrentUserTmp =>
-
-        //TODO: remove and adapt => cannot keep this fake return
-        new CurrentUser()
-        {
-            Email = "",
-            Name = "",
-            TenantIds = [NewId.NextGuid()],
-            Id = NewId.NextGuid()
-        };
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid? TenantId { get; set; } = Guid.NewGuid();
+    public bool IsMegaAdmin { get; set; } = false;
 }
 
 

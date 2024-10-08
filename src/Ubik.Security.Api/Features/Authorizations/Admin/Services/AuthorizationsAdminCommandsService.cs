@@ -84,7 +84,7 @@ namespace Ubik.Security.Api.Features.Authorizations.Admin.Services
                .Map(c =>
                {
                    ctx.Entry(c).State = EntityState.Modified;
-                   ctx.SetAuditAndSpecialFields();
+                   ctx.SetAuditAndSpecialFieldsForAdmin();
                    return c;
                });
         }
@@ -96,7 +96,7 @@ namespace Ubik.Security.Api.Features.Authorizations.Admin.Services
                {
                    ac.Id = NewId.NextGuid();
                    await ctx.Authorizations.AddAsync(ac);
-                   ctx.SetAuditAndSpecialFields();
+                   ctx.SetAuditAndSpecialFieldsForAdmin();
                    return ac;
                });
         }

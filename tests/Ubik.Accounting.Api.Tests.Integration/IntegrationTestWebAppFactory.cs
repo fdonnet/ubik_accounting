@@ -1,4 +1,5 @@
-﻿using DotNet.Testcontainers.Configurations;
+﻿using Bogus.DataSets;
+using DotNet.Testcontainers.Configurations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -22,27 +23,44 @@ namespace Ubik.Accounting.Api.Tests.Integration
         private readonly PostgreSqlContainer _dbContainer;
         private readonly KeycloakContainer _keycloackContainer;
         private readonly RabbitMqContainer _rabbitMQContainer;
+        private static readonly string[] command = ["--import-realm"];
 
-
-        public class TestUserService : ICurrentUserService
+        public class TestUserService : ICurrentUser
         {
             private readonly BaseValuesForUsers _testValuesForUser;
             private readonly BaseValuesForTenants _testValuesForTenants;
+            private readonly CurrentUser _currentUser;
 
             public TestUserService()
             {
                 _testValuesForUser = new BaseValuesForUsers();
                 _testValuesForTenants = new BaseValuesForTenants();
+                _currentUser = new CurrentUser()
+                {
+                    Id = _testValuesForUser.UserId1,
+                    TenantId =  _testValuesForTenants.TenantId 
+                };
 
             }
 
-            public ICurrentUser CurrentUser =>  new CurrentUser()
-                { 
-                Id = _testValuesForUser.UserId1,
-                Name = "TEST",
-                Email = "test@test.com",
-                TenantIds = new Guid[] { _testValuesForTenants.TenantId }};
-           
+            public Guid Id   
+            {
+                get { return _currentUser.Id; } 
+                set { _currentUser.Id = value; }
+            }
+
+            public Guid? TenantId
+            {
+                get { return _currentUser.TenantId; }
+                set { _currentUser.TenantId = value; }
+            }
+
+            public bool IsMegaAdmin
+            {
+                get { return _currentUser.IsMegaAdmin; }
+                set { _currentUser.IsMegaAdmin = value; }
+            }
+
         }
 
         public IntegrationTestWebAppFactory()
@@ -55,7 +73,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
             _keycloackContainer = new KeycloakBuilder()
                                 .WithImage("quay.io/keycloak/keycloak:21.1")
                                 .WithBindMount(GetWslAbsolutePath("./import"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
-                                .WithCommand(new string[] { "--import-realm" })
+                                .WithCommand(command)
                                 .Build();
 
             _rabbitMQContainer = new RabbitMqBuilder()
@@ -82,7 +100,7 @@ namespace Ubik.Accounting.Api.Tests.Integration
                 services.AddDbContext<AccountingDbContext>(options =>
                     options.UseNpgsql(_dbContainer.GetConnectionString()));
 
-                services.AddScoped<ICurrentUserService, TestUserService>();
+                services.AddScoped<ICurrentUser, TestUserService>();
                 services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
             });
         }
