@@ -25,5 +25,18 @@ namespace Ubik.Security.Api.Features.Users.Standard.Controller.v1
                             Right: ok => Ok(ok.ToUserStandardResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
+
+        [HttpGet("tenants")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<UserStandardResult>> GetMyTenants()
+        {
+            var result = await queryService.GetAsync(currentUser.Id);
+            return result.Match(
+                            Right: ok => Ok(ok.ToUserStandardResult()),
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
     }
 }

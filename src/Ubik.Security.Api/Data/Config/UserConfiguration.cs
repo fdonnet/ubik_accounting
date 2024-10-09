@@ -29,7 +29,11 @@ namespace Ubik.Security.Api.Data.Config
 
             builder.HasIndex(a => a.Email)
                 .IsUnique();
-            
+
+            builder
+                .HasOne(e => e.SelectedTenant)
+                .WithMany()
+                .HasForeignKey(e => e.SelectedTenantId).OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
