@@ -3,8 +3,8 @@ In progress in tenants_and_users branch
 - remove authorization via roles from keycloack
 - implement Yarp as a proxy and authorization manager (call the security api and forward request to backend apis, authorization via policy requierments for each route)
 - remove masstransit for request/response, keep it only for events (pub/sub)
-- review and simply the test parts
-- adapt the accounting api to the previous point (proxy etc)
+- review and simplify the test parts (complete review)
+- adapt the accounting api to the previous points (proxy etc)
 - adapt Blazor app too.
   (readme below will be adapted when work done)
   
