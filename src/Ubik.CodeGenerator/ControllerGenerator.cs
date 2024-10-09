@@ -37,6 +37,7 @@ namespace Ubik.CodeGenerator
                 {
                     [HttpGet]
                     [ProducesResponseType(200)]
+                    [ProducesResponseType(typeof(CustomProblemDetails), 400)]
                     [ProducesResponseType(typeof(CustomProblemDetails), 500)]
                     public async Task<ActionResult<IEnumerable<{ClassName}StandardResult>>> GetAll()
                     {

@@ -13,6 +13,7 @@ namespace Ubik.Security.Api.Features.Tenants.Mappers
                 Id = x.Id,
                 Code = x.Code,
                 Label = x.Label,
+                IsActivated = x.IsActivated,
                 Description = x.Description,
                 Version = x.Version,
             });
@@ -70,6 +71,7 @@ namespace Ubik.Security.Api.Features.Tenants.Mappers
             model.Code = forUpd.Code;
             model.Label = forUpd.Label;
             model.Description = forUpd.Description;
+            model.IsActivated = forUpd.IsActivated;
             model.Version = forUpd.Version;
 
             return model;
@@ -83,6 +85,7 @@ namespace Ubik.Security.Api.Features.Tenants.Mappers
                 Code = current.Code,
                 Label = current.Label,
                 Description = current.Description,
+                IsActivated = current.IsActivated,
                 Version = current.Version,
             };
         }

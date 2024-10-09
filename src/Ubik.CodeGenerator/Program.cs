@@ -26,8 +26,8 @@ var myControllerGenerator = serviceProvider.GetRequiredService<ControllerGenerat
 
 //myContractsGenerator.GenerateAllContracts(false, string.Empty, "Tenant");
 //myMappersGenerator.GenerateMappers("Tenant");
-myServicesGenerator.GenerateAllServicesAndInterfaces("Tenant");
-//myControllerGenerator.GenerateController("Tenant");
+//myServicesGenerator.GenerateAllServicesAndInterfaces("Tenant");
+myControllerGenerator.GenerateController("Tenant");
 
 //FAKER to use the DBcontext
 internal class FakeUserService : ICurrentUser

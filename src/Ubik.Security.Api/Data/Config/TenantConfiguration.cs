@@ -22,6 +22,8 @@ namespace Ubik.Security.Api.Data.Config
             builder.Property(a => a.Version)
                 .IsConcurrencyToken();
 
+            builder.Property(a => a.IsActivated)
+                .IsRequired();
 
             builder.Property(a => a.CreatedAt)
                 .IsRequired();

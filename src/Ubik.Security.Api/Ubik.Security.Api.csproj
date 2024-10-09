@@ -30,8 +30,6 @@
   <ItemGroup>
     <Folder Include="Features\Authorizations\Errors\" />
     <Folder Include="Features\Authorizations\Standard\" />
-    <Folder Include="Features\Tenants\Admin\Controller\v1\" />
-    <Folder Include="Features\Tenants\Admin\Services\" />
     <Folder Include="Features\Tenants\Standard\" />
   </ItemGroup>
 

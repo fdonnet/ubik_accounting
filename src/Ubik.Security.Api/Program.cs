@@ -18,6 +18,7 @@ using Ubik.Security.Api.Features.Roles.Admin.Services;
 using Ubik.Security.Api.Features.RolesAuthorizations.Admin.Services;
 using Ubik.ApiService.Common.Middlewares;
 using Microsoft.AspNetCore.Builder;
+using Ubik.Security.Api.Features.Tenants.Admin.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -121,6 +122,8 @@ builder.Services.AddScoped<IRolesAdminCommandsService, RolesAdminCommandsService
 builder.Services.AddScoped<IRolesAdminQueriesService, RolesAdminQueriesService>();
 builder.Services.AddScoped<IRolesAuthorizationsAdminCommandsService, RolesAuthorizationsAdminCommandsService>();
 builder.Services.AddScoped<IRolesAuthorizationsAdminQueriesService, RolesAuthorizationsAdminQueriesService>();
+builder.Services.AddScoped<ITenantsAdminCommandsService, TenantsAdminCommandsService>();
+builder.Services.AddScoped<ITenantsAdminQueriesService, TenantsAdminQueriesService>();
 
 //General
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
