@@ -19,6 +19,7 @@ using Ubik.Security.Api.Features.RolesAuthorizations.Admin.Services;
 using Ubik.ApiService.Common.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Ubik.Security.Api.Features.Tenants.Admin.Services;
+using Google.Protobuf.WellKnownTypes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -172,12 +173,18 @@ if (app.Environment.IsDevelopment())
 
 //Middlewares config
 app.UseWhen(
-    httpContext => httpContext.Request.Path.StartsWithSegments("/admin"),
+    httpContext => httpContext.Request.Path.StartsWithSegments("/admin")
+        || httpContext.Request.Path.Value!.Contains("/me"),
+
     subApp => subApp.UseMiddleware<MegaAdminUserInHeaderMiddleware>()
 );
 
+//TODO: Bad here for the "/me" segment, can do better
 app.UseWhen(
-    httpContext => !httpContext.Request.Path.StartsWithSegments("/admin") && !httpContext.Request.Path.StartsWithSegments("/swagger"),
+    httpContext => !httpContext.Request.Path.StartsWithSegments("/admin")
+        && !httpContext.Request.Path.StartsWithSegments("/swagger")
+        && !httpContext.Request.Path.Value!.Contains("/me"),
+
     subApp => subApp.UseMiddleware<UserInHeaderMiddleware>()
 );
 
