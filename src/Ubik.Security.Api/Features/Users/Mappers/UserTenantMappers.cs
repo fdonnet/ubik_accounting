@@ -1,4 +1,5 @@
 ﻿using Ubik.Security.Api.Models;
+using Ubik.Security.Contracts.Tenants.Commands;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Results;
 
@@ -6,7 +7,7 @@ namespace Ubik.Security.Api.Features.Users.Mappers
 {
     public static class UserTenantMappers
     {
-        public static Tenant ToTenant(this AddTenantAndLinkToMeCommand current)
+        public static Tenant ToTenant(this AddTenantCommand current)
         {
             return new Tenant
             {

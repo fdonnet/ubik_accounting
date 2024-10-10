@@ -5,6 +5,7 @@ using Ubik.ApiService.Common.Services;
 using Ubik.Security.Api.Features.Tenants.Mappers;
 using Ubik.Security.Api.Features.Users.Mappers;
 using Ubik.Security.Api.Features.Users.Services;
+using Ubik.Security.Contracts.Tenants.Commands;
 using Ubik.Security.Contracts.Tenants.Results;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Results;
@@ -61,7 +62,7 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<TenantForUserResult>> AddTenant(AddTenantAndLinkToMeCommand command)
+        public async Task<ActionResult<TenantForUserResult>> AddTenant(AddTenantCommand command)
         {
             var result = await commandService.AddNewTenantAndAttachToTheUser(currentUser.Id,command);
 

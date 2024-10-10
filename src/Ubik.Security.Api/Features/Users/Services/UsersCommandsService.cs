@@ -58,7 +58,7 @@ namespace Ubik.Security.Api.Features.Users.Services
         }
 
         //For the moment-- add first part or user email and add it to Tenant_code
-        public async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAndAttachToTheUser(Guid userId,AddTenantAndLinkToMeCommand command)
+        public async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAndAttachToTheUser(Guid userId,AddTenantCommand command)
         {
             var result = await GetAsync(userId)
                 .BindAsync(u => AddTenantWithUserEmailAsync(command.ToTenant(), u.Email))
