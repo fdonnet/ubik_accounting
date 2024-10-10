@@ -9,6 +9,6 @@ namespace Ubik.Security.Api.Features.Users.Services
     public interface IUsersCommandsService
     {
         Task<Either<IServiceAndFeatureError, User>> AddAsync(AddUserCommand userCommand);
-        Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAndAttachToTheUser(Guid userId,AddTenantCommand command);
+        Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAsync(Guid userId,AddTenantCommand command);
     }
 }

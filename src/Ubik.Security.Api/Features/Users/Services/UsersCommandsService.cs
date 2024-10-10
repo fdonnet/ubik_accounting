@@ -6,7 +6,9 @@ using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Features.Users.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Tenants.Commands;
+using Ubik.Security.Contracts.Tenants.Events;
 using Ubik.Security.Contracts.Users.Commands;
+using Ubik.Security.Contracts.Users.Events;
 
 namespace Ubik.Security.Api.Features.Users.Services
 {
@@ -57,14 +59,33 @@ namespace Ubik.Security.Api.Features.Users.Services
                });
         }
 
-        //For the moment-- add first part or user email and add it to Tenant_code
-        public async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAndAttachToTheUser(Guid userId,AddTenantCommand command)
+        public async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAsync(Guid userId, AddTenantCommand command)
+        {
+            var result = await AddNewTenantAndAttachToTheUserAsync(userId, command.ToTenant());
+
+            return await result.MatchAsync<Either<IServiceAndFeatureError, Tenant>>(
+            RightAsync: async ok =>
+            {
+                var tenandAdded = new UserTenantAdded()
+                {
+                    UserId = userId,
+                    NewLinkedTenantCreated = ok.ToTenantAdded()
+                };
+                await publishEndpoint.Publish(tenandAdded, CancellationToken.None);
+                await ctx.SaveChangesAsync();
+                return ok;
+            },
+            Left: err =>
+            {
+                return Prelude.Left(err);
+            });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAndAttachToTheUserAsync(Guid userId, Tenant tenant)
         {
             var result = await GetAsync(userId)
-                .BindAsync(u => AddTenantWithUserEmailAsync(command.ToTenant(), u.Email))
+                .BindAsync(u => AddTenantWithUserEmailAsync(tenant, u.Email))
                 .BindAsync(t => AddUserTenantLinkAsync(userId, t));
-
-            await ctx.SaveChangesAsync();
 
             return result;
         }
@@ -96,7 +117,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                        TenantId = t.Id,
                        UserId = userId,
                    };
-                   
+
                    await ctx.UsersTenants.AddAsync(ut);
                    ctx.SetAuditAndSpecialFields();
                    return tenant;
@@ -170,5 +191,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 ? new ResourceAlreadyExistsError("User", "Email", user.Email)
                 : user;
         }
+
+
     }
 }

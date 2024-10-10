@@ -1,5 +1,7 @@
 ﻿using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Tenants.Commands;
+using Ubik.Security.Contracts.Tenants.Events;
+using Ubik.Security.Contracts.Tenants.Results;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Results;
 
@@ -17,9 +19,9 @@ namespace Ubik.Security.Api.Features.Users.Mappers
             };
         }
 
-        public static TenantForUserResult ToUserForTenantResult(this Tenant current)
+        public static TenantStandardResult ToTenantStandardResult(this Tenant current)
         {
-            return new TenantForUserResult
+            return new TenantStandardResult
             {
                 Code = current.Code,
                 Label = current.Label,
@@ -29,5 +31,16 @@ namespace Ubik.Security.Api.Features.Users.Mappers
             };
         }
 
+        public static TenantAdded ToTenantAdded(this Tenant current)
+        {
+            return new TenantAdded()
+            {
+                Id = current.Id,
+                Code = current.Code,
+                Label = current.Label,
+                Description = current.Description,
+                Version = current.Version,
+            };
+        }
     }
 }
