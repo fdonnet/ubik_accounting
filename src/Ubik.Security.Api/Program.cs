@@ -13,13 +13,13 @@ using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Api.Data.Init;
 using Ubik.Security.Api.Features.Users.Services;
-using Ubik.Security.Api.Features.Authorizations.Admin.Services;
-using Ubik.Security.Api.Features.Roles.Admin.Services;
-using Ubik.Security.Api.Features.RolesAuthorizations.Admin.Services;
 using Ubik.ApiService.Common.Middlewares;
 using Microsoft.AspNetCore.Builder;
-using Ubik.Security.Api.Features.Tenants.Admin.Services;
 using Google.Protobuf.WellKnownTypes;
+using Ubik.Security.Api.Features.Authorizations.Services;
+using Ubik.Security.Api.Features.Roles.Services;
+using Ubik.Security.Api.Features.RolesAuthorizations.Services;
+using Ubik.Security.Api.Features.Tenants.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -117,14 +117,14 @@ builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
 //Business
 builder.Services.AddScoped<IUsersCommandsService, UsersCommandsService>();
 builder.Services.AddScoped<IUsersQueriesService, UsersQueriesService>();
-builder.Services.AddScoped<IAuthorizationsAdminCommandsService, AuthorizationsAdminCommandsService>();
-builder.Services.AddScoped<IAuthorizationsAdminQueriesService, AuthorizationsAdminQueriesService>();
+builder.Services.AddScoped<IAuthorizationsCommandsService, AuthorizationsCommandsService>();
+builder.Services.AddScoped<IAuthorizationsQueriesService, AuthorizationsQueriesService>();
 builder.Services.AddScoped<IRolesAdminCommandsService, RolesAdminCommandsService>();
 builder.Services.AddScoped<IRolesAdminQueriesService, RolesAdminQueriesService>();
-builder.Services.AddScoped<IRolesAuthorizationsAdminCommandsService, RolesAuthorizationsAdminCommandsService>();
-builder.Services.AddScoped<IRolesAuthorizationsAdminQueriesService, RolesAuthorizationsAdminQueriesService>();
-builder.Services.AddScoped<ITenantsAdminCommandsService, TenantsAdminCommandsService>();
-builder.Services.AddScoped<ITenantsAdminQueriesService, TenantsAdminQueriesService>();
+builder.Services.AddScoped<IRolesAuthorizationsCommandsService, RolesAuthorizationsCommandsService>();
+builder.Services.AddScoped<IRolesAuthorizationsQueriesService, RolesAuthorizationsQueriesService>();
+builder.Services.AddScoped<ITenantsCommandsService, TenantsCommandsService>();
+builder.Services.AddScoped<ITenantsQueriesService, TenantsQueriesService>();
 
 //General
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
@@ -141,6 +141,12 @@ builder.Services.AddControllers(o =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
+
+//Route config
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+});
 
 //Build the app
 var app = builder.Build();
@@ -160,7 +166,7 @@ if (app.Environment.IsDevelopment())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<SecurityDbContext>();
-    context.Database.EnsureDeleted();
+    //context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
 
     var initDb = new DbInitializer();
@@ -172,14 +178,17 @@ if (app.Environment.IsDevelopment())
 //app.UseAuthorization();
 
 //Middlewares config
+//TODO: see if we can do better for the /me... 
 app.UseWhen(
-    httpContext => httpContext.Request.Path.StartsWithSegments("/admin")
-        || httpContext.Request.Path.Value!.Contains("/me"),
-
+    httpContext => httpContext.Request.Path.StartsWithSegments("/admin"),
     subApp => subApp.UseMiddleware<MegaAdminUserInHeaderMiddleware>()
 );
 
-//TODO: Bad here for the "/me" segment, can do better
+app.UseWhen(
+    httpContext => httpContext.Request.Path.Value!.Contains("/me"),
+    subApp => subApp.UseMiddleware<MeUserInHeaderMiddleware>()
+);
+
 app.UseWhen(
     httpContext => !httpContext.Request.Path.StartsWithSegments("/admin")
         && !httpContext.Request.Path.StartsWithSegments("/swagger")

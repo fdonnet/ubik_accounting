@@ -12,7 +12,8 @@ namespace Ubik.ApiService.Common.Middlewares
 {
     internal static class UserMiddlewareErrors
     {
-        public static async Task Manage(HttpContext context, string errorMsg)       {
+        public static async Task Manage(HttpContext context, string errorMsg)
+        {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
 
@@ -51,7 +52,7 @@ namespace Ubik.ApiService.Common.Middlewares
             {
                 if (Guid.TryParse(userId, out var parsedUserId))
                 {
-                    if(parsedUserId == MegaAminUserId )
+                    if (parsedUserId == MegaAminUserId)
                         currentUser.Id = parsedUserId;
                     else
                     {
@@ -74,6 +75,35 @@ namespace Ubik.ApiService.Common.Middlewares
             await next(context);
         }
     }
+
+    public class MeUserInHeaderMiddleware(RequestDelegate next)
+    {
+
+        public async Task InvokeAsync(HttpContext context, ICurrentUser currentUser)
+        {
+            //UserId
+            if (context.Request.Headers.TryGetValue("x-user-id", out var userId))
+            {
+                if (Guid.TryParse(userId, out var parsedUserId))
+                {
+                    currentUser.Id = parsedUserId;
+                }
+                else
+                {
+                    await UserMiddlewareErrors.Manage(context, "Invalid x-user-id format");
+                    return;
+                }
+            }
+            else
+            {
+                await UserMiddlewareErrors.Manage(context, "x-user-id is missing");
+                return;
+            }
+
+            await next(context);
+        }
+    }
+
     public class UserInHeaderMiddleware(RequestDelegate next)
     {
         public async Task InvokeAsync(HttpContext context, ICurrentUser currentUser)

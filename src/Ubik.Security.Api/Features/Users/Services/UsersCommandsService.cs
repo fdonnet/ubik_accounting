@@ -5,6 +5,7 @@ using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Features.Users.Mappers;
 using Ubik.Security.Api.Models;
+using Ubik.Security.Contracts.Tenants.Commands;
 using Ubik.Security.Contracts.Users.Commands;
 
 namespace Ubik.Security.Api.Features.Users.Services
@@ -56,9 +57,84 @@ namespace Ubik.Security.Api.Features.Users.Services
                });
         }
 
+        //For the moment-- add first part or user email and add it to Tenant_code
+        public async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAndAttachToTheUser(Guid userId,AddTenantAndLinkToMeCommand command)
+        {
+            var result = await GetAsync(userId)
+                .BindAsync(u => AddTenantWithUserEmailAsync(command.ToTenant(), u.Email))
+                .BindAsync(t => AddUserTenantLinkAsync(userId, t));
+
+            await ctx.SaveChangesAsync();
+
+            return result;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantWithUserEmailAsync(Tenant tennant, string userEmail)
+        {
+            //TODO generate better tenant unique code or use a owner field (for the unique constrain)
+            tennant.Code = GenerateTenantCode(tennant.Code, userEmail);
+            return await AddTenantAsync(tennant);
+        }
+
+        private static string GenerateTenantCode(string tenantCode, string userEmail)
+        {
+            var userEmailForCode = userEmail.Split("@")[0];
+            var code = tenantCode + " - " + userEmailForCode;
+            if (code.Length >= 50)
+                code = code[..50];
+            return code;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Tenant>> AddUserTenantLinkAsync(Guid userId, Tenant tenant)
+        {
+            return await ValidateIfTenantLinkNotAlreadyExistsAsync(userId, tenant)
+               .MapAsync(async t =>
+               {
+                   var ut = new UserTenant()
+                   {
+                       Id = NewId.NextGuid(),
+                       TenantId = t.Id,
+                       UserId = userId,
+                   };
+                   
+                   await ctx.UsersTenants.AddAsync(ut);
+                   ctx.SetAuditAndSpecialFields();
+                   return tenant;
+               });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Tenant>> ValidateIfTenantLinkNotAlreadyExistsAsync(Guid userId, Tenant tenant)
+        {
+            var result = await ctx.UsersTenants.FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TenantId == tenant.Id);
+
+            return result == null
+                ? tenant
+                : new ResourceAlreadyExistsError("UserTenant(link)", "UserId/TenantId", $"{userId}/{tenant.Id}");
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantAsync(Tenant current)
+        {
+            return await ValidateIfTenantNotAlreadyExistsAsync(current)
+               .MapAsync(async ac =>
+               {
+                   ac.Id = NewId.NextGuid();
+                   await ctx.Tenants.AddAsync(ac);
+                   ctx.SetAuditAndSpecialFields();
+                   return ac;
+               });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Tenant>> ValidateIfTenantNotAlreadyExistsAsync(Tenant current)
+        {
+            var exists = await ctx.Tenants.AnyAsync(a => a.Code == current.Code);
+            return exists
+                ? new ResourceAlreadyExistsError("Tenant", "Code", current.Code)
+                : current;
+        }
+
         private async Task<Either<IServiceAndFeatureError, User>> AddUserAsync(User user)
         {
-            return await ValidateIfNotAlreadyExistsAsync(user).ToAsync()
+            return await ValidateIfNotAlreadyExistsAsync(user)
                 .MapAsync(async ac =>
                 {
                     ac.Id = NewId.NextGuid();
@@ -70,7 +146,7 @@ namespace Ubik.Security.Api.Features.Users.Services
 
         private async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
         {
-            return await GetAsync(id).ToAsync()
+            return await GetAsync(id)
                 .MapAsync(async ac =>
                 {
                     await ctx.Users.Where(x => x.Id == id).ExecuteDeleteAsync();

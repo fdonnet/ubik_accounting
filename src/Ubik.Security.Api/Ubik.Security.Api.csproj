@@ -12,6 +12,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\Tenants\Standard\**" />
+    <Content Remove="Features\Tenants\Standard\**" />
+    <EmbeddedResource Remove="Features\Tenants\Standard\**" />
+    <None Remove="Features\Tenants\Standard\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageReference Include="Dapper" Version="2.1.35" />
@@ -30,7 +37,7 @@
   <ItemGroup>
     <Folder Include="Features\Authorizations\Errors\" />
     <Folder Include="Features\Authorizations\Standard\" />
-    <Folder Include="Features\Tenants\Standard\" />
+    <Folder Include="Features\Tenants\Admin\" />
   </ItemGroup>
 
 </Project>

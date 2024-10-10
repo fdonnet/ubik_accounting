@@ -1,5 +1,6 @@
 ﻿using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Tenants.Commands;
+using Ubik.Security.Contracts.Tenants.Results;
 using Ubik.Security.Contracts.Tenants.Events;
 
 namespace Ubik.Security.Api.Features.Tenants.Mappers

@@ -16,8 +16,8 @@ namespace Ubik.Security.Api.Features.Users.Services
 
         public async Task<Either<IServiceAndFeatureError, bool>> AddUserAsync(AddUserCommand user)
         {
-            return await GetServiceTokenAsync().ToAsync()
-                .Bind(token => SendAddRequestToAuthProviderAsync(user, token).ToAsync()
+            return await GetServiceTokenAsync()
+                .BindAsync(token => SendAddRequestToAuthProviderAsync(user, token)
                 .Map(isOk =>
                 {
                     return isOk;
