@@ -8,6 +8,7 @@ namespace Ubik.Security.Api.Features.Users.Services
     public interface IUsersQueriesService
     {
         Task<Either<IServiceAndFeatureError, User>> GetAsync(Guid id);
+        Task<Either<IServiceAndFeatureError, User>> GetUserInSelectedTenantAsync(Guid id);
         Task<Either<IServiceAndFeatureError, User>> GetAsync(string email);
         Task<Either<IServiceAndFeatureError, UserAdminResult>> GetUserWithAuhtorizationsByTenants(string email);
         Task<Either<IServiceAndFeatureError, Tenant>> GetUserSelectedTenantAsync(Guid userId);

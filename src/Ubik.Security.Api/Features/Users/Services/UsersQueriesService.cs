@@ -3,6 +3,7 @@ using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Ubik.ApiService.Common.Errors;
+using Ubik.ApiService.Common.Services;
 using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Features.Mappers;
 using Ubik.Security.Api.Features.Users.Errors;
@@ -13,8 +14,32 @@ using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Security.Api.Features.Users.Services
 {
-    public class UsersQueriesService(SecurityDbContext ctx) : IUsersQueriesService
+    public class UsersQueriesService(SecurityDbContext ctx, ICurrentUser currentUser) : IUsersQueriesService
     {
+
+        public async Task<Either<IServiceAndFeatureError, User>> GetUserInSelectedTenantAsync(Guid id)
+        {
+            var p = new DynamicParameters();
+            p.Add("@user_id", id);
+            p.Add("@tenant_id", currentUser.TenantId);
+
+            var con = ctx.Database.GetDbConnection();
+            var sql =
+                """
+                SELECT u.*
+                FROM users u
+                INNER JOIN users_tenants ut ON ut.user_id = u.id
+                WHERE u.id = @user_id
+                AND ut.tenant_id = @tenant_id
+                """;
+
+            var result = await con.QueryFirstOrDefaultAsync<User>(sql, p);
+
+            return result == null
+                ? new ResourceNotFoundError("User", "Id", id.ToString())
+                : result;
+        }
+
         public async Task<Either<IServiceAndFeatureError, User>> GetAsync(Guid id)
         {
             var result = await ctx.Users.FindAsync(id);

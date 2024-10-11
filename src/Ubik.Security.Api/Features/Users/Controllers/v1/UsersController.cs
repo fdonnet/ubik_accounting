@@ -17,6 +17,7 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
     [Route("api/v{version:apiVersion}/[controller]")]
     public class UsersController(IUsersCommandsService commandService, IUsersQueriesService queryService) : ControllerBase
     {
+        //Get the user but only for the current selected tenant
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -24,7 +25,7 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<UserStandardResult>> Get(Guid id)
         {
-            var result = await queryService.GetAsync(id);
+            var result = await queryService.GetUserInSelectedTenantAsync(id);
             return result.Match(
                             Right: ok => Ok(ok.ToUserStandardResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
@@ -33,6 +34,7 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
         //TODO: need to be protected by captach or other stuff
         //This API need to remain private (no public call on that)
         //Maybe protect by domain names or other stuff but it allow a user to register
+        //See if we chain the other needed stuff here or in a second step
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
