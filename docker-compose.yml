@@ -93,7 +93,7 @@ services:
       - "LANG=C.UTF-8"
       - "LANGUAGE=C.UTF-8"
       - "LC_ALL=C.UTF-8"
-    image: "rabbitmq:3.12-management"
+    image: "rabbitmq:4.0-management"
     ipc: "private"
     logging:
       driver: "json-file"

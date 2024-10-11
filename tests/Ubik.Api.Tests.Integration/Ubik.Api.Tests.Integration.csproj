@@ -42,6 +42,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Ubik.Accounting.Api\Ubik.Accounting.Api.csproj" />
+		<ProjectReference Include="..\..\src\Ubik.YarpProxy\Ubik.YarpProxy.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

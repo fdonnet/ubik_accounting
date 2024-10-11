@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Ubik.ApiService.Common\Ubik.ApiService.Common.csproj" />
     <ProjectReference Include="..\Ubik.Security.Contracts\Ubik.Security.Contracts.csproj" />
+    <InternalsVisibleTo Include="Ubik.Api.Tests.Integration" />
   </ItemGroup>
 
 </Project>
