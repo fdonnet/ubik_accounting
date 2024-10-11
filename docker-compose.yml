@@ -21,7 +21,7 @@ services:
     ipc: "private"
 
     volumes:
-      - ./tests/Ubik.Api.Tests.Integration/import/ubik-realm.json:/opt/keycloak/data/import/ubik-realm_old.json
+      - ./tests/Ubik.Api.Tests.Integration/import/ubik-realm_old.json:/opt/keycloak/data/import/ubik-realm.json
 
     logging:
       driver: "json-file"
@@ -38,6 +38,7 @@ services:
 
     command:
       - "start-dev"
+      - "--import-realm" 
 
     container_name: "ubik-keycloak-last"
 
@@ -69,7 +70,10 @@ services:
     ports:
       - "8082:8080/tcp"
 
-    user: "1000"  
+    user: "1000"
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  
 
   rabbitmq:
     command:

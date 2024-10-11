@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Testcontainers.Keycloak;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
+using Ubik.Accounting.Api;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.ApiService.Common.Services;
@@ -72,7 +72,7 @@ namespace Ubik.Api.Tests.Integration
 
             _keycloackContainer = new KeycloakBuilder()
                                 .WithImage("quay.io/keycloak/keycloak:21.1")
-                                .WithBindMount(GetWslAbsolutePath("./import"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
+                                .WithBindMount(GetWslAbsolutePath("./import_old"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
                                 .WithCommand(command)
                                 .Build();
 
