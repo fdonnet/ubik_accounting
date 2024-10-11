@@ -19,9 +19,10 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<UserAdminResult>> Get(string email)
         {
-            var result = await queryService.GetAsync(email);
+            var result = await queryService.GetUserWithAuhtorizationsByTenants(email);
+
             return result.Match(
-                            Right: ok => Ok(ok.ToUserAdminResult()),
+                            Right: ok => Ok(ok),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
     }

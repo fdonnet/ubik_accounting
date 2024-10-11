@@ -19,8 +19,7 @@ namespace Ubik.Security.Api.Features.Users.Services
     {
         public async Task<Either<IServiceAndFeatureError, User>> AddAsync(AddUserCommand userCommand)
         {
-            //TODO: Enhance this part... dirty asf to maintain aligned systems (DB + auth)
-            //Ad the ID to be aligned with DB or use email as identifier ?
+            //TODO: Enhance this part... dirty asf
 
             //First step DB
             var result = await AddUserAsync(userCommand.ToUser());
@@ -104,7 +103,7 @@ namespace Ubik.Security.Api.Features.Users.Services
         private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantAndRoleLinksToUser(Guid userId, Tenant tenant)
         {
             var result = await AddUserTenantLinkAsync(userId, tenant)
-                         .BindAsync(ut => AddTenantUserManagerRoleToTheUser(userId, ut.Id));
+                         .BindAsync(ut => AddTenantUserManagerRoleToTheUser(ut.Id));
 
             return result.Match<Either<IServiceAndFeatureError, Tenant>>(
                 Right: ok =>
@@ -151,7 +150,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                });
         }
 
-        private async Task<Either<IServiceAndFeatureError, UserRoleByTenant>> AddTenantUserManagerRoleToTheUser(Guid userId, Guid userTenantLinkId)
+        private async Task<Either<IServiceAndFeatureError, UserRoleByTenant>> AddTenantUserManagerRoleToTheUser(Guid userTenantLinkId)
         {
             return await GetTenantUserManagementRole()
                 .MapAsync(async r =>

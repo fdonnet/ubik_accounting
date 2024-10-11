@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using Ubik.Security.Api.Models;
+using Ubik.Security.Contracts.Authorizations.Results;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Events;
 using Ubik.Security.Contracts.Users.Results;
@@ -32,7 +33,7 @@ namespace Ubik.Security.Api.Features.Mappers
             };
         }
 
-        public static UserAdminResult ToUserAdminResult(this User current)
+        public static UserAdminResult ToUserAdminResult(this User current, Dictionary<Guid,List<AuthorizationStandardResult>> authorizationsByTenant)
         {
             return new UserAdminResult()
             {
@@ -43,6 +44,7 @@ namespace Ubik.Security.Api.Features.Mappers
                 IsActivated = current.IsActivated,
                 IsMegaAdmin = current.IsMegaAdmin,
                 Version = current.Version,
+                AuthorizationsByTenantIds = authorizationsByTenant
             };
         }
 
