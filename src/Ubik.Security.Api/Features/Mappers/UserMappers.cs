@@ -43,6 +43,7 @@ namespace Ubik.Security.Api.Features.Mappers
                 Email = current.Email,
                 IsActivated = current.IsActivated,
                 IsMegaAdmin = current.IsMegaAdmin,
+                SelectedTenantId = current.SelectedTenantId,
                 Version = current.Version,
                 AuthorizationsByTenantIds = authorizationsByTenant
             };

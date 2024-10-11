@@ -57,13 +57,16 @@ builder.Services.AddHttpClient<UserService>(client =>
 
 //Authorization handlers
 builder.Services.AddScoped<IAuthorizationHandler, UserInfoOkHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, UserWithAuthorizationsHandler>();
 
 //Available policy
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("IsUser", policy =>
-        policy.Requirements.Add(new UserInfoOkRequirement(false)))
+        policy.Requirements.Add(new UserInfoOnlyRequirement(false)))
     .AddPolicy("IsMegaAdmin", policy =>
-        policy.Requirements.Add(new UserInfoOkRequirement(true)));
+        policy.Requirements.Add(new UserInfoOnlyRequirement(true)))
+    .AddPolicy("CanUsersRead", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["security_user_read"])));
 
 //Proxy
 var configProxy = builder.Configuration.GetSection("ReverseProxy");
@@ -82,9 +85,7 @@ builder.Services.AddReverseProxy()
             if (user != null)
             {
                 transformContext.ProxyRequest.Headers.Add("x-user-id", user.Id.ToString());
-
-                //TODO: pass tenant value via proxy too
-                //transformContext.ProxyRequest.Headers.Add("x-tenant-id", tenantId);
+                transformContext.ProxyRequest.Headers.Add("x-tenant-id", user.SelectedTenantId.ToString());
 
             }
         });

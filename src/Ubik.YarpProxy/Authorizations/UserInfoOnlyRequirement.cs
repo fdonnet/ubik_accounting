@@ -4,13 +4,13 @@ using Ubik.YarpProxy.Services;
 
 namespace Ubik.YarpProxy.Authorizations
 {
-    public class UserInfoOkRequirement(bool needsMegaAdminRight) : IAuthorizationRequirement
+    public class UserInfoOnlyRequirement(bool needsMegaAdminRight) : IAuthorizationRequirement
     {
         public bool NeedsMegaAdminRight { get; set; } = needsMegaAdminRight;
     }
-    public class UserInfoOkHandler(UserService userService) : AuthorizationHandler<UserInfoOkRequirement>
+    public class UserInfoOkHandler(UserService userService) : AuthorizationHandler<UserInfoOnlyRequirement>
     {
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserInfoOkRequirement requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserInfoOnlyRequirement requirement)
         {
             var email = context.User.FindFirst(ClaimTypes.Email)?.Value;
 
