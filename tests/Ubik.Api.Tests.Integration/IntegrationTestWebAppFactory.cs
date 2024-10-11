@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Testcontainers.Keycloak;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
@@ -13,7 +14,7 @@ using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.ApiService.Common.Services;
 
-namespace Ubik.Accounting.Api.Tests.Integration
+namespace Ubik.Api.Tests.Integration
 {
     public class IntegrationTestWebAppFactory
     : WebApplicationFactory<Program>,

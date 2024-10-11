@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.DB.Common", "Ubik.Db.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.ApiService.Common", "Ubik.ApiService.Common\Ubik.ApiService.Common.csproj", "{3FF5E747-6CCD-4BB0-8F3D-9DEBA5E8382B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Api.Tests.Integration", "..\tests\Ubik.Accounting.Api.Tests.Integration\Ubik.Accounting.Api.Tests.Integration.csproj", "{40D9982F-BB82-4922-B2DE-E2F6B02C6CBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Api.Tests.Integration", "..\tests\Ubik.Api.Tests.Integration\Ubik.Api.Tests.Integration.csproj", "{40D9982F-BB82-4922-B2DE-E2F6B02C6CBC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Api.Tests.UnitTests", "..\tests\Ubik.Accounting.Api.Tests.UnitTests\Ubik.Accounting.Api.Tests.UnitTests.csproj", "{28D8CCFA-1FA3-436E-AE22-0B46EEAAABC6}"
 EndProject

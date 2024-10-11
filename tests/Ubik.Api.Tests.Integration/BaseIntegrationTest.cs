@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ubik.Accounting.Api.Data;
 
-namespace Ubik.Accounting.Api.Tests.Integration
+namespace Ubik.Api.Tests.Integration
 {
     [Collection("AuthServer and DB")]
     public abstract class BaseIntegrationTest

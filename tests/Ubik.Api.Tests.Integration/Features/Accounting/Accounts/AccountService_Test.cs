@@ -5,10 +5,10 @@ using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Accounts.Errors;
 using Ubik.Accounting.Api.Features.Accounts.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Api.Tests.Integration.Fake;
+using Ubik.Api.Tests.Integration.Fake;
 using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
 {
     public class AccountService_Test : BaseIntegrationTest
     {

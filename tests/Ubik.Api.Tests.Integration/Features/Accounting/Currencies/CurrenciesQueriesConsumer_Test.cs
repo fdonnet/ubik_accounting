@@ -2,13 +2,13 @@
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Ubik.Accounting.Api.Tests.Integration.Fake;
+using Ubik.Api.Tests.Integration.Fake;
 using Ubik.Accounting.Contracts.Currencies.Queries;
 using Ubik.Accounting.Contracts.Currencies.Results;
 using Ubik.ApiService.Common.Filters;
 using Ubik.ApiService.Common.Services;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features.Currencies
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
 {
     public class CurrenciesQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
     {

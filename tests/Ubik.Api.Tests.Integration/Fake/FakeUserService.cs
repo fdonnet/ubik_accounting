@@ -1,7 +1,7 @@
 ﻿using MassTransit;
 using Ubik.ApiService.Common.Services;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Fake
+namespace Ubik.Api.Tests.Integration.Fake
 {
     public class FakeUserService : ICurrentUser
     {

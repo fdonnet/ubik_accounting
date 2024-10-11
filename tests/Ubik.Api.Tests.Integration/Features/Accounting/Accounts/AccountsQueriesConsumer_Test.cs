@@ -7,10 +7,10 @@ using FluentAssertions;
 using MassTransit.Testing;
 using Ubik.ApiService.Common.Filters;
 using Ubik.ApiService.Common.Services;
-using Ubik.Accounting.Api.Tests.Integration.Fake;
+using Ubik.Api.Tests.Integration.Fake;
 using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
 {
     public class AccountsQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
     {
@@ -54,7 +54,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var client = _harness.GetRequestClient<GetAllAccountsQuery>();
 
             //Act
-            var result= await client.GetResponse<GetAllAccountsResults>(new { });
+            var result = await client.GetResponse<GetAllAccountsResults>(new { });
 
             //Assert
             result.Message.Should()
@@ -85,7 +85,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
             var client = _harness.GetRequestClient<GetAccountQuery>();
 
             //Act
-            var result = await client.GetResponse<GetAccountResult>(new GetAccountQuery { Id=_testValuesForAccounts.AccountId1});
+            var result = await client.GetResponse<GetAccountResult>(new GetAccountQuery { Id = _testValuesForAccounts.AccountId1 });
 
             //Assert
             result.Message.Should()
@@ -111,7 +111,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Accounts
                     a.ErrorType == ServiceAndFeatureErrorType.NotFound
                     && a.CustomErrors[0].ErrorCode == "ACCOUNT_NOT_FOUND");
         }
-         
+
         public async Task DisposeAsync()
         {
             await _harness.Stop();

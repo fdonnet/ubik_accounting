@@ -3,10 +3,10 @@ using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.AccountGroups.Errors;
 using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Api.Tests.Integration.Fake;
+using Ubik.Api.Tests.Integration.Fake;
 using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
+namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
 {
     public class AccountGroupService_Test : BaseIntegrationTest
     {
@@ -128,7 +128,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             };
 
             //Act
-            var result = (await _serviceManager.AccountGroupService.AddAsync(accountGroup)).IfRight(err=>default!);
+            var result = (await _serviceManager.AccountGroupService.AddAsync(accountGroup)).IfRight(err => default!);
 
             //Assert
             result.Should()
@@ -146,7 +146,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             {
                 Code = "zzz",
                 Label = "Test",
-                ParentAccountGroupId =null,
+                ParentAccountGroupId = null,
                 ClassificationId = Guid.NewGuid()
             };
 

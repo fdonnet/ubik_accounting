@@ -3,14 +3,14 @@ using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Ubik.Accounting.Api.Data.Init;
-using Ubik.Accounting.Api.Tests.Integration.Fake;
+using Ubik.Api.Tests.Integration.Fake;
 using Ubik.Accounting.Contracts.Classifications.Queries;
 using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Filters;
 using Ubik.ApiService.Common.Services;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {
     public class ClassificationsQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
     {

@@ -2,9 +2,9 @@
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Api.Tests.Integration.Fake;
+using Ubik.Api.Tests.Integration.Fake;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features.Currencies
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
 {
     public class CurrenciesService_Test : BaseIntegrationTest
     {

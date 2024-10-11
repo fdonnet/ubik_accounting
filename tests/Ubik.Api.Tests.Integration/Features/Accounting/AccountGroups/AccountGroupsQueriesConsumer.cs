@@ -3,16 +3,16 @@ using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Ubik.Accounting.Api.Data.Init;
-using Ubik.Accounting.Api.Tests.Integration.Fake;
+using Ubik.Api.Tests.Integration.Fake;
 using Ubik.Accounting.Contracts.AccountGroups.Queries;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Filters;
 using Ubik.ApiService.Common.Services;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
+namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
 {
-    public  class AccountGroupsQueriesConsumer(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
+    public class AccountGroupsQueriesConsumer(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;
@@ -69,7 +69,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.AccountGroups
             var client = _harness.GetRequestClient<GetChildAccountsQuery>();
 
             //Act
-            var result = await client.GetResponse<GetChildAccountsResults>(new GetChildAccountsQuery 
+            var result = await client.GetResponse<GetChildAccountsResults>(new GetChildAccountsQuery
             { AccountGroupId = _testValuesForAccountGroups.AccountGroupId2 });
 
             //Assert

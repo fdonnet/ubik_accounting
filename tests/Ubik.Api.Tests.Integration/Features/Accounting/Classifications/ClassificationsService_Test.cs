@@ -3,10 +3,10 @@ using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Features;
 using Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco;
 using Ubik.Accounting.Api.Models;
-using Ubik.Accounting.Api.Tests.Integration.Fake;
+using Ubik.Api.Tests.Integration.Fake;
 using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {
     public class ClassificationsService_Test : BaseIntegrationTest
     {

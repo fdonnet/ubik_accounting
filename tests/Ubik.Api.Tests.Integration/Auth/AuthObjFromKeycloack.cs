@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Auth
+namespace Ubik.Api.Tests.Integration.Auth
 {
     internal class TokenObjFromKeycloack
     {

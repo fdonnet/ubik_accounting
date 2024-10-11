@@ -3,10 +3,10 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Ubik.Accounting.Api.Data.Init;
-using Ubik.Accounting.Api.Tests.Integration.Auth;
+using Ubik.Api.Tests.Integration.Auth;
 using Ubik.Accounting.Contracts.Currencies.Results;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features.Currencies
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
 {
     public class CurrenciesController_Test : BaseIntegrationTest
     {
@@ -42,7 +42,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Currencies
 
             //Act
             var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
-            
+
             //Assert
             responseGetAll.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }

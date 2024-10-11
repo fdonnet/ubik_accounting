@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Net;
 using Ubik.Accounting.Api.Data.Init;
-using Ubik.Accounting.Api.Tests.Integration.Auth;
+using Ubik.Api.Tests.Integration.Auth;
 using FluentAssertions;
 using System.Net.Http.Json;
 using Ubik.Accounting.Contracts.Classifications.Results;
@@ -11,7 +11,7 @@ using System.Text.Json;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Api.Models;
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {
     public class ClassificationsController_Test : BaseIntegrationTest
     {
@@ -173,7 +173,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             {
                 Id = Guid.NewGuid(),
                 Label = "Test",
-                Code ="TEST"
+                Code = "TEST"
             };
 
             var putClassificationJson = JsonSerializer.Serialize(fake);
@@ -360,7 +360,8 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features.Classifications
             var responseGet = await httpClient.GetAsync($"{_baseUrlForV1}/{_testValuesForClassifications.ClassificationId2}");
             var resultGet = await responseGet.Content.ReadFromJsonAsync<GetClassificationResult>();
 
-            var fake = new Classification { 
+            var fake = new Classification
+            {
                 Version = resultGet!.Version,
                 Id = resultGet.Id,
                 Code = "Modified",

@@ -18,6 +18,7 @@ using Ubik.Security.Api.Features.Authorizations.Services;
 using Ubik.Security.Api.Features.Roles.Services;
 using Ubik.Security.Api.Features.RolesAuthorizations.Services;
 using Ubik.Security.Api.Features.Tenants.Services;
+using Ubik.ApiService.Common.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,8 +72,8 @@ builder.Services.AddMassTransit(config =>
         //Use to pass tenantid when message broker is used to contact the api (async)
         //TODO:See if needed
         //configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
-        //configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);
-        //configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
+        configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);
+        configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
     });
 
     config.AddEntityFrameworkOutbox<SecurityDbContext>(o =>
@@ -136,7 +137,6 @@ builder.Services.AddControllers(o =>
 }).AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -172,8 +172,6 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
-//app.UseAuthentication();
-//app.UseAuthorization();
 
 //Middlewares config
 //TODO: see if we can do better for the /me... 

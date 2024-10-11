@@ -7,7 +7,7 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Enums;
 
 
-namespace Ubik.Accounting.Api.Tests.Integration.Features
+namespace Ubik.Api.Tests.Integration.Features.Accounting
 {
     public static class FakeGenerator
     {
@@ -45,7 +45,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                  }).Generate(numTests);
         }
 
-        public static IEnumerable<AddAccountGroupCommand> GenerateAddAccountGroups(int numTests, 
+        public static IEnumerable<AddAccountGroupCommand> GenerateAddAccountGroups(int numTests,
             string? code = null, string? label = null, Guid accountGroupClassificationId = default,
             string? description = null)
         {
@@ -56,7 +56,7 @@ namespace Ubik.Accounting.Api.Tests.Integration.Features
                      Code = code ?? a.Finance.Account().ToString(),
                      Label = label ?? a.Finance.AccountName().ClampLength(1, 100),
                      Description = description ?? a.Lorem.Paragraphs().ClampLength(1, 700),
-                     AccountGroupClassificationId = accountGroupClassificationId != default ? accountGroupClassificationId : testData.ClassificationId1                     
+                     AccountGroupClassificationId = accountGroupClassificationId != default ? accountGroupClassificationId : testData.ClassificationId1
                  }).Generate(numTests);
         }
 

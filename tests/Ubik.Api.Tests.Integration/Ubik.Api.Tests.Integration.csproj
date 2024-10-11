@@ -56,4 +56,8 @@
 	  </None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Features\Security\" />
+	</ItemGroup>
+
 </Project>
