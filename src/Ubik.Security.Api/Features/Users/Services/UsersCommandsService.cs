@@ -1,9 +1,12 @@
 ﻿using LanguageExt;
+using LanguageExt.ClassInstances;
 using MassTransit;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Features.Mappers;
+using Ubik.Security.Api.Features.Users.Errors;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Tenants.Commands;
 using Ubik.Security.Contracts.Users.Commands;
@@ -83,17 +86,42 @@ namespace Ubik.Security.Api.Features.Users.Services
         private async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAndAttachToTheUserAsync(Guid userId, Tenant tenant)
         {
             var result = await GetAsync(userId)
-                .BindAsync(u => AddTenantWithUserEmailAsync(tenant, u.Email))
-                .BindAsync(t => AddUserTenantLinkAsync(userId, t));
+                .BindAsync(u => AddTenantWithUserEmailInCodeAsync(tenant, u.Email));
 
-            return result;
+            //Links to tenant and add usrmgt role for tenant to the user
+            return await result.MatchAsync(
+                RightAsync: async ok =>
+                {
+                    return await AddTenantAndRoleLinksToUser(userId, ok);
+                },
+                Left: err =>
+                {
+                    return Prelude.Left(err);
+                });
+
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantWithUserEmailAsync(Tenant tennant, string userEmail)
+        private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantAndRoleLinksToUser(Guid userId, Tenant tenant)
+        {
+            var result = await AddUserTenantLinkAsync(userId, tenant)
+                         .BindAsync(ut => AddTenantUserManagerRoleToTheUser(userId, ut.Id));
+
+            return result.Match<Either<IServiceAndFeatureError, Tenant>>(
+                Right: ok =>
+                {
+                    return Prelude.Right(tenant);
+                },
+                Left: err =>
+                {
+                    return Prelude.Left(err);
+                });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantWithUserEmailInCodeAsync(Tenant tenant, string userEmail)
         {
             //TODO generate better tenant unique code or use a owner field (for the unique constrain)
-            tennant.Code = GenerateTenantCode(tennant.Code, userEmail);
-            return await AddTenantAsync(tennant);
+            tenant.Code = GenerateTenantCode(tenant.Code, userEmail);
+            return await AddTenantAsync(tenant);
         }
 
         private static string GenerateTenantCode(string tenantCode, string userEmail)
@@ -105,7 +133,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return code;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> AddUserTenantLinkAsync(Guid userId, Tenant tenant)
+        private async Task<Either<IServiceAndFeatureError, UserTenant>> AddUserTenantLinkAsync(Guid userId, Tenant tenant)
         {
             return await ValidateIfTenantLinkNotAlreadyExistsAsync(userId, tenant)
                .MapAsync(async t =>
@@ -119,8 +147,35 @@ namespace Ubik.Security.Api.Features.Users.Services
 
                    await ctx.UsersTenants.AddAsync(ut);
                    ctx.SetAuditAndSpecialFields();
-                   return tenant;
+                   return ut;
                });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, UserRoleByTenant>> AddTenantUserManagerRoleToTheUser(Guid userId, Guid userTenantLinkId)
+        {
+            return await GetTenantUserManagementRole()
+                .MapAsync(async r =>
+                {
+                    var newRoleForUser = new UserRoleByTenant()
+                    {
+                        Id = NewId.NextGuid(),
+                        RoleId = r.Id,
+                        UserTenantId = userTenantLinkId,
+                    };
+
+                    await ctx.UserRolesByTenants.AddAsync(newRoleForUser);
+                    ctx.SetAuditAndSpecialFields();
+                    return newRoleForUser;
+                });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Role>> GetTenantUserManagementRole()
+        {
+            var result = await ctx.Roles.FirstOrDefaultAsync(r => r.Code == "usrmgt_all");
+
+            return result == null
+                ? new UserCannotGetMainUsrMgtRole()
+                : result;
         }
 
         private async Task<Either<IServiceAndFeatureError, Tenant>> ValidateIfTenantLinkNotAlreadyExistsAsync(Guid userId, Tenant tenant)

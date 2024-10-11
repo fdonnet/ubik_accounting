@@ -6,19 +6,20 @@
         BadParams = 400,
         Conflict = 409,
         NotAuthorized = 403,
-        NotAuthentified = 401
+        NotAuthentified = 401,
+        ServerError = 500
     }
 
     public record CustomError
     {
         public string ErrorFriendlyMessage { get; set; } = default!;
-        public string ErrorCode { get; set; }=default!;
+        public string ErrorCode { get; set; } = default!;
         public string? ErrorValueDetails { get; set; }
     }
 
     public interface IServiceAndFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; } 
+        public ServiceAndFeatureErrorType ErrorType { get; }
         public List<CustomError> CustomErrors { get; }
     }
 }

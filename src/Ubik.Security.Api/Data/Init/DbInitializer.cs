@@ -10,6 +10,7 @@
             await AuthorizationsData.LoadAsync(context);
             await RolesData.LoadAsync(context);
             await RolesAuthorizationsData.LoadAsync(context);
+            await UserRoleByTenantData.LoadAsync(context);
         }
     }
 }
