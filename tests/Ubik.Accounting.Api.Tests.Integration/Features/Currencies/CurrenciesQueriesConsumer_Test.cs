@@ -2,7 +2,6 @@
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Ubik.Accounting.Api.Data.Init;
 using Ubik.Accounting.Api.Tests.Integration.Fake;
 using Ubik.Accounting.Contracts.Currencies.Queries;
 using Ubik.Accounting.Contracts.Currencies.Results;

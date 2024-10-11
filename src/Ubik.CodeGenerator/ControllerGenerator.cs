@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.Security.Api.Data;
+﻿using Ubik.Security.Api.Data;
 
 namespace Ubik.CodeGenerator
 {

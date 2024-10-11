@@ -1,8 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
 using Ubik.ApiService.Common.Services;
 using Ubik.CodeGenerator;
 using Ubik.Security.Api.Data;

@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Exceptions;
-using Ubik.Security.Api.Features.Users.Mappers;
+using Ubik.Security.Api.Features.Mappers;
 using Ubik.Security.Api.Features.Users.Services;
 using Ubik.Security.Contracts.Users.Results;
 

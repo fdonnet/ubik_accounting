@@ -1,12 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
 using System.Text;
-using System.Threading.Tasks;
 using Ubik.Security.Api.Data;
 
 namespace Ubik.CodeGenerator

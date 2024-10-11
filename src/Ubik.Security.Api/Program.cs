@@ -14,8 +14,6 @@ using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Api.Data.Init;
 using Ubik.Security.Api.Features.Users.Services;
 using Ubik.ApiService.Common.Middlewares;
-using Microsoft.AspNetCore.Builder;
-using Google.Protobuf.WellKnownTypes;
 using Ubik.Security.Api.Features.Authorizations.Services;
 using Ubik.Security.Api.Features.Roles.Services;
 using Ubik.Security.Api.Features.RolesAuthorizations.Services;
@@ -166,7 +164,7 @@ if (app.Environment.IsDevelopment())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<SecurityDbContext>();
-    //context.Database.EnsureDeleted();
+    context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
 
     var initDb = new DbInitializer();

@@ -1,12 +1,9 @@
 ﻿using Ubik.Security.Api.Models;
-using Ubik.Security.Contracts.Authorizations.Commands;
-using Ubik.Security.Contracts.Authorizations.Events;
-using Ubik.Security.Contracts.Authorizations.Results;
 using Ubik.Security.Contracts.Roles.Commands;
 using Ubik.Security.Contracts.Roles.Events;
 using Ubik.Security.Contracts.Roles.Results;
 
-namespace Ubik.Security.Api.Features.Roles.Mappers
+namespace Ubik.Security.Api.Features.Mappers
 {
     public static class RoleMappers
     {

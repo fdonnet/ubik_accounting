@@ -2,11 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
-using Ubik.Security.Api.Features.Users.Mappers;
+using Ubik.Security.Api.Features.Mappers;
 using Ubik.Security.Api.Features.Users.Services;
 using Ubik.Security.Contracts.Tenants.Commands;
 using Ubik.Security.Contracts.Tenants.Results;
-using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Security.Api.Features.Users.Controllers.v1
@@ -42,6 +41,19 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
+        [HttpGet("tenants")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<IEnumerable<TenantStandardResult>>> GetAllMyTenants()
+        {
+            var result = await queryService.GetUserAllTenantsAsync(currentUser.Id);
+            return result.Match(
+                            Right: ok => Ok(ok.ToTenantStandardResults()),
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
         [HttpGet("tenants/{tenantId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -49,8 +61,7 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<TenantStandardResult>> GetTenant(Guid tenantId)
         {
-            //TODO
-            var result = await queryService.GetUserSelectedTenantAsync(currentUser.Id);
+            var result = await queryService.GetUserTenantAsync(currentUser.Id,tenantId);
             return result.Match(
                             Right: ok => Ok(ok.ToTenantStandardResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));

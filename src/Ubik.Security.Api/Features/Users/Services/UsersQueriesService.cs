@@ -1,10 +1,7 @@
 ﻿using Dapper;
 using LanguageExt;
-using LanguageExt.Pipes;
-using LanguageExt.Pretty;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
-using Ubik.ApiService.Common.Services;
 using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Features.Users.Errors;
 using Ubik.Security.Api.Models;
@@ -62,7 +59,8 @@ namespace Ubik.Security.Api.Features.Users.Services
                         """
                         SELECT t.*
                         FROM tenants t
-                        INNER JOIN users_tenants ut ON ut.user_id = @userid
+                        INNER JOIN users_tenants ut ON ut.tenant_id = t.id
+                        WHERE ut.user_id = @userid
                         """;
 
                     return await con.QueryAsync<Tenant>(sql, p);

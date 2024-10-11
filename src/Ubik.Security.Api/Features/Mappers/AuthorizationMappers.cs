@@ -1,28 +1,26 @@
 ﻿using Ubik.Security.Api.Models;
-using Ubik.Security.Contracts.Tenants.Commands;
-using Ubik.Security.Contracts.Tenants.Results;
-using Ubik.Security.Contracts.Tenants.Events;
+using Ubik.Security.Contracts.Authorizations.Commands;
+using Ubik.Security.Contracts.Authorizations.Events;
+using Ubik.Security.Contracts.Authorizations.Results;
 
-namespace Ubik.Security.Api.Features.Tenants.Mappers
+namespace Ubik.Security.Api.Features.Mappers
 {
-    public static class TenantMappers
+    public static class AuthorizationMappers
     {
-        public static IEnumerable<TenantStandardResult> ToTenantStandardResults(this IEnumerable<Tenant> current)
+        public static IEnumerable<AuthorizationStandardResult> ToAuthorizationStandardResults(this IEnumerable<Authorization> current)
         {
-            return current.Select(x => new TenantStandardResult()
+            return current.Select(x => new AuthorizationStandardResult()
             {
                 Id = x.Id,
                 Code = x.Code,
                 Label = x.Label,
-                IsActivated = x.IsActivated,
                 Description = x.Description,
-                Version = x.Version,
+                Version = x.Version
             });
         }
-
-        public static Tenant ToTenant(this AddTenantCommand current)
+        public static Authorization ToAuthorization(this AddAuthorizationCommand current)
         {
-            return new Tenant
+            return new Authorization
             {
                 Code = current.Code,
                 Label = current.Label,
@@ -30,64 +28,61 @@ namespace Ubik.Security.Api.Features.Tenants.Mappers
             };
         }
 
-        public static Tenant ToTenant(this UpdateTenantCommand current)
+        public static Authorization ToAuthorization(this UpdateAuthorizationCommand current)
         {
-            return new Tenant
+            return new Authorization
             {
-                Id = current.Id,
                 Code = current.Code,
                 Label = current.Label,
                 Description = current.Description,
                 Version = current.Version,
+                Id = current.Id
             };
         }
-
-        public static TenantAdded ToTenantAdded(this Tenant current)
+        public static AuthorizationAdded ToAuthorizationAdded(this Authorization current)
         {
-            return new TenantAdded()
+            return new AuthorizationAdded()
             {
-                Id = current.Id,
                 Code = current.Code,
                 Label = current.Label,
                 Description = current.Description,
                 Version = current.Version,
+                Id = current.Id,
             };
         }
 
-        public static TenantUpdated ToTenantUpdated(this Tenant current)
+        public static AuthorizationUpdated ToAuthorizationUpdated(this Authorization current)
         {
-            return new TenantUpdated()
+            return new AuthorizationUpdated()
             {
-                Id = current.Id,
                 Code = current.Code,
                 Label = current.Label,
                 Description = current.Description,
                 Version = current.Version,
+                Id = current.Id,
             };
         }
 
-        public static Tenant ToTenant(this Tenant forUpd, Tenant model)
+        public static Authorization ToAuthorization(this Authorization forUpd, Authorization model)
         {
             model.Id = forUpd.Id;
             model.Code = forUpd.Code;
             model.Label = forUpd.Label;
             model.Description = forUpd.Description;
-            model.IsActivated = forUpd.IsActivated;
             model.Version = forUpd.Version;
 
             return model;
         }
 
-        public static TenantStandardResult ToTenantStandardResult(this Tenant current)
+        public static AuthorizationStandardResult ToAuthorizationStandardResult(this Authorization current)
         {
-            return new TenantStandardResult()
+            return new AuthorizationStandardResult()
             {
-                Id = current.Id,
                 Code = current.Code,
                 Label = current.Label,
                 Description = current.Description,
-                IsActivated = current.IsActivated,
                 Version = current.Version,
+                Id = current.Id
             };
         }
     }

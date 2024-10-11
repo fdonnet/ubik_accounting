@@ -1,16 +1,11 @@
 ﻿using LanguageExt;
 using MassTransit;
-using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Api.Data;
-using Ubik.Security.Api.Features.Authorizations.Mappers;
-using Ubik.Security.Api.Features.Roles.Mappers;
+using Ubik.Security.Api.Features.Mappers;
 using Ubik.Security.Api.Models;
-using Ubik.Security.Contracts.Authorizations.Commands;
-using Ubik.Security.Contracts.Authorizations.Events;
-using Ubik.Security.Contracts.RoleAuthorizations.Commands;
 using Ubik.Security.Contracts.Roles.Commands;
 using Ubik.Security.Contracts.Roles.Events;
 

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Ubik.ApiService.Common.Configure.Options;
-using Ubik.ApiService.Common.Configure.Options.Swagger;
 using Ubik.YarpProxy.Authorizations;
 using Ubik.YarpProxy.Services;
 using Yarp.ReverseProxy.Swagger;
@@ -11,12 +10,8 @@ using Yarp.ReverseProxy.Swagger.Extensions;
 using Ubik.YarpProxy.Extensions;
 using Ubik.YarpProxy.Config;
 using Ubik.ApiService.Common.Configure;
-using Microsoft.OpenApi.Models;
-using static IdentityModel.ClaimComparer;
-using System.Reflection;
 using Yarp.ReverseProxy.Transforms;
 using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 

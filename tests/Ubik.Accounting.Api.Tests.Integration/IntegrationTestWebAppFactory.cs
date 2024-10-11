@@ -1,5 +1,4 @@
-﻿using Bogus.DataSets;
-using DotNet.Testcontainers.Configurations;
+﻿using DotNet.Testcontainers.Configurations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;

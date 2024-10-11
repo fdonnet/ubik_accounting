@@ -1,13 +1,9 @@
 ﻿using Dapper;
 using LanguageExt;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
-using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Models;
-using Ubik.Security.Contracts.RoleAuthorizations.Commands;
-using Ubik.Security.Contracts.RoleAuthorizations.Events;
 
 namespace Ubik.Security.Api.Features.RolesAuthorizations.Services
 {

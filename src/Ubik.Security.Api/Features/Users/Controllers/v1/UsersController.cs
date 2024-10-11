@@ -4,7 +4,7 @@ using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Contracts.Users.Results;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Api.Features.Users.Services;
-using Ubik.Security.Api.Features.Users.Mappers;
+using Ubik.Security.Api.Features.Mappers;
 
 namespace Ubik.Security.Api.Features.Users.Controllers.v1
 {

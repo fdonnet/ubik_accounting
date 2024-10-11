@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Ubik.ApiService.Common.Configure.Options.Swagger;
 using Ubik.YarpProxy.Extensions;
 using Yarp.ReverseProxy.Swagger;
 

@@ -1,11 +1,9 @@
 ﻿using Asp.Versioning;
-using MassTransit;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
-using Ubik.Security.Api.Features.Authorizations.Mappers;
 using Ubik.Security.Api.Features.Authorizations.Services;
+using Ubik.Security.Api.Features.Mappers;
 using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Contracts.Authorizations.Results;
 using Ubik.Security.Contracts.Users.Results;

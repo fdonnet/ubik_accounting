@@ -3,10 +3,9 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Api.Data;
-using Ubik.Security.Api.Features.Users.Mappers;
+using Ubik.Security.Api.Features.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Tenants.Commands;
-using Ubik.Security.Contracts.Tenants.Events;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Events;
 
