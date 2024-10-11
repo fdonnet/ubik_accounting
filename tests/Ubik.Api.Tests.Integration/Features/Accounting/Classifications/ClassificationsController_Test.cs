@@ -18,7 +18,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
         private readonly BaseValuesForClassifications _testValuesForClassifications;
         private readonly string _baseUrlForV1;
 
-        public ClassificationsController_Test(IntegrationTestWebAppFactory factory) : base(factory)
+        public ClassificationsController_Test(IntegrationTestAccoutingFactory factory) : base(factory)
         {
             _testValuesForClassifications = new BaseValuesForClassifications();
             _baseUrlForV1 = "/api/v1/Classifications";

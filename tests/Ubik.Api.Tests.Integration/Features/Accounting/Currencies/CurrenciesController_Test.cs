@@ -13,7 +13,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
         private readonly BaseValuesForCurrencies _testValuesForCurrencies;
         private readonly string _baseUrlForV1;
 
-        public CurrenciesController_Test(IntegrationTestWebAppFactory factory) : base(factory)
+        public CurrenciesController_Test(IntegrationTestAccoutingFactory factory) : base(factory)
         {
             _testValuesForCurrencies = new BaseValuesForCurrencies();
             _baseUrlForV1 = "/api/v1/Currencies";

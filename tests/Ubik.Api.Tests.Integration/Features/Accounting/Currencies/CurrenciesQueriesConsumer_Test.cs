@@ -10,7 +10,7 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
 {
-    public class CurrenciesQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
+    public class CurrenciesQueriesConsumer_Test(IntegrationTestAccoutingFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;

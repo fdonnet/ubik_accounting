@@ -16,7 +16,7 @@ using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Api.Tests.Integration
 {
-    public class IntegrationTestWebAppFactory
+    public class IntegrationTestAccoutingFactory
     : WebApplicationFactory<Program>,
       IAsyncLifetime
     {
@@ -63,7 +63,7 @@ namespace Ubik.Api.Tests.Integration
 
         }
 
-        public IntegrationTestWebAppFactory()
+        public IntegrationTestAccoutingFactory()
         {
             _dbContainer = new PostgreSqlBuilder()
                 .WithImage("postgres:latest")
@@ -75,6 +75,12 @@ namespace Ubik.Api.Tests.Integration
                                 .WithBindMount(GetWslAbsolutePath("./import_old"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
                                 .WithCommand(command)
                                 .Build();
+
+            _keycloackContainerDel = new KeycloakBuilder()
+                    .WithImage("quay.io/keycloak/keycloak:latest")
+                    .WithBindMount(GetWslAbsolutePath("./import"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
+                    .WithCommand(command)
+                    .Build();
 
             _rabbitMQContainer = new RabbitMqBuilder()
                                 .WithImage("rabbitmq:3.12-management")
@@ -143,7 +149,7 @@ namespace Ubik.Api.Tests.Integration
     }
 
     [CollectionDefinition("AuthServer and DB")]
-    public class KeycloackAndDb : ICollectionFixture<IntegrationTestWebAppFactory>
+    public class KeycloackAndDb : ICollectionFixture<IntegrationTestAccoutingFactory>
     {
 
     }

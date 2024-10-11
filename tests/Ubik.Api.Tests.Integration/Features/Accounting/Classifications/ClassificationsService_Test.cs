@@ -13,7 +13,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
         private readonly BaseValuesForClassifications _testClassifications;
         private readonly IServiceManager _serviceManager;
 
-        public ClassificationsService_Test(IntegrationTestWebAppFactory factory) : base(factory)
+        public ClassificationsService_Test(IntegrationTestAccoutingFactory factory) : base(factory)
         {
             _testClassifications = new BaseValuesForClassifications();
             _serviceManager = new ServiceManager(DbContext, new FakeUserService());

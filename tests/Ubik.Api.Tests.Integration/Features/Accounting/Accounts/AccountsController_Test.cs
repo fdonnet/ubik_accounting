@@ -18,7 +18,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
         private readonly string _baseUrlForV1;
 
-        public AccountsController_Test(IntegrationTestWebAppFactory factory) : base(factory)
+        public AccountsController_Test(IntegrationTestAccoutingFactory factory) : base(factory)
         {
             _testValuesForAccounts = new BaseValuesForAccounts();
             _testValuesForAccountGroups = new BaseValuesForAccountGroups();

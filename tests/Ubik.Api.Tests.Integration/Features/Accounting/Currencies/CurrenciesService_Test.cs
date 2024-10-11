@@ -11,7 +11,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
         private readonly BaseValuesForCurrencies _testCurrencies;
         private readonly IServiceManager _serviceManager;
 
-        public CurrenciesService_Test(IntegrationTestWebAppFactory factory) : base(factory)
+        public CurrenciesService_Test(IntegrationTestAccoutingFactory factory) : base(factory)
         {
             _testCurrencies = new BaseValuesForCurrencies();
             _serviceManager = new ServiceManager(DbContext, new FakeUserService());

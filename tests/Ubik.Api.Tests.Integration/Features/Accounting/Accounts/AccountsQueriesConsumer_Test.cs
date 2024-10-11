@@ -12,7 +12,7 @@ using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
 {
-    public class AccountsQueriesConsumer_Test(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
+    public class AccountsQueriesConsumer_Test(IntegrationTestAccoutingFactory factory) : BaseIntegrationTest(factory), IAsyncLifetime
     {
         private ITestHarness _harness = default!;
         private IServiceProvider _provider = default!;

@@ -9,10 +9,10 @@ namespace Ubik.Api.Tests.Integration
     {
         private readonly IServiceScope _scope;
         public readonly AccountingDbContext DbContext;
-        public IntegrationTestWebAppFactory Factory { get; }
+        public IntegrationTestAccoutingFactory Factory { get; }
        
 
-        protected BaseIntegrationTest(IntegrationTestWebAppFactory factory)
+        protected BaseIntegrationTest(IntegrationTestAccoutingFactory factory)
         {
             Factory = factory;
             _scope = factory.Services.CreateScope();

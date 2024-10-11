@@ -18,7 +18,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
 
         private readonly IServiceManager _serviceManager;
 
-        public AccountService_Test(IntegrationTestWebAppFactory factory) : base(factory)
+        public AccountService_Test(IntegrationTestAccoutingFactory factory) : base(factory)
         {
             _testValuesForAccounts = new BaseValuesForAccounts();
             _testValuesForAccountGroups = new BaseValuesForAccountGroups();
