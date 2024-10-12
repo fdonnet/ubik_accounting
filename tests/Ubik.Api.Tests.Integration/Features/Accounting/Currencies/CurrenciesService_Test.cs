@@ -6,7 +6,7 @@ using Ubik.Api.Tests.Integration.Fake;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
 {
-    public class CurrenciesService_Test : BaseIntegrationTest
+    public class CurrenciesService_Test : BaseIntegrationTestOld
     {
         private readonly BaseValuesForCurrencies _testCurrencies;
         private readonly IServiceManager _serviceManager;

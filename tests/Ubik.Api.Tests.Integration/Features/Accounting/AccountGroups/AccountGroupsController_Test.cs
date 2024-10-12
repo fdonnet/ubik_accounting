@@ -14,13 +14,13 @@ using Ubik.Accounting.Contracts.AccountGroups.Results;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
 {
-    public class AccountGroupsController_Test : BaseIntegrationTest
+    public class AccountGroupsController_Test : BaseIntegrationTestOld
     {
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;
         private readonly BaseValuesForClassifications _testValuesForAccountGroupClassifications;
         private readonly string _baseUrlForV1;
 
-        public AccountGroupsController_Test(IntegrationTestAccoutingFactory factory) : base(factory)
+        internal AccountGroupsController_Test(IntegrationTestAccoutingFactory factory) : base(factory)
         {
             _testValuesForAccountGroups = new BaseValuesForAccountGroups();
             _testValuesForAccountGroupClassifications = new BaseValuesForClassifications();

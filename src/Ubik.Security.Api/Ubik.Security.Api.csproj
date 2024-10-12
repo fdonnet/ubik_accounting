@@ -41,15 +41,35 @@
     <ProjectReference Include="..\Ubik.Db.Common\Ubik.DB.Common\Ubik.DB.Common.csproj" />
     <ProjectReference Include="..\Ubik.Security.Contracts\Ubik.Security.Contracts.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="Ubik.Api.Tests.Integration" />
-  </ItemGroup>
-  
+ 
   <ItemGroup>
     <Folder Include="Features\Authorizations\Errors\" />
     <Folder Include="Features\Authorizations\Standard\" />
     <Folder Include="Features\Tenants\Mappers\" />
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <None Update="Data\Init\AuthorizationsData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\RolesAuthorizationsData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\RolesData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\TenantsData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\UserRoleByTenantData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\UsersData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\UsersTenantsData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

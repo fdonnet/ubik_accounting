@@ -8,7 +8,7 @@ using Ubik.Accounting.Contracts.Currencies.Results;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
 {
-    public class CurrenciesController_Test : BaseIntegrationTest
+    public class CurrenciesController_Test : BaseIntegrationTestOld
     {
         private readonly BaseValuesForCurrencies _testValuesForCurrencies;
         private readonly string _baseUrlForV1;

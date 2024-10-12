@@ -12,7 +12,7 @@ using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
 {
-    public class AccountsController_Test : BaseIntegrationTest
+    public class AccountsController_Test : BaseIntegrationTestOld
     {
         private readonly BaseValuesForAccounts _testValuesForAccounts;
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;

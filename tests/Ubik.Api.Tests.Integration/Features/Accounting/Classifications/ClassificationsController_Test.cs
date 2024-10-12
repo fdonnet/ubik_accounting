@@ -13,7 +13,7 @@ using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {
-    public class ClassificationsController_Test : BaseIntegrationTest
+    public class ClassificationsController_Test : BaseIntegrationTestOld
     {
         private readonly BaseValuesForClassifications _testValuesForClassifications;
         private readonly string _baseUrlForV1;

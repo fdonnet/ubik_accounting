@@ -23,4 +23,8 @@
     <InternalsVisibleTo Include="Ubik.Api.Tests.Integration" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Ubik.Api.Tests.Integration" />
+  </ItemGroup>
+
 </Project>

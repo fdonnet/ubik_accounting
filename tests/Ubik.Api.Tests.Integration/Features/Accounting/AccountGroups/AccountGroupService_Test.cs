@@ -8,7 +8,7 @@ using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
 {
-    public class AccountGroupService_Test : BaseIntegrationTest
+    public class AccountGroupService_Test : BaseIntegrationTestOld
     {
         private readonly BaseValuesForAccountGroups _testAccountGroupValues;
         private readonly BaseValuesForClassifications _testClassifications;

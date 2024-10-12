@@ -10,7 +10,7 @@ using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
 {
-    public class AccountService_Test : BaseIntegrationTest
+    public class AccountService_Test : BaseIntegrationTestOld
     {
         private readonly BaseValuesForAccounts _testValuesForAccounts;
         private readonly BaseValuesForAccountGroups _testValuesForAccountGroups;

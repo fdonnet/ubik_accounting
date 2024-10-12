@@ -1,24 +1,26 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Api.Data;
 
 namespace Ubik.Api.Tests.Integration
 {
-    [Collection("Proxy")]
-    public abstract class BaseIntegrationTest : IDisposable
+    [Collection("AuthServer and DB")]
+    public abstract class BaseIntegrationTestOld
+        : IDisposable
     {
         private readonly IServiceScope _scope;
-        internal IntegrationTestProxyFactory Factory { get; }
+        public readonly AccountingDbContext DbContext;
+        public IntegrationTestAccoutingFactory Factory { get; }
 
 
-        internal BaseIntegrationTest(IntegrationTestProxyFactory factory)
+
+        internal BaseIntegrationTestOld(IntegrationTestAccoutingFactory factory)
         {
             Factory = factory;
             _scope = factory.Services.CreateScope();
+
+            DbContext = _scope.ServiceProvider
+                .GetRequiredService<AccountingDbContext>();
+           
         }
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
@@ -26,6 +28,7 @@ namespace Ubik.Api.Tests.Integration
 #pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
         {
             _scope?.Dispose();
+            DbContext?.Dispose();
         }
     }
 }

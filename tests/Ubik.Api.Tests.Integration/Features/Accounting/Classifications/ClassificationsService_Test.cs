@@ -8,7 +8,7 @@ using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {
-    public class ClassificationsService_Test : BaseIntegrationTest
+    public class ClassificationsService_Test : BaseIntegrationTestOld
     {
         private readonly BaseValuesForClassifications _testClassifications;
         private readonly IServiceManager _serviceManager;

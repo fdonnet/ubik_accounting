@@ -116,3 +116,4 @@ app.UseAuthorization();
 app.MapReverseProxy();
 app.Run();
 
+public partial class Program { } //FOR TEST
