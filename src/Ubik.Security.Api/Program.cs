@@ -167,8 +167,8 @@ if (app.Environment.IsDevelopment())
     //context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
 
-    var initDb = new DbInitializer();
-    await initDb.InitializeAsync(context);
+    await DbInitializer.InitializeAsync(context);
+    await AuthInitializer.InitializeAsync(services.GetRequiredService<IUserAuthProviderService>());
 }
 
 //app.UseHttpsRedirection();

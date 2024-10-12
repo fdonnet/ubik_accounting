@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Api.Features.Users.Errors;
+using Ubik.Security.Api.Models;
+using System.Net.Http.Json;
 
 namespace Ubik.Security.Api.Features.Users.Services
 {
@@ -22,6 +24,13 @@ namespace Ubik.Security.Api.Features.Users.Services
                 {
                     return isOk;
                 }));
+        }
+
+        public async Task<Either<IServiceAndFeatureError, bool>> CheckIfUsersPresentInAuth()
+        {
+            return await GetServiceTokenAsync()
+                    .BindAsync(token => CheckIfUsersRequestToAuthProviderAsync(token));
+
         }
 
         private async Task<Either<IServiceAndFeatureError, bool>> SendAddRequestToAuthProviderAsync(AddUserCommand user, string token)
@@ -42,7 +51,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
             var request = JsonSerializer.Serialize(userPayload);
-            var response = await _httpClient.PostAsync("admin/realms/Ubik/users"
+            var response = await _httpClient.PostAsync("admin/realms/ubik/users"
                             , new StringContent(request, Encoding.UTF8, "application/json"));
 
             return response.IsSuccessStatusCode
@@ -50,6 +59,31 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : response.StatusCode == System.Net.HttpStatusCode.Conflict
                     ? new UserCannotBeAddedInAuthProviderConflict(user)
                     : new UserCannotBeAddedInAuthProviderBadParams(user);
+        }
+
+        private async Task<Either<IServiceAndFeatureError, bool>> CheckIfUsersRequestToAuthProviderAsync(string token)
+        {
+            var code = "{@code null}";
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+
+            var request = new HttpRequestMessage(HttpMethod.Get, "admin/realms/ubik/users/count")
+            {
+                Content = new StringContent(code, Encoding.UTF8, "application/json")
+
+            };
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+
+                return result!="0";
+
+            }
+            else
+                return new UserCannotCheckIfPresentInAuth();
         }
 
         private async Task<Either<IServiceAndFeatureError, string>> GetServiceTokenAsync()
@@ -63,7 +97,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             };
 
 
-            HttpResponseMessage response = _httpClient.PostAsync($"realms/Ubik/protocol/openid-connect/token", new FormUrlEncodedContent(dict)).Result;
+            HttpResponseMessage response = _httpClient.PostAsync($"realms/ubik/protocol/openid-connect/token", new FormUrlEncodedContent(dict)).Result;
             if (response.IsSuccessStatusCode)
             {
                 var token = await response.Content.ReadFromJsonAsync<GetTokenResult>();

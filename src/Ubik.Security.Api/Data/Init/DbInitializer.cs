@@ -1,8 +1,8 @@
 ﻿namespace Ubik.Security.Api.Data.Init
 {
-    internal class DbInitializer
+    internal static class DbInitializer
     {
-        internal async Task InitializeAsync(SecurityDbContext context)
+        internal static async Task InitializeAsync(SecurityDbContext context)
         {
             await TenantsData.LoadAsync(context);
             await UsersData.LoadAsync(context);
