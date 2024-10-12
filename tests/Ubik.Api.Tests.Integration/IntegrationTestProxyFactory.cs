@@ -68,7 +68,7 @@ namespace Ubik.Api.Tests.Integration
                                 .WithBindMount(GetWslAbsolutePath("./import"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
                                 .WithCommand(command)
                                 .WithNetwork(_network)
-                                .WithPortBinding(9000,true)
+                                .WithPortBinding(9000, true)
                                 .WithPortBinding(8080, true)
                                 .WithNetworkAliases("keycloak")
                                 .WithName("keycloak-test")
@@ -86,7 +86,7 @@ namespace Ubik.Api.Tests.Integration
 
             _securityApiContainerImg = new ImageFromDockerfileBuilder()
                 .WithName("security-api-test")
-                .WithDockerfileDirectory(CommonDirectoryPath.GetGitDirectory(),string.Empty)
+                .WithDockerfileDirectory(CommonDirectoryPath.GetGitDirectory(), string.Empty)
                 .WithDockerfile("src/Ubik.Security.Api/Dockerfile")
                 .Build();
 
@@ -118,12 +118,10 @@ namespace Ubik.Api.Tests.Integration
         {
             await _securityApiContainerImg.CreateAsync();
 
+            //Cannot use task when all, I dont' know why.
             await _dbContainer.StartAsync();
             await _rabbitMQContainer.StartAsync();
             await KeycloackContainer.StartAsync();
-
-            //await Task.WhenAll(keycloackTask, dbTask, rabbitTask);
-
 
             _securityApiContainer = new ContainerBuilder()
              .WithNetwork(_network)
@@ -137,7 +135,7 @@ namespace Ubik.Api.Tests.Integration
              .WithEnvironment("AuthManagerKeyCloakClient__RootUrl", $"http://keycloak:8080/")
              .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
              .WithEnvironment("MessageBroker__Host", $"amqp://rabbit:5672")
-             .WithPortBinding(7055,7051)
+             .WithPortBinding(7055, 7051)
              .Build();
 
 
@@ -160,7 +158,7 @@ namespace Ubik.Api.Tests.Integration
             return "/" + path.Replace('\\', '/').Replace(":", "");
         }
 
-         private async Task SetTestEnvVariables()
+        private async Task SetTestEnvVariables()
         {
             var keycloakPort = KeycloackContainer.GetMappedPublicPort(8080);
             var keycloackHost = KeycloackContainer.Hostname;
@@ -175,91 +173,8 @@ namespace Ubik.Api.Tests.Integration
             var authTokenUrl = $"http://{keycloackHost}:{keycloakPort}/";
 
             _client.BaseAddress = new Uri(authTokenUrl);
-
-            var token = await GetTokenToAddUsers(keycloackHost, keycloakPort.ToString());
-
         }
 
-        private async Task<string?> GetTokenToAddUsers(string keycloakHost, string keycloakPort)
-        {
-            var dict = new Dictionary<string, string>
-            {
-                { "Content-Type", "application/x-www-form-urlencoded" },
-                { "client_id", "ubik_auth_manager" },
-                { "client_secret", "QC58aWc4xeN38zskEWyOf4uDlRVVgZVq" },
-                { "grant_type", "client_credentials" }
-            };
-
-
-            HttpResponseMessage response = _client.PostAsync($"realms/ubik/protocol/openid-connect/token", new FormUrlEncodedContent(dict)).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                var token = await response.Content.ReadFromJsonAsync<GetTokenResult>();
-                return token?.AccessToken;
-            }
-            else
-                return null;
-        }
-
-        private async Task AddTestUsersInAuth(string token)
-        {
-                var userPayload = new AddUserInKeycloakRealm()
-                {
-                    Email = "admin@test.com",
-                    EmailVerified = true,
-                    Firstname = "Mega",
-                    Lastname = "Admin",
-                    Username = "Admin",
-                    Enabled = true,
-                    Credentials = [new() { Value = "test" }]
-                };
-
-                _client.DefaultRequestHeaders.Clear();
-                _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-
-                var request = JsonSerializer.Serialize(userPayload);
-                var response = await _client.PostAsync("admin/realms/Ubik/users"
-                                , new StringContent(request, Encoding.UTF8, "application/json"));
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception("Cannot add users in auth");
-        }
-
-
-
-        private record GetTokenResult
-        {
-            [JsonPropertyName("access_token")]
-            public string AccessToken { get; init; } = default!;
-        }
-
-        private record AddUserInKeycloakRealm
-        {
-            [JsonPropertyName("email")]
-            public string Email { get; init; } = default!;
-            [JsonPropertyName("firstName")]
-            public string Firstname { get; init; } = default!;
-            [JsonPropertyName("lastName")]
-            public string Lastname { get; init; } = default!;
-            [JsonPropertyName("emailVerified")]
-            public bool EmailVerified { get; init; } = default!;
-            [JsonPropertyName("enabled")]
-            public bool Enabled { get; init; } = true;
-            [JsonPropertyName("username")]
-            public string Username { get; init; } = default!;
-            [JsonPropertyName("credentials")]
-            public List<Credentials> Credentials { get; init; } = default!;
-        }
-
-        private record Credentials
-        {
-            [JsonPropertyName("temporary")]
-            public bool Temporary { get; init; } = false;
-            [JsonPropertyName("type")]
-            public string Type { get; init; } = "password";
-            [JsonPropertyName("value")]
-            public string Value { get; init; } = default!;
-        }
     }
 
     [CollectionDefinition("Proxy")]
