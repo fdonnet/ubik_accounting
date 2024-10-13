@@ -18,7 +18,8 @@ namespace Ubik.Api.Tests.Integration
     {
         MegaAdmin,
         RW,
-        RO
+        RO,
+        NoRole
     }
 
     [Collection("Proxy")]
@@ -39,7 +40,6 @@ namespace Ubik.Api.Tests.Integration
 
         internal async Task<string> GetAccessTokenAsync(TokenType tokenType)
         {
-            //TODO: hard coded, change that
             var dict = new Dictionary<string, string>();
             switch (tokenType)
             {
@@ -48,6 +48,12 @@ namespace Ubik.Api.Tests.Integration
                     break;
                 case TokenType.RW:
                     dict = ValuesForTestRW();
+                    break;
+                case TokenType.RO:
+                    dict = ValuesForTestRO();
+                    break;
+                case TokenType.NoRole:
+                    dict = ValuesForTestNoRole();
                     break;
             }
 
@@ -70,6 +76,34 @@ namespace Ubik.Api.Tests.Integration
                 { "client_id", "ubik_app" },
                 { "client_secret", "Ye6Y36ocA4SaGqYzd0HgmqMhVaM2jlkE" },
                 { "username", "testrw@test.com" },
+                { "password", "test" },
+                { "grant_type", "password" },
+                { "scope", "openid" },
+            };
+        }
+
+        private static Dictionary<string, string> ValuesForTestRO()
+        {
+            return new Dictionary<string, string>
+            {
+                { "Content-Type", "application/x-www-form-urlencoded" },
+                { "client_id", "ubik_app" },
+                { "client_secret", "Ye6Y36ocA4SaGqYzd0HgmqMhVaM2jlkE" },
+                { "username", "testro@test.com" },
+                { "password", "test" },
+                { "grant_type", "password" },
+                { "scope", "openid" },
+            };
+        }
+
+        private static Dictionary<string, string> ValuesForTestNoRole()
+        {
+            return new Dictionary<string, string>
+            {
+                { "Content-Type", "application/x-www-form-urlencoded" },
+                { "client_id", "ubik_app" },
+                { "client_secret", "Ye6Y36ocA4SaGqYzd0HgmqMhVaM2jlkE" },
+                { "username", "testnorole@test.com" },
                 { "password", "test" },
                 { "grant_type", "password" },
                 { "scope", "openid" },
