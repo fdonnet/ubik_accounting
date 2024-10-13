@@ -32,6 +32,7 @@ using System.Net.Http;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Contracts.Users.Commands;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Ubik.Api.Tests.Integration
 {
@@ -68,8 +69,8 @@ namespace Ubik.Api.Tests.Integration
                                 .WithBindMount(GetWslAbsolutePath("./import"), "/opt/keycloak/data/import", AccessMode.ReadWrite)
                                 .WithCommand(command)
                                 .WithNetwork(_network)
-                                .WithPortBinding(9000, true)
-                                .WithPortBinding(8080, true)
+                                .WithPortBinding(9000, 9000)
+                                .WithPortBinding(8086, 8080)
                                 .WithNetworkAliases("keycloak")
                                 .WithName("keycloak-test")
                                 .Build();
@@ -92,55 +93,48 @@ namespace Ubik.Api.Tests.Integration
 
         }
 
-        protected async override void ConfigureWebHost(IWebHostBuilder builder)
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            await SetTestEnvVariables();
-
-            //builder.ConfigureTestServices(services =>
-            //{
-            //    //var descriptor = services
-            //    //    .SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<SecurityDbContext>));
-
-            //    //if (descriptor is not null)
-            //    //{
-            //    //    services.Remove(descriptor);
-            //    //}
-
-            //    //services.AddDbContext<AccountingDbContext>(options =>
-            //    //    options.UseNpgsql(_dbContainer.GetConnectionString()));
-
-            //    //services.AddScoped<ICurrentUser, TestUserService>();
-            //    //services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-            //});
+            SetTestEnvVariablesForProxy();
         }
 
         public async Task InitializeAsync()
         {
-            await _securityApiContainerImg.CreateAsync();
+            var imgApiSecurity = _securityApiContainerImg.CreateAsync();
 
             //Cannot use task when all, I dont' know why.
-            await _dbContainer.StartAsync();
-            await _rabbitMQContainer.StartAsync();
-            await KeycloackContainer.StartAsync();
+            var taskDb = _dbContainer.StartAsync();
+            var taskRabbit = _rabbitMQContainer.StartAsync();
+            var taskKeycloak = KeycloackContainer.StartAsync();
 
-            _securityApiContainer = new ContainerBuilder()
-             .WithNetwork(_network)
-             .WithNetworkAliases("api-security")
-             .WithImage(_securityApiContainerImg)
-             .WithEnvironment("AuthServer__MetadataAddress", $"http://keycloak:8080/realms/ubik/.well-known/openid-configuration")
-             .WithEnvironment("AuthServer__Authority", $"http://keycloak:8080/realms/ubik")
-             .WithEnvironment("AuthServer__AuthorizationUrl", $"http://keycloak:8080/realms/ubik/protocol/openid-connect/auth")
-             .WithEnvironment("AuthServer__TokenUrl", $"http://keycloak:8080/realms/ubik/.protocol/openid-connect/token")
-             .WithEnvironment("ConnectionStrings__SecurityDbContext", $"Host=db-test;Port=5432;Database=ubik_security;Username=postgres;Password=test01")
-             .WithEnvironment("AuthManagerKeyCloakClient__RootUrl", $"http://keycloak:8080/")
-             .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
-             .WithEnvironment("MessageBroker__Host", $"amqp://rabbit:5672")
-             .WithPortBinding(7055, 7051)
-             .Build();
+            await Task.WhenAll(taskDb, taskRabbit, imgApiSecurity);
 
+            //Need to be alone.
+            await taskKeycloak;
 
+            //Conf apis
+            ConfigureApis();
+
+            //Start apis
             await _securityApiContainer!.StartAsync();
+        }
 
+        private void ConfigureApis()
+        {
+            _securityApiContainer = new ContainerBuilder()
+                .WithNetwork(_network)
+                .WithNetworkAliases("api-security")
+                .WithImage(_securityApiContainerImg)
+                .WithEnvironment("AuthServer__MetadataAddress", $"http://keycloak:8080/realms/ubik/.well-known/openid-configuration")
+                .WithEnvironment("AuthServer__Authority", $"http://keycloak:8080/realms/ubik")
+                .WithEnvironment("AuthServer__AuthorizationUrl", $"http://keycloak:8080/realms/ubik/protocol/openid-connect/auth")
+                .WithEnvironment("AuthServer__TokenUrl", $"http://keycloak:8080/realms/ubik/.protocol/openid-connect/token")
+                .WithEnvironment("ConnectionStrings__SecurityDbContext", $"Host=db-test;Port=5432;Database=ubik_security;Username=postgres;Password=test01")
+                .WithEnvironment("AuthManagerKeyCloakClient__RootUrl", $"http://keycloak:8080/")
+                .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
+                .WithEnvironment("MessageBroker__Host", $"amqp://rabbit:5672")
+                .WithPortBinding(7055, 7051)
+                .Build();
         }
 
         public new async Task DisposeAsync()
@@ -158,7 +152,7 @@ namespace Ubik.Api.Tests.Integration
             return "/" + path.Replace('\\', '/').Replace(":", "");
         }
 
-        private async Task SetTestEnvVariables()
+        private void SetTestEnvVariablesForProxy()
         {
             var keycloakPort = KeycloackContainer.GetMappedPublicPort(8080);
             var keycloackHost = KeycloackContainer.Hostname;

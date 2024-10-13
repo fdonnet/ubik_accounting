@@ -22,12 +22,13 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         {
             _baseUrlForV1 = "/usrmgt/admin/api/v1/users";
             _client = Factory.CreateDefaultClient();
-
         }
 
         [Fact]
         public async Task CheckAuth_401_NoAuth()
         {
+
+            var token = await GetAccessTokenAsync();
             //Arrange
             var httpClient = Factory.CreateDefaultClient();
 
