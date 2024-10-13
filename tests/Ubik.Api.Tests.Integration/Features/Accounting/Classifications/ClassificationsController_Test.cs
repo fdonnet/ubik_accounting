@@ -13,16 +13,10 @@ using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {
-    public class ClassificationsController_Test : BaseIntegrationTestOld
+    public class ClassificationsController_Test(IntegrationTestAccoutingFactory factory) : BaseIntegrationTestOld(factory)
     {
-        private readonly BaseValuesForClassifications _testValuesForClassifications;
-        private readonly string _baseUrlForV1;
-
-        public ClassificationsController_Test(IntegrationTestAccoutingFactory factory) : base(factory)
-        {
-            _testValuesForClassifications = new BaseValuesForClassifications();
-            _baseUrlForV1 = "/api/v1/Classifications";
-        }
+        private readonly BaseValuesForClassifications _testValuesForClassifications = new();
+        private readonly string _baseUrlForV1 = "/api/v1/Classifications";
 
         [Fact]
         public async Task CheckAuth_401_NoAuth()

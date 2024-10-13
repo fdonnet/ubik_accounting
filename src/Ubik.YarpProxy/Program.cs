@@ -12,6 +12,7 @@ using Ubik.YarpProxy.Config;
 using Ubik.ApiService.Common.Configure;
 using Yarp.ReverseProxy.Transforms;
 using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,7 +53,7 @@ builder.Services.ConfigureHttpClientDefaults(http =>
 builder.Services.AddHttpClient<UserService>(client =>
 {
     //TODO: change hardcoded
-    client.BaseAddress = new Uri("https://localhost:7051/");
+    client.BaseAddress = new Uri(builder.Configuration.GetSection("ApiSecurityForAdmin:HostAndPort").Value!);
 });
 
 //Authorization handlers

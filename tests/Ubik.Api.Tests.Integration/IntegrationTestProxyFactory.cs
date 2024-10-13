@@ -33,6 +33,7 @@ using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Contracts.Users.Commands;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Query;
+using Testcontainers.Redis;
 
 namespace Ubik.Api.Tests.Integration
 {
@@ -43,12 +44,13 @@ namespace Ubik.Api.Tests.Integration
         private readonly PostgreSqlContainer _dbContainer;
         public KeycloakContainer KeycloackContainer;
         private readonly RabbitMqContainer _rabbitMQContainer;
+        private readonly RedisContainer _redisContainer;
         private IContainer? _securityApiContainer;
-        private INetwork _network;
+        private readonly INetwork _network;
         private readonly IFutureDockerImage _securityApiContainerImg;
         private static readonly string[] command = ["--import-realm"];
-        private HttpClient _client = new HttpClient();
-        private bool _reUse = true;
+        private readonly HttpClient _client = new();
+        private readonly bool _reUse = true;
 
         public IntegrationTestProxyFactory()
         {
@@ -68,6 +70,16 @@ namespace Ubik.Api.Tests.Integration
                 .WithLabel("reuse-id", "postges-db-test")
                 .WithReuse(_reUse)
                 .Build();
+
+            _redisContainer = new RedisBuilder()
+                .WithImage("redis/redis-stack:latest")
+                .WithName("redis-proxy-test")
+                .WithNetwork(_network)
+                .WithNetworkAliases("redis-proxy-test")
+                .WithLabel("reuse-id", "redis-proxy-test")
+                .WithReuse(_reUse)
+                .Build();
+
 
             KeycloackContainer = new KeycloakBuilder()
                                 .WithImage("keycloak/keycloak:26.0")
@@ -113,8 +125,9 @@ namespace Ubik.Api.Tests.Integration
             var taskDb = _dbContainer.StartAsync();
             var taskRabbit = _rabbitMQContainer.StartAsync();
             var taskKeycloak = KeycloackContainer.StartAsync();
+            var taskRedisProxy = _redisContainer.StartAsync();
 
-            await Task.WhenAll(taskDb, taskRabbit);
+            await Task.WhenAll(taskDb, taskRabbit, taskRedisProxy);
 
             //Need to be alone.
             await taskKeycloak;
@@ -142,7 +155,8 @@ namespace Ubik.Api.Tests.Integration
                 .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
                 .WithEnvironment("MessageBroker__Host", $"amqp://rabbit:5672")
                 .WithLabel("reuse-id", "security-api")
-                .WithPortBinding(7055, 7051)
+                .WithPortBinding(8080, true)
+                .WithPortBinding(8081, true)
                 .Build();
         }
 
@@ -152,6 +166,8 @@ namespace Ubik.Api.Tests.Integration
             await _dbContainer.DisposeAsync();
             await _rabbitMQContainer.DisposeAsync();
             await _securityApiContainer!.DisposeAsync();
+            await _redisContainer.DisposeAsync();
+
             _client.Dispose();
         }
 
@@ -163,17 +179,14 @@ namespace Ubik.Api.Tests.Integration
 
         private void SetTestEnvVariablesForProxy()
         {
-            var keycloakPort = KeycloackContainer.GetMappedPublicPort(8080);
-            var keycloackHost = KeycloackContainer.Hostname;
-            var rabbitMQPort = _rabbitMQContainer.GetMappedPublicPort(5672);
-            var rabbitMQHost = _rabbitMQContainer.Hostname;
-
-            Environment.SetEnvironmentVariable("AuthServer__MetadataAddress", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/.well-known/openid-configuration");
-            Environment.SetEnvironmentVariable("AuthServer__Authority", $"http://{keycloackHost}:{keycloakPort}/realms/ubik");
-            Environment.SetEnvironmentVariable("AuthServer__AuthorizationUrl", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/protocol/openid-connect/auth");
-            Environment.SetEnvironmentVariable("AuthServer__TokenUrl", $"http://{keycloackHost}:{keycloakPort}/realms/ubik/protocol/openid-connect/token");
-            Environment.SetEnvironmentVariable("ReverseProxy__Clusters__ubik_users_admin__Destinations__destination1__Address", $"https://{_securityApiContainer!.Hostname}:7055/");
-            var authTokenUrl = $"http://{keycloackHost}:{keycloakPort}/";
+            Environment.SetEnvironmentVariable("AuthServer__MetadataAddress", $"http://localhost:8086/realms/ubik/.well-known/openid-configuration");
+            Environment.SetEnvironmentVariable("AuthServer__Authority", $"http://localhost:8086/realms/ubik");
+            Environment.SetEnvironmentVariable("AuthServer__AuthorizationUrl", $"http://localhost:8086/realms/ubik/protocol/openid-connect/auth");
+            Environment.SetEnvironmentVariable("AuthServer__TokenUrl", $"http://localhost:8086/realms/ubik/protocol/openid-connect/token");
+            Environment.SetEnvironmentVariable("ReverseProxy__Clusters__ubik_users_admin__Destinations__destination1__Address", $"http://{_securityApiContainer!.Hostname}:{_securityApiContainer.GetMappedPublicPort(8080)}/");
+            Environment.SetEnvironmentVariable("RedisCache__ConnectionString", $"{_redisContainer.Hostname}:{_redisContainer.GetMappedPublicPort(6379)}");
+            Environment.SetEnvironmentVariable("ApiSecurityForAdmin__HostAndPort", $"http://{_securityApiContainer.Hostname}:{_securityApiContainer.GetMappedPublicPort(8080)}/");
+            var authTokenUrl = $"http://localhost:8086/";
 
             _client.BaseAddress = new Uri(authTokenUrl);
         }

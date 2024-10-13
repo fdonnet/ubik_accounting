@@ -14,12 +14,19 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ubik.Api.Tests.Integration
 {
+    enum TokenType
+    {
+        MegaAdmin,
+        RW,
+        RO
+    }
+
     [Collection("Proxy")]
     public abstract class BaseIntegrationTest : IDisposable
     {
         private readonly IServiceScope _scope;
         internal IntegrationTestProxyFactory Factory { get; }
-        private HttpClient _authHttpClient;
+        private readonly HttpClient _authHttpClient;
 
 
         internal BaseIntegrationTest(IntegrationTestProxyFactory factory)
@@ -30,11 +37,34 @@ namespace Ubik.Api.Tests.Integration
             { BaseAddress = new Uri("http://localhost:8086/realms/ubik/") };
         }
 
-        internal async Task<string> GetAccessTokenAsync()
+        internal async Task<string> GetAccessTokenAsync(TokenType tokenType)
         {
             //TODO: hard coded, change that
+            var dict = new Dictionary<string, string>();
+            switch (tokenType)
+            {
+                case TokenType.MegaAdmin:
+                    dict = ValuesForMegaAdmin();
+                    break;
+                case TokenType.RW:
+                    dict = ValuesForTestRW();
+                    break;
+            }
 
-            var dict = new Dictionary<string, string>
+            HttpResponseMessage response = _authHttpClient.PostAsync($"protocol/openid-connect/token", new FormUrlEncodedContent(dict)).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var token = await response.Content.ReadFromJsonAsync<GetTokenResult>();
+                if (token != null)
+                    return token.AccessToken;
+            }
+
+            throw new Exception("Cannot get auth access token to continue with testing.");
+        }
+
+        private static Dictionary<string, string> ValuesForTestRW()
+        {
+            return new Dictionary<string, string>
             {
                 { "Content-Type", "application/x-www-form-urlencoded" },
                 { "client_id", "ubik_app" },
@@ -44,17 +74,20 @@ namespace Ubik.Api.Tests.Integration
                 { "grant_type", "password" },
                 { "scope", "openid" },
             };
+        }
 
-
-            HttpResponseMessage response = _authHttpClient.PostAsync($"protocol/openid-connect/token", new FormUrlEncodedContent(dict)).Result;
-            if (response.IsSuccessStatusCode)
+        private static Dictionary<string, string> ValuesForMegaAdmin()
+        {
+            return new Dictionary<string, string>
             {
-                var token = await response.Content.ReadFromJsonAsync<GetTokenResult>();
-                if(token != null)
-                    return token.AccessToken;
-            }
-
-            throw new Exception("Cannot get auth access token to continue with testing.");
+                { "Content-Type", "application/x-www-form-urlencoded" },
+                { "client_id", "ubik_app" },
+                { "client_secret", "Ye6Y36ocA4SaGqYzd0HgmqMhVaM2jlkE" },
+                { "username", "admin@test.com" },
+                { "password", "test" },
+                { "grant_type", "password" },
+                { "scope", "openid" },
+            };
         }
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize

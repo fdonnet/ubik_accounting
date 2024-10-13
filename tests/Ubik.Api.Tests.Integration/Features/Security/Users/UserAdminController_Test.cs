@@ -5,11 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Ubik.Accounting.Api.Data.Init;
+using Ubik.Accounting.Contracts.Classifications.Results;
+using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Api.Tests.Integration.Features.Security.Users
 {
@@ -25,19 +28,21 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task CheckAuth_401_NoAuth()
+        public async Task Get_TestRwUser_ByEmail_OK()
         {
-
-            var token = await GetAccessTokenAsync();
             //Arrange
-            var httpClient = Factory.CreateDefaultClient();
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             //Act
-            var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
-
+            var response = await _client.GetAsync($"{_baseUrlForV1}?email=testrw@test.com");
+            var result = await response.Content.ReadFromJsonAsync<UserAdminResult>();
 
             //Assert
-            responseGetAll.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<UserAdminResult>(); ;
         }
     }
 }
