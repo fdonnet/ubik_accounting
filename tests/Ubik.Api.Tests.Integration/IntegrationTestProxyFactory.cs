@@ -48,11 +48,14 @@ namespace Ubik.Api.Tests.Integration
         private readonly IFutureDockerImage _securityApiContainerImg;
         private static readonly string[] command = ["--import-realm"];
         private HttpClient _client = new HttpClient();
+        private bool _reUse = true;
 
         public IntegrationTestProxyFactory()
         {
             _network = new NetworkBuilder()
                 .WithName("network-test")
+                .WithLabel("reuse-id", "network-test")
+                .WithReuse(_reUse)
                 .Build();
 
             _dbContainer = new PostgreSqlBuilder()
@@ -62,6 +65,8 @@ namespace Ubik.Api.Tests.Integration
                 .WithNetwork(_network)
                 .WithNetworkAliases("db-test")
                 .WithPortBinding(5433, true)
+                .WithLabel("reuse-id", "postges-db-test")
+                .WithReuse(_reUse)
                 .Build();
 
             KeycloackContainer = new KeycloakBuilder()
@@ -73,6 +78,8 @@ namespace Ubik.Api.Tests.Integration
                                 .WithPortBinding(8086, 8080)
                                 .WithNetworkAliases("keycloak")
                                 .WithName("keycloak-test")
+                                .WithLabel("reuse-id", "keycloak-test")
+                                .WithReuse(_reUse)
                                 .Build();
 
             _rabbitMQContainer = new RabbitMqBuilder()
@@ -83,6 +90,8 @@ namespace Ubik.Api.Tests.Integration
                                 .WithNetwork(_network)
                                 .WithNetworkAliases("rabbit")
                                 .WithName("rabbit-test")
+                                .WithLabel("reuse-id", "rabbit-test")
+                                .WithReuse(_reUse)
                                 .Build();
 
             _securityApiContainerImg = new ImageFromDockerfileBuilder()
@@ -100,19 +109,18 @@ namespace Ubik.Api.Tests.Integration
 
         public async Task InitializeAsync()
         {
-            var imgApiSecurity = _securityApiContainerImg.CreateAsync();
-
             //Cannot use task when all, I dont' know why.
             var taskDb = _dbContainer.StartAsync();
             var taskRabbit = _rabbitMQContainer.StartAsync();
             var taskKeycloak = KeycloackContainer.StartAsync();
 
-            await Task.WhenAll(taskDb, taskRabbit, imgApiSecurity);
+            await Task.WhenAll(taskDb, taskRabbit);
 
             //Need to be alone.
             await taskKeycloak;
 
             //Conf apis
+            await _securityApiContainerImg.CreateAsync();
             ConfigureApis();
 
             //Start apis
@@ -133,6 +141,7 @@ namespace Ubik.Api.Tests.Integration
                 .WithEnvironment("AuthManagerKeyCloakClient__RootUrl", $"http://keycloak:8080/")
                 .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
                 .WithEnvironment("MessageBroker__Host", $"amqp://rabbit:5672")
+                .WithLabel("reuse-id", "security-api")
                 .WithPortBinding(7055, 7051)
                 .Build();
         }
