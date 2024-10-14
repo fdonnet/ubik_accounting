@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: hoverkraft-tech/compose-action@v2.0.2
       with:
-        compose-file: "./docker-compose.yml docker-integration-tests.yml"
+        compose-file: "docker-compose.yml,build_and_test_new_on_tenant_users_branch.yml" 
     - name: Docker compose
       run: docker-compose up -d
     - uses: actions/checkout@v4
