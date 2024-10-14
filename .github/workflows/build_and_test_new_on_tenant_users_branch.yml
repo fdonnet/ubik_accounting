@@ -24,7 +24,7 @@ jobs:
       with:
         compose-file: |
           docker-compose.yml
-          build_and_test_new_on_tenant_users_branch.yml
+          docker-integration-tests.yml
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -33,8 +33,12 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: ./src/
 
     - name: Build
       run: dotnet build -c Debug --no-restore
+      working-directory: ./src/
+
     - name: Test
       run: dotnet test -c Debug --no-build --no-restore
+      working-directory: ./src/
