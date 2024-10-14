@@ -1,0 +1,32 @@
+services:
+  security-api-test:
+    build:
+      context: ./
+      dockerfile: src/Ubik.Security.Api/Dockerfile
+    container_name: "security-api-test"
+    environment:
+      - "ASPNETCORE_ENVIRONMENT=Development"
+      - "AuthServer__MetadataAddress=http://keycloak:8080/realms/ubik/.well-known/openid-configuration"
+      - "AuthServer__Authority=http://keycloak:8080/realms/ubik"
+      - "AuthServer__AuthorizationUrl=http://keycloak:8080/realms/ubik/protocol/openid-connect/auth"
+      - "AuthServer__TokenUrl=http://keycloak:8080/realms/ubik/.protocol/openid-connect/token"
+      - "ConnectionStrings__SecurityDbContext=Host=db-test;Port=5432;Database=ubik_security;Username=postgres;Password=test01"
+      - "AuthManagerKeyCloakClient__RootUrl=http://keycloak:8080/"
+      - "MessageBroker__Host=amqp://rabbit:5672"
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      keycloak-last:
+        condition: service_healthy
+      ubik-proxy-cache:
+        condition: service_started
+      ubik-postgres:
+        condition: service_started
+    networks:
+      - ubik-network
+    ports:
+      - "5000:8080"
+
+
+      
+
