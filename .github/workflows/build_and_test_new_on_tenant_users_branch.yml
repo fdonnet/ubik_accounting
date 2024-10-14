@@ -12,6 +12,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:27.2.0
+        options: --privileged
+        ports:
+          - 8082:8080
+          - 5435:5432
+          - 15672:15672
+          - 5672:5672
+          - 6379:6379
+          - 6380:6379
+          - 8001:8001
+          - 8004:8001
+
     defaults:
       run:
         working-directory: ./
@@ -20,8 +34,11 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run docker compose
-      run: docker compose -f docker-compose.yml -f docker-integration-tests.yml up -d
+      run: docker compose -f docker-compose.yml -f docker-integration-tests.yml up --build -d
       working-directory: ./
+
+    - name: Print Docker Compose logs
+      run: docker-compose logs
 
     # - name: Set up Docker Compose
     #   uses: hoverkraft-tech/compose-action@v2.0.2

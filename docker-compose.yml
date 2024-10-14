@@ -37,7 +37,7 @@ services:
           - keycloak-old
 
     ports:
-      - "8080:8080/tcp"
+      - "8087:8087/tcp"
 
     user: "1000"
   
@@ -89,9 +89,6 @@ services:
       timeout: 5s
       
     user: "1000"
-
-    extra_hosts:
-      - "host.docker.internal:host-gateway"  
 
   rabbitmq:
     command:
