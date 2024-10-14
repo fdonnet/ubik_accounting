@@ -12,19 +12,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      docker:
-        image: docker:27.2.0
-        options: --privileged
-        # ports:
-        #   - 8082:8080
-        #   - 5435:5432
-        #   - 15672:15672
-        #   - 5672:5672
-        #   - 6379:6379
-        #   - 6380:6379
-        #   - 8001:8001
-        #   - 8004:8004
+    # services:
+    #   docker:
+    #     image: docker:27.2.0
+    #     options: --privileged
+    #     # ports:
+    #     #   - 8082:8080
+    #     #   - 5435:5432
+    #     #   - 15672:15672
+    #     #   - 5672:5672
+    #     #   - 6379:6379
+    #     #   - 6380:6379
+    #     #   - 8001:8001
+    #     #   - 8004:8004
 
     defaults:
       run:
@@ -36,15 +36,6 @@ jobs:
     - name: Run docker compose
       run: docker compose -f docker-compose.yml -f docker-integration-tests.yml up --build -d
       working-directory: ./
-
-    - name: Print Docker Compose logs
-      run: docker compose logs
-
-    - name: Dump all logs
-      uses: jwalton/gh-docker-logs@v2
-      with:
-        images: 'ubik-security-api-test'
-        tail: '500'
 
     # - name: Set up Docker Compose
     #   uses: hoverkraft-tech/compose-action@v2.0.2

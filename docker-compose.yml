@@ -170,11 +170,7 @@ services:
       - "8004:8004/tcp"
 
   ubik-postgres:
-    command:
-      - "postgres"
     container_name: "ubik-postgres"
-    entrypoint:
-      - "docker-entrypoint.sh"
     environment:
       - "POSTGRES_PASSWORD=test01"
       - "POSTGRES_USER=postgres"
@@ -184,7 +180,7 @@ services:
       - "PG_MAJOR=16"
       - "PG_VERSION=16.0-1.pgdg120+1"
       - "PGDATA=/var/lib/postgresql/data"
-    image: "postgres:latest"
+    image: "postgres:17.0-alpine3.20"
     ipc: "private"
     logging:
       driver: "json-file"
