@@ -17,7 +17,7 @@ services:
       rabbitmq:
         condition: service_started
       keycloak-last:
-        condition: service_healthy
+        condition: service_started
       ubik-proxy-cache:
         condition: service_started
       ubik-postgres:
