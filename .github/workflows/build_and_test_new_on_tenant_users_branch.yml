@@ -22,7 +22,9 @@ jobs:
     - name: Set up Docker Compose
       uses: hoverkraft-tech/compose-action@v2.0.2
       with:
-        compose-file: "docker-compose.yml,build_and_test_new_on_tenant_users_branch.yml" 
+        compose-file: |
+          docker-compose.yml
+          build_and_test_new_on_tenant_users_branch.yml
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
