@@ -22,7 +22,23 @@ services:
         condition: service_started
       ubik-postgres:
         condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:80/healthcheck || exit 1" ]
+      start_period: 10s
+      interval: 30s
+      retries: 3
+      timeout: 5s
+      
     networks:
       - ubik-network
     ports:
       - "5000:8080"
+  finisher:
+    container_name: wait-for-completion
+    image: alpine
+    healthcheck:
+      test: exit 0
+      interval: 2s
+    depends_on:
+      security-api-test:
+        condition: service_started

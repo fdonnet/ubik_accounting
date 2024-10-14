@@ -146,6 +146,8 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
 });
 
+//builder.Services.AddHealthChecks();
+
 //Build the app
 var app = builder.Build();
 
@@ -194,4 +196,5 @@ app.UseWhen(
 );
 
 app.MapControllers();
+//app.MapHealthChecks("/api/health");
 app.Run();
