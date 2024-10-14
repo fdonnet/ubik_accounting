@@ -20,8 +20,15 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run docker compose
-      run: docker compose -f docker-compose.yml -f docker-integration-tests.yml up
+      run: docker compose -f docker-compose.yml -f docker-integration-tests.yml up -d
       working-directory: ./
+
+    - name: Check services healthiness
+      uses: thegabriele97/dockercompose-health-action@main
+      with:
+        filename: 'docker-compose.test.yml'
+        timeout: '60'
+        workdir: 'src'
 
     # - name: Set up Docker Compose
     #   uses: hoverkraft-tech/compose-action@v2.0.2
