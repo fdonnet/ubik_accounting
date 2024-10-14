@@ -1,16 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.Accounting.Api.Data;
-using Microsoft.Extensions.Configuration;
 using System.Text.Json.Serialization;
-using LanguageExt.Pretty;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ubik.Api.Tests.Integration
 {

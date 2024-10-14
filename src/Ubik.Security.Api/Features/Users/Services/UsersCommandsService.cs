@@ -1,7 +1,5 @@
 ﻿using LanguageExt;
-using LanguageExt.ClassInstances;
 using MassTransit;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Security.Api.Data;

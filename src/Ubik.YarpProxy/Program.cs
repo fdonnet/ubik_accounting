@@ -12,7 +12,6 @@ using Ubik.YarpProxy.Config;
 using Ubik.ApiService.Common.Configure;
 using Yarp.ReverseProxy.Transforms;
 using System.Security.Claims;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 

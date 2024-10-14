@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Services;
 using Ubik.Security.Api.Data;
@@ -9,7 +8,6 @@ using Ubik.Security.Api.Features.Mappers;
 using Ubik.Security.Api.Features.Users.Errors;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Authorizations.Results;
-using Ubik.Security.Contracts.RoleAuthorizations.Events;
 using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Security.Api.Features.Users.Services

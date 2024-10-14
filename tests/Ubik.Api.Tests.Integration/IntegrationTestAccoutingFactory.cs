@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Testcontainers.Keycloak;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
-using Ubik.Accounting.Api;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Data.Init;
 using Ubik.ApiService.Common.Services;

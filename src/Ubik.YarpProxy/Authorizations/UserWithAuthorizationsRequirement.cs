@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using System.Linq;
 using System.Security.Claims;
 using Ubik.YarpProxy.Services;
 
