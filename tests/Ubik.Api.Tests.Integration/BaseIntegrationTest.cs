@@ -20,12 +20,13 @@ namespace Ubik.Api.Tests.Integration
         private readonly HttpClient _authHttpClient;
 
 
+        //TODO: change that
         internal BaseIntegrationTest(IntegrationTestProxyFactory factory)
         {
             Factory = factory;
             _scope = Factory.Services.CreateScope();
             _authHttpClient = new HttpClient()
-            { BaseAddress = new Uri("http://localhost:8082/realms/ubik/") };
+            { BaseAddress = new Uri("http://localhost:8080/realms/ubik/") };
         }
 
         internal async Task<string> GetAccessTokenAsync(TokenType tokenType)
