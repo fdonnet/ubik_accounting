@@ -20,7 +20,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run docker compose
-      run: docker-compose -f docker-compose.yml -f docker-integration-tests.yml up --no-TTY
+      run: docker compose -f docker-compose.yml -f docker-integration-tests.yml up
       working-directory: ./
 
     # - name: Set up Docker Compose
