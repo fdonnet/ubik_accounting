@@ -38,7 +38,7 @@ jobs:
       working-directory: ./
 
     - name: Print Docker Compose logs
-      run: docker-compose logs
+      run: docker compose logs
 
     # - name: Set up Docker Compose
     #   uses: hoverkraft-tech/compose-action@v2.0.2

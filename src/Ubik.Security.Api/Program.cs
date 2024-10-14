@@ -164,7 +164,7 @@ if (app.Environment.IsDevelopment())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<SecurityDbContext>();
-    context.Database.EnsureDeleted();
+    //context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
 
     await DbInitializer.InitializeAsync(context);
