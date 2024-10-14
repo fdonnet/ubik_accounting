@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: build_and_test
+name: build_and_test_2
 
 on:
   push:
@@ -17,9 +17,10 @@ jobs:
         working-directory: ./src/
     steps:
     - uses: hoverkraft-tech/compose-action@v2.0.2
-      with: ["./docker-compose.yml","docker-integration-tests.yml"]
+      with:
+        compose-file: "./docker-compose.yml docker-integration-tests.yml"
     - name: Docker compose
-      run: docker compose up
+      run: docker-compose up -d
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
