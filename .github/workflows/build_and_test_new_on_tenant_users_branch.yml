@@ -19,25 +19,21 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Set up Docker Compose
-      uses: hoverkraft-tech/compose-action@v2.0.2
-      with:
-        compose-file: |
-          docker-compose.yml
-          docker-integration-tests.yml
+    - name: Run docker compose
+      run: docker-compose -f docker-compose.yml -f docker-integration-tests.yml up -d
+      working-directory: ./
+
+    # - name: Set up Docker Compose
+    #   uses: hoverkraft-tech/compose-action@v2.0.2
+    #   with:
+    #     compose-file: |
+    #       docker-compose.yml
+    #       docker-integration-tests.yml
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
-
-    - name: Wait for server to be ready
-      run: |
-       while ! curl -s http://localhost:8082 > /dev/null; do
-         echo "Waiting for server..."
-         sleep 5
-       done
-      shell: bash
 
     - name: Restore dependencies
       run: dotnet restore
