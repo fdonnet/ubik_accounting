@@ -31,6 +31,14 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    - name: Wait for server to be ready
+      run: |
+       while ! curl -s http://localhost:8082 > /dev/null; do
+         echo "Waiting for server..."
+         sleep 5
+       done
+      shell: bash
+
     - name: Restore dependencies
       run: dotnet restore
       working-directory: ./src/

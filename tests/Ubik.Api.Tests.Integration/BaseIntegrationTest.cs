@@ -26,7 +26,7 @@ namespace Ubik.Api.Tests.Integration
             Factory = factory;
             _scope = Factory.Services.CreateScope();
             _authHttpClient = new HttpClient()
-            { BaseAddress = new Uri("http://localhost:8080/realms/ubik/") };
+            { BaseAddress = new Uri("http://localhost:8082/realms/ubik/") };
         }
 
         internal async Task<string> GetAccessTokenAsync(TokenType tokenType)
