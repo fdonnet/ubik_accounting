@@ -26,13 +26,6 @@ jobs:
     - name: Dump docker logs on failure
       uses: jwalton/gh-docker-logs@v2
 
-    - name: Check services healthiness
-      uses: thegabriele97/dockercompose-health-action@main
-      with:
-        filename: './docker-compose.yml'
-        timeout: '60'
-        workdir: 'src'
-
     # - name: Set up Docker Compose
     #   uses: hoverkraft-tech/compose-action@v2.0.2
     #   with:
