@@ -18,6 +18,8 @@ jobs:
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
+
+    - name: Docker up  
       run: docker compose -f docker-compose.yml -f docker-integration-tests.yml up  
 
     # - name: Set up Docker Compose
