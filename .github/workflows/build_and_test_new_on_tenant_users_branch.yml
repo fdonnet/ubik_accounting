@@ -51,5 +51,6 @@ jobs:
       working-directory: ./src/
 
     - name: Test
+      if: ${{ success() }}
       run: dotnet test -c Debug --no-build --no-restore
       working-directory: ./src/
