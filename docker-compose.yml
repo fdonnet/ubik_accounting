@@ -167,7 +167,7 @@ services:
       - ubik-network
     ports:
       - "6380:6379/tcp"
-      - "8004:8001/tcp"
+      - "8004:8004/tcp"
 
   ubik-postgres:
     command:
