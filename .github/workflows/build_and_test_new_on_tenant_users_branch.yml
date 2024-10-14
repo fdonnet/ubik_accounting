@@ -26,7 +26,7 @@ jobs:
     - name: Check services healthiness
       uses: thegabriele97/dockercompose-health-action@main
       with:
-        filename: 'docker-compose.test.yml'
+        filename: 'docker-compose.yml'
         timeout: '60'
         workdir: 'src'
 
