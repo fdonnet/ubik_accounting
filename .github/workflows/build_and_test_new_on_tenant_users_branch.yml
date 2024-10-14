@@ -18,13 +18,14 @@ jobs:
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
+      run: docker compose -f docker-compose.yml -f docker-integration-tests.yml up  
 
-    - name: Set up Docker Compose
-      uses: hoverkraft-tech/compose-action@v2.0.2
-      with:
-        compose-file: |
-          docker-compose.yml
-          docker-integration-tests.yml
+    # - name: Set up Docker Compose
+    #   uses: hoverkraft-tech/compose-action@v2.0.2
+    #   with:
+    #     compose-file: |
+    #       docker-compose.yml
+    #       docker-integration-tests.yml
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
