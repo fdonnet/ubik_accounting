@@ -17,8 +17,7 @@ services:
       rabbitmq:
         condition: service_started
       keycloak-last:
-        # condition: service_healthy
-        condition: service_started
+        condition: service_healthy
       ubik-proxy-cache:
         condition: service_started
       ubik-postgres:
@@ -27,6 +26,3 @@ services:
       - ubik-network
     ports:
       - "5000:8080"
-
-      
-

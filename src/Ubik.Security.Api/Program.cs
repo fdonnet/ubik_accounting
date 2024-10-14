@@ -168,9 +168,6 @@ if (app.Environment.IsDevelopment())
     context.Database.EnsureCreated();
 
     await DbInitializer.InitializeAsync(context);
-
-    //TODO: Because health check is not working with the github actions...
-    await Task.Delay(120000);
     await AuthInitializer.InitializeAsync(services.GetRequiredService<IUserAuthProviderService>());
 }
 
