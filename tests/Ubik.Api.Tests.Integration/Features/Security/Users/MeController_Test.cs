@@ -6,6 +6,7 @@ using Ubik.Security.Contracts.Users.Results;
 using Ubik.Security.Contracts.Tenants.Results;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Contracts.Tenants.Commands;
+using MassTransit.SagaStateMachine;
 
 namespace Ubik.Api.Tests.Integration.Features.Security.Users
 {
@@ -195,6 +196,15 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
                .NotBeNull()
                .And.BeOfType<TenantStandardResult>()
                .And.Match<TenantStandardResult>(x => x.Code == "TestTenant - testrw");
+
+            //Cleanup
+            try
+            {
+                await _client.DeleteAsync($"{_baseUrlForV1}/tenants/{result?.Id}");
+            }
+            catch
+            {                 
+            }
         }
 
         //TODO: TEST Role added to the user when he created a tenant
