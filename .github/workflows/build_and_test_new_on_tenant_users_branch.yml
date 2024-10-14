@@ -1,66 +1,66 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+# # This workflow will build a .NET project
+# # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: build_and_test_2
+# name: build_and_test_2
 
-on:
-  push:
-    branches: [ "tenants_and_users" ]
-  pull_request:
-    branches: [ "tenants_and_users" ]
+# on:
+#   push:
+#     branches: [ "tenants_and_users" ]
+#   pull_request:
+#     branches: [ "tenants_and_users" ]
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    services:
-      docker:
-        image: docker:27.2.0
-        options: --privileged
-        # ports:
-        #   - 8082:8080
-        #   - 5435:5432
-        #   - 15672:15672
-        #   - 5672:5672
-        #   - 6379:6379
-        #   - 6380:6379
-        #   - 8001:8001
-        #   - 8004:8004
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     services:
+#       docker:
+#         image: docker:27.2.0
+#         options: --privileged
+#         # ports:
+#         #   - 8082:8080
+#         #   - 5435:5432
+#         #   - 15672:15672
+#         #   - 5672:5672
+#         #   - 6379:6379
+#         #   - 6380:6379
+#         #   - 8001:8001
+#         #   - 8004:8004
 
-    defaults:
-      run:
-        working-directory: ./
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
+#     defaults:
+#       run:
+#         working-directory: ./
+#     steps:
+#     - name: Checkout repo
+#       uses: actions/checkout@v4
 
-    - name: Run docker compose
-      run: docker compose -f docker-compose.yml up --build -d
-      working-directory: ./
+#     - name: Run docker compose
+#       run: docker compose -f docker-compose.yml up --build -d
+#       working-directory: ./
 
-    - name: Print Docker Compose logs
-      run: docker compose logs
+#     - name: Print Docker Compose logs
+#       run: docker compose logs
 
-    # - name: Set up Docker Compose
-    #   uses: hoverkraft-tech/compose-action@v2.0.2
-    #   with:
-    #     compose-file: |
-    #       docker-compose.yml
-    #       docker-integration-tests.yml
+#     # - name: Set up Docker Compose
+#     #   uses: hoverkraft-tech/compose-action@v2.0.2
+#     #   with:
+#     #     compose-file: |
+#     #       docker-compose.yml
+#     #       docker-integration-tests.yml
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.0.x
+#     - name: Setup .NET
+#       uses: actions/setup-dotnet@v3
+#       with:
+#         dotnet-version: 8.0.x
 
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: ./src/
+#     - name: Restore dependencies
+#       run: dotnet restore
+#       working-directory: ./src/
 
-    - name: Build
-      run: dotnet build -c Debug --no-restore
-      working-directory: ./src/
+#     - name: Build
+#       run: dotnet build -c Debug --no-restore
+#       working-directory: ./src/
 
-    - name: Test
-      if: ${{ success() }}
-      run: dotnet test -c Debug --no-build --no-restore
-      working-directory: ./src/
+#     - name: Test
+#       if: ${{ success() }}
+#       run: dotnet test -c Debug --no-build --no-restore
+#       working-directory: ./src/

@@ -228,6 +228,16 @@ services:
     ports:
       - "5000:8080"
 
+  finisher:
+      container_name: wait-for-completion
+      image: alpine
+      healthcheck:
+        test: exit 0
+        interval: 2s
+      depends_on:
+        security-api-test:
+          condition: service_started
+
 volumes:
   ubik-rabbitmq-vol:
   ubik-postgresl-vol:
