@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./src/
+        working-directory: ./
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
@@ -23,8 +23,8 @@ jobs:
       uses: hoverkraft-tech/compose-action@v2.0.2
       with:
         compose-file: |
-          ../docker-compose.yml
-          ../build_and_test_new_on_tenant_users_branch.yml
+          docker-compose.yml
+          build_and_test_new_on_tenant_users_branch.yml
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
