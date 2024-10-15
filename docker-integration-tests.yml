@@ -3,7 +3,7 @@ services:
     build:
       context: ./
       dockerfile: src/Ubik.Security.Api/Dockerfile
-    container_name: "security-api-test"
+    container_name: "ubik-security-api-test"
     environment:
       - "ASPNETCORE_ENVIRONMENT=Development"
       - "AuthServer__MetadataAddress=http://keycloak:8080/realms/ubik/.well-known/openid-configuration"

@@ -16,6 +16,10 @@ COPY ["src/Ubik.Security.Api/Ubik.Security.Api.csproj", "src/Ubik.Security.Api/"
 COPY ["src/Ubik.Db.Common/Ubik.DB.Common/Ubik.DB.Common.csproj", "src/Ubik.Db.Common/Ubik.DB.Common/"]
 COPY ["src/Ubik.ApiService.Common/Ubik.ApiService.Common.csproj", "src/Ubik.ApiService.Common/"]
 COPY ["src/Ubik.Security.Contracts/Ubik.Security.Contracts.csproj", "src/Ubik.Security.Contracts/"]
+# COPY ["src/mycert.cer", "src/"]
+# ADD ./src/mycert.cer /usr/local/share/ca-certificates/mycert.cer
+# ADD ./src/mycert.cer /etc/ssl/certs/mycert.cer
+# RUN chmod 644 /usr/local/share/ca-certificates/mycert.cer && update-ca-certificates
 RUN dotnet restore "./src/Ubik.Security.Api/Ubik.Security.Api.csproj"
 COPY . .
 WORKDIR "/src/src/Ubik.Security.Api"
