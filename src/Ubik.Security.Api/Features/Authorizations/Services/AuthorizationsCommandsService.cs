@@ -97,7 +97,7 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
             var result = await ctx.Authorizations.FindAsync(id);
 
             return result == null
-                ? new ResourceNotFoundError("Auhtorization", "Id", id.ToString())
+                ? new ResourceNotFoundError("Authorization", "Id", id.ToString())
                 : result;
         }
 

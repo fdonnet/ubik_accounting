@@ -12,14 +12,14 @@ namespace Ubik.Security.Api.Features.Authorizations.Controllers.v1
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("admin/api/v{version:apiVersion}/authorization")]
+    [Route("admin/api/v{version:apiVersion}/authorizations")]
     public class AuthorizationsAdminController(IAuthorizationsCommandsService commandService, IAuthorizationsQueriesService queryService) : ControllerBase
     {
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<UserStandardResult>>> GetAll()
+        public async Task<ActionResult<IEnumerable<AuthorizationStandardResult>>> GetAll()
         {
             var results = (await queryService.GetAllAsync()).ToAuthorizationStandardResults();
             return Ok(results);
@@ -30,7 +30,7 @@ namespace Ubik.Security.Api.Features.Authorizations.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<UserStandardResult>> Get(Guid id)
+        public async Task<ActionResult<AuthorizationStandardResult>> Get(Guid id)
         {
             var result = await queryService.GetAsync(id);
             return result.Match(

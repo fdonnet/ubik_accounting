@@ -10,7 +10,7 @@ namespace Ubik.Security.Api.Features.RolesAuthorizations.Controllers.v1
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("admin/api/v{version:apiVersion}/authorizations")]
+    [Route("admin/api/v{version:apiVersion}/rolesauthorizations")]
     public class RolesAuthorizationsAdminController(IRolesAuthorizationsCommandsService commandService, IRolesAuthorizationsQueriesService queryService) : ControllerBase
     {
         [HttpGet]
