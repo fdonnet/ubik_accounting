@@ -8,6 +8,7 @@ namespace Ubik.Api.Tests.Integration
       IAsyncLifetime
     {
         private readonly HttpClient _client = new();
+        public bool IsDbCleaned { get; set; } = false;
 
         public IntegrationTestProxyFactory()
         {
@@ -30,11 +31,11 @@ namespace Ubik.Api.Tests.Integration
             await Task.CompletedTask;
         }
 
-        private static string GetWslAbsolutePath(string windowRealtivePath)
-        {
-            var path = Path.GetFullPath(windowRealtivePath);
-            return "/" + path.Replace('\\', '/').Replace(":", "");
-        }
+        //private static string GetWslAbsolutePath(string windowRealtivePath)
+        //{
+        //    var path = Path.GetFullPath(windowRealtivePath);
+        //    return "/" + path.Replace('\\', '/').Replace(":", "");
+        //}
 
         private void SetTestEnvVariablesForProxy()
         {

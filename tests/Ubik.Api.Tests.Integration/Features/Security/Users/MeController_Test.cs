@@ -164,49 +164,39 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        //TODO : to be activated when cleanup is in place
-        //[Fact]
-        //public async Task Post_CurrentMeUser_Tenant_OK()
-        //{
-        //    //Arrange
-        //    var token = await GetAccessTokenAsync(TokenType.RW);
-        //    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        [Fact]
+        public async Task Post_CurrentMeUser_Tenant_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        //    //Act
-        //    var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/tenants",
-        //        new AddTenantCommand
-        //        {
-        //            Code = "TestTenant",
-        //            Description = "TestTenant",
-        //            Label = "TestTenant",
-        //        });
+            //Act
+            var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/tenants",
+                new AddTenantCommand
+                {
+                    Code = "TestTenant",
+                    Description = "TestTenant",
+                    Label = "TestTenant",
+                });
 
-        //    var result = await response.Content.ReadFromJsonAsync<TenantStandardResult>();
+            var result = await response.Content.ReadFromJsonAsync<TenantStandardResult>();
 
-        //    //Assert
-        //    response.StatusCode.Should().Be(HttpStatusCode.Created);
-        //    result.Should()
-        //        .NotBeNull()
-        //        .And.BeOfType<TenantStandardResult>()
-        //        .And.Match<TenantStandardResult>(x => x.Code == "TestTenant - testrw");
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<TenantStandardResult>()
+                .And.Match<TenantStandardResult>(x => x.Code == "TestTenant - testrw");
 
-        //    //Assert link created with call to get endpoint
-        //    var response2 = await _client.GetAsync($"{_baseUrlForV1}/tenants/{result?.Id}");
-        //    var result2 = await response2.Content.ReadFromJsonAsync<TenantStandardResult>();
-        //    result2.Should()
-        //       .NotBeNull()
-        //       .And.BeOfType<TenantStandardResult>()
-        //       .And.Match<TenantStandardResult>(x => x.Code == "TestTenant - testrw");
-
-        //    //TODO: Cleanup
-        //    try
-        //    {
-        //        await _client.DeleteAsync($"{_baseUrlForV1}/tenants/{result?.Id}");
-        //    }
-        //    catch
-        //    {                 
-        //    }
-        //}
+            //Assert link created with call to get endpoint
+            var response2 = await _client.GetAsync($"{_baseUrlForV1}/tenants/{result?.Id}");
+            var result2 = await response2.Content.ReadFromJsonAsync<TenantStandardResult>();
+            result2.Should()
+               .NotBeNull()
+               .And.BeOfType<TenantStandardResult>()
+               .And.Match<TenantStandardResult>(x => x.Code == "TestTenant - testrw");
+        }
 
         //TODO: TEST Role added to the user when he created a tenant
 

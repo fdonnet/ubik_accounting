@@ -154,16 +154,6 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
                 .NotBeNull()
                 .And.BeOfType<AuthorizationStandardResult>();
 
-            //Dirty Cleanup, depend on delete endpoint
-            try
-            {
-                if(result != null)
-                    await _client.DeleteAsync($"{_baseUrlForV1}/{result.Id}");
-            }
-            catch
-            {
-
-            }
         }
 
         [Fact]

@@ -168,7 +168,7 @@ namespace Ubik.Security.Api.Features.Users.Services
 
         private async Task<Either<IServiceAndFeatureError, Role>> GetTenantUserManagementRole()
         {
-            var result = await ctx.Roles.FirstOrDefaultAsync(r => r.Code == "usrmgt_all");
+            var result = await ctx.Roles.FirstOrDefaultAsync(r => r.Code == "usrmgt_all_rw");
 
             return result == null
                 ? new UserCannotGetMainUsrMgtRole()

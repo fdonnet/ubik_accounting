@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using LanguageExt.Pipes;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Api.Tests.Integration
 {
@@ -19,7 +22,6 @@ namespace Ubik.Api.Tests.Integration
         internal IntegrationTestProxyFactory Factory { get; }
         private readonly HttpClient _authHttpClient;
 
-
         //TODO: change that
         internal BaseIntegrationTest(IntegrationTestProxyFactory factory)
         {
@@ -27,6 +29,21 @@ namespace Ubik.Api.Tests.Integration
             _scope = Factory.Services.CreateScope();
             _authHttpClient = new HttpClient()
             { BaseAddress = new Uri("http://localhost:8082/realms/ubik/") };
+            CleanupDb().Wait();
+        }
+
+        internal async Task CleanupDb()
+        {
+            if(!Factory.IsDbCleaned)
+            {
+                using var client = Factory.CreateClient();
+                var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.DeleteAsync($"/usrmgt/admin/api/v1/application/cleanupdb");
+                response.EnsureSuccessStatusCode();
+                Factory.IsDbCleaned = true;
+            }
         }
 
         internal async Task<string> GetAccessTokenAsync(TokenType tokenType)
