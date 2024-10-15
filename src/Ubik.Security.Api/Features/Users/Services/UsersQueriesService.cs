@@ -75,7 +75,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             var con = ctx.Database.GetDbConnection();
             var sql =
                 """
-                SELECT ut.tenant_id, a.*
+                SELECT DISTINCT ut.tenant_id, a.*
                 FROM users u
                 INNER JOIN users_tenants ut ON ut.user_id = u.id
                 INNER JOIN user_roles_by_tenants urt ON urt.user_tenant_id = ut.id
@@ -92,9 +92,9 @@ namespace Ubik.Security.Api.Features.Users.Services
             {
                 if (!dic.ContainsKey(record.tenant_id))
                 {
-#pragma warning disable IDE0028 // Simplify collection initialization
+#pragma warning disable IDE0028 // Simplify collection initialization (not working good with Dynamic)
                     dic.Add(record.tenant_id, new List<AuthorizationStandardResult>());
-#pragma warning restore IDE0028 // Simplify collection initialization
+#pragma warning restore IDE0028 // Simplify collection initialization (not working good with Dynamic)
                 }
                 dic[record.tenant_id].Add(new AuthorizationStandardResult()
                 {

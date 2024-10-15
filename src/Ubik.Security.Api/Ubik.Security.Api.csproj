@@ -15,13 +15,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\Authorizations\Standard\**" />
     <Compile Remove="Features\Tenants\Admin\**" />
+    <Compile Remove="Features\Tenants\Mappers\**" />
     <Compile Remove="Features\Tenants\Standard\**" />
+    <Content Remove="Features\Authorizations\Standard\**" />
     <Content Remove="Features\Tenants\Admin\**" />
+    <Content Remove="Features\Tenants\Mappers\**" />
     <Content Remove="Features\Tenants\Standard\**" />
+    <EmbeddedResource Remove="Features\Authorizations\Standard\**" />
     <EmbeddedResource Remove="Features\Tenants\Admin\**" />
+    <EmbeddedResource Remove="Features\Tenants\Mappers\**" />
     <EmbeddedResource Remove="Features\Tenants\Standard\**" />
+    <None Remove="Features\Authorizations\Standard\**" />
     <None Remove="Features\Tenants\Admin\**" />
+    <None Remove="Features\Tenants\Mappers\**" />
     <None Remove="Features\Tenants\Standard\**" />
   </ItemGroup>
 
@@ -44,8 +52,6 @@
  
   <ItemGroup>
     <Folder Include="Features\Authorizations\Errors\" />
-    <Folder Include="Features\Authorizations\Standard\" />
-    <Folder Include="Features\Tenants\Mappers\" />
   </ItemGroup>
  
   <ItemGroup>
