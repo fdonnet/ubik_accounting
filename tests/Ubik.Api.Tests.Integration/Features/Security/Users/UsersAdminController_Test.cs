@@ -19,7 +19,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_TestRwUser_ByEmail_WithAdminUser_OK()
+        public async Task Get_User_ByEmail_WithAdminUser_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -37,7 +37,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_TestRwUser_ByEmail_BadEmail_404()
+        public async Task Get_User_ByEmail_BadEmail_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -55,7 +55,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_TestRwUser_ByEmail_WithNotAdminUser_403()
+        public async Task Get_User_ByEmail_WithNotAdminUser_403()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -70,7 +70,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_TestRwUser_ByEmail_WithNoAuth_401()
+        public async Task Get_User_ByEmail_WithNoAuth_401()
         {
             //Arrange
 

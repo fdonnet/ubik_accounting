@@ -58,6 +58,14 @@ namespace Ubik.Security.Api.Data.Init
                 Firstname="Testnorole",
                 Lastname="Test"
             }
+             ,
+             new AddUserCommand()
+            {
+                Email="testothertenant@test.com",
+                Password="test",
+                Firstname="Testothertenant",
+                Lastname="Test"
+            }
         ];
     }
 }
