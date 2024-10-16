@@ -16,6 +16,7 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Filters;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.ApiService.Common.Middlewares;
 
 namespace Ubik.Accounting.Api
 {
@@ -37,8 +38,8 @@ namespace Ubik.Accounting.Api
             var swaggerUIOptions = new SwaggerUIOptions();
             builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
 
-            //Auth server and JWT
-            builder.Services.AddAuthServerAndJwt(authOptions);
+            //Auth server and JWT (no need, no auth)
+            //builder.Services.AddAuthServerAndJwt(authOptions);
 
             //Default httpclient
             builder.Services.ConfigureHttpClientDefaults(http =>
@@ -52,6 +53,7 @@ namespace Ubik.Accounting.Api
 
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
+            //TODO: remove useless parts (only pub/sub)
             //MessageBroker with masstransit + outbox
             builder.Services.AddMassTransit(config =>
             {
@@ -133,6 +135,12 @@ namespace Ubik.Accounting.Api
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddEndpointsApiExplorer();
 
+            //Route config
+            builder.Services.Configure<RouteOptions>(options =>
+            {
+                options.LowercaseUrls = true;
+            });
+
             //Build the app
             var app = builder.Build();
 
@@ -154,13 +162,13 @@ namespace Ubik.Accounting.Api
                 //context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
 
-                var initDb = new DbInitializer();
-                await initDb.InitializeAsync(context);
+                await DbInitializer.InitializeAsync(context);
             }
 
+            app.UseMiddleware<UserInHeaderMiddleware>();
             //app.UseHttpsRedirection();
-            app.UseAuthentication();
-            app.UseAuthorization();
+            //app.UseAuthentication();
+            //app.UseAuthorization();
 
             app.MapControllers();
             app.Run();

@@ -66,7 +66,9 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("IsMegaAdmin", policy =>
         policy.Requirements.Add(new UserInfoOnlyRequirement(true)))
     .AddPolicy("CanUsersRead", policy =>
-        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["security_user_read"])));
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["security_user_read"])))
+    .AddPolicy("CanAccountGroupsRead", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_accountgroup_read"]))); 
 
 //Proxy
 var configProxy = builder.Configuration.GetSection("ReverseProxy");

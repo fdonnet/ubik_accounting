@@ -10,7 +10,6 @@ using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
 {
-    [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
