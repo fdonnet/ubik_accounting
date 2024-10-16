@@ -71,7 +71,7 @@ namespace Ubik.Security.Api.Features.RolesAuthorizations.Services
 
             return exists
                 ? current
-                : new ResourceNotFoundError("Authorization", "Id", current.AuthorizationId.ToString());
+                : new BadParamExternalResourceNotFound("RoleAuthorization","Authorization","AuthorizationId", current.AuthorizationId.ToString());
         }
 
         private async Task<Either<IServiceAndFeatureError, RoleAuthorization>> ValidateIfNotAlreadyExistsAsync(RoleAuthorization current)
