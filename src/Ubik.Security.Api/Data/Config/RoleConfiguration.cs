@@ -10,7 +10,7 @@ namespace Ubik.Security.Api.Data.Config
         {
             builder.Property(a => a.Code)
                 .IsRequired()
-                .HasMaxLength(20);
+                .HasMaxLength(50);
 
             builder.HasIndex(a => new { a.Code, a.TenantId })
                  .IsUnique();

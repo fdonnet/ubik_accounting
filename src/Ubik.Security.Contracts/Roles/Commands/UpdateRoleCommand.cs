@@ -7,7 +7,7 @@ namespace Ubik.Security.Contracts.Roles.Commands
         [Required]
         public Guid Id { get; init; }
         [Required]
-        [MaxLength(20)]
+        [MaxLength(50)]
         public required string Code { get; init; }
         [Required]
         [MaxLength(100)]

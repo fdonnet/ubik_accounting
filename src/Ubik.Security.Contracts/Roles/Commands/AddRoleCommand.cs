@@ -5,7 +5,7 @@ namespace Ubik.Security.Contracts.Roles.Commands
     public record AddRoleCommand
     {
         [Required]
-        [MaxLength(20)]
+        [MaxLength(50)]
         public required string Code { get; init; }
         [Required]
         [MaxLength(100)]
