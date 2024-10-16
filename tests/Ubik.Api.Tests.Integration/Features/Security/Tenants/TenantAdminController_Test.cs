@@ -1,29 +1,37 @@
 ﻿using FluentAssertions;
-using MassTransit;
-using System.Net;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Ubik.ApiService.Common.Exceptions;
-using Ubik.Security.Contracts.Authorizations.Commands;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 using Ubik.Security.Contracts.Authorizations.Results;
+using Ubik.Security.Contracts.Tenants.Results;
+using Ubik.ApiService.Common.Exceptions;
+using Ubik.Security.Contracts.Tenants.Commands;
+using Ubik.Security.Contracts.Authorizations.Commands;
+using MassTransit;
 
-namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
+namespace Ubik.Api.Tests.Integration.Features.Security.Tenants
 {
-    public class AuthorizationsAdminController_Test : BaseIntegrationTest
+    public class TenantAdminController_Test : BaseIntegrationTest
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
-        private readonly static Guid _authorizationId = new("60260000-3c36-7456-5cf4-08dce60fd766");  //security_user_write
-        private readonly static Guid _authorizationIdToDel = new("f4350000-088f-d0ad-d8b0-08dcedb170e1");
+        private readonly static Guid _tenantId = new("74a20000-088f-d0ad-7a4e-08dce86b0459");  //ubik_tenant_test_2 - testrw
+        private readonly static Guid _tenantIdToDel = new("f0130000-088f-d0ad-5682-08dcede59555");
 
-        public AuthorizationsAdminController_Test(IntegrationTestProxyFactory factory) : base(factory)
+        public TenantAdminController_Test(IntegrationTestProxyFactory factory) : base(factory)
         {
-            _baseUrlForV1 = "/usrmgt/admin/api/v1/authorizations";
+            _baseUrlForV1 = "/usrmgt/admin/api/v1/tenants";
             _client = Factory.CreateDefaultClient();
         }
 
+        //Get all Authorization test
         [Fact]
-        public async Task Get_Authorizations_All_WithAdminUser_OK()
+        public async Task Get_Tenants_All_WithAdminUser_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -31,17 +39,17 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
 
             //Act
             var response = await _client.GetAsync(_baseUrlForV1);
-            var result = await response.Content.ReadFromJsonAsync<List<AuthorizationStandardResult>>();
+            var result = await response.Content.ReadFromJsonAsync<List<TenantStandardResult>>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<List<AuthorizationStandardResult>>(); ;
+                .And.BeOfType<List<TenantStandardResult>>(); ;
         }
 
         [Fact]
-        public async Task Get_Authorizations_All_WithNotAdminUser_403()
+        public async Task Get_Tenants_All_WithNotAdminUser_403()
         {
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -54,7 +62,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Get_Authorizations_All_WithNoAuth_401()
+        public async Task Get_Tenants_All_WithNoAuth_401()
         {
             //Act
             var response = await _client.GetAsync(_baseUrlForV1);
@@ -63,27 +71,49 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        //Get Authorization by id test
         [Fact]
-        public async Task Get_Authorization_By_Id_WithAdminUser_OK()
+        public async Task Get_Tenant_By_Id_WithAdminUser_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             //Act
-            var response = await _client.GetAsync($"{_baseUrlForV1}/{_authorizationId}");
-            var result = await response.Content.ReadFromJsonAsync<AuthorizationStandardResult>();
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_tenantId}");
+            var result = await response.Content.ReadFromJsonAsync<TenantStandardResult>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<AuthorizationStandardResult>();
+                .And.BeOfType<TenantStandardResult>();
         }
 
         [Fact]
-        public async Task Get_Authorization_By_Id_BadId_404()
+        public async Task Get_Tenant_By_Id_WithNotAdminUser_403()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_tenantId}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_Tenant_By_Id_WithNoAuth_401()
+        {
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_tenantId}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Get_Tenant_By_Id_BadId_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -98,71 +128,45 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_NOT_FOUND");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TENANT_NOT_FOUND");
         }
 
         [Fact]
-        public async Task Get_Authorization_By_Id_WithNotAdminUser_403()
-        {
-            //Arrange
-            var token = await GetAccessTokenAsync(TokenType.RW);
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            //Act
-            var response = await _client.GetAsync($"{_baseUrlForV1}/{_authorizationId}");
-
-            //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        }
-
-        [Fact]
-        public async Task Get_Authorization_By_Id_WithNoAuth_401()
-        {
-            //Act
-            var response = await _client.GetAsync($"{_baseUrlForV1}/{_authorizationId}");
-
-            //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
-
-        [Fact]
-        public async Task Add_Authorization_WithAdminUser_OK()
+        public async Task Add_Tenant_WithAdminUser_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddAuthorizationCommand
+            var command = new AddTenantCommand
             {
-                Code = "TestCode",
-                Description = "TestDescription",
-                Label = "TestLabel"
+                Code = "test_tenant",
+                Label = "Test Tenant",
+                Description = "Test Tenant Description",
             };
 
             //Act
             var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
-            var result = await response.Content.ReadFromJsonAsync<AuthorizationStandardResult>();
+            var result = await response.Content.ReadFromJsonAsync<TenantStandardResult>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<AuthorizationStandardResult>();
-
+                .And.BeOfType<TenantStandardResult>();
         }
 
         [Fact]
-        public async Task Add_Authorization_WithNotAdminUser_403()
+        public async Task Add_Tenant_WithNotAdminUser_403()
         {
-            //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddAuthorizationCommand
+            var command = new AddTenantCommand
             {
-                Code = "TestCode",
-                Description = "TestDescription",
-                Label = "TestLabel"
+                Code = "test_tenant",
+                Label = "Test Tenant",
+                Description = "Test Tenant Description",
             };
 
             //Act
@@ -173,13 +177,13 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Add_Authorization_WithNoAuth_401()
+        public async Task Add_Tenant_WithNoAuth_401()
         {
-            var command = new AddAuthorizationCommand
+            var command = new AddTenantCommand
             {
-                Code = "TestCode",
-                Description = "TestDescription",
-                Label = "TestLabel"
+                Code = "test_tenant",
+                Label = "Test Tenant",
+                Description = "Test Tenant Description",
             };
 
             //Act
@@ -190,20 +194,21 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Add_Authorization_AlreadyExists_409()
+        public async Task Add_Tenant_WithExistingCode_409()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddAuthorizationCommand
+            var command = new AddTenantCommand
             {
-                Code = "security_user_read",
-                Description = "TestDescription",
-                Label = "TestLabel"
+                Code = "test_tenant_2times",
+                Label = "Test Tenant",
+                Description = "Test Tenant Description",
             };
 
             //Act
+            await _client.PostAsJsonAsync(_baseUrlForV1, command);
             var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
@@ -212,11 +217,11 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_ALREADY_EXISTS");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TENANT_ALREADY_EXISTS");
         }
 
         [Fact]
-        public async Task Update_Authorization_WithAdminUser_OK()
+        public async Task Update_Tenant_WithAdminUser_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -224,15 +229,15 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
 
             var command = new UpdateAuthorizationCommand
             {
-                Id = _authorizationId,
-                Code = "security_user_write",
+                Id = _tenantId,
+                Code = "ubik_tenant_test_2 - testrw",
                 Description = "Test",
                 Label = "TestLabel",
-                Version = new Guid("60260000-3c36-7456-1ee5-08dce60fd76d")
+                Version = new Guid("74a20000-088f-d0ad-89e8-08dce86b0459")
             };
 
             //Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_authorizationId}", command);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_tenantId}", command);
             var result = await response.Content.ReadFromJsonAsync<AuthorizationStandardResult>();
 
             //Assert
@@ -244,49 +249,48 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Update_Authorization_WithNotAdminUser_403()
+        public async Task Update_Tenant_WithNotAdminUser_403()
         {
-            //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var command = new UpdateAuthorizationCommand
             {
-                Id = _authorizationId,
-                Code = "security_user_read",
+                Id = _tenantId,
+                Code = "ubik_tenant_test_2 - testrw",
                 Description = "Test",
                 Label = "TestLabel",
-                Version = _authorizationId
+                Version = new Guid("74a20000-088f-d0ad-89e8-08dce86b0459")
             };
 
             //Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_authorizationId}", command);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_tenantId}", command);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
-        public async Task Update_Authorization_WithNoAuth_401()
+        public async Task Update_Tenant_WithNoAuth_401()
         {
             var command = new UpdateAuthorizationCommand
             {
-                Id = _authorizationId,
-                Code = "security_user_read",
+                Id = _tenantId,
+                Code = "ubik_tenant_test_2 - testrw",
                 Description = "Test",
                 Label = "TestLabel",
-                Version = _authorizationId
+                Version = new Guid("74a20000-088f-d0ad-89e8-08dce86b0459")
             };
 
             //Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_authorizationId}", command);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_tenantId}", command);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
-        public async Task Update_Authorization_BadId_404()
+        public async Task Update_Tenant_WithBadId_400()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -296,10 +300,10 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             var command = new UpdateAuthorizationCommand
             {
                 Id = id,
-                Code = "test",
+                Code = "ubik_tenant_test_x - testrw",
                 Description = "Test",
                 Label = "TestLabel",
-                Version = _authorizationId
+                Version = new Guid("74a20000-088f-d0ad-89e8-08dce86b0459")
             };
 
             //Act
@@ -311,11 +315,11 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_NOT_FOUND");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TENANT_NOT_FOUND");
         }
 
         [Fact]
-        public async Task Update_Authorization_NotMatchId_400()
+        public async Task Update_Tenant_NotMatchId_400()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -323,11 +327,11 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
 
             var command = new UpdateAuthorizationCommand
             {
-                Id = _authorizationId,
-                Code = "test",
+                Id = Guid.NewGuid(),
+                Code = "ubik_tenant_test_x - testrw",
                 Description = "Test",
                 Label = "TestLabel",
-                Version = _authorizationId
+                Version = new Guid("74a20000-088f-d0ad-89e8-08dce86b0459")
             };
 
             //Act
@@ -339,11 +343,11 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_UPDATE_IDS_NOT_MATCH");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TENANT_UPDATE_IDS_NOT_MATCH");
         }
 
         [Fact]
-        public async Task Update_Authorization_AlreadyExistsWithOtherId_409()
+        public async Task Update_Tenant_AlreadyExistsWithOtherId_409()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -351,15 +355,15 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
 
             var command = new UpdateAuthorizationCommand
             {
-                Id = _authorizationId,
-                Code = "security_user_read",
+                Id = _tenantId,
+                Code = "ubik_tenant_test_1 - testrw",
                 Description = "Test",
                 Label = "TestLabel",
-                Version = _authorizationId
+                Version = new Guid("74a20000-088f-d0ad-89e8-08dce86b0459")
             };
 
             //Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_authorizationId}", command);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_tenantId}", command);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -367,11 +371,11 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_ALREADY_EXISTS");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TENANT_ALREADY_EXISTS");
         }
 
         [Fact]
-        public async Task Update_Authorization_WithBadVersion_409()
+        public async Task Update_Tenant_WithBadVersion_409()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -379,15 +383,15 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
 
             var command = new UpdateAuthorizationCommand
             {
-                Id = _authorizationId,
-                Code = "security_user_write",
+                Id = _tenantId,
+                Code = "ubik_tenant_test_z - testrw",
                 Description = "Test",
                 Label = "TestLabel",
                 Version = NewId.NextGuid()
             };
 
             //Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_authorizationId}", command);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_tenantId}", command);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -395,65 +399,45 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_UPDATE_CONCURRENCY");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TENANT_UPDATE_CONCURRENCY");
         }
 
         [Fact]
-        public async Task Delete_Authorization_WithAdminUser_OK()
+        public async Task Delete_Tenant_WithAdminUser_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             //Act
-            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_authorizationIdToDel}");
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_tenantIdToDel}");
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [Fact]
-        public async Task Delete_Authorization_WithNotAdminUser_403()
+        public async Task Delete_Tenant_WithNotAdminUser_403()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             //Act
-            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_authorizationIdToDel}");
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_tenantIdToDel}");
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
-        public async Task Delete_Authorization_WithNoAuth_401()
+        public async Task Delete_Tenant_WithNoAuth_401()
         {
             //Act
-            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_authorizationIdToDel}");
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_tenantIdToDel}");
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
-
-        [Fact]
-        public async Task Delete_Authorization_BadId_404()
-        {
-            //Arrange
-            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            //Act
-            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{Guid.NewGuid()}");
-            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
-
-            //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-            result.Should()
-                .NotBeNull()
-                .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_NOT_FOUND");
-
         }
     }
 }

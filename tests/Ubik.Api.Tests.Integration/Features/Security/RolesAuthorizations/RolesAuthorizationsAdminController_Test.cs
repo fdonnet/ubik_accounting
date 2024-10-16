@@ -9,7 +9,7 @@ using Ubik.Security.Contracts.RoleAuthorizations.Events;
 
 namespace Ubik.Api.Tests.Integration.Features.Security.RolesAuthorizations
 {
-    public class RolesAuthorizationsAdminController : BaseIntegrationTest
+    public class RolesAuthorizationsAdminController_Test : BaseIntegrationTest
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
@@ -19,7 +19,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.RolesAuthorizations
         private readonly static Guid _roleId = new("74410000-088f-d0ad-f4d5-08dcedd9c6a3");
         private readonly static Guid _authorizationId = new("d05a0000-3c36-7456-8576-08dce616ad08");
 
-        public RolesAuthorizationsAdminController(IntegrationTestProxyFactory factory) : base(factory)
+        public RolesAuthorizationsAdminController_Test(IntegrationTestProxyFactory factory) : base(factory)
         {
             _baseUrlForV1 = "/usrmgt/admin/api/v1/rolesauthorizations";
             _client = Factory.CreateDefaultClient();
