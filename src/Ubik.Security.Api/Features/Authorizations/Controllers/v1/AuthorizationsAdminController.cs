@@ -6,7 +6,6 @@ using Ubik.Security.Api.Features.Authorizations.Services;
 using Ubik.Security.Api.Features.Mappers;
 using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Contracts.Authorizations.Results;
-using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Security.Api.Features.Authorizations.Controllers.v1
 {

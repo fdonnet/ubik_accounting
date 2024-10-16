@@ -6,7 +6,6 @@ using Ubik.Security.Contracts.Users.Results;
 using Ubik.Security.Contracts.Tenants.Results;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Contracts.Tenants.Commands;
-using MassTransit.SagaStateMachine;
 
 namespace Ubik.Api.Tests.Integration.Features.Security.Users
 {

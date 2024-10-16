@@ -1,13 +1,7 @@
 ﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.Security.Contracts.Authorizations.Results;
 using Ubik.Security.Contracts.Roles.Results;
 using Ubik.ApiService.Common.Exceptions;
 using MassTransit;
@@ -29,6 +23,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
             _baseUrlForV1 = "/usrmgt/admin/api/v1/roles";
             _client = Factory.CreateDefaultClient();
         }
+
         [Fact]
         public async Task Get_Roles_All_WithAdminUser_OK()
         {

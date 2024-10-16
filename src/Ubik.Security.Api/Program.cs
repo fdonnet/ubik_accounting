@@ -19,7 +19,6 @@ using Ubik.Security.Api.Features.Roles.Services;
 using Ubik.Security.Api.Features.RolesAuthorizations.Services;
 using Ubik.Security.Api.Features.Tenants.Services;
 using Ubik.ApiService.Common.Filters;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Ubik.Security.Api.Features.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);

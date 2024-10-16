@@ -1,9 +1,7 @@
-﻿using LanguageExt.Pipes;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
-using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Api.Tests.Integration
 {
