@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using MassTransit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,8 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
-        private readonly static Guid authorizationId = new("60260000-3c36-7456-5cf4-08dce60fd766");  
+        private readonly static Guid authorizationId = new("60260000-3c36-7456-5cf4-08dce60fd766");  //security_user_write
+        private readonly static Guid authorizationIdToDel = new("f4350000-088f-d0ad-d8b0-08dcedb170e1");
 
         public AuthorizationsAdminController_Test(IntegrationTestProxyFactory factory) : base(factory)
         {
@@ -26,9 +28,9 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             _client = Factory.CreateDefaultClient();
         }
 
-        //Get all auhtorization test
+        //Get all Authorization test
         [Fact]
-        public async Task Get_Auhtorizations_All_WithAdminUser_OK()
+        public async Task Get_Authorizations_All_WithAdminUser_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -46,7 +48,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Get_Auhtorizations_All_WithNotAdminUser_403()
+        public async Task Get_Authorizations_All_WithNotAdminUser_403()
         {
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -59,7 +61,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Get_Auhtorizations_All_WithNoAuth_401()
+        public async Task Get_Authorizations_All_WithNoAuth_401()
         {
             //Act
             var response = await _client.GetAsync(_baseUrlForV1);
@@ -68,9 +70,9 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        //Get auhtorization by id test
+        //Get Authorization by id test
         [Fact]
-        public async Task Get_Auhtorization_By_Id_WithAdminUser_OK()
+        public async Task Get_Authorization_By_Id_WithAdminUser_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -88,7 +90,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Get_Auhtorization_By_Id_BadId_404()
+        public async Task Get_Authorization_By_Id_BadId_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -107,7 +109,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Get_Auhtorization_By_Id_WithNotAdminUser_403()
+        public async Task Get_Authorization_By_Id_WithNotAdminUser_403()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -121,7 +123,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Get_Auhtorization_By_Id_WithNoAuth_401()
+        public async Task Get_Authorization_By_Id_WithNoAuth_401()
         {
             //Act
             var response = await _client.GetAsync($"{_baseUrlForV1}/{authorizationId}");
@@ -131,7 +133,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Post_Auhtorization_WithAdminUser_OK()
+        public async Task Add_Authorization_WithAdminUser_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -141,7 +143,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             {
                 Code = "TestCode",
                 Description = "TestDescription",
-                Label= "TestLabel"
+                Label = "TestLabel"
             };
 
             //Act
@@ -157,7 +159,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Post_Auhtorization_WithNotAdminUser_403()
+        public async Task Add_Authorization_WithNotAdminUser_403()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -178,7 +180,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Post_Auhtorization_WithNoAuth_401()
+        public async Task Add_Authorization_WithNoAuth_401()
         {
             var command = new AddAuthorizationCommand
             {
@@ -195,7 +197,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
         }
 
         [Fact]
-        public async Task Post_Auhtorization_AlreadyExists_409()
+        public async Task Add_Authorization_AlreadyExists_409()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -218,6 +220,247 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_ALREADY_EXISTS");
+        }
+
+        [Fact]
+        public async Task Update_Authorization_WithAdminUser_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new UpdateAuthorizationCommand
+            {
+                Id = authorizationId,
+                Code = "security_user_write",
+                Description = "Test",
+                Label = "TestLabel",
+                Version = new Guid("60260000-3c36-7456-1ee5-08dce60fd76d")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{authorizationId}", command);
+            var result = await response.Content.ReadFromJsonAsync<AuthorizationStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AuthorizationStandardResult>()
+                .And.Match<AuthorizationStandardResult>(x => x.Description == "Test");
+        }
+
+        [Fact]
+        public async Task Update_Authorization_WithNotAdminUser_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new UpdateAuthorizationCommand
+            {
+                Id = authorizationId,
+                Code = "security_user_read",
+                Description = "Test",
+                Label = "TestLabel",
+                Version = authorizationId
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{authorizationId}", command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Update_Authorization_WithNoAuth_401()
+        {
+            var command = new UpdateAuthorizationCommand
+            {
+                Id = authorizationId,
+                Code = "security_user_read",
+                Description = "Test",
+                Label = "TestLabel",
+                Version = authorizationId
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{authorizationId}", command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Update_Authorization_BadId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var id = Guid.NewGuid();
+            var command = new UpdateAuthorizationCommand
+            {
+                Id = id,
+                Code = "test",
+                Description = "Test",
+                Label = "TestLabel",
+                Version = authorizationId
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{id}", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Update_Authorization_NotMatchId_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new UpdateAuthorizationCommand
+            {
+                Id = authorizationId,
+                Code = "test",
+                Description = "Test",
+                Label = "TestLabel",
+                Version = authorizationId
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{Guid.NewGuid()}", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_UPDATE_IDS_NOT_MATCH");
+        }
+
+        [Fact]
+        public async Task Update_Authorization_AlreadyExistsWithOtherId_409()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new UpdateAuthorizationCommand
+            {
+                Id = authorizationId,
+                Code = "security_user_read",
+                Description = "Test",
+                Label = "TestLabel",
+                Version = authorizationId
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{authorizationId}", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_ALREADY_EXISTS");
+        }
+
+        [Fact]
+        public async Task Update_Authorization_WithBadVersion_409()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new UpdateAuthorizationCommand
+            {
+                Id = authorizationId,
+                Code = "security_user_write",
+                Description = "Test",
+                Label = "TestLabel",
+                Version = NewId.NextGuid()
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{authorizationId}", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_UPDATE_CONCURRENCY");
+        }
+
+        [Fact]
+        public async Task Delete_Authorization_WithAdminUser_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{authorizationIdToDel}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        }
+
+        [Fact]
+        public async Task Delete_Authorization_WithNotAdminUser_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{authorizationIdToDel}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Delete_Authorization_WithNoAuth_401()
+        {
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{authorizationIdToDel}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Delete_Authorization_BadId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{Guid.NewGuid()}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_NOT_FOUND");
+
         }
     }
 }

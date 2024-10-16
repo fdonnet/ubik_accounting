@@ -165,7 +165,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Post_CurrentMeUser_Tenant_OK()
+        public async Task Add_CurrentMeUser_Tenant_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -201,7 +201,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         //TODO: TEST Role added to the user when he created a tenant
 
         [Fact]
-        public async Task Post_CurrentMeUser_Tenant_NoAuth_401()
+        public async Task Add_CurrentMeUser_Tenant_NoAuth_401()
         {
             //Arrange
 
@@ -219,7 +219,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Post_CurrentMeUser_Tenant_AlreadyExists_409()
+        public async Task Add_CurrentMeUser_Tenant_AlreadyExists_409()
         {             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
