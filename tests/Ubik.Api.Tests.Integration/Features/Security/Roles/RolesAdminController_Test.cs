@@ -20,8 +20,9 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
-        private readonly static Guid roleId = new("141a0000-3c36-7456-b223-08dce6346ddc");  //usrmgt_all_rw
-        private readonly static Guid roleIdToDel = new("b8650000-088f-d0ad-2726-08dcedbd2375");
+        private readonly static Guid _roleId = new("141a0000-3c36-7456-b223-08dce6346ddc");  //usrmgt_all_rw
+        private readonly static Guid _roleIdToDel = new("b8650000-088f-d0ad-2726-08dcedbd2375");
+        private readonly static Guid _roleIdNotABaseRole = new("989e0000-088f-d0ad-9cf1-08dcedbf070e");
 
         public RolesAdminController_Test(IntegrationTestProxyFactory factory) : base(factory)
         {
@@ -43,7 +44,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<List<RoleStandardResult>>(); ;
+                .And.BeOfType<List<RoleStandardResult>>();
         }
 
         [Fact]
@@ -78,7 +79,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
-            var response = await _client.GetAsync($"{_baseUrlForV1}/{roleId}");
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_roleId}");
             var result = await response.Content.ReadFromJsonAsync<RoleStandardResult>();
 
             // Assert
@@ -96,7 +97,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
-            var response = await _client.GetAsync($"{_baseUrlForV1}/{roleId}");
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_roleId}");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -106,14 +107,14 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
         public async Task Get_Role_By_Id_WithNoAuth_401()
         {
             // Act
-            var response = await _client.GetAsync($"{_baseUrlForV1}/{roleId}");
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_roleId}");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
-        public async Task Get_Role_By_Id_BadId_404()
+        public async Task Get_Role_By_Id_WithBadId_404()
         {
             // Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -121,6 +122,25 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
 
             // Act
             var response = await _client.GetAsync($"{_baseUrlForV1}/{NewId.NextGuid()}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ROLE_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Get_Role_By_Id_WithRoleNotABaseRole_404()
+        {
+            // Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_roleIdNotABaseRole}");
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -230,7 +250,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
 
             var command = new UpdateRoleCommand
             {
-                Id = roleId,
+                Id = _roleId,
                 Code = "usrmgt_all_rw",
                 Label = "TestRole",
                 Description = "TEST",
@@ -238,7 +258,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
             };
 
             // Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{roleId}", command);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_roleId}", command);
             var result = await response.Content.ReadFromJsonAsync<RoleStandardResult>();
 
             // Assert
@@ -258,15 +278,15 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
 
             var command = new UpdateRoleCommand
             {
-                Id = roleId,
+                Id = _roleId,
                 Code = "usrmgt_all_rw",
                 Label = "TestRole",
                 Description = "TEST",
-                Version = roleId
+                Version = _roleId
             };
 
             // Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{roleId}", command);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_roleId}", command);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -278,15 +298,15 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
             // Arrange
             var command = new UpdateRoleCommand
             {
-                Id = roleId,
+                Id = _roleId,
                 Code = "usrmgt_all_rw",
                 Label = "TestRole",
                 Description = "TEST",
-                Version = roleId
+                Version = _roleId
             };
 
             // Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{roleId}", command);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_roleId}", command);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -306,11 +326,39 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
                 Code = "usrmgt_all_rw",
                 Label = "TestRole",
                 Description = "TEST",
-                Version = roleId
+                Version = _roleId
             };
 
             // Act
             var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{id}", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ROLE_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Update_Role_WithRoleNotABaseRole_404()
+        {
+            // Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
+            var command = new UpdateRoleCommand
+            {
+                Id = _roleIdNotABaseRole,
+                Code = "usrmgt_all_rw",
+                Label = "TestRole",
+                Description = "TEST",
+                Version = _roleId
+            };
+
+            // Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_roleIdNotABaseRole}", command);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             // Assert
@@ -330,15 +378,15 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
 
             var command = new UpdateRoleCommand
             {
-                Id = roleId,
+                Id = _roleId,
                 Code = "usrmgt_all_ro",
                 Label = "TestRole",
                 Description = "TEST",
-                Version = roleId
+                Version = _roleId
             };
 
             // Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{roleId}", command);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_roleId}", command);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             // Assert
@@ -358,11 +406,11 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
 
             var command = new UpdateAuthorizationCommand
             {
-                Id = roleId,
+                Id = _roleId,
                 Code = "test",
                 Description = "Test",
                 Label = "TestLabel",
-                Version = roleId
+                Version = _roleId
             };
 
             //Act
@@ -386,7 +434,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
 
             var command = new UpdateAuthorizationCommand
             {
-                Id = roleId,
+                Id = _roleId,
                 Code = "test",
                 Description = "Test",
                 Label = "TestLabel",
@@ -394,7 +442,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
             };
 
             //Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{roleId}", command);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_roleId}", command);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -413,7 +461,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
-            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{roleIdToDel}");
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_roleIdToDel}");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -427,7 +475,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
-            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{roleIdToDel}");
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_roleIdToDel}");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -437,7 +485,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
         public async Task Delete_Role_WithNoAuth_401()
         {
             // Act
-            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{roleIdToDel}");
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_roleIdToDel}");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -452,6 +500,25 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
 
             // Act
             var response = await _client.DeleteAsync($"{_baseUrlForV1}/{NewId.NextGuid()}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ROLE_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Delete_Role_WithRoleNotABaseRol_404()
+        {
+            // Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_roleIdNotABaseRole}");
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
