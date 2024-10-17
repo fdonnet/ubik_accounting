@@ -1,18 +1,25 @@
-﻿using LanguageExt;
+﻿using Dapper;
+using LanguageExt;
 using MassTransit;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
+using Ubik.ApiService.Common.Services;
 using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Features.Mappers;
 using Ubik.Security.Api.Features.Users.Errors;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Tenants.Commands;
+using Ubik.Security.Contracts.Tenants.Events;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Events;
 
 namespace Ubik.Security.Api.Features.Users.Services
 {
-    public class UsersCommandsService(SecurityDbContext ctx, IUserAuthProviderService authUserProviderService, IPublishEndpoint publishEndpoint)
+    public class UsersCommandsService(SecurityDbContext ctx
+        , IUserAuthProviderService authUserProviderService
+        , IPublishEndpoint publishEndpoint
+        , ICurrentUser currentUser)
         : IUsersCommandsService
     {
         public async Task<Either<IServiceAndFeatureError, User>> AddAsync(AddUserCommand userCommand)
@@ -60,24 +67,98 @@ namespace Ubik.Security.Api.Features.Users.Services
 
         public async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAsync(Guid userId, AddTenantCommand command)
         {
-            var result = await AddNewTenantAndAttachToTheUserAsync(userId, command.ToTenant());
-
-            return await result.MatchAsync<Either<IServiceAndFeatureError, Tenant>>(
-            RightAsync: async ok =>
-            {
-                var tenandAdded = new UserTenantAdded()
+            return await AddNewTenantAndAttachToTheUserAsync(userId, command.ToTenant())
+                .MapAsync(async t =>
                 {
-                    UserId = userId,
-                    NewLinkedTenantCreated = ok.ToTenantAdded()
-                };
-                await publishEndpoint.Publish(tenandAdded, CancellationToken.None);
-                await ctx.SaveChangesAsync();
-                return ok;
-            },
-            Left: err =>
+                    var tenandAdded = new UserTenantAdded()
+                    {
+                        UserId = userId,
+                        NewLinkedTenantCreated = t.ToTenantAdded()
+                    };
+                    await publishEndpoint.Publish(tenandAdded, CancellationToken.None);
+                    await ctx.SaveChangesAsync();
+                    return t;
+                });
+        }
+
+        public async Task<Either<IServiceAndFeatureError, Role>> AddRoleInTenantAsync(Guid userId, Guid roleId)
+        {
+            return await GetUserInSelectedTenantAsync(userId)
+                .BindAsync(u => CheckIfRoleExistInTenantOrBaseRole(roleId))
+                .BindAsync(r => AddRoleToUserInTenantAsync(userId, r))
+                .MapAsync(async r => 
+                {
+                    var userRoleAddedToTenant = new UserRoleAddedToTenant()
+                    {
+                        UserId = userId,
+                        RoleId = r.Id,
+                        TenantId = (Guid)currentUser.TenantId!
+                    };
+
+                    await publishEndpoint.Publish(userRoleAddedToTenant, CancellationToken.None);
+                    await ctx.SaveChangesAsync();
+                    return r;
+                });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Role>> AddRoleToUserInTenantAsync(Guid userTenantId, Role role)
+        {
+            var roleInTenantByUser = new UserRoleByTenant()
             {
-                return Prelude.Left(err);
-            });
+                RoleId = role.Id,
+                UserTenantId = userTenantId,
+            };
+
+            await ctx.UserRolesByTenants.AddAsync(roleInTenantByUser);
+            ctx.SetAuditAndSpecialFields();
+            return role;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Role>>
+                CheckIfRoleExistInTenantOrBaseRole(Guid roleId)
+        {
+            var p = new DynamicParameters();
+            p.Add("@tenant_id", currentUser.TenantId);
+            p.Add("@role_id", roleId);
+
+            var con = ctx.Database.GetDbConnection();
+            var sql =
+                """
+                SELECT r.*
+                FROM roles r
+                WHERE (r.tenant_id = @tenant_id OR r.tenant_id IS NULL)
+                AND r.id = @role_id
+                """;
+
+            var result = await con.QuerySingleOrDefaultAsync<Role>(sql, p);
+
+            if (result == null)
+                return new ResourceNotFoundError("Role", "Id", roleId.ToString());
+            else
+                return result;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, User>> GetUserInSelectedTenantAsync(Guid id)
+        {
+            var p = new DynamicParameters();
+            p.Add("@user_id", id);
+            p.Add("@tenant_id", currentUser.TenantId);
+
+            var con = ctx.Database.GetDbConnection();
+            var sql =
+                """
+                SELECT u.*
+                FROM users u
+                INNER JOIN users_tenants ut ON ut.user_id = u.id
+                WHERE u.id = @user_id
+                AND ut.tenant_id = @tenant_id
+                """;
+
+            var result = await con.QueryFirstOrDefaultAsync<User>(sql, p);
+
+            return result == null
+                ? new ResourceNotFoundError("User", "Id", id.ToString())
+                : result;
         }
 
         private async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAndAttachToTheUserAsync(Guid userId, Tenant tenant)

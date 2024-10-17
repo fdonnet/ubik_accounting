@@ -10,5 +10,6 @@ namespace Ubik.Security.Api.Features.Users.Services
     {
         Task<Either<IServiceAndFeatureError, User>> AddAsync(AddUserCommand userCommand);
         Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAsync(Guid userId,AddTenantCommand command);
+        Task<Either<IServiceAndFeatureError, Role>> AddRoleInTenantAsync(Guid userId, Guid roleId);
     }
 }
