@@ -67,6 +67,30 @@ namespace Ubik.Security.Api.Features.Users.Services
                     });
         }
 
+        public async Task<Either<IServiceAndFeatureError, IEnumerable<Role>>> GetUserRolesInSelectedTenantAsync(Guid id)
+        {
+            return await GetUserInSelectedTenantAsync(id)
+                .MapAsync(async u =>
+                {
+                    var p = new DynamicParameters();
+                    p.Add("@user_id", u.Id);
+                    p.Add("@tenant_id", currentUser.TenantId);
+
+                    var con = ctx.Database.GetDbConnection();
+                    var sql =
+                        """
+                        SELECT r.*
+                        FROM roles r
+                        INNER JOIN user_roles_by_tenants urt ON urt.role_id = r.id
+                        INNER JOIN users_tenants ut ON ut.id = urt.user_tenant_id
+                        WHERE ut.user_id = @user_id
+                        AND ut.tenant_id = @tenant_id
+                        """;
+
+                    return await con.QueryAsync<Role>(sql, p);
+                });
+        }
+
         private async Task<Dictionary<Guid,List<AuthorizationStandardResult>>> GetAllAuthorizationByTenantAsyc(Guid userId)
         {
             var p = new DynamicParameters();

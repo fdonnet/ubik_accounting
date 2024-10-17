@@ -48,5 +48,20 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
                 Right: ok => CreatedAtAction(nameof(Get), new { id = ok.Id }, ok.ToUserStandardResult()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
+
+        [HttpGet("{id}/roles")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<UserStandardResult>> GetAllUserRolesInTenant(Guid id)
+        {
+            var result = await queryService.GetUserRolesInSelectedTenantAsync(id);
+            return result.Match(
+                            Right: ok => Ok(ok.ToRoleStandardResults()),
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
+
     }
 }
