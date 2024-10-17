@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using MassTransit;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -13,6 +14,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
         private readonly static Guid _userId = new Guid("c8660000-3c36-7456-580a-08dce562105f");
+        private readonly static Guid _roleId = new Guid("141a0000-3c36-7456-b223-08dce6346ddc");
 
         public UsersController_Test(IntegrationTestProxyFactory factory) : base(factory)
         {
@@ -141,7 +143,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         [InlineData("c8660000-3c36-7456-580a-08dce562105f")]
         [InlineData("d48c0000-088f-d0ad-1adf-08dced1562aa")]
         [InlineData("d48c0000-088f-d0ad-1d00-08dced1562aa")]
-        public async Task Get_User_Roles_WithRWUser_OK(string userId)
+        public async Task Get_User_Roles_WithRW_OK(string userId)
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -162,7 +164,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         [InlineData("c8660000-3c36-7456-580a-08dce562105f")]
         [InlineData("d48c0000-088f-d0ad-1adf-08dced1562aa")]
         [InlineData("d48c0000-088f-d0ad-1d00-08dced1562aa")]
-        public async Task Get_User_Roles_WithROUser_OK(string userId)
+        public async Task Get_User_Roles_WithRO_OK(string userId)
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RO);
@@ -205,6 +207,25 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
+        [Fact]
+        public async Task Get_User_Roles_BadUserId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{NewId.NextGuid()}/roles");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "USER_NOT_FOUND");
+        }
+
         [Theory]
         [InlineData("e84d0000-088f-d0ad-3a6e-08dced19f063")]
         [InlineData("5c5e0000-3c36-7456-b9da-08dcdf9832e2")]
@@ -224,6 +245,146 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "USER_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Get_User_Role_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_userId}/roles/{_roleId}");
+            var result = await response.Content.ReadFromJsonAsync<RoleStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<RoleStandardResult>(); ;
+        }
+
+        [Fact]
+        public async Task Get_User_Role_WithRO_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_userId}/roles/{_roleId}");
+            var result = await response.Content.ReadFromJsonAsync<RoleStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<RoleStandardResult>(); ;
+        }
+
+        [Fact]
+        public async Task Get_User_Role_WithAdminUser_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_userId}/roles/{_roleId}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_User_Role_WithNoAuth_401()
+        {
+            //Arrange
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_userId}/roles/{_roleId}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Theory]
+        [InlineData("e84d0000-088f-d0ad-3a6e-08dced19f063")]
+        [InlineData("5c5e0000-3c36-7456-b9da-08dcdf9832e2")]
+        public async Task Get_User_Role_UserNotInTenant_404(string userId)
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{userId}/roles/{_roleId}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "USER_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Get_User_Role_BadUserId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{NewId.NextGuid()}/roles/{_roleId}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "USER_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Get_User_Role_RoleNotInTenant_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_userId}/roles/989e0000-088f-d0ad-9cf1-08dcedbf070e");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ROLE_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Get_User_Role_BadRoleId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_userId}/roles/{NewId.NextGuid()}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ROLE_NOT_FOUND");
         }
     }
 }

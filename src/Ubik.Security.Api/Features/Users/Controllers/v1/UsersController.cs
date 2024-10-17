@@ -5,6 +5,7 @@ using Ubik.Security.Contracts.Users.Results;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Api.Features.Users.Services;
 using Ubik.Security.Api.Features.Mappers;
+using Ubik.Security.Contracts.Roles.Results;
 
 namespace Ubik.Security.Api.Features.Users.Controllers.v1
 {
@@ -54,11 +55,24 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<UserStandardResult>> GetAllUserRolesInTenant(Guid id)
+        public async Task<ActionResult<IEnumerable<RoleStandardResult>>> GetAllUserRolesInTenant(Guid id)
         {
             var result = await queryService.GetUserRolesInSelectedTenantAsync(id);
             return result.Match(
                             Right: ok => Ok(ok.ToRoleStandardResults()),
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
+        [HttpGet("{id}/roles/{roleId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<RoleStandardResult>> GetUserRoleInTenant(Guid id, Guid roleId)
+        {
+            var result = await queryService.GetUserRoleInSelectedTenantAsync(id, roleId);
+            return result.Match(
+                            Right: ok => Ok(ok.ToRoleStandardResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

@@ -91,7 +91,40 @@ namespace Ubik.Security.Api.Features.Users.Services
                 });
         }
 
-        private async Task<Dictionary<Guid,List<AuthorizationStandardResult>>> GetAllAuthorizationByTenantAsyc(Guid userId)
+        public async Task<Either<IServiceAndFeatureError, Role>> GetUserRoleInSelectedTenantAsync(Guid id, Guid roleId)
+        {
+            return await GetUserInSelectedTenantAsync(id)
+                .BindAsync(u => GetRoleForUserAsync(u.Id, roleId));
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Role>> GetRoleForUserAsync(Guid id,Guid roleId)
+        {
+            var p = new DynamicParameters();
+            p.Add("@user_id", id);
+            p.Add("@tenant_id", currentUser.TenantId);
+            p.Add("@role_id", roleId);
+
+            var con = ctx.Database.GetDbConnection();
+            var sql =
+                """
+                                    SELECT r.*
+                                    FROM roles r
+                                    INNER JOIN user_roles_by_tenants urt ON urt.role_id = r.id
+                                    INNER JOIN users_tenants ut ON ut.id = urt.user_tenant_id
+                                    WHERE ut.user_id = @user_id
+                                    AND ut.tenant_id = @tenant_id
+                                    AND r.id = @role_id
+                                    """;
+
+            var result = await con.QuerySingleOrDefaultAsync<Role>(sql, p);
+
+            if (result == null)
+                return new ResourceNotFoundError("Role", "Id", roleId.ToString());
+            else
+                return result;
+        }
+
+        private async Task<Dictionary<Guid, List<AuthorizationStandardResult>>> GetAllAuthorizationByTenantAsyc(Guid userId)
         {
             var p = new DynamicParameters();
             p.Add("@userid", userId);
