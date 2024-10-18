@@ -40,6 +40,7 @@ namespace Ubik.Api.Tests.Integration
         private void SetTestEnvVariablesForProxy()
         {
             Environment.SetEnvironmentVariable("ReverseProxy__Clusters__ubik_users_admin__Destinations__destination1__Address", $"http://localhost:5000/");
+            Environment.SetEnvironmentVariable("ReverseProxy__Clusters__ubik_accounting__Destinations__destination1__Address", $"http://localhost:5001/");
             Environment.SetEnvironmentVariable("ApiSecurityForAdmin__HostAndPort", $"http://localhost:5000/");
             var authTokenUrl = $"http://localhost:8082/";
 

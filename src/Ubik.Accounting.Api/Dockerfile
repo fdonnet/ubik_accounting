@@ -11,16 +11,16 @@ EXPOSE 8081
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["Ubik.Accounting.Api/Ubik.Accounting.Api.csproj", "Ubik.Accounting.Api/"]
-COPY ["Ubik.Accounting.Contracts/Ubik.Accounting.Contracts.csproj", "Ubik.Accounting.Contracts/"]
-COPY ["Ubik.Db.Common/Ubik.DB.Common/Ubik.DB.Common.csproj", "Ubik.Db.Common/Ubik.DB.Common/"]
-COPY ["Ubik.ApiService.Common/Ubik.ApiService.Common.csproj", "Ubik.ApiService.Common/"]
+WORKDIR /
+COPY ["src/Ubik.Accounting.Api/Ubik.Accounting.Api.csproj", "src/Ubik.Accounting.Api/"]
+COPY ["src/Ubik.Accounting.Contracts/Ubik.Accounting.Contracts.csproj", "src/Ubik.Accounting.Contracts/"]
+COPY ["src/Ubik.Db.Common/Ubik.DB.Common/Ubik.DB.Common.csproj", "src/Ubik.Db.Common/Ubik.DB.Common/"]
+COPY ["src/Ubik.ApiService.Common/Ubik.ApiService.Common.csproj", "src/Ubik.ApiService.Common/"]
 #COPY ["src/mycert.cer", "src/"]
 #ADD ./src/mycert.cer /usr/local/share/ca-certificates/mycert.cer
 #ADD ./src/mycert.cer /etc/ssl/certs/mycert.cer
 #RUN chmod 644 /usr/local/share/ca-certificates/mycert.cer && update-ca-certificates
-RUN dotnet restore "./Ubik.Accounting.Api/Ubik.Accounting.Api.csproj"
+RUN dotnet restore "./src/Ubik.Accounting.Api/Ubik.Accounting.Api.csproj"
 COPY . .
 WORKDIR "/src/Ubik.Accounting.Api"
 RUN dotnet build "./Ubik.Accounting.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build

@@ -11,7 +11,7 @@ EXPOSE 8081
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
+WORKDIR /
 COPY ["src/Ubik.Security.Api/Ubik.Security.Api.csproj", "src/Ubik.Security.Api/"]
 COPY ["src/Ubik.Db.Common/Ubik.DB.Common/Ubik.DB.Common.csproj", "src/Ubik.Db.Common/Ubik.DB.Common/"]
 COPY ["src/Ubik.ApiService.Common/Ubik.ApiService.Common.csproj", "src/Ubik.ApiService.Common/"]
@@ -22,7 +22,7 @@ COPY ["src/Ubik.Security.Contracts/Ubik.Security.Contracts.csproj", "src/Ubik.Se
 #RUN chmod 644 /usr/local/share/ca-certificates/mycert.cer && update-ca-certificates
 RUN dotnet restore "./src/Ubik.Security.Api/Ubik.Security.Api.csproj"
 COPY . .
-WORKDIR "/src/src/Ubik.Security.Api"
+WORKDIR "/src/Ubik.Security.Api"
 RUN dotnet build "./Ubik.Security.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

@@ -19,6 +19,9 @@ namespace Ubik.Security.Api.Data.Config
             builder.HasIndex(a => new { a.RoleId, a.AuthorizationId })
                 .IsUnique();
 
+            builder.Property(a => a.Version)
+                .IsConcurrencyToken();
+
             builder
             .HasOne(e => e.Role)
             .WithMany()

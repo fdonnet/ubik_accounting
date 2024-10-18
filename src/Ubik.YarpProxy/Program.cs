@@ -67,12 +67,12 @@ builder.Services.AddAuthorizationBuilder()
         policy.Requirements.Add(new UserInfoOnlyRequirement(true)))
     .AddPolicy("CanUsersRead", policy =>
         policy.Requirements.Add(new UserWithAuthorizationsRequirement(["security_user_read"])))
-    .AddPolicy("CanAccountGroupsRead", policy =>
-        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_accountgroup_read"])))
     .AddPolicy("CanUsersAndRolesRead", policy =>
         policy.Requirements.Add(new UserWithAuthorizationsRequirement(["security_user_read", "security_role_read"])))
     .AddPolicy("CanUsersAndRolesWrite", policy =>
-        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["security_user_write", "security_role_write"])));
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["security_user_write", "security_role_write"])))
+    .AddPolicy("CanAccountGroupsRead", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_accountgroup_read"])));
 
 //Proxy
 var configProxy = builder.Configuration.GetSection("ReverseProxy");

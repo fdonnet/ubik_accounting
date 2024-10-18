@@ -19,6 +19,9 @@ namespace Ubik.Security.Api.Data.Config
             builder.HasIndex(a => new { a.UserId, a.TenantId })
                 .IsUnique();
 
+            builder.Property(a => a.Version)
+                .IsConcurrencyToken();
+
             //TODO: very dangerous, change that
             builder
             .HasOne(e => e.User)

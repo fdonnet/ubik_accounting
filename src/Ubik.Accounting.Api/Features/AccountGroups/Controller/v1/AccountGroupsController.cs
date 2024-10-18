@@ -16,7 +16,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
     public class AccountGroupsController(IServiceManager serviceManager) : ControllerBase
     {
         //TODO: add auhtorization (maybe manage that in API security before)
-        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
+        //[Authorize(Roles = "ubik_accounting_accountgroup_read")]
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
