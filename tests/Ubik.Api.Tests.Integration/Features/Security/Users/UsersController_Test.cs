@@ -462,6 +462,25 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
+        public async Task Add_User_Role_WithOtherTenantUser_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/d4520000-3c36-7456-cac1-08dcef793b1a/roles/f47b0000-088f-d0ad-c1b9-08dced163f7e", null);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "USER_NOT_FOUND");
+        }
+
+        [Fact]
         public async Task Add_User_Role_WithNoRole_403()
         {
             //Arrange
