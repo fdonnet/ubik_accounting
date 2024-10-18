@@ -28,4 +28,4 @@ namespace Ubik.Api.Tests.Integration
         }
     }
 }
-}
+
