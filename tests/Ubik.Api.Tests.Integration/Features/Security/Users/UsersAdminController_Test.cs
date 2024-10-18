@@ -7,7 +7,7 @@ using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Api.Tests.Integration.Features.Security.Users
 {
-    public class UsersAdminController_Test : BaseIntegrationTest
+    public class UsersAdminController_Test : BaseIntegrationTestSecurity
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;

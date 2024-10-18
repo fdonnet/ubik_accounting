@@ -16,7 +16,7 @@ using MassTransit;
 
 namespace Ubik.Api.Tests.Integration.Features.Security.Tenants
 {
-    public class TenantAdminController_Test : BaseIntegrationTest
+    public class TenantAdminController_Test : BaseIntegrationTestSecurity
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;

@@ -17,6 +17,7 @@ using Ubik.ApiService.Common.Filters;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.ApiService.Common.Middlewares;
+using Ubik.Accounting.Api.Features.Application.Services;
 
 namespace Ubik.Accounting.Api
 {
@@ -122,6 +123,7 @@ namespace Ubik.Accounting.Api
             //Services injection
             //TODO: see if we need to integrate the user service more
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
+            builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
@@ -165,7 +167,18 @@ namespace Ubik.Accounting.Api
                 await DbInitializer.InitializeAsync(context);
             }
 
-            app.UseMiddleware<UserInHeaderMiddleware>();
+            app.UseWhen(
+                httpContext => httpContext.Request.Path.StartsWithSegments("/admin"),
+                subApp => subApp.UseMiddleware<MegaAdminUserInHeaderMiddleware>()
+            );
+
+            app.UseWhen(
+                httpContext => !httpContext.Request.Path.StartsWithSegments("/admin")
+                    && !httpContext.Request.Path.StartsWithSegments("/swagger"),
+
+                subApp => subApp.UseMiddleware<UserInHeaderMiddleware>()
+            );
+
             //app.UseHttpsRedirection();
             //app.UseAuthentication();
             //app.UseAuthorization();

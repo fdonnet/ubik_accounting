@@ -10,7 +10,7 @@ using Ubik.Security.Contracts.Authorizations.Commands;
 
 namespace Ubik.Api.Tests.Integration.Features.Security.Roles
 {
-    public class RolesAdminController_Test : BaseIntegrationTest
+    public class RolesAdminController_Test : BaseIntegrationTestSecurity
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;

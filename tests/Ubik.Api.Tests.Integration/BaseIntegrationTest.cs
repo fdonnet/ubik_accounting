@@ -30,19 +30,8 @@ namespace Ubik.Api.Tests.Integration
             CleanupDb().Wait();
         }
 
-        internal async Task CleanupDb()
-        {
-            if(!Factory.IsDbCleaned)
-            {
-                using var client = Factory.CreateClient();
-                var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        internal abstract Task CleanupDb();
 
-                var response = await client.DeleteAsync($"/usrmgt/admin/api/v1/application/cleanupdb");
-                response.EnsureSuccessStatusCode();
-                Factory.IsDbCleaned = true;
-            }
-        }
 
         internal async Task<string> GetAccessTokenAsync(TokenType tokenType)
         {
@@ -74,7 +63,7 @@ namespace Ubik.Api.Tests.Integration
             throw new Exception("Cannot get auth access token to continue with testing.");
         }
 
-        private static Dictionary<string, string> ValuesForTestRW()
+        protected static Dictionary<string, string> ValuesForTestRW()
         {
             return new Dictionary<string, string>
             {
@@ -88,7 +77,7 @@ namespace Ubik.Api.Tests.Integration
             };
         }
 
-        private static Dictionary<string, string> ValuesForTestRO()
+        protected static Dictionary<string, string> ValuesForTestRO()
         {
             return new Dictionary<string, string>
             {
@@ -102,7 +91,7 @@ namespace Ubik.Api.Tests.Integration
             };
         }
 
-        private static Dictionary<string, string> ValuesForTestNoRole()
+        protected static Dictionary<string, string> ValuesForTestNoRole()
         {
             return new Dictionary<string, string>
             {
@@ -116,7 +105,7 @@ namespace Ubik.Api.Tests.Integration
             };
         }
 
-        private static Dictionary<string, string> ValuesForMegaAdmin()
+        protected static Dictionary<string, string> ValuesForMegaAdmin()
         {
             return new Dictionary<string, string>
             {
@@ -137,7 +126,7 @@ namespace Ubik.Api.Tests.Integration
             _scope?.Dispose();
         }
 
-        private record GetTokenResult
+        protected record GetTokenResult
         {
             [JsonPropertyName("access_token")]
             public string AccessToken { get; init; } = default!;

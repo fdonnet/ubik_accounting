@@ -1,9 +1,9 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Ubik.Accounting.Api.Features.Application.Services;
 using Ubik.ApiService.Common.Exceptions;
-using Ubik.Security.Api.Features.Application.Services;
 
-namespace Ubik.Security.Api.Features.Application.Controllers.v1
+namespace Ubik.Accounting.Api.Features.Application.Controllers.v1
 {
     [ApiController]
     [ApiVersion("1.0")]

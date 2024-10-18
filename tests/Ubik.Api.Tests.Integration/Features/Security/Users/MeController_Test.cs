@@ -9,7 +9,7 @@ using Ubik.Security.Contracts.Tenants.Commands;
 
 namespace Ubik.Api.Tests.Integration.Features.Security.Users
 {
-    public class MeController_Test : BaseIntegrationTest
+    public class MeController_Test : BaseIntegrationTestSecurity
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
