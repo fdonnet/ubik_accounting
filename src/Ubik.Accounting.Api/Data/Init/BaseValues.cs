@@ -37,7 +37,7 @@
 
     public record BaseValuesForTenants
     {
-        public Guid TenantId { get; } = Guid.Parse("727449e8-e93c-49e6-a5e5-1bf145d3e62d");
+        public Guid TenantId { get; } = Guid.Parse("74a20000-088f-d0ad-7a4e-08dce86b0459");
     }
 
     public record BaseValuesForUsers

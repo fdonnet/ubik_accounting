@@ -7,6 +7,7 @@ using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using MassTransit;
 using Ubik.ApiService.Common.Errors;
+using Ubik.Accounting.Api.Features.Mappers;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
 {
@@ -20,9 +21,9 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<GetAllAccountGroupsResult>>> GetAll()
+        public async Task<ActionResult<IEnumerable<AccountGroupStandardResult>>> GetAll()
         {
-            var results = (await serviceManager.AccountGroupService.GetAllAsync()).ToGetAllAccountGroupsResult();
+            var results = (await serviceManager.AccountGroupService.GetAllAsync()).ToAccountGroupStandardResults();
             return Ok(results);
         }
 

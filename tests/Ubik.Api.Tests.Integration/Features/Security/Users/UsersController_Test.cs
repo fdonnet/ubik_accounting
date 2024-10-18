@@ -196,6 +196,20 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
+        public async Task Get_User_Roles_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_userId}/roles");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
         public async Task Get_User_Roles_WithNoAuth_401()
         {
             //Arrange
@@ -288,6 +302,20 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_userId}/roles/{_roleId}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_User_Role_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             //Act
@@ -395,7 +423,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             //Act
-            var response = await _client.PostAsync($"{_baseUrlForV1}/d48c0000-088f-d0ad-1d00-08dced1562aa/roles/f47b0000-088f-d0ad-c1b9-08dced163f7e", null);
+            var response = await _client.PostAsync($"{_baseUrlForV1}/d4520000-3c36-7456-cac1-08dcef793b1a/roles/f47b0000-088f-d0ad-c1b9-08dced163f7e", null);
             var result = await response.Content.ReadFromJsonAsync<RoleStandardResult>();
 
             //Assert
@@ -413,7 +441,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             //Act
-            var response = await _client.PostAsync($"{_baseUrlForV1}/d48c0000-088f-d0ad-1d00-08dced1562aa/roles/f47b0000-088f-d0ad-c1b9-08dced163f7e", null);
+            var response = await _client.PostAsync($"{_baseUrlForV1}/d4520000-3c36-7456-cac1-08dcef793b1a/roles/f47b0000-088f-d0ad-c1b9-08dced163f7e", null);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -427,7 +455,21 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             //Act
-            var response = await _client.PostAsync($"{_baseUrlForV1}/d48c0000-088f-d0ad-1d00-08dced1562aa/roles/f47b0000-088f-d0ad-c1b9-08dced163f7e", null);
+            var response = await _client.PostAsync($"{_baseUrlForV1}/d4520000-3c36-7456-cac1-08dcef793b1a/roles/f47b0000-088f-d0ad-c1b9-08dced163f7e", null);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Add_User_Role_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/d4520000-3c36-7456-cac1-08dcef793b1a/roles/f47b0000-088f-d0ad-c1b9-08dced163f7e", null);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -439,7 +481,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
             //Arrange
 
             //Act
-            var response = await _client.PostAsync($"{_baseUrlForV1}/d48c0000-088f-d0ad-1d00-08dced1562aa/roles/f47b0000-088f-d0ad-c1b9-08dced163f7e", null);
+            var response = await _client.PostAsync($"{_baseUrlForV1}/d4520000-3c36-7456-cac1-08dcef793b1a/roles/f47b0000-088f-d0ad-c1b9-08dced163f7e", null);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

@@ -10,7 +10,8 @@ namespace Ubik.Api.Tests.Integration
         MegaAdmin,
         RW,
         RO,
-        NoRole
+        NoRole,
+        OtherTenant
     }
 
     [Collection("Proxy")]
@@ -49,6 +50,9 @@ namespace Ubik.Api.Tests.Integration
                     break;
                 case TokenType.NoRole:
                     dict = ValuesForTestNoRole();
+                    break;
+                case TokenType.OtherTenant:
+                    dict = ValuesForOtherTenantUser();
                     break;
             }
 
@@ -113,6 +117,20 @@ namespace Ubik.Api.Tests.Integration
                 { "client_id", "ubik_app" },
                 { "client_secret", "Ye6Y36ocA4SaGqYzd0HgmqMhVaM2jlkE" },
                 { "username", "admin@test.com" },
+                { "password", "test" },
+                { "grant_type", "password" },
+                { "scope", "openid" },
+            };
+        }
+
+        private static Dictionary<string, string> ValuesForOtherTenantUser()
+        {
+            return new Dictionary<string, string>
+            {
+                { "Content-Type", "application/x-www-form-urlencoded" },
+                { "client_id", "ubik_app" },
+                { "client_secret", "Ye6Y36ocA4SaGqYzd0HgmqMhVaM2jlkE" },
+                { "username", "testothertenant@test.com" },
                 { "password", "test" },
                 { "grant_type", "password" },
                 { "scope", "openid" },

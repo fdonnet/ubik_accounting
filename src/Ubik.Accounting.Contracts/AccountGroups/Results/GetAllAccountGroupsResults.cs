@@ -2,7 +2,7 @@
 {
     public record GetAllAccountGroupsResults
     {
-        public GetAllAccountGroupsResult[] AccountGroups { get; init; } = default!;
+        public AccountGroupStandardResult[] AccountGroups { get; init; } = default!;
     }
 }
 

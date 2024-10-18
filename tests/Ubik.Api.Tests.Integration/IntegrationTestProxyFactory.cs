@@ -8,7 +8,8 @@ namespace Ubik.Api.Tests.Integration
       IAsyncLifetime
     {
         private readonly HttpClient _client = new();
-        public bool IsDbCleaned { get; set; } = false;
+        public bool IsDbCleanedAccounting { get; set; } = false;
+        public bool IsDbCleanedSecurity { get; set; } = false;
 
         public IntegrationTestProxyFactory()
         {

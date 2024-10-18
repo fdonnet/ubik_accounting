@@ -15,7 +15,7 @@ namespace Ubik.Api.Tests.Integration
 
         protected override async Task CleanupDb()
         {
-            if (!Factory.IsDbCleaned)
+            if (!Factory.IsDbCleanedAccounting)
             {
                 using var client = Factory.CreateClient();
                 var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -23,7 +23,7 @@ namespace Ubik.Api.Tests.Integration
 
                 var response = await client.DeleteAsync($"/accounting/admin/api/v1/application/cleanupdb");
                 response.EnsureSuccessStatusCode();
-                Factory.IsDbCleaned = true;
+                Factory.IsDbCleanedAccounting = true;
             }
         }
     }
