@@ -18,6 +18,7 @@ using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.ApiService.Common.Middlewares;
 using Ubik.Accounting.Api.Features.Application.Services;
+using Ubik.Accounting.Api.Features.AccountGroups.Services;
 
 namespace Ubik.Accounting.Api
 {
@@ -124,6 +125,7 @@ namespace Ubik.Accounting.Api
             //TODO: see if we need to integrate the user service more
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
+            builder.Services.AddScoped<IAccountGroupQueryService, AccountGroupQueryService>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 

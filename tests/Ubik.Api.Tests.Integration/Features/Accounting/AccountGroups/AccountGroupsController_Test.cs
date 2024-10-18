@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ubik.Security.Contracts.Roles.Results;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
+using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
 {
@@ -16,8 +17,8 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
-        private readonly static Guid _accountGroupId = new("141a0000-3c36-7456-b223-08dce6346ddc");  //usrmgt_all_rw
-        private readonly static Guid _accountGroupToDel = new("b8650000-088f-d0ad-2726-08dcedbd2375");
+        private readonly static Guid _accountGroupId = new("ec860000-5dd4-0015-93df-08dcda2056e2");  //usrmgt_all_rw
+        private readonly static Guid _accountGroupToDel = new("34980000-5dd4-0015-30ac-08dcdb08a8cc");
 
         public AccountGroupsController_Test(IntegrationTestProxyFactory factory) : base(factory)
         {
@@ -103,5 +104,126 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
+
+        [Fact]
+        public async Task Get_AccountGroup_By_Id_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_accountGroupId}");
+            var result = await response.Content.ReadFromJsonAsync<AccountGroupStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AccountGroupStandardResult>()
+                .And.Match<AccountGroupStandardResult>(x => x.Id == _accountGroupId);
+        }
+
+        [Fact]
+        public async Task Get_AccountGroup_By_Id_WithRO_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_accountGroupId}");
+            var result = await response.Content.ReadFromJsonAsync<AccountGroupStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AccountGroupStandardResult>()
+                .And.Match<AccountGroupStandardResult>(x => x.Id == _accountGroupId);
+        }
+
+        [Fact]
+        public async Task Get_AccountGroup_By_Id_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_accountGroupId}");
+            
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_AccountGroup_By_Id_WithNoAuth_401()
+        {
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_accountGroupId}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Get_AccountGroup_By_Id_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_accountGroupId}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_AccountGroup_By_Id_WithOtherTenant_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_accountGroupId}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Get_AccountGroup_By_Id_WithWrongId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{Guid.NewGuid()}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_NOT_FOUND");
+        }
+
+
+
+
+
+
     }
 }

@@ -8,13 +8,14 @@ using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
 using MassTransit;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Accounting.Api.Features.Mappers;
+using Ubik.Accounting.Api.Features.AccountGroups.Services;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
 {
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class AccountGroupsController(IServiceManager serviceManager) : ControllerBase
+    public class AccountGroupsController(IServiceManager serviceManager, IAccountGroupQueryService queryService) : ControllerBase
     {
         //TODO: add auhtorization (maybe manage that in API security before)
         //[Authorize(Roles = "ubik_accounting_accountgroup_read")]
@@ -23,11 +24,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<AccountGroupStandardResult>>> GetAll()
         {
-            var results = (await serviceManager.AccountGroupService.GetAllAsync()).ToAccountGroupStandardResults();
-            return Ok(results);
+            var result = (await queryService.GetAllAsync()).ToAccountGroupStandardResults();
+            return Ok(result);
         }
 
-        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -35,10 +35,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<GetAccountGroupResult>> Get(Guid id)
         {
-            var result = await serviceManager.AccountGroupService.GetAsync(id);
+            var result = await queryService.GetAsync(id);
 
             return result.Match(
-                Right: ok => Ok(ok.ToGetAccountGroupResult()),
+                Right: ok => Ok(ok.ToAccountGroupStandardResult()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

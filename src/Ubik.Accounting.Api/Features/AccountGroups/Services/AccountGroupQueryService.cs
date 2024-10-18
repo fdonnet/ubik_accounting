@@ -8,9 +8,18 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
     public class AccountGroupQueryService(AccountingDbContext ctx) : IAccountGroupQueryService
     {
-        public async Task<Either<IServiceAndFeatureError, IEnumerable<AccountGroup>>> GetAllAsync(Guid id)
+        public async Task<IEnumerable<AccountGroup>> GetAllAsync()
         {
             return await ctx.AccountGroups.ToListAsync();
+        }
+
+        public async Task<Either<IServiceAndFeatureError, AccountGroup>> GetAsync(Guid id)
+        {
+            var accountGroup = await ctx.AccountGroups.FindAsync(id);
+
+            return accountGroup == null
+                ? new ResourceNotFoundError("AccountGroup", "Id", id.ToString())
+                : accountGroup;
         }
     }
 }
