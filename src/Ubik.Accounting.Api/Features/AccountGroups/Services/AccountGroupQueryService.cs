@@ -1,12 +1,14 @@
-﻿using LanguageExt;
+﻿using Dapper;
+using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Errors;
+using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
-    public class AccountGroupQueryService(AccountingDbContext ctx) : IAccountGroupQueryService
+    public class AccountGroupQueryService(AccountingDbContext ctx, ICurrentUser currentUser) : IAccountGroupQueryService
     {
         public async Task<IEnumerable<AccountGroup>> GetAllAsync()
         {
@@ -24,7 +26,23 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 
         public async Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetChildAccountsAsync(Guid id)
         {
+            return await GetAsync(id)
+                .MapAsync(async a =>
+                {
+                    var p = new DynamicParameters();
+                    p.Add("@account_group_id", id);
+                    p.Add("@tenantId", currentUser.TenantId);
 
+                    var con = ctx.Database.GetDbConnection();
+                    var sql = """
+                              SELECT a.* 
+                              FROM accounts a
+                              INNER JOIN accounts_account_groups aag ON a.id = aag.account_id
+                              WHERE aag.account_group_id = @account_group_id
+                              """;
+
+                    return await con.QueryAsync<Account>(sql, p);
+                });
         }
     }
 }
