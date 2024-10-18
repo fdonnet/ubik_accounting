@@ -77,7 +77,7 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
         }
 
         [HttpPost("{id}/roles/{roleId}")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(201)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
@@ -85,7 +85,7 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
         {
             var result = await commandService.AddRoleInTenantAsync(id, roleId);
             return result.Match(
-                            Right: ok => Ok(ok.ToRoleStandardResult()),
+                            Right: ok => CreatedAtAction(nameof(GetUserRoleInTenant), new { id, roleId }, ok.ToRoleStandardResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

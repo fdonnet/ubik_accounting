@@ -85,8 +85,10 @@ namespace Ubik.Security.Api.Features.Users.Services
         {
             return await GetUserInSelectedTenantAsync(userId)
                 .BindAsync(u => CheckIfRoleExistInTenantOrBaseRole(roleId))
-                .BindAsync(r => AddRoleToUserInTenantAsync(userId, r))
-                .MapAsync(async r => 
+                .BindAsync(r => GetUserTenantLink(userId,r))
+                .BindAsync(utr => CheckIfUserTenantRoleAlreadyExists(utr.Item1, utr.Item2))
+                .BindAsync(utr => AddRoleToUserInTenantAsync(utr.Item1.Id, utr.Item2))
+                .MapAsync(async r =>
                 {
                     var userRoleAddedToTenant = new UserRoleAddedToTenant()
                     {
@@ -99,6 +101,26 @@ namespace Ubik.Security.Api.Features.Users.Services
                     await ctx.SaveChangesAsync();
                     return r;
                 });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, (UserTenant,Role)>> GetUserTenantLink(Guid userId,Role role)
+        {
+            var result = await ctx.UsersTenants.SingleOrDefaultAsync(ut => ut.UserId == userId
+                                                            && ut.TenantId == currentUser.TenantId);
+
+            return result == null
+                ? new ResourceNotFoundError("UserTenant", "UserId/TenantId", $"{userId}/{currentUser.TenantId}")
+                : (result,role);
+        }
+
+        private async Task<Either<IServiceAndFeatureError, (UserTenant, Role)>> CheckIfUserTenantRoleAlreadyExists(UserTenant userTenant, Role role)
+        {
+            var result = await ctx.UserRolesByTenants.SingleOrDefaultAsync(ut => ut.UserTenantId == userTenant.Id
+                                                            && ut.RoleId == role.Id);
+
+            return result == null
+                ? (userTenant, role)
+                : new ResourceAlreadyExistsError("UserRoleByTenant", "UserTenantId/RoleId", $"{userTenant.Id}/{role.Id}");
         }
 
         private async Task<Either<IServiceAndFeatureError, Role>> AddRoleToUserInTenantAsync(Guid userTenantId, Role role)

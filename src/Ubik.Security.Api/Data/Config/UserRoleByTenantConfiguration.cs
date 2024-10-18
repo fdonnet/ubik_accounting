@@ -10,24 +10,21 @@ namespace Ubik.Security.Api.Data.Config
         {
             builder.ToTable("users_roles_by_tenant");
 
-            builder.Property(a => a.UserTenantId)
-                .IsRequired();
-
-            builder.Property(a => a.RoleId)
-                .IsRequired();
-
             builder.HasIndex(a => new { a.UserTenantId, a.RoleId })
-                .IsUnique();
+            .IsUnique();
 
             builder
             .HasOne(e => e.UserTenant)
             .WithMany()
-            .HasForeignKey(e => e.UserTenantId).OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(e => e.UserTenantId).OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
 
             builder
            .HasOne(e => e.Role)
            .WithMany()
-           .HasForeignKey(e => e.RoleId).OnDelete(DeleteBehavior.Cascade);
+           .HasForeignKey(e => e.RoleId).OnDelete(DeleteBehavior.Cascade)
+           .IsRequired();
+
         }
     }
 }
