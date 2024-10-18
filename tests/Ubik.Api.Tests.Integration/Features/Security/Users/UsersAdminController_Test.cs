@@ -37,7 +37,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_User_ByEmail_BadEmail_404()
+        public async Task Get_User_ByEmail_WithBadEmail_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);

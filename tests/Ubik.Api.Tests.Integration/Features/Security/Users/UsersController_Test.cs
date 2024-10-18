@@ -45,7 +45,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_User_NotFound_404()
+        public async Task Get_User_WithBadId_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -64,7 +64,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_User_NotInTheTenant_404()
+        public async Task Get_User_WithUserNotInTheTenant_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -222,7 +222,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_User_Roles_BadUserId_404()
+        public async Task Get_User_Roles_WithBadUserId_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -359,7 +359,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_User_Role_BadUserId_404()
+        public async Task Get_User_Role_WithBadUserId_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -378,7 +378,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_User_Role_RoleNotInTenant_404()
+        public async Task Get_User_Role_WithRoleNotInTenant_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -397,7 +397,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Get_User_Role_BadRoleId_404()
+        public async Task Get_User_Role_WithBadRoleId_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -507,7 +507,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Add_User_Role_BadUserId_404()
+        public async Task Add_User_Role_WithBadUserId_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -526,7 +526,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Add_User_Role_UserNotInTenant_404()
+        public async Task Add_User_Role_WithUserNotInTenant_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -545,7 +545,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Add_User_Role_BadRoleId_404()
+        public async Task Add_User_Role_WithBadRoleId_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -564,7 +564,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Add_User_Role_RoleNotInTenant_404()
+        public async Task Add_User_Role_WithRoleNotInTenant_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -583,7 +583,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
         }
 
         [Fact]
-        public async Task Add_User_Role_UserAlreadyHasRoleInTenant_409()
+        public async Task Add_User_Role_WithUserAlreadyHasRoleInTenant_409()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);

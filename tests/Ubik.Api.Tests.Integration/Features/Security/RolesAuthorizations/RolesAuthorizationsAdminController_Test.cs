@@ -259,7 +259,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.RolesAuthorizations
         }
 
         [Fact]
-        public async Task Add_RoleAuthorization_BadAuthorizationId_400()
+        public async Task Add_RoleAuthorization_WithBadId_400()
         {
             // Arrange
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);

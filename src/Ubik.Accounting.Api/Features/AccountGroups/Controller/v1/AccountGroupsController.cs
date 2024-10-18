@@ -21,6 +21,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         //[Authorize(Roles = "ubik_accounting_accountgroup_read")]
         [HttpGet]
         [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<AccountGroupStandardResult>>> GetAll()
         {
@@ -42,8 +43,6 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
-        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet("{id}/Accounts")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]

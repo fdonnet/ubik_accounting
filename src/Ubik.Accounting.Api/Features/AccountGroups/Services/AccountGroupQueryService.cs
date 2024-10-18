@@ -21,5 +21,10 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                 ? new ResourceNotFoundError("AccountGroup", "Id", id.ToString())
                 : accountGroup;
         }
+
+        public async Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetChildAccountsAsync(Guid id)
+        {
+
+        }
     }
 }

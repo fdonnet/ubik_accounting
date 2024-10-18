@@ -183,7 +183,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
         }
 
         [Fact]
-        public async Task Get_AccountGroup_By_Id_WithOtherTenant_404()
+        public async Task Get_AccountGroup_By_Id_WithOtherTenantUser_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.OtherTenant);
@@ -202,7 +202,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
         }
 
         [Fact]
-        public async Task Get_AccountGroup_By_Id_WithWrongId_404()
+        public async Task Get_AccountGroup_By_Id_WithBadId_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -219,11 +219,6 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_NOT_FOUND");
         }
-
-
-
-
-
 
     }
 }
