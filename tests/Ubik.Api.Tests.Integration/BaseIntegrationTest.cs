@@ -30,7 +30,7 @@ namespace Ubik.Api.Tests.Integration
             CleanupDb().Wait();
         }
 
-        internal abstract Task CleanupDb();
+        protected abstract Task CleanupDb();
 
 
         internal async Task<string> GetAccessTokenAsync(TokenType tokenType)
@@ -63,7 +63,7 @@ namespace Ubik.Api.Tests.Integration
             throw new Exception("Cannot get auth access token to continue with testing.");
         }
 
-        protected static Dictionary<string, string> ValuesForTestRW()
+        private static Dictionary<string, string> ValuesForTestRW()
         {
             return new Dictionary<string, string>
             {
@@ -77,7 +77,7 @@ namespace Ubik.Api.Tests.Integration
             };
         }
 
-        protected static Dictionary<string, string> ValuesForTestRO()
+        private static Dictionary<string, string> ValuesForTestRO()
         {
             return new Dictionary<string, string>
             {
@@ -91,7 +91,7 @@ namespace Ubik.Api.Tests.Integration
             };
         }
 
-        protected static Dictionary<string, string> ValuesForTestNoRole()
+        private static Dictionary<string, string> ValuesForTestNoRole()
         {
             return new Dictionary<string, string>
             {
@@ -105,7 +105,7 @@ namespace Ubik.Api.Tests.Integration
             };
         }
 
-        protected static Dictionary<string, string> ValuesForMegaAdmin()
+        private static Dictionary<string, string> ValuesForMegaAdmin()
         {
             return new Dictionary<string, string>
             {
@@ -126,7 +126,7 @@ namespace Ubik.Api.Tests.Integration
             _scope?.Dispose();
         }
 
-        protected record GetTokenResult
+        private record GetTokenResult
         {
             [JsonPropertyName("access_token")]
             public string AccessToken { get; init; } = default!;

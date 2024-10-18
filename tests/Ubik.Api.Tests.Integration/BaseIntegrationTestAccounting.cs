@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Ubik.Api.Tests.Integration
 {
-    public abstract class BaseIntegrationTestSecurity : BaseIntegrationTest
+    public abstract class BaseIntegrationTestAccounting : BaseIntegrationTest
     {
-        internal BaseIntegrationTestSecurity(IntegrationTestProxyFactory factory) : base(factory)
+        internal BaseIntegrationTestAccounting(IntegrationTestProxyFactory factory) : base(factory)
         {
         }
 
@@ -21,10 +21,11 @@ namespace Ubik.Api.Tests.Integration
                 var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.DeleteAsync($"/usrmgt/admin/api/v1/application/cleanupdb");
+                var response = await client.DeleteAsync($"/accounting/admin/api/v1/application/cleanupdb");
                 response.EnsureSuccessStatusCode();
                 Factory.IsDbCleaned = true;
             }
         }
     }
+}
 }
