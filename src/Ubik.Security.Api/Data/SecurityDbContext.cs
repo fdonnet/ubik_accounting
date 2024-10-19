@@ -59,11 +59,6 @@ namespace Ubik.Security.Api.Data
             ChangeTracker.SetSpecialFields(_currentUser);
         }
 
-        public void SetAuditAndSpecialFieldsForAdmin()
-        {
-            ChangeTracker.SetSpecialFieldsForAdminUser(_currentUser);
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Build for Masstransit inbox/outbox

@@ -9,6 +9,6 @@ namespace Ubik.Security.Api.Features.Roles.Services
     {
         public Task<Either<IServiceAndFeatureError, Role>> AddAsync(AddRoleCommand authorizationCommand);
         public Task<Either<IServiceAndFeatureError, Role>> UpdateAsync(UpdateRoleCommand authorizationCommand);
-        public Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id);
+        public Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id);
     }
 }

@@ -27,27 +27,25 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
             var model = command.ToAuthorization();
 
             return await GetAsync(model.Id)
-               .BindAsync(a => MapInDbContextAsync(a,model))
+               .BindAsync(a => MapInDbContextAsync(a, model))
                .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
                .BindAsync(UpdateInDbContextAsync)
                .BindAsync(UpdateSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id)
         {
-            var res = await ExecuteDeleteAuthorizationAsync(id);
 
-            return await res.MatchAsync<Either<IServiceAndFeatureError, bool>>(
-                RightAsync: async r =>
-                {
-                    await publishEndpoint.Publish(new AuthorizationDeleted { Id = id }, CancellationToken.None);
-                    await ctx.SaveChangesAsync();
-                    return true;
-                },
-                Left: err =>
-                {
-                    return Prelude.Left(err);
-                });
+            return await GetAsync(id)
+                .BindAsync(DeleteInDbContextAsync)
+                .BindAsync(DeleteSaveAndPublishAsync);
+        }
+
+        private async Task<Either<IServiceAndFeatureError, bool>> DeleteSaveAndPublishAsync(Authorization current)
+        {
+            await publishEndpoint.Publish(new AuthorizationDeleted { Id = current.Id }, CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return true;
         }
 
         private async Task<Either<IServiceAndFeatureError, Authorization>> MapInDbContextAsync
@@ -108,7 +106,7 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
         private async Task<Either<IServiceAndFeatureError, Authorization>> UpdateInDbContextAsync(Authorization authorization)
         {
             ctx.Entry(authorization).State = EntityState.Modified;
-            ctx.SetAuditAndSpecialFieldsForAdmin();
+            ctx.SetAuditAndSpecialFields();
 
             await Task.CompletedTask;
             return authorization;
@@ -118,18 +116,16 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
         {
             authorization.Id = NewId.NextGuid();
             await ctx.Authorizations.AddAsync(authorization);
-            ctx.SetAuditAndSpecialFieldsForAdmin();
+            ctx.SetAuditAndSpecialFields();
             return authorization;
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAuthorizationAsync(Guid id)
+        private async Task<Either<IServiceAndFeatureError, Authorization>> DeleteInDbContextAsync(Authorization authorization)
         {
-            return await GetAsync(id)
-                    .MapAsync(async ac =>
-                    {
-                        await ctx.Authorizations.Where(x => x.Id == id).ExecuteDeleteAsync();
-                        return true;
-                    });
+            ctx.Entry(authorization).State = EntityState.Deleted;
+
+            await Task.CompletedTask;
+            return authorization;
         }
     }
 }

@@ -15,19 +15,9 @@ namespace Ubik.Security.Api.Features.Roles.Services
     {
         public async Task<Either<IServiceAndFeatureError, Role>> AddAsync(AddRoleCommand command)
         {
-            var result = await AddRoleAsync(command.ToRole());
-
-            return await result.MatchAsync<Either<IServiceAndFeatureError, Role>>(
-            RightAsync: async r =>
-            {
-                await publishEndpoint.Publish(r.ToRoleAdded(), CancellationToken.None);
-                await ctx.SaveChangesAsync();
-                return r;
-            },
-            Left: err =>
-            {
-                return Prelude.Left(err);
-            });
+            return await ValidateIfNotAlreadyExistsAsync(command.ToRole())
+                .BindAsync(AddInDbContextAsync)
+                .BindAsync(AddSaveAndPublishAsync);
         }
 
         public async Task<Either<IServiceAndFeatureError, Role>> UpdateAsync(UpdateRoleCommand command)
@@ -35,28 +25,31 @@ namespace Ubik.Security.Api.Features.Roles.Services
             var model = command.ToRole();
 
             return await GetAsync(model.Id)
-                    .BindAsync(r => MapInDbContextAsync(r,model))
+                    .BindAsync(r => MapInDbContextAsync(r, model))
                     .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
                     .BindAsync(UpdateInDbContextAsync)
                     .BindAsync(UpdateSaveAndPublishAsync);
-
         }
 
-        public async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
+        public async Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id)
         {
-            var res = await ExecuteDeleteRoleAsync(id);
+            return await GetAsync(id)
+                .BindAsync(DeleteInDbContextAsync)
+                .BindAsync(DeleteSaveAndPublishAsync);
+        }
 
-            return await res.MatchAsync<Either<IServiceAndFeatureError, bool>>(
-                RightAsync: async r =>
-                {
-                    await publishEndpoint.Publish(new RoleDeleted { Id = id }, CancellationToken.None);
-                    await ctx.SaveChangesAsync();
-                    return true;
-                },
-                Left: err =>
-                {
-                    return Prelude.Left(err);
-                });
+        private async Task<Either<IServiceAndFeatureError, bool>> DeleteSaveAndPublishAsync(Role current)
+        {
+            await publishEndpoint.Publish(new RoleDeleted { Id = current.Id }, CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return true;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Role>> AddSaveAndPublishAsync(Role current)
+        {
+            await publishEndpoint.Publish(current.ToRoleAdded(), CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, Role>> UpdateSaveAndPublishAsync(Role role)
@@ -111,32 +104,26 @@ namespace Ubik.Security.Api.Features.Roles.Services
         private async Task<Either<IServiceAndFeatureError, Role>> UpdateInDbContextAsync(Role current)
         {
             ctx.Entry(current).State = EntityState.Modified;
-            ctx.SetAuditAndSpecialFieldsForAdmin();
+            ctx.SetAuditAndSpecialFields();
 
             await Task.CompletedTask;
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Role>> AddRoleAsync(Role current)
+        private async Task<Either<IServiceAndFeatureError, Role>> AddInDbContextAsync(Role current)
         {
-            return await ValidateIfNotAlreadyExistsAsync(current)
-               .MapAsync(async ac =>
-               {
-                   ac.Id = NewId.NextGuid();
-                   await ctx.Roles.AddAsync(ac);
-                   ctx.SetAuditAndSpecialFieldsForAdmin();
-                   return ac;
-               });
+            current.Id = NewId.NextGuid();
+            await ctx.Roles.AddAsync(current);
+            ctx.SetAuditAndSpecialFields();
+            return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteRoleAsync(Guid id)
+        private async Task<Either<IServiceAndFeatureError, Role>> DeleteInDbContextAsync(Role current)
         {
-            return await GetAsync(id)
-                    .MapAsync(async ac =>
-                    {
-                        await ctx.Roles.Where(x => x.Id == id).ExecuteDeleteAsync();
-                        return true;
-                    });
+            ctx.Entry(current).State = EntityState.Deleted;
+
+            await Task.CompletedTask;
+            return current;
         }
     }
 }
