@@ -87,7 +87,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
         }
 
         public async Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateAsync(AccountGroup accountGroup)
-        {
+        {   
             return await GetAsync(accountGroup.Id).ToAsync()
                 .Map(ag => ag = accountGroup.ToAccountGroup(ag))
                 .Bind(ag => ValidateIfNotAlreadyExistsWithOtherIdAsync(ag).ToAsync())

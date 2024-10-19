@@ -59,21 +59,6 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
             };
         }
 
-
-        public static AccountGroup ToAccountGroup(this UpdateAccountGroupCommand updAccountGroupCommand)
-        {
-            return new AccountGroup()
-            {
-                Id = updAccountGroupCommand.Id,
-                Code = updAccountGroupCommand.Code,
-                Label = updAccountGroupCommand.Label,
-                Description = updAccountGroupCommand.Description,
-                ParentAccountGroupId = updAccountGroupCommand.ParentAccountGroupId,
-                ClassificationId = updAccountGroupCommand.AccountGroupClassificationId,
-                Version = updAccountGroupCommand.Version
-            };
-        }
-
         public static UpdateAccountGroupResult ToUpdateAccountGroupResult(this AccountGroup accountGroup)
         {
             return new UpdateAccountGroupResult()
@@ -126,19 +111,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
             };
         }
 
-        public static AccountGroupUpdated ToAccountGroupUpdated(this AccountGroup accountGroup)
-        {
-            return new AccountGroupUpdated
-            {
-                Id = accountGroup.Id,
-                Code = accountGroup.Code,
-                Label = accountGroup.Label,
-                Description = accountGroup.Description,
-                ParentAccountGroupId = accountGroup.ParentAccountGroupId,
-                AccountGroupClassificationId = accountGroup.ClassificationId,
-                Version = accountGroup.Version
-            };
-        }
+
 
         public static AccountGroupDeleted ToAccountGroupDeleted(this AccountGroup accountGroup)
         {

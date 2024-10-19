@@ -1,6 +1,5 @@
 ﻿using LanguageExt;
 using MassTransit;
-using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.AccountGroups.Errors;
@@ -8,6 +7,7 @@ using Ubik.Accounting.Api.Features.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.ApiService.Common.Errors;
+using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Services
 {
@@ -16,15 +16,79 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
         public async Task<Either<IServiceAndFeatureError, AccountGroup>> AddAsync(AddAccountGroupCommand command)
         {
             return await ValidateIfNotAlreadyExistsAsync(command.ToAccountGroup())
-                        .BindAsync(ag => ValidateIfParentAccountGroupExistsAsync(ag))
-                        .BindAsync(ag => ValidateIfClassificationExistsAsync(ag))
-                        .BindAsync(ag => AddInDbContextAsync(ag))
-                        .MapAsync(async ag =>
-                        {
-                            await publishEndpoint.Publish(ag.ToAccountGroupAdded(), CancellationToken.None);
-                            await ctx.SaveChangesAsync();
-                            return ag;
-                        });
+                        .BindAsync(ValidateIfParentAccountGroupExistsAsync)
+                        .BindAsync(ValidateIfClassificationExistsAsync)
+                        .BindAsync(AddInDbContextAsync)
+                        .BindAsync(AddSaveAndPublishAsync);
+        }
+
+        public async Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateAsync(UpdateAccountGroupCommand command)
+        {
+            var model = command.ToAccountGroup();
+
+            return await GetAsync(model.Id)
+                .MapAsync(async ag =>
+                {
+                    ag = model.ToAccountGroup(ag);
+                    await Task.CompletedTask;
+                    return ag;
+                })
+                .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
+                .BindAsync(ValidateIfParentAccountGroupExistsAsync)
+                .BindAsync(ValidateIfClassificationExistsAsync)
+                .BindAsync(UpdateInDbContext)
+                .BindAsync(UpdateSaveAndPublishAsync);
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> AddSaveAndPublishAsync(AccountGroup accountGroup)
+        {
+            await publishEndpoint.Publish(accountGroup.ToAccountGroupAdded(), CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return accountGroup;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateSaveAndPublishAsync(AccountGroup accountGroup)
+        {
+            try
+            {
+                await publishEndpoint.Publish(accountGroup.ToAccountGroupUpdated(), CancellationToken.None);
+                await ctx.SaveChangesAsync();
+                return accountGroup;
+            }
+            catch (UpdateDbConcurrencyException)
+            {
+                return new ResourceUpdateConcurrencyError("AccountGroup", accountGroup.Version.ToString());
+            }
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateInDbContext(AccountGroup accountGroup)
+        {
+            ctx.Entry(accountGroup).State = EntityState.Modified;
+            ctx.SetAuditAndSpecialFields();
+
+            await Task.CompletedTask;
+            return accountGroup;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfNotAlreadyExistsWithOtherIdAsync(AccountGroup accountGroup)
+        {
+            var exists = await ctx.AccountGroups.AnyAsync(a => a.Code == accountGroup.Code
+                        && a.ClassificationId == accountGroup.ClassificationId
+                        && a.Id != accountGroup.Id);
+
+            return exists
+                ? new ResourceAlreadyExistsError("AccountGroup_In_Classification",
+                    "Code/ClassificationId/Id", $"{accountGroup.Code}/{accountGroup.ClassificationId}/{accountGroup.Id}")
+                : accountGroup;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> GetAsync(Guid id)
+        {
+            var accountGroup = await ctx.AccountGroups.FindAsync(id);
+
+            return accountGroup == null
+                ? new ResourceNotFoundError("AccountGroup", "Id", id.ToString())
+                : accountGroup;
         }
 
         private async Task<Either<IServiceAndFeatureError, AccountGroup>> AddInDbContextAsync(AccountGroup accountGroup)

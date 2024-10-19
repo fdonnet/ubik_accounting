@@ -15,48 +15,29 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
     public class AuthorizationsCommandsService(SecurityDbContext ctx, IPublishEndpoint publishEndpoint) : IAuthorizationsCommandsService
     {
 
-        public async Task<Either<IServiceAndFeatureError, Authorization>> AddAsync(AddAuthorizationCommand authorizationCommand)
+        public async Task<Either<IServiceAndFeatureError, Authorization>> AddAsync(AddAuthorizationCommand command)
         {
-            var result = await AddAuthorizationAsync(authorizationCommand.ToAuthorization());
-
-            return await result.MatchAsync<Either<IServiceAndFeatureError, Authorization>>(
-            RightAsync: async r =>
-            {
-                await publishEndpoint.Publish(r.ToAuthorizationAdded(), CancellationToken.None);
-                await ctx.SaveChangesAsync();
-                return r;
-            },
-            Left: err =>
-            {
-                return Prelude.Left(err);
-            });
+            return await ValidateIfNotAlreadyExistsAsync(command.ToAuthorization())
+                .BindAsync(AddInDbContextAsync)
+                .BindAsync(AddSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, Authorization>> UpdateAsync(UpdateAuthorizationCommand authorizationCommand)
+        public async Task<Either<IServiceAndFeatureError, Authorization>> UpdateAsync(UpdateAuthorizationCommand command)
         {
-            var result = await UpdateAuthorizationAsync(authorizationCommand.ToAuthorization());
+            var model = command.ToAuthorization();
 
-            return await result.MatchAsync<Either<IServiceAndFeatureError, Authorization>>(
-                RightAsync: async r =>
-                {
-                    try
-                    {
-                        //Store and publish AccountGroupAdded event
-                        await publishEndpoint.Publish(r.ToAuthorizationUpdated(), CancellationToken.None);
-                        await ctx.SaveChangesAsync();
-                        return r;
-                    }
-                    catch (UpdateDbConcurrencyException)
-                    {
-                        return new ResourceUpdateConcurrencyError("Authorization", r.Version.ToString());
-                    }
-                },
-                Left: err =>
-                {
-                    return Prelude.Left(err);
-                });
+            return await GetAsync(model.Id)
+               .MapAsync(async c =>
+               {
+                   c = model.ToAuthorization(c);
+                   await Task.CompletedTask;
+                   return c;
+    
+               })
+               .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
+               .BindAsync(UpdateInDbContextAsync)
+               .BindAsync(UpdateSaveAndPublishAsync);
         }
-
 
         public async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
         {
@@ -73,6 +54,27 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
                 {
                     return Prelude.Left(err);
                 });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Authorization>> AddSaveAndPublishAsync(Authorization authorization)
+        {
+            await publishEndpoint.Publish(authorization.ToAuthorizationAdded(), CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return authorization;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Authorization>> UpdateSaveAndPublishAsync(Authorization authorization)
+        {
+            try
+            {
+                await publishEndpoint.Publish(authorization.ToAuthorizationUpdated(), CancellationToken.None);
+                await ctx.SaveChangesAsync();
+                return authorization;
+            }
+            catch (UpdateDbConcurrencyException)
+            {
+                return new ResourceUpdateConcurrencyError("Authorization", authorization.Version.ToString());
+            }
         }
 
         private async Task<Either<IServiceAndFeatureError, Authorization>> ValidateIfNotAlreadyExistsAsync(Authorization auth)
@@ -101,29 +103,21 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Authorization>> UpdateAuthorizationAsync(Authorization authorization)
+        private async Task<Either<IServiceAndFeatureError, Authorization>> UpdateInDbContextAsync(Authorization authorization)
         {
-            return await GetAsync(authorization.Id).ToAsync()
-               .Map(c => c = authorization.ToAuthorization(c))
-               .Bind(c => ValidateIfNotAlreadyExistsWithOtherIdAsync(c).ToAsync())
-               .Map(c =>
-               {
-                   ctx.Entry(c).State = EntityState.Modified;
-                   ctx.SetAuditAndSpecialFieldsForAdmin();
-                   return c;
-               });
+            ctx.Entry(authorization).State = EntityState.Modified;
+            ctx.SetAuditAndSpecialFieldsForAdmin();
+
+            await Task.CompletedTask;
+            return authorization;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Authorization>> AddAuthorizationAsync(Authorization authorization)
+        private async Task<Either<IServiceAndFeatureError, Authorization>> AddInDbContextAsync(Authorization authorization)
         {
-            return await ValidateIfNotAlreadyExistsAsync(authorization)
-               .MapAsync(async ac =>
-               {
-                   ac.Id = NewId.NextGuid();
-                   await ctx.Authorizations.AddAsync(ac);
-                   ctx.SetAuditAndSpecialFieldsForAdmin();
-                   return ac;
-               });
+            authorization.Id = NewId.NextGuid();
+            await ctx.Authorizations.AddAsync(authorization);
+            ctx.SetAuditAndSpecialFieldsForAdmin();
+            return authorization;
         }
 
         private async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAuthorizationAsync(Guid id)

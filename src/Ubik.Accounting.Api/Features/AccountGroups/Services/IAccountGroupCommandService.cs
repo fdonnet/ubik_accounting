@@ -8,5 +8,6 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
     public interface IAccountGroupCommandService
     {
         public Task<Either<IServiceAndFeatureError, AccountGroup>> AddAsync(AddAccountGroupCommand command);
+        public Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateAsync(UpdateAccountGroupCommand command);
     }
 }
