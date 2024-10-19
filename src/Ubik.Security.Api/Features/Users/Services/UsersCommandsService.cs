@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using LanguageExt;
+using LanguageExt.Pipes;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,8 @@ using Ubik.Security.Contracts.Tenants.Events;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Events;
 
+
+//Write tests for this part !!!
 namespace Ubik.Security.Api.Features.Users.Services
 {
     public class UsersCommandsService(SecurityDbContext ctx
@@ -22,17 +25,18 @@ namespace Ubik.Security.Api.Features.Users.Services
         , ICurrentUser currentUser)
         : IUsersCommandsService
     {
-        public async Task<Either<IServiceAndFeatureError, User>> AddAsync(AddUserCommand userCommand)
+        public async Task<Either<IServiceAndFeatureError, User>> AddAsync(AddUserCommand command)
         {
             //TODO: Enhance this part... dirty asf
 
             //First step DB
-            var result = await AddUserAsync(userCommand.ToUser());
+            var result = await ValidateIfNotAlreadyExistsAsync(command.ToUser())
+                            .BindAsync(AddInDbContextAsync);
 
             return await result.MatchAsync(
                 RightAsync: async okDb =>
                 {
-                    var resultAuth = await authUserProviderService.AddUserAsync(userCommand);
+                    var resultAuth = await authUserProviderService.AddUserAsync(command);
 
                     return await resultAuth.MatchAsync<Either<IServiceAndFeatureError, User>>(
                         RightAsync: async okAfterAuth =>
@@ -67,50 +71,66 @@ namespace Ubik.Security.Api.Features.Users.Services
 
         public async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAsync(Guid userId, AddTenantCommand command)
         {
-            return await AddNewTenantAndAttachToTheUserAsync(userId, command.ToTenant())
-                .MapAsync(async t =>
-                {
-                    var tenandAdded = new UserTenantAdded()
-                    {
-                        UserId = userId,
-                        NewLinkedTenantCreated = t.ToTenantAdded()
-                    };
-                    await publishEndpoint.Publish(tenandAdded, CancellationToken.None);
-                    await ctx.SaveChangesAsync();
-                    return t;
-                });
+            var model = command.ToTenant();
+
+            var tenantAdded = await GetAsync(userId)
+                .BindAsync(u => CompleteTenantCode(model, u.Email))
+                .BindAsync(ValidateIfTenantNotAlreadyExistsAsync)
+                .BindAsync(AddTenantInDbContextAsync);
+
+            return await tenantAdded
+                .BindAsync(t => ValidateIfTenantLinkNotAlreadyExistsAsync(userId, t))
+                .BindAsync(t => AddUserTenantLinkInDbContextAsync(userId, t))
+                .BindAsync(GetTenantUserManagementRole)
+                .BindAsync(r => AddTenantUserManagerRoleToTheUserInDbContextAsync(r.Item1, r.Item2.Id))
+                .BindAsync(t => tenantAdded)
+                .BindAsync(t => AddSaveAndPublishAsync(t, userId));
         }
 
         public async Task<Either<IServiceAndFeatureError, Role>> AddRoleInTenantAsync(Guid userId, Guid roleId)
         {
             return await GetUserInSelectedTenantAsync(userId)
                 .BindAsync(u => CheckIfRoleExistInTenantOrBaseRole(roleId))
-                .BindAsync(r => GetUserTenantLink(userId,r))
+                .BindAsync(r => GetUserTenantLink(userId, r))
                 .BindAsync(utr => CheckIfUserTenantRoleAlreadyExists(utr.Item1, utr.Item2))
-                .BindAsync(utr => AddRoleToUserInTenantAsync(utr.Item1.Id, utr.Item2))
-                .MapAsync(async r =>
-                {
-                    var userRoleAddedToTenant = new UserRoleAddedToTenant()
-                    {
-                        UserId = userId,
-                        RoleId = r.Id,
-                        TenantId = (Guid)currentUser.TenantId!
-                    };
-
-                    await publishEndpoint.Publish(userRoleAddedToTenant, CancellationToken.None);
-                    await ctx.SaveChangesAsync();
-                    return r;
-                });
+                .BindAsync(utr => AddRoleToUserInTenantInDbContextAsync(utr.Item1.Id, utr.Item2))
+                .BindAsync(r => AddRoleInTenantSaveAndPublishAsync(r, userId));
         }
 
-        private async Task<Either<IServiceAndFeatureError, (UserTenant,Role)>> GetUserTenantLink(Guid userId,Role role)
+        private async Task<Either<IServiceAndFeatureError, Role>> AddRoleInTenantSaveAndPublishAsync(Role current, Guid userId)
+        {
+            var userRoleAddedToTenant = new UserRoleAddedToTenant()
+            {
+                UserId = userId,
+                RoleId = current.Id,
+                TenantId = (Guid)currentUser.TenantId!
+            };
+
+            await publishEndpoint.Publish(userRoleAddedToTenant, CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return current;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Tenant>> AddSaveAndPublishAsync(Tenant current, Guid userId)
+        {
+            var tenandAdded = new UserTenantAdded()
+            {
+                UserId = userId,
+                NewLinkedTenantCreated = current.ToTenantAdded()
+            };
+            await publishEndpoint.Publish(tenandAdded, CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return current;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, (UserTenant, Role)>> GetUserTenantLink(Guid userId, Role role)
         {
             var result = await ctx.UsersTenants.SingleOrDefaultAsync(ut => ut.UserId == userId
                                                             && ut.TenantId == currentUser.TenantId);
 
             return result == null
                 ? new ResourceNotFoundError("UserTenant", "UserId/TenantId", $"{userId}/{currentUser.TenantId}")
-                : (result,role);
+                : (result, role);
         }
 
         private async Task<Either<IServiceAndFeatureError, (UserTenant, Role)>> CheckIfUserTenantRoleAlreadyExists(UserTenant userTenant, Role role)
@@ -123,7 +143,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : new ResourceAlreadyExistsError("UserRoleByTenant", "UserTenantId/RoleId", $"{userTenant.Id}/{role.Id}");
         }
 
-        private async Task<Either<IServiceAndFeatureError, Role>> AddRoleToUserInTenantAsync(Guid userTenantId, Role role)
+        private async Task<Either<IServiceAndFeatureError, Role>> AddRoleToUserInTenantInDbContextAsync(Guid userTenantId, Role role)
         {
             var roleInTenantByUser = new UserRoleByTenant()
             {
@@ -183,99 +203,53 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAndAttachToTheUserAsync(Guid userId, Tenant tenant)
-        {
-            var result = await GetAsync(userId)
-                .BindAsync(u => AddTenantWithUserEmailInCodeAsync(tenant, u.Email));
-
-            //Links to tenant and add usrmgt role for tenant to the user
-            return await result.MatchAsync(
-                RightAsync: async ok =>
-                {
-                    return await AddTenantAndRoleLinksToUser(userId, ok);
-                },
-                Left: err =>
-                {
-                    return Prelude.Left(err);
-                });
-
-        }
-
-        private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantAndRoleLinksToUser(Guid userId, Tenant tenant)
-        {
-            var result = await AddUserTenantLinkAsync(userId, tenant)
-                         .BindAsync(ut => AddTenantUserManagerRoleToTheUser(ut.Id));
-
-            return result.Match<Either<IServiceAndFeatureError, Tenant>>(
-                Right: ok =>
-                {
-                    return Prelude.Right(tenant);
-                },
-                Left: err =>
-                {
-                    return Prelude.Left(err);
-                });
-        }
-
-        private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantWithUserEmailInCodeAsync(Tenant tenant, string userEmail)
-        {
-            //TODO generate better tenant unique code or use a owner field (for the unique constrain)
-            tenant.Code = GenerateTenantCode(tenant.Code, userEmail);
-            return await AddTenantAsync(tenant);
-        }
-
-        private static string GenerateTenantCode(string tenantCode, string userEmail)
+        private async Task<Either<IServiceAndFeatureError,Tenant>> CompleteTenantCode(Tenant current, string userEmail)
         {
             var userEmailForCode = userEmail.Split("@")[0];
-            var code = tenantCode + " - " + userEmailForCode;
-            if (code.Length >= 50)
-                code = code[..50];
-            return code;
+            current.Code = current.Code + " - " + userEmailForCode;
+
+            if (current.Code.Length >= 50)
+                current.Code = current.Code[..50];
+
+            await Task.CompletedTask;
+            return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, UserTenant>> AddUserTenantLinkAsync(Guid userId, Tenant tenant)
+        private async Task<Either<IServiceAndFeatureError, UserTenant>> AddUserTenantLinkInDbContextAsync(Guid userId, Tenant current)
         {
-            return await ValidateIfTenantLinkNotAlreadyExistsAsync(userId, tenant)
-               .MapAsync(async t =>
-               {
-                   var ut = new UserTenant()
-                   {
-                       Id = NewId.NextGuid(),
-                       TenantId = t.Id,
-                       UserId = userId,
-                   };
+            var ut = new UserTenant()
+            {
+                Id = NewId.NextGuid(),
+                TenantId = current.Id,
+                UserId = userId,
+            };
 
-                   await ctx.UsersTenants.AddAsync(ut);
-                   ctx.SetAuditAndSpecialFields();
-                   return ut;
-               });
+            await ctx.UsersTenants.AddAsync(ut);
+            ctx.SetAuditAndSpecialFields();
+            return ut;
         }
 
-        private async Task<Either<IServiceAndFeatureError, UserRoleByTenant>> AddTenantUserManagerRoleToTheUser(Guid userTenantLinkId)
+        private async Task<Either<IServiceAndFeatureError, UserRoleByTenant>> AddTenantUserManagerRoleToTheUserInDbContextAsync(Role current, Guid userTenantLinkId)
         {
-            return await GetTenantUserManagementRole()
-                .MapAsync(async r =>
-                {
-                    var newRoleForUser = new UserRoleByTenant()
-                    {
-                        Id = NewId.NextGuid(),
-                        RoleId = r.Id,
-                        UserTenantId = userTenantLinkId,
-                    };
+            var newRoleForUser = new UserRoleByTenant()
+            {
+                Id = NewId.NextGuid(),
+                RoleId = current.Id,
+                UserTenantId = userTenantLinkId,
+            };
 
-                    await ctx.UserRolesByTenants.AddAsync(newRoleForUser);
-                    ctx.SetAuditAndSpecialFields();
-                    return newRoleForUser;
-                });
+            await ctx.UserRolesByTenants.AddAsync(newRoleForUser);
+            ctx.SetAuditAndSpecialFields();
+            return newRoleForUser;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Role>> GetTenantUserManagementRole()
+        private async Task<Either<IServiceAndFeatureError, (Role, UserTenant)>> GetTenantUserManagementRole(UserTenant current)
         {
             var result = await ctx.Roles.FirstOrDefaultAsync(r => r.Code == "usrmgt_all_rw");
 
             return result == null
                 ? new UserCannotGetMainUsrMgtRole()
-                : result;
+                : (result, current);
         }
 
         private async Task<Either<IServiceAndFeatureError, Tenant>> ValidateIfTenantLinkNotAlreadyExistsAsync(Guid userId, Tenant tenant)
@@ -287,16 +261,12 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : new ResourceAlreadyExistsError("UserTenant(link)", "UserId/TenantId", $"{userId}/{tenant.Id}");
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantAsync(Tenant current)
+        private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantInDbContextAsync(Tenant current)
         {
-            return await ValidateIfTenantNotAlreadyExistsAsync(current)
-               .MapAsync(async ac =>
-               {
-                   ac.Id = NewId.NextGuid();
-                   await ctx.Tenants.AddAsync(ac);
-                   ctx.SetAuditAndSpecialFields();
-                   return ac;
-               });
+            current.Id = NewId.NextGuid();
+            await ctx.Tenants.AddAsync(current);
+            ctx.SetAuditAndSpecialFields();
+            return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, Tenant>> ValidateIfTenantNotAlreadyExistsAsync(Tenant current)
@@ -307,16 +277,12 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, User>> AddUserAsync(User user)
+        private async Task<Either<IServiceAndFeatureError, User>> AddInDbContextAsync(User current)
         {
-            return await ValidateIfNotAlreadyExistsAsync(user)
-                .MapAsync(async ac =>
-                {
-                    ac.Id = NewId.NextGuid();
-                    await ctx.Users.AddAsync(ac);
-                    ctx.SetAuditAndSpecialFields();
-                    return ac;
-                });
+            current.Id = NewId.NextGuid();
+            await ctx.Users.AddAsync(current);
+            ctx.SetAuditAndSpecialFields();
+            return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)

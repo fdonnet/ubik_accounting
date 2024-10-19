@@ -52,18 +52,18 @@ namespace Ubik.Security.Api.Features.Roles.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Role>> UpdateSaveAndPublishAsync(Role role)
+        private async Task<Either<IServiceAndFeatureError, Role>> UpdateSaveAndPublishAsync(Role current)
         {
             try
             {
                 //Store and publish AccountGroupAdded event
-                await publishEndpoint.Publish(role.ToRoleUpdated(), CancellationToken.None);
+                await publishEndpoint.Publish(current.ToRoleUpdated(), CancellationToken.None);
                 await ctx.SaveChangesAsync();
-                return role;
+                return current;
             }
             catch (UpdateDbConcurrencyException)
             {
-                return new ResourceUpdateConcurrencyError("Role", role.Version.ToString());
+                return new ResourceUpdateConcurrencyError("Role", current.Version.ToString());
             }
         }
 

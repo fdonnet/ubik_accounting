@@ -77,7 +77,7 @@ namespace Ubik.Security.Api.Features.Tenants.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult> Delete(Guid id)
         {
-            var result = await commandService.ExecuteDeleteAsync(id);
+            var result = await commandService.DeleteAsync(id);
 
             return result.Match<ActionResult>(
                 Right: ok => NoContent(),
