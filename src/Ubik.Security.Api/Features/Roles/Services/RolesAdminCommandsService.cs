@@ -32,27 +32,14 @@ namespace Ubik.Security.Api.Features.Roles.Services
 
         public async Task<Either<IServiceAndFeatureError, Role>> UpdateAsync(UpdateRoleCommand command)
         {
-            var result = await UpdateRoleAsync(command.ToRole());
+            var model = command.ToRole();
 
-            return await result.MatchAsync<Either<IServiceAndFeatureError, Role>>(
-                RightAsync: async r =>
-                {
-                    try
-                    {
-                        //Store and publish AccountGroupAdded event
-                        await publishEndpoint.Publish(r.ToRoleUpdated(), CancellationToken.None);
-                        await ctx.SaveChangesAsync();
-                        return r;
-                    }
-                    catch (UpdateDbConcurrencyException)
-                    {
-                        return new ResourceUpdateConcurrencyError("Role", r.Version.ToString());
-                    }
-                },
-                Left: err =>
-                {
-                    return Prelude.Left(err);
-                });
+            return await GetAsync(model.Id)
+                    .BindAsync(r => MapInDbContextAsync(r,model))
+                    .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
+                    .BindAsync(UpdateInDbContextAsync)
+                    .BindAsync(UpdateSaveAndPublishAsync);
+
         }
 
         public async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
@@ -70,6 +57,21 @@ namespace Ubik.Security.Api.Features.Roles.Services
                 {
                     return Prelude.Left(err);
                 });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Role>> UpdateSaveAndPublishAsync(Role role)
+        {
+            try
+            {
+                //Store and publish AccountGroupAdded event
+                await publishEndpoint.Publish(role.ToRoleUpdated(), CancellationToken.None);
+                await ctx.SaveChangesAsync();
+                return role;
+            }
+            catch (UpdateDbConcurrencyException)
+            {
+                return new ResourceUpdateConcurrencyError("Role", role.Version.ToString());
+            }
         }
 
         private async Task<Either<IServiceAndFeatureError, Role>> GetAsync(Guid id)
@@ -98,17 +100,21 @@ namespace Ubik.Security.Api.Features.Roles.Services
                 : current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Role>> UpdateRoleAsync(Role current)
+        private async Task<Either<IServiceAndFeatureError, Role>> MapInDbContextAsync
+            (Role current, Role forUpdate)
         {
-            return await GetAsync(current.Id).ToAsync()
-               .Map(c => c = current.ToRole(c))
-               .Bind(c => ValidateIfNotAlreadyExistsWithOtherIdAsync(c).ToAsync())
-               .Map(c =>
-               {
-                   ctx.Entry(c).State = EntityState.Modified;
-                   ctx.SetAuditAndSpecialFieldsForAdmin();
-                   return c;
-               });
+            current = forUpdate.ToRole(current);
+            await Task.CompletedTask;
+            return current;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Role>> UpdateInDbContextAsync(Role current)
+        {
+            ctx.Entry(current).State = EntityState.Modified;
+            ctx.SetAuditAndSpecialFieldsForAdmin();
+
+            await Task.CompletedTask;
+            return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, Role>> AddRoleAsync(Role current)

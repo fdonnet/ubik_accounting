@@ -27,13 +27,7 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
             var model = command.ToAuthorization();
 
             return await GetAsync(model.Id)
-               .MapAsync(async c =>
-               {
-                   c = model.ToAuthorization(c);
-                   await Task.CompletedTask;
-                   return c;
-    
-               })
+               .BindAsync(a => MapInDbContextAsync(a,model))
                .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
                .BindAsync(UpdateInDbContextAsync)
                .BindAsync(UpdateSaveAndPublishAsync);
@@ -54,6 +48,14 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
                 {
                     return Prelude.Left(err);
                 });
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Authorization>> MapInDbContextAsync
+            (Authorization current, Authorization forUpdate)
+        {
+            current = forUpdate.ToAuthorization(current);
+            await Task.CompletedTask;
+            return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, Authorization>> AddSaveAndPublishAsync(Authorization authorization)

@@ -27,17 +27,20 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
             var model = command.ToAccountGroup();
 
             return await GetAsync(model.Id)
-                .MapAsync(async ag =>
-                {
-                    ag = model.ToAccountGroup(ag);
-                    await Task.CompletedTask;
-                    return ag;
-                })
+                .BindAsync(ag => MapInDbContextAsync(ag, model))
                 .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
                 .BindAsync(ValidateIfParentAccountGroupExistsAsync)
                 .BindAsync(ValidateIfClassificationExistsAsync)
                 .BindAsync(UpdateInDbContext)
                 .BindAsync(UpdateSaveAndPublishAsync);
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> MapInDbContextAsync
+            (AccountGroup current, AccountGroup forUpdate)
+        {
+            current = forUpdate.ToAccountGroup(current);
+            await Task.CompletedTask;
+            return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, AccountGroup>> AddSaveAndPublishAsync(AccountGroup accountGroup)
