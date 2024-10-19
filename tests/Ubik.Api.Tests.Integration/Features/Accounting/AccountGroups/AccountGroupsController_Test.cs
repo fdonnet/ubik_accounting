@@ -333,7 +333,5 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_NOT_FOUND");
         }
-
-
     }
 }
