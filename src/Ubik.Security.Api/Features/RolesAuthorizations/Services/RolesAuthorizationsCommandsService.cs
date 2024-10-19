@@ -8,6 +8,7 @@ using Ubik.Security.Api.Features.RolesAuthorizations.Errors;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.RoleAuthorizations.Commands;
 using Ubik.Security.Contracts.RoleAuthorizations.Events;
+using Ubik.Security.Contracts.Roles.Events;
 
 namespace Ubik.Security.Api.Features.RolesAuthorizations.Services
 {
@@ -15,45 +16,42 @@ namespace Ubik.Security.Api.Features.RolesAuthorizations.Services
     {
         public async Task<Either<IServiceAndFeatureError, RoleAuthorization>> AddAsync(AddRoleAuthorizationCommand command)
         {
-            var result = await AddRoleAuthorizationAsync(command.ToRoleAuthorization());
-
-            return await result.MatchAsync<Either<IServiceAndFeatureError, RoleAuthorization>>(
-            RightAsync: async r =>
-            {
-                await publishEndpoint.Publish(r.ToRoleAuthorizationAdded(), CancellationToken.None);
-                await ctx.SaveChangesAsync();
-                return r;
-            },
-            Left: err =>
-            {
-                return Prelude.Left(err);
-            });
+            return await ValidateIfNotAlreadyExistsAsync(command.ToRoleAuthorization())
+                .BindAsync(ValidateIfForBaseRoleAsync)
+                .BindAsync(ValidateIfAuhtorizationAsync)
+                .BindAsync(AddInDbContextAsync)
+                .BindAsync(AddSaveAndPublishAsync);
         }
 
         public async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
         {
-            var res = await ExecuteDeleteRoleAuthorizationAsync(id);
-
-            return await res.MatchAsync<Either<IServiceAndFeatureError, bool>>(
-                RightAsync: async r =>
-                {
-                    await publishEndpoint.Publish(new RoleAuthorizationDeleted { Id = id }, CancellationToken.None);
-                    await ctx.SaveChangesAsync();
-                    return true;
-                },
-                Left: err =>
-                {
-                    return Prelude.Left(err);
-                });
+            return await GetAsync(id)
+                .BindAsync(ValidateIfForBaseRoleAsync)
+                .BindAsync(DeleteInDbContextAsync)
+                .BindAsync(DeleteSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, RoleAuthorization>> GetAsync(Guid id)
+        private async Task<Either<IServiceAndFeatureError, RoleAuthorization>> GetAsync(Guid id)
         {
             var result = await ctx.RolesAuthorizations.FindAsync(id);
 
             return result == null
                 ? new ResourceNotFoundError("RoleAuthorization", "Id", id.ToString())
                 : result;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, bool>> DeleteSaveAndPublishAsync(RoleAuthorization current)
+        {
+            await publishEndpoint.Publish(new RoleAuthorizationDeleted { Id = current.Id }, CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return true;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, RoleAuthorization>> AddSaveAndPublishAsync(RoleAuthorization current)
+        {
+            await publishEndpoint.Publish(current.ToRoleAuthorizationAdded(), CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, RoleAuthorization>> ValidateIfForBaseRoleAsync(RoleAuthorization current)
@@ -95,29 +93,20 @@ namespace Ubik.Security.Api.Features.RolesAuthorizations.Services
                 : current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteRoleAuthorizationAsync(Guid id)
+        private async Task<Either<IServiceAndFeatureError, RoleAuthorization>> DeleteInDbContextAsync(RoleAuthorization current)
         {
-            return await GetAsync(id)
-                    .BindAsync(notexists => ValidateIfForBaseRoleAsync(notexists))
-                    .MapAsync(async ac =>
-                    {
-                        await ctx.RolesAuthorizations.Where(x => x.Id == id).ExecuteDeleteAsync();
-                        return true;
-                    });
+            ctx.Entry(current).State = EntityState.Deleted;
+
+            await Task.CompletedTask;
+            return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, RoleAuthorization>> AddRoleAuthorizationAsync(RoleAuthorization current)
+        private async Task<Either<IServiceAndFeatureError, RoleAuthorization>> AddInDbContextAsync(RoleAuthorization current)
         {
-            return await ValidateIfNotAlreadyExistsAsync(current)
-                .BindAsync(ra => ValidateIfForBaseRoleAsync(ra))
-                .BindAsync(ra => ValidateIfAuhtorizationAsync(ra))
-               .MapAsync(async ac =>
-               {
-                   ac.Id = NewId.NextGuid();
-                   await ctx.RolesAuthorizations.AddAsync(ac);
-                   ctx.SetAuditAndSpecialFields();
-                   return ac;
-               });
+            current.Id = NewId.NextGuid();
+            await ctx.RolesAuthorizations.AddAsync(current);
+            ctx.SetAuditAndSpecialFields();
+            return current;
         }
     }
 }
