@@ -12,6 +12,8 @@ using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.ApiService.Common.Exceptions;
 using RabbitMQ.Client;
 using Ubik.Accounting.Contracts.Accounts.Results;
+using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using MassTransit;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
 {
@@ -332,6 +334,200 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Add_AccountGroup_WithRW_Created()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new AddAccountGroupCommand
+            {
+                Description = "Test",
+                Code = "Test",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+            var result = await response.Content.ReadFromJsonAsync<AccountGroupStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AccountGroupStandardResult>()
+                .And.Match<AccountGroupStandardResult>(x => x.Code == command.Code);
+        }
+
+        [Fact]
+        public async Task Add_AccountGroupWithParent_WithRW_Created()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new AddAccountGroupCommand
+            {
+                Description = "Test",
+                Code = "ZZZ",
+                Label = "Test",
+                ParentAccountGroupId = new Guid("b0650000-5dd4-0015-b1d7-08dcda6d3ea4"),
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+            var result = await response.Content.ReadFromJsonAsync<AccountGroupStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AccountGroupStandardResult>()
+                .And.Match<AccountGroupStandardResult>(x => x.Code == command.Code);
+        }
+
+        [Fact]
+        public async Task Add_AccountGroup_WithRO_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new AddAccountGroupCommand
+            {
+                Description = "Test",
+                Code = "Test",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Add_AccountGroup_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new AddAccountGroupCommand
+            {
+                Description = "Test",
+                Code = "Test",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Add_AccountGroup_WithNoAuth_401()
+        {
+            //Arrange
+            var command = new AddAccountGroupCommand
+            {
+                Description = "Test",
+                Code = "Test",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Add_AccountGroup_WithAlreadyExists_409()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new AddAccountGroupCommand
+            {
+                Description = "Test",
+                Code = "106",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code
+                    == "ACCOUNTGROUP_IN_CLASSIFICATION_ALREADY_EXISTS");
+        }
+
+        [Fact]
+        public async Task Add_AccountGroup_WithParentAccountGroupNotExists_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new AddAccountGroupCommand
+            {
+                Description = "Test",
+                Code = "Test1",
+                Label = "Test",
+                ParentAccountGroupId = NewId.NextGuid(),
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "PARENT_ACCOUNTGROUP_NOTFOUND");
+        }
+
+        [Fact]
+        public async Task Add_AccountGroup_WithClassificationNotExists_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new AddAccountGroupCommand
+            {
+                Description = "Test",
+                Code = "Test",
+                Label = "Test",
+                AccountGroupClassificationId = NewId.NextGuid(),
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_CLASSIFICATION_NOT_FOUND");
         }
     }
 }
