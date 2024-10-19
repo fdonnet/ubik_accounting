@@ -86,7 +86,6 @@ namespace Ubik.Accounting.Api
                 config.AddConsumers(Assembly.GetExecutingAssembly());
 
                 //Add commands clients
-                config.AddRequestClient<AddAccountCommand>();
                 config.AddRequestClient<AddAccountInAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountInAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountCommand>();
@@ -126,6 +125,7 @@ namespace Ubik.Accounting.Api
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
             builder.Services.AddScoped<IAccountGroupQueryService, AccountGroupQueryService>();
+            builder.Services.AddScoped<IAccountGroupCommandService, AccountGroupCommandService>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 

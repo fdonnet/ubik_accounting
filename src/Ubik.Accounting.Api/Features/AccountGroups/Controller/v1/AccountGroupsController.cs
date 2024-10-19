@@ -15,7 +15,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class AccountGroupsController(IServiceManager serviceManager, IAccountGroupQueryService queryService) : ControllerBase
+    public class AccountGroupsController(IAccountGroupQueryService queryService, IAccountGroupCommandService commandService) : ControllerBase
     {
         //TODO: add auhtorization (maybe manage that in API security before)
         //[Authorize(Roles = "ubik_accounting_accountgroup_read")]
@@ -34,7 +34,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<GetAccountGroupResult>> Get(Guid id)
+        public async Task<ActionResult<AccountGroupStandardResult>> Get(Guid id)
         {
             var result = await queryService.GetAsync(id);
 
@@ -48,7 +48,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<GetAccountGroupResult>> GetChildAccount(Guid id)
+        public async Task<ActionResult<AccountGroupStandardResult>> GetChildAccount(Guid id)
         {
             var result = await queryService.GetChildAccountsAsync(id);
 
@@ -57,26 +57,18 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AddAccountGroupResult>> Add(AddAccountGroupCommand command, IRequestClient<AddAccountGroupCommand> client)
+        public async Task<ActionResult<AccountGroupStandardResult>> Add(AddAccountGroupCommand command, IRequestClient<AddAccountGroupCommand> client)
         {
-            var (result, error) = await client.GetResponse<AddAccountGroupResult, IServiceAndFeatureError>(command);
+            var result = await commandService.AddAsync(command);
 
-            if (result.IsCompletedSuccessfully)
-            {
-                var addedAccountGroup = (await result).Message;
-                return CreatedAtAction(nameof(Get), new { id = addedAccountGroup.Id }, addedAccountGroup);
-            }
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match(
+                Right: r => CreatedAtAction(nameof(Get), new { id = r.Id }, r.ToAccountGroupStandardResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]

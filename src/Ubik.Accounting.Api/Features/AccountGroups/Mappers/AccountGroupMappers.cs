@@ -59,18 +59,6 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Mappers
             };
         }
 
-        public static AccountGroup ToAccountGroup(this AddAccountGroupCommand addAccountGroupCommand)
-        {
-            return new AccountGroup()
-            {
-                Id = NewId.NextGuid(),
-                Code = addAccountGroupCommand.Code,
-                Label = addAccountGroupCommand.Label,
-                Description = addAccountGroupCommand.Description,
-                ParentAccountGroupId = addAccountGroupCommand.ParentAccountGroupId,
-                ClassificationId = addAccountGroupCommand.AccountGroupClassificationId,
-            };
-        }
 
         public static AccountGroup ToAccountGroup(this UpdateAccountGroupCommand updAccountGroupCommand)
         {
