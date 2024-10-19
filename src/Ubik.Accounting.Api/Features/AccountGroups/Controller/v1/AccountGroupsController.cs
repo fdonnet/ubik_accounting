@@ -9,6 +9,7 @@ using MassTransit;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Accounting.Api.Features.Mappers;
 using Ubik.Accounting.Api.Features.AccountGroups.Services;
+using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
 {
@@ -43,12 +44,12 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        [HttpGet("{id}/Accounts")]
+        [HttpGet("{id}/accounts")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AccountGroupStandardResult>> GetChildAccount(Guid id)
+        public async Task<ActionResult<AccountStandardResult>> GetChildAccount(Guid id)
         {
             var result = await queryService.GetChildAccountsAsync(id);
 
