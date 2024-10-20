@@ -161,7 +161,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
             return new DeleteClassificationResult
             {
                 Id = classificationId,
-                DeletedAccountGroups = accountGroups.Select(x => new DeleteAccountGroupResult()
+                DeletedAccountGroups = accountGroups.Select(x => new AccountGroupStandardResult()
                 {
                     Id = x.Id,
                     Code = x.Code,

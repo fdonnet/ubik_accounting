@@ -12,7 +12,6 @@ namespace Ubik.Accounting.Api.Features
         private readonly AccountingDbContext _context = context;
         private readonly ICurrentUser _currentUser = currentUser;
         private IAccountService? _accountService;
-        private IAccountGroupService? _accountGroupService;
         private IClassificationService? _classificationService;
         private ICurrencyService? _currencyService;
 
@@ -22,15 +21,6 @@ namespace Ubik.Accounting.Api.Features
             {
                 _accountService ??= new AccountService(_context,_currentUser);
                 return _accountService;
-            }
-        }
-
-        public IAccountGroupService AccountGroupService
-        {
-            get
-            {
-                _accountGroupService ??= new AccountGroupService(_context,_currentUser);
-                return _accountGroupService;
             }
         }
 

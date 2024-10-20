@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Exceptions;
 using Asp.Versioning;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
-using Ubik.Accounting.Api.Features.AccountGroups.Mappers;
-using MassTransit;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Accounting.Api.Features.Mappers;
 using Ubik.Accounting.Api.Features.AccountGroups.Services;
@@ -78,7 +75,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<UpdateAccountGroupResult>> Update(Guid id,
+        public async Task<ActionResult<AccountGroupStandardResult>> Update(Guid id,
             UpdateAccountGroupCommand command)
         {
             if (command.Id != id)
@@ -88,7 +85,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
             var result = await commandService.UpdateAsync(command);
 
             return result.Match(
-                Right: r => Ok(r.ToUpdateAccountGroupResult()),
+                Right: r => Ok(r.ToAccountGroupStandardResult()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
@@ -98,25 +95,18 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         /// <remarks>Return All the account groups removed</remarks>
         /// <param name="id"></param>
         /// <param name="client"></param>
-        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpDelete("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<DeleteAccountGroupResult>>> Delete(Guid id, IRequestClient<DeleteAccountGroupCommand> client)
+        public async Task<ActionResult<IEnumerable<AccountGroupStandardResult>>> Delete(Guid id)
         {
-            var (result, error) = await client.GetResponse<DeleteAccountGroupResults,
-            IServiceAndFeatureError>(new DeleteAccountGroupCommand { Id = id });
+            var result = await commandService.DeleteAsync(id);
 
-            if (result.IsCompletedSuccessfully)
-                return Ok((await result).Message.AccountGroups);
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match(
+                Right: r => Ok(r.ToAccountGroupStandardResults()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
-
     }
 }

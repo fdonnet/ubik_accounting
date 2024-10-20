@@ -711,6 +711,92 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_IN_CLASSIFICATION_ALREADY_EXISTS");
         }
 
+        [Fact]
+        public async Task Update_AccountGroup_WithParentAccountGroup_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new UpdateAccountGroupCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-c40a-08dcda311af0"),
+                Description = "Test",
+                Code = "Test5",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+                Version = new Guid("ec860000-5dd4-0015-c6eb-08dcda311af0"),
+                ParentAccountGroupId = new Guid("ec860000-5dd4-0015-2d06-08dcda1f7bbb"),
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/ec860000-5dd4-0015-c40a-08dcda311af0", command);
+            var result = await response.Content.ReadFromJsonAsync<AccountGroupStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AccountGroupStandardResult>()
+                .And.Match<AccountGroupStandardResult>(x => x.Code == command.Code);
+        }
+
+        [Fact]
+        public async Task Update_AccountGroup_WithParentAccountGroupNotExists_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new UpdateAccountGroupCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-6596-08dcda313f52"),
+                Description = "Test",
+                Code = "Test3",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+                Version = new Guid("ec860000-5dd4-0015-9509-08dcda31d988"),
+                ParentAccountGroupId = NewId.NextGuid(),
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/ec860000-5dd4-0015-6596-08dcda313f52", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "PARENT_ACCOUNTGROUP_NOTFOUND");
+        }
+
+        [Fact]
+        public async Task Update_AccountGroup_WithClassificationNotExists_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new UpdateAccountGroupCommand
+            {
+                Id = new Guid("cc100000-5dd4-0015-3bb7-08dcd9780cd7"),
+                Description = "Test",
+                Code = "Test6",
+                Label = "Test",
+                AccountGroupClassificationId = NewId.NextGuid(),
+                Version = new Guid("ec860000-5dd4-0015-0d47-08dcda322a37"),
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/cc100000-5dd4-0015-3bb7-08dcd9780cd7", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_CLASSIFICATION_NOT_FOUND");
+        }
+
 
     }
 }

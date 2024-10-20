@@ -102,5 +102,16 @@ namespace Ubik.Accounting.Api.Features.Mappers
                 Version = accountGroup.Version
             };
         }
+
+        public static IEnumerable<AccountGroupDeleted> ToAccountGroupDeleted(this IEnumerable<AccountGroup> accountGroups)
+        {
+            return accountGroups.Select(x => new AccountGroupDeleted()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Label = x.Label,
+                ParentAccountGroupId = x.ParentAccountGroupId,
+            });
+        }
     }
 }

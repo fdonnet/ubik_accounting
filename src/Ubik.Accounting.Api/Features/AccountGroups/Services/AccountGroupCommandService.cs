@@ -1,11 +1,14 @@
 ﻿using LanguageExt;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Data.Common;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.AccountGroups.Errors;
 using Ubik.Accounting.Api.Features.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Contracts.AccountGroups.Events;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 
@@ -33,6 +36,49 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Services
                 .BindAsync(ValidateIfClassificationExistsAsync)
                 .BindAsync(UpdateInDbContext)
                 .BindAsync(UpdateSaveAndPublishAsync);
+        }
+
+        public async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id)
+        {
+            using var transaction = ctx.Database.BeginTransaction();
+            var deletedAccountGroups = new List<AccountGroup>();
+
+            return await GetAsync(id)
+                .BindAsync(ag => DeleteAllChildrenOfAsync(ag, deletedAccountGroups))
+                .BindAsync(DeleteInDbContextAsync)
+                .BindAsync(ag => DeleteSaveCommitAndPublishAsync(ag, deletedAccountGroups, transaction));
+        }
+
+        private async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteSaveCommitAndPublishAsync(AccountGroup current,
+            List<AccountGroup> childAccountGroups, IDbContextTransaction trans)
+        {
+            childAccountGroups.Add(current);
+            await publishEndpoint.Publish(new AccountGroupsDeleted {  AccountGroups = childAccountGroups.ToAccountGroupDeleted() }, CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            await trans.CommitAsync();
+            return childAccountGroups;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> DeleteAllChildrenOfAsync(AccountGroup current, List<AccountGroup> deletedAccountGroups)
+        {
+            var children = await ctx.AccountGroups.Where(ag => ag.ParentAccountGroupId == current.Id).ToListAsync();
+
+            foreach (var child in children)
+            {
+                await DeleteAllChildrenOfAsync(child, deletedAccountGroups);
+                deletedAccountGroups.Add(child);
+                await ctx.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
+            }
+
+            return current;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountGroup>> DeleteInDbContextAsync(AccountGroup current)
+        {
+            ctx.Entry(current).State = EntityState.Deleted;
+
+            await Task.CompletedTask;
+            return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, AccountGroup>> MapInDbContextAsync
