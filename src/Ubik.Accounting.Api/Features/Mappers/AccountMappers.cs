@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using Ubik.Accounting.Api.Features.Accounts.CustomPoco;
+using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Api.Features.Mappers
@@ -52,6 +53,19 @@ namespace Ubik.Accounting.Api.Features.Mappers
                 AccountGroupId = x.AccountGroupId,
                 AccountId = x.AccountId,
                 Version = x.Version
+            });
+        }
+
+        public static IEnumerable<AccountGroupWithClassificationResult> ToAccountGroupWithClassificationResult(this IEnumerable<AccountGroupClassification> accountGroupClassification)
+        {
+            return accountGroupClassification.Select(x => new AccountGroupWithClassificationResult()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Label = x.Label,
+                ClassificationId = x.ClassificationId,
+                ClassificationCode = x.ClassificationCode,
+                CLassificationLabel = x.ClassificationLabel
             });
         }
     }

@@ -110,6 +110,20 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
         }
 
         [Fact]
+        public async Task Get_AccountGroups_All_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
         public async Task Get_AccountGroup_By_Id_WithRW_OK()
         {
             //Arrange

@@ -75,6 +75,8 @@ builder.Services.AddAuthorizationBuilder()
         policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_accountgroup_read"])))
     .AddPolicy("CanAccountGroupsAndAccountsRead", policy =>
         policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_accountgroup_read", "accounting_account_read"])))
+    .AddPolicy("CanAccountGroupsAndAccountsAndClassificationsRead", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_accountgroup_read", "accounting_account_read", "accounting_classification_read"])))
     .AddPolicy("CanAccountGroupsWrite", policy =>
         policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_accountgroup_write"])))
     .AddPolicy("CanAccountsRead", policy =>

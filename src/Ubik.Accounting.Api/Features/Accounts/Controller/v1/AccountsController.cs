@@ -61,19 +61,17 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Authorize(Roles = "ubik_accounting_account_read")]
-        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
-        [HttpGet("{id}/AccountGroups")]
+        [HttpGet("{id}/accountgroups")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<GetAccountGroupClassificationResult>>> GetAccountGroups(Guid id)
+        public async Task<ActionResult<IEnumerable<AccountGroupWithClassificationResult>>> GetAccountGroups(Guid id)
         {
-            var result = await _serviceManager.AccountService.GetAccountGroupsWithClassificationInfoAsync(id);
+            var result = await queryService.GetAccountGroupsWithClassificationInfoAsync(id);
 
             return result.Match(
-                Right: r => Ok(r.ToGetAccountGroupClassificationResult()),
+                Right: r => Ok(r.ToAccountGroupWithClassificationResult()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

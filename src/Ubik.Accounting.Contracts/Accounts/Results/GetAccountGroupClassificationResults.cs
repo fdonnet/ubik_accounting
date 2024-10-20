@@ -2,6 +2,6 @@
 {
     public record GetAccountGroupClassificationResults
     {
-        public IEnumerable<GetAccountGroupClassificationResult> AccountGroups { get; init; } = default!;
+        public IEnumerable<AccountGroupWithClassificationResult> AccountGroups { get; init; } = default!;
     }
 }
