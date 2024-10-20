@@ -134,7 +134,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
 
             var command = new AddAuthorizationCommand
             {
-                Code = "TestCode",
+                Code = "TestCode1",
                 Description = "TestDescription",
                 Label = "TestLabel"
             };
