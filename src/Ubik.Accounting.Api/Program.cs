@@ -70,6 +70,7 @@ namespace Ubik.Accounting.Api
 
                     configurator.ConfigureEndpoints(context);
 
+                    //TODO:review that
                     //Use to pass tenantid when message broker is used to contact the api (async)
                     configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
                     configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);
@@ -92,7 +93,6 @@ namespace Ubik.Accounting.Api
                 config.AddRequestClient<UpdateAccountCommand>();
                 config.AddRequestClient<AddAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountGroupCommand>();
-                config.AddRequestClient<UpdateAccountGroupCommand>();
                 config.AddRequestClient<AddClassificationCommand>();
                 config.AddRequestClient<UpdateClassificationCommand>();
 

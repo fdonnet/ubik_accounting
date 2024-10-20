@@ -91,7 +91,7 @@ namespace Ubik.Security.Api.Features.Users.Services
         {
             return await GetUserInSelectedTenantAsync(userId)
                 .BindAsync(u => CheckIfRoleExistInTenantOrBaseRole(roleId))
-                .BindAsync(r => GetUserTenantLink(userId, r))
+                .BindAsync(r => GetUserTenantLinkForRole(userId, r))
                 .BindAsync(utr => CheckIfUserTenantRoleAlreadyExists(utr.Item1, utr.Item2))
                 .BindAsync(utr => AddRoleToUserInTenantInDbContextAsync(utr.Item1.Id, utr.Item2))
                 .BindAsync(r => AddRoleInTenantSaveAndPublishAsync(r, userId));
@@ -123,7 +123,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, (UserTenant, Role)>> GetUserTenantLink(Guid userId, Role role)
+        private async Task<Either<IServiceAndFeatureError, (UserTenant, Role)>> GetUserTenantLinkForRole(Guid userId, Role role)
         {
             var result = await ctx.UsersTenants.SingleOrDefaultAsync(ut => ut.UserId == userId
                                                             && ut.TenantId == currentUser.TenantId);
@@ -174,10 +174,9 @@ namespace Ubik.Security.Api.Features.Users.Services
 
             var result = await con.QuerySingleOrDefaultAsync<Role>(sql, p);
 
-            if (result == null)
-                return new ResourceNotFoundError("Role", "Id", roleId.ToString());
-            else
-                return result;
+            return result == null
+                ? (Either<IServiceAndFeatureError, Role>)new ResourceNotFoundError("Role", "Id", roleId.ToString())
+                : (Either<IServiceAndFeatureError, Role>)result;
         }
 
         private async Task<Either<IServiceAndFeatureError, User>> GetUserInSelectedTenantAsync(Guid id)
@@ -203,7 +202,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError,Tenant>> CompleteTenantCode(Tenant current, string userEmail)
+        private static async Task<Either<IServiceAndFeatureError,Tenant>> CompleteTenantCode(Tenant current, string userEmail)
         {
             var userEmailForCode = userEmail.Split("@")[0];
             current.Code = current.Code + " - " + userEmailForCode;

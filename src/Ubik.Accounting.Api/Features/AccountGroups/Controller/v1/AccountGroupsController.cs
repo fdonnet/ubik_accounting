@@ -63,7 +63,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AccountGroupStandardResult>> Add(AddAccountGroupCommand command, IRequestClient<AddAccountGroupCommand> client)
+        public async Task<ActionResult<AccountGroupStandardResult>> Add(AddAccountGroupCommand command)
         {
             var result = await commandService.AddAsync(command);
 
@@ -72,7 +72,6 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -80,25 +79,17 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<UpdateAccountGroupResult>> Update(Guid id,
-            UpdateAccountGroupCommand command, IRequestClient<UpdateAccountGroupCommand> client)
+            UpdateAccountGroupCommand command)
         {
             if (command.Id != id)
-                return new ObjectResult(new ResourceIdNotMatchForUpdateError("AccountGroup",id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchForUpdateError("AccountGroup", id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
-            
 
-            var (result, error) = await client.GetResponse<UpdateAccountGroupResult, IServiceAndFeatureError>(command);
+            var result = await commandService.UpdateAsync(command);
 
-            if (result.IsCompletedSuccessfully)
-            {
-                var updatedAccountGroup = (await result).Message;
-                return Ok(updatedAccountGroup);
-            }
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match(
+                Right: r => Ok(r.ToUpdateAccountGroupResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
-        private readonly static Guid _accountGroupId = new("ec860000-5dd4-0015-93df-08dcda2056e2");  //usrmgt_all_rw
+        private readonly static Guid _accountGroupId = new("ec860000-5dd4-0015-93df-08dcda2056e2"); 
         private readonly static Guid _accountGroupToDel = new("34980000-5dd4-0015-30ac-08dcdb08a8cc");
 
         public AccountGroupsController_Test(IntegrationTestProxyFactory factory) : base(factory)
@@ -529,5 +529,188 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_CLASSIFICATION_NOT_FOUND");
         }
+
+        [Fact]
+        public async Task Update_AccountGroup_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new UpdateAccountGroupCommand
+            {
+                Id = new Guid("78920000-5dd4-0015-db59-08dcd9a9de05"),
+                Description = "Test",
+                Code = "Test2",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+                Version = new Guid("78920000-5dd4-0015-e1bb-08dcd9a9de05"),
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/78920000-5dd4-0015-db59-08dcd9a9de05", command);
+            var result = await response.Content.ReadFromJsonAsync<AccountGroupStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AccountGroupStandardResult>()
+                .And.Match<AccountGroupStandardResult>(x => x.Code == command.Code);
+        }
+
+        [Fact]
+        public async Task Update_AccountGroup_WithRO_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new UpdateAccountGroupCommand
+            {
+                Id = _accountGroupId,
+                Description = "Test",
+                Code = "Test",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+                Version = new Guid("ec860000-5dd4-0015-9a33-08dcda2056e2"),
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_accountGroupId}", command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Update_AccountGroup_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new UpdateAccountGroupCommand
+            {
+                Id = _accountGroupId,
+                Description = "Test",
+                Code = "Test",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+                Version = new Guid("ec860000-5dd4-0015-9a33-08dcda2056e2"),
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_accountGroupId}", command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Update_AccountGroup_WithNoAuth_401()
+        {
+            //Arrange
+            var command = new UpdateAccountGroupCommand
+            {
+                Id = _accountGroupId,
+                Description = "Test",
+                Code = "Test",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+                Version = new Guid("ec860000-5dd4-0015-9a33-08dcda2056e2"),
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_accountGroupId}", command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Update_AccountGroup_WithNotMatchId_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new UpdateAccountGroupCommand
+            {
+                Id = NewId.NextGuid(),
+                Description = "Test",
+                Code = "Test",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+                Version = new Guid("ec860000-5dd4-0015-9a33-08dcda2056e2"),
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_accountGroupId}", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_UPDATE_IDS_NOT_MATCH");
+        }
+
+        [Fact]
+        public async Task Update_AccountGroup_WithBadId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var id = NewId.NextGuid();
+            var command = new UpdateAccountGroupCommand
+            {
+                Id = id,
+                Description = "Test",
+                Code = "Test",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+                Version = new Guid("ec860000-5dd4-0015-9a33-08dcda2056e2"),
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{id}", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Update_AccountGroup_WithAlreadyExists_409()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var command = new UpdateAccountGroupCommand
+            {
+                Id = _accountGroupId,
+                Description = "Test",
+                Code = "180",
+                Label = "Test",
+                AccountGroupClassificationId = new Guid("cc100000-5dd4-0015-d910-08dcd9665e79"),
+                Version = new Guid("ec860000-5dd4-0015-9a33-08dcda2056e2"),
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_accountGroupId}", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTGROUP_IN_CLASSIFICATION_ALREADY_EXISTS");
+        }
+
+
     }
 }

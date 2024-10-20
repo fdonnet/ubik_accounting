@@ -56,7 +56,6 @@ namespace Ubik.Security.Api.Features.Roles.Services
         {
             try
             {
-                //Store and publish AccountGroupAdded event
                 await publishEndpoint.Publish(current.ToRoleUpdated(), CancellationToken.None);
                 await ctx.SaveChangesAsync();
                 return current;
