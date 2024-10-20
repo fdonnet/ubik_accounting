@@ -54,7 +54,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\AccountGroups\Mappers\" />
     <Folder Include="Features\Classifications\Errors\" />
   </ItemGroup>
 

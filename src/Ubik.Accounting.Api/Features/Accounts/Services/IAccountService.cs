@@ -7,8 +7,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
 {
     public interface IAccountService
     {
-        public Task<IEnumerable<Account>> GetAllAsync();
-        public Task<Either<IServiceAndFeatureError,Account>> GetAsync(Guid id);
         public Task<Either<IServiceAndFeatureError, Account>> AddAsync(Account account);
         public Task<Either<IServiceAndFeatureError, Account>> UpdateAsync(Account account);
         public Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id);

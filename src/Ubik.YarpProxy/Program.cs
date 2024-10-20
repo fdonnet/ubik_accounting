@@ -59,7 +59,7 @@ builder.Services.AddHttpClient<UserService>(client =>
 builder.Services.AddScoped<IAuthorizationHandler, UserInfoOkHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, UserWithAuthorizationsHandler>();
 
-//Available policy
+//Available policies
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("IsUser", policy =>
         policy.Requirements.Add(new UserInfoOnlyRequirement(false)))
@@ -76,7 +76,9 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanAccountGroupsAndAccountsRead", policy =>
         policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_accountgroup_read", "accounting_account_read"])))
     .AddPolicy("CanAccountGroupsWrite", policy =>
-        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_accountgroup_write"])));
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_accountgroup_write"])))
+    .AddPolicy("CanAccountsRead", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_account_read"])));
 
 //Proxy
 var configProxy = builder.Configuration.GetSection("ReverseProxy");
@@ -85,6 +87,7 @@ builder.Services.AddReverseProxy()
     .AddSwagger(configProxy)
     .AddTransforms(builderContext =>
     {
+        //Transform the request to be sent with headers x-user-id and x-tenant-id
         var serviceProvider = builderContext.Services;
 
         builderContext.AddRequestTransform(async transformContext =>

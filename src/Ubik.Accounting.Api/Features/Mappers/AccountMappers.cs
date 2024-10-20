@@ -5,7 +5,7 @@ namespace Ubik.Accounting.Api.Features.Mappers
 {
     public static class AccountMappers
     {
-        public static IEnumerable<AccountStandardResult> ToAccountStandardResult(this IEnumerable<Account> accounts)
+        public static IEnumerable<AccountStandardResult> ToAccountStandardResults(this IEnumerable<Account> accounts)
         {
             return accounts.Select(x => new AccountStandardResult()
             {
@@ -16,6 +16,21 @@ namespace Ubik.Accounting.Api.Features.Mappers
                 Version = x.Version,
                 CurrencyId = x.CurrencyId
             });
+        }
+
+        public static AccountStandardResult ToAccountStandardResult(this Account account)
+        {
+            return new AccountStandardResult()
+            {
+                Id = account.Id,
+                Code = account.Code,
+                Label = account.Label,
+                Category = account.Category,
+                Domain = account.Domain,
+                Description = account.Description,
+                CurrencyId = account.CurrencyId,
+                Version = account.Version
+            };
         }
     }
 }

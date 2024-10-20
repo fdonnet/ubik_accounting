@@ -3,6 +3,8 @@ using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.Api.Features.Accounts.Mappers;
+using Ubik.Accounting.Api.Features.Accounts.Services;
+using Ubik.Accounting.Api.Features.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Errors;
@@ -10,41 +12,34 @@ using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
 {
-    /// <summary>
-    /// For all queries endpoints => call the service manager and access the data
-    /// For all commands endpoints => call the message bus
-    /// </summary>
-    [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class AccountsController(IServiceManager serviceManager) : ControllerBase
+    public class AccountsController(IAccountQueryService queryService, IServiceManager serviceManager) : ControllerBase
     {
         private readonly IServiceManager _serviceManager = serviceManager;
 
-        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<GetAllAccountsResult>>> GetAll()
+        public async Task<ActionResult<IEnumerable<AccountStandardResult>>> GetAll()
         {
-            var result = (await _serviceManager.AccountService.GetAllAsync()).ToGetAllAccountResult();
+            var result = (await queryService.GetAllAsync()).ToAccountStandardResults();
 
             return Ok(result);
         }
 
-        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<GetAccountResult>> Get(Guid id)
+        public async Task<ActionResult<AccountStandardResult>> Get(Guid id)
         {
-            var result = await _serviceManager.AccountService.GetAsync(id);
+            var result = await queryService.GetAsync(id);
 
             return result.Match(
-                Right: r => Ok(r.ToGetAccountResult()),
+                Right: r => Ok(r.ToAccountStandardResult()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

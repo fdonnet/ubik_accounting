@@ -51,7 +51,7 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
             var result = await queryService.GetChildAccountsAsync(id);
 
             return result.Match(
-                Right: r => Ok(r.ToAccountStandardResult()),
+                Right: r => Ok(r.ToAccountStandardResults()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

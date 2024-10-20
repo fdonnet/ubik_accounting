@@ -52,20 +52,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
-        public static GetAccountResult ToGetAccountResult(this Account account)
-        {
-            return new GetAccountResult()
-            {
-                Id = account.Id,
-                Code = account.Code,
-                Label = account.Label,
-                Category = account.Category,
-                Domain = account.Domain,
-                Description = account.Description,
-                CurrencyId = account.CurrencyId,
-                Version = account.Version
-            };
-        }
 
         public static IEnumerable<GetAllAccountsResult> ToGetAllAccountResult(this IEnumerable<Account> accounts)
         {
