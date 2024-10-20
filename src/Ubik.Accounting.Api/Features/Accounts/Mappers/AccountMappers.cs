@@ -39,21 +39,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
-
-        public static Account ToAccount(this AddAccountCommand addAccountCommand)
-        {
-            return new Account()
-            {
-                Id = NewId.NextGuid(),
-                Code = addAccountCommand.Code,
-                Label = addAccountCommand.Label,
-                Category = addAccountCommand.Category,
-                Domain = addAccountCommand.Domain,
-                Description = addAccountCommand.Description,
-                CurrencyId = addAccountCommand.CurrencyId
-            };
-        }
-
         public static AccountAccountGroup ToAccountAccountGroup(this AddAccountInAccountGroupCommand addAccountInAccountGroupCommand)
         {
             return new AccountAccountGroup()
@@ -102,22 +87,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 Description = updateAccountCommand.Description,
                 Version = updateAccountCommand.Version,
                 CurrencyId = updateAccountCommand.CurrencyId,
-            };
-        }
-
-        public static AccountAdded ToAccountAdded(this Account account)
-        {
-            return new AccountAdded
-            {
-                Code = account.Code,
-                Label = account.Label,
-                Category = account.Category,
-                Domain = account.Domain,
-                Description = account.Description,
-                Version = account.Version,
-                Id = account.Id,
-                TenantId = account.TenantId,
-                CurrencyId = account.CurrencyId
             };
         }
 

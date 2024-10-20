@@ -375,7 +375,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
         }
 
         [Fact]
-        public async Task Get_All_AccountGroupsWithClassification_WithOtherTenant_OK()
+        public async Task Get_All_AccountGroupsWithClassification_WithOtherTenant_404()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.OtherTenant);

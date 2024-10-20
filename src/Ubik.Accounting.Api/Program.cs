@@ -92,7 +92,6 @@ namespace Ubik.Accounting.Api
                 config.AddRequestClient<DeleteAccountInAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountCommand>();
                 config.AddRequestClient<UpdateAccountCommand>();
-                config.AddRequestClient<AddAccountGroupCommand>();
                 config.AddRequestClient<AddClassificationCommand>();
                 config.AddRequestClient<UpdateClassificationCommand>();
 
@@ -127,6 +126,7 @@ namespace Ubik.Accounting.Api
             builder.Services.AddScoped<IAccountGroupQueryService, AccountGroupQueryService>();
             builder.Services.AddScoped<IAccountGroupCommandService, AccountGroupCommandService>();
             builder.Services.AddScoped<IAccountQueryService, AccountQueryService>();
+            builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 

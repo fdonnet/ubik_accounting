@@ -15,7 +15,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class AccountsController(IAccountQueryService queryService, IServiceManager serviceManager) : ControllerBase
+    public class AccountsController(IAccountQueryService queryService, IAccountCommandService commandService, IServiceManager serviceManager) : ControllerBase
     {
         private readonly IServiceManager _serviceManager = serviceManager;
 
@@ -75,26 +75,18 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AddAccountResult>> Add(AddAccountCommand command, IRequestClient<AddAccountCommand> client)
+        public async Task<ActionResult<AccountStandardResult>> Add(AddAccountCommand command)
         {
-            var (result,error) = await client.GetResponse<AddAccountResult, IServiceAndFeatureError>(command);
+            var result = await commandService.AddAsync(command.ToAccount());
 
-            if (result.IsCompletedSuccessfully)
-            {
-                var addedAccount = (await result).Message;
-                return CreatedAtAction(nameof(Get), new { id = addedAccount.Id }, addedAccount);
-            }
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match(
+                Right: r => CreatedAtAction(nameof(Get), new { id = r.Id }, r.ToAccountStandardResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]
