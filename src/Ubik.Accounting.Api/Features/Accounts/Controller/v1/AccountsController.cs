@@ -21,6 +21,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
 
         [HttpGet]
         [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<IEnumerable<AccountStandardResult>>> GetAll()
         {
@@ -43,16 +44,14 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        [Authorize(Roles = "ubik_accounting_account_read")]
-        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
-        [HttpGet("AllAccountGroupLinks")]
+        [HttpGet("accountgrouplinks")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<GetAccountResult>> GetAllAccountsLinksToGroups()
+        public async Task<ActionResult<IEnumerable<AccountGroupLinkResult>>> GetAllAccountsLinksToGroups()
         {
-            var result = (await _serviceManager.AccountService.GetAllAccountGroupLinksAsync()).ToGetAllAccountGroupLinkResult();
+            var result = (await queryService.GetAllAccountGroupLinksAsync()).ToAccountGroupLinkResults();
 
             return Ok(result);
         }

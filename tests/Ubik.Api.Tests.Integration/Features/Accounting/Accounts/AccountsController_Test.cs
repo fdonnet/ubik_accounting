@@ -63,7 +63,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
         }
 
         [Fact]
-        public async Task Get_Accounts_All_WithNoToken_Unauthorized()
+        public async Task Get_Accounts_All_WithNoToken_401()
         {
             //Act
             var response = await _client.GetAsync(_baseUrlForV1);
@@ -143,7 +143,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
         }
 
         [Fact]
-        public async Task Get_Account_By_Id_WithNoToken_Unauthorized()
+        public async Task Get_Account_By_Id_WithNoToken_401()
         {
             //Act
             var response = await _client.GetAsync($"{_baseUrlForV1}/{_accountId}");
@@ -202,6 +202,85 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Get_All_AccountGroupLinks_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/accountgrouplinks");
+            var result = await response.Content.ReadFromJsonAsync<List<AccountGroupLinkResult>>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<List<AccountGroupLinkResult>>();
+        }
+
+        [Fact]
+        public async Task Get_All_AccountGroupLinks_WithRO_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/accountgrouplinks");
+            var result = await response.Content.ReadFromJsonAsync<List<AccountGroupLinkResult>>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<List<AccountGroupLinkResult>>();
+        }
+
+        [Fact]
+        public async Task Get_All_AccountGroupLinks_WithNoToken_401()
+        {
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/accountgrouplinks");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Get_All_AccountGroupLinks_WithOtherTenant_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/accountgrouplinks");
+            var result = await response.Content.ReadFromJsonAsync<List<AccountGroupLinkResult>>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<List<AccountGroupLinkResult>>()
+                .And.Match<List<AccountGroupLinkResult>>(x => x.Count == 0);
+        }
+
+        [Fact]
+        public async Task Get_All_AccountGroupLinks_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/accountgrouplinks");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
     }
 }

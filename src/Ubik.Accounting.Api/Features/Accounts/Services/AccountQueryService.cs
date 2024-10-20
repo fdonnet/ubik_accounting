@@ -22,5 +22,13 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 ? new ResourceNotFoundError("Account", "Id", id.ToString())
                 : account;
         }
+
+        public async Task<IEnumerable<AccountAccountGroup>> GetAllAccountGroupLinksAsync()
+        {
+            var results = await ctx.AccountsAccountGroups.ToListAsync();
+
+            return results;
+        }
+
     }
 }

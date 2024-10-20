@@ -53,21 +53,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
         }
 
 
-        public static IEnumerable<GetAllAccountsResult> ToGetAllAccountResult(this IEnumerable<Account> accounts)
-        {
-            return accounts.Select(x => new GetAllAccountsResult()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Label = x.Label,
-                Category = x.Category,
-                Domain = x.Domain,
-                Description = x.Description,
-                CurrencyId = x.CurrencyId,
-                Version = x.Version
-            });
-        }
-
         public static Account ToAccount(this AddAccountCommand addAccountCommand)
         {
             return new Account()
@@ -201,17 +186,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
                 TenantId = account.TenantId,
                 CurrencyId = account.CurrencyId
             };
-        }
-
-        public static IEnumerable<GetAllAccountGroupLinksResult> ToGetAllAccountGroupLinkResult(this IEnumerable<AccountAccountGroup> accountGroupLinks)
-        {
-            return accountGroupLinks.Select(x => new GetAllAccountGroupLinksResult()
-            {
-                Id = x.Id,
-                AccountId = x.AccountId,
-                AccountGroupId = x.AccountGroupId,
-                Version = x.Version
-            });
         }
     }
 }

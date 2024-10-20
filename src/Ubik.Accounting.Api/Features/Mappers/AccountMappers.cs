@@ -32,5 +32,27 @@ namespace Ubik.Accounting.Api.Features.Mappers
                 Version = account.Version
             };
         }
+
+        public static AccountGroupLinkResult ToAccountGroupLinkResult(this AccountAccountGroup current)
+        {
+            return new AccountGroupLinkResult()
+            {
+                Id = current.Id,
+                AccountGroupId = current.AccountGroupId,
+                AccountId = current.AccountId,
+                Version = current.Version
+            };
+        }
+
+        public static IEnumerable<AccountGroupLinkResult> ToAccountGroupLinkResults(this IEnumerable<AccountAccountGroup> current)
+        {
+            return current.Select(x => new AccountGroupLinkResult()
+            {
+                Id = x.Id,
+                AccountGroupId = x.AccountGroupId,
+                AccountId = x.AccountId,
+                Version = x.Version
+            });
+        }
     }
 }
