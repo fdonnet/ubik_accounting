@@ -91,7 +91,6 @@ namespace Ubik.Accounting.Api
                 config.AddRequestClient<AddAccountInAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountInAccountGroupCommand>();
                 config.AddRequestClient<DeleteAccountCommand>();
-                config.AddRequestClient<UpdateAccountCommand>();
                 config.AddRequestClient<AddClassificationCommand>();
                 config.AddRequestClient<UpdateClassificationCommand>();
 

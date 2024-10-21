@@ -633,5 +633,232 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
                 .And.Match<CustomProblemDetails>(e => e.Errors.First().Code == "ACCOUNT_CURRENCY_NOT_FOUND");
         }
 
+        [Fact]
+        public async Task Update_Account_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-1cc9-08dcda20a76e"),
+                Code = "ZZZAAA1",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec860000-5dd4-0015-234c-08dcda20a76e")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/ec860000-5dd4-0015-1cc9-08dcda20a76e", updateAccount);
+            var result = await response.Content.ReadFromJsonAsync<AccountStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AccountStandardResult>()
+                .And.Match<AccountStandardResult>(x => x.Code == "ZZZAAA1");
+        }
+
+        [Fact]
+        public async Task Update_Account_WithRO_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-1cc9-08dcda20a76e"),
+                Code = "ZZZAAA1",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec860000-5dd4-0015-234c-08dcda20a76e")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_accountId}", updateAccount);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Update_Account_WithNoAuth_401()
+        {
+            //Arrange
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-1cc9-08dcda20a76e"),
+                Code = "ZZZAAA1",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec860000-5dd4-0015-234c-08dcda20a76e")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_accountId}", updateAccount);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Update_Account_WithOtherTenant_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-1cc9-08dcda20a76e"),
+                Code = "ZZZAAA1",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec860000-5dd4-0015-234c-08dcda20a76e")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/ec860000-5dd4-0015-1cc9-08dcda20a76e", updateAccount);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Update_Account_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-1cc9-08dcda20a76e"),
+                Code = "ZZZAAA1",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec860000-5dd4-0015-234c-08dcda20a76e")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_accountId}", updateAccount);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Update_Account_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-1cc9-08dcda20a76e"),
+                Code = "ZZZAAA1",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec860000-5dd4-0015-234c-08dcda20a76e")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_accountId}", updateAccount);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Update_Account_WithBadId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var id = NewId.NextGuid();
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = id,
+                Code = "ZZZAAA1",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec860000-5dd4-0015-234c-08dcda20a76e")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{id}", updateAccount);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Update_Account_WithIDNotMatch_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-1cc9-08dcda20a76e"),
+                Code = "ZZZAAA1",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec860000-5dd4-0015-234c-08dcda20a76e")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{NewId.NextGuid()}", updateAccount);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_UPDATE_IDS_NOT_MATCH");
+        }
+
+
     }
 }
