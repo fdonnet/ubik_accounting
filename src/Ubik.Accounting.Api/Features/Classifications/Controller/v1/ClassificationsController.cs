@@ -27,7 +27,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
             return Ok(results);
         }
 
-        [Authorize(Roles = "ubik_accounting_classification_read")]
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -35,7 +34,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<ClassificationStandardResult>> Get(Guid id)
         {
-            var result = await serviceManager.ClassificationService.GetAsync(id);
+            var result = await queryService.GetAsync(id);
             return result.Match(
                             Right: ok => Ok(ok.ToClassificationStandardResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));

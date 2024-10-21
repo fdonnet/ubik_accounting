@@ -7,7 +7,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
 {
     public interface IClassificationService
     {
-        public Task<Either<IServiceAndFeatureError, Classification>> GetAsync(Guid id);
         public Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationAccountsAsync(Guid id);
         public Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationAccountsMissingAsync(Guid id);
         public Task<Either<IServiceAndFeatureError, ClassificationStatus>> GetClassificationStatusAsync(Guid id);
