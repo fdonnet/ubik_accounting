@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Exceptions;
+using Ubik.Accounting.Contracts.Classifications.Commands;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {
@@ -567,6 +568,134 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Add_Classification_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new AddClassificationCommand
+            {
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, classification);
+            var result = await response.Content.ReadFromJsonAsync<ClassificationStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<ClassificationStandardResult>()
+                .And.Match<ClassificationStandardResult>(x => x.Code == classification.Code);
+        }
+
+        [Fact]
+        public async Task Add_Classification_WithRO_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new AddClassificationCommand
+            {
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, classification);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Add_Classification_WithNoAuth_401()
+        {
+            //Arrange
+            var classification = new AddClassificationCommand
+            {
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, classification);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Add_Classification_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new AddClassificationCommand
+            {
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, classification);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Add_Classification_WithOtherTenant_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new AddClassificationCommand
+            {
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, classification);
+            var result = await response.Content.ReadFromJsonAsync<ClassificationStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<ClassificationStandardResult>()
+                .And.Match<ClassificationStandardResult>(x => x.Code == classification.Code);
+        }
+
+        [Fact]
+        public async Task Add_Classification_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new AddClassificationCommand
+            {
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, classification);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
     }
 }
