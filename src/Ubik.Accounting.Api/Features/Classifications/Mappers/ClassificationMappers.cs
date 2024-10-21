@@ -23,18 +23,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
             };
         }
 
-        public static UpdateClassificationResult ToUpdateClassificationResult(this Classification classification)
-        {
-            return new UpdateClassificationResult()
-            {
-                Id = classification.Id,
-                Code = classification.Code,
-                Label = classification.Label,
-                Description = classification.Description,
-                Version = classification.Version
-            };
-        }
-
         public static ClassificationDeleteResult ToDeleteClassificationResult(this IEnumerable<AccountGroup> accountGroups, Guid classificationId)
         {
             return new ClassificationDeleteResult
