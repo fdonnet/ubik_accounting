@@ -859,6 +859,99 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_UPDATE_IDS_NOT_MATCH");
         }
 
+        [Fact]
+        public async Task Update_Account_WithAlreadyExists_409()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-ce96-08dcda306be5"),
+                Code = "2005",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec860000-5dd4-0015-0a00-08dcda307df9")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/ec860000-5dd4-0015-ce96-08dcda306be5", updateAccount);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_ALREADY_EXISTS");
+        }
+
+        [Fact]
+        public async Task Update_Account_WithBadVersion_409()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-ce96-08dcda306be5"),
+                Code = "UUUAAA",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec850000-5dd4-0015-0a00-08dcda307df9")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/ec860000-5dd4-0015-ce96-08dcda306be5", updateAccount);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_UPDATE_CONCURRENCY");
+        }
+
+        [Fact]
+        public async Task Update_Account_WithBadCurrency_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var updateAccount = new UpdateAccountCommand
+            {
+                Id = new Guid("ec860000-5dd4-0015-ce96-08dcda306be5"),
+                Code = "UUUAAA",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("242e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+                Version = new Guid("ec850000-5dd4-0015-0a00-08dcda307df9")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/ec860000-5dd4-0015-ce96-08dcda306be5", updateAccount);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_CURRENCY_NOT_FOUND");
+        }
+
 
     }
 }
