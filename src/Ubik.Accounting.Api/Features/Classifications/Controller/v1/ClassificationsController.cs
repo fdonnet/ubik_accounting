@@ -65,18 +65,17 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Authorize(Roles = "ubik_accounting_classification_read")]
-        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet("{id}/missingaccounts")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<GetClassificationAccountsMissingResult>> GetMissingAccounts(Guid id)
+        public async Task<ActionResult<IEnumerable<AccountStandardResult>>> GetMissingAccounts(Guid id)
         {
-            var result = await serviceManager.ClassificationService.GetClassificationAccountsMissingAsync(id);
+            var result = await queryService.GetClassificationMissingAccountsAsync(id);
+
             return result.Match(
-                            Right: ok => Ok(ok.ToGetClassificationAccountsMissingResult()),
+                            Right: ok => Ok(ok.ToAccountStandardResults()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

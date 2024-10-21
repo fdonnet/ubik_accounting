@@ -1,6 +1,6 @@
 ﻿using Ubik.Accounting.Api.Models;
 
-namespace Ubik.Accounting.Api.Features.Classifications.Queries.CustomPoco
+namespace Ubik.Accounting.Api.Features.Classifications.CustomPoco
 {
     public record ClassificationStatus
     {
