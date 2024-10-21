@@ -8,7 +8,7 @@ namespace Ubik.DB.Common.Extensions
     public static class ChangeTrackerExtensions
     {
         //TODO: seems to work, need to manage special deletion when we don't remove a record from the table but only update a bool "deleted" field
-        //      new interface ISpecialDelete to be dev
+        //      new interface ISpecialDelete to be dev => good idea do it.
         public static void SetSpecialFields(this ChangeTracker changeTracker, ICurrentUser currentUser)
         {
             changeTracker.DetectChanges();

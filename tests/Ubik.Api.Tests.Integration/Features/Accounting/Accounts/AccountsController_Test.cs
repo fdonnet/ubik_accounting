@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
+using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.Accounting.Contracts.Accounts.Enums;
+using MassTransit;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
 {
@@ -420,5 +423,215 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
+
+        [Fact]
+        public async Task Add_Account_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var newAccount = new AddAccountCommand
+            {
+                Code = "ZZZAAA",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, newAccount);
+            var result = await response.Content.ReadFromJsonAsync<AccountStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AccountStandardResult>()
+                .And.Match<AccountStandardResult>(x => x.Code == "ZZZAAA");
+        }
+
+        [Fact]
+        public async Task Add_Account_WithRO_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var newAccount = new AddAccountCommand
+            {
+                Code = "ZZZAAA",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, newAccount);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Add_Account_WithNoAuth_401()
+        {
+            //Arrange
+            var newAccount = new AddAccountCommand
+            {
+                Code = "ZZZAAA",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, newAccount);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Add_Account_WithOtherTenant_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var newAccount = new AddAccountCommand
+            {
+                Code = "ZZZAAA",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, newAccount);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(e => e.Errors.First().Code == "ACCOUNT_CURRENCY_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Add_Account_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var newAccount = new AddAccountCommand
+            {
+                Code = "ZZZAAA",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, newAccount);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Add_Account_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var newAccount = new AddAccountCommand
+            {
+                Code = "ZZZAAA",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, newAccount);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Add_Account_WithExistingCode_409()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var newAccount = new AddAccountCommand
+            {
+                Code = "1000",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = new Guid("248e0000-5dd4-0015-38c5-08dcd98e5b2d"),
+                Label = "Test Account",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, newAccount);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(e => e.Errors.First().Code == "ACCOUNT_ALREADY_EXISTS");
+        }
+
+        [Fact]
+        public async Task Add_Account_WithBadCurrency_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var newAccount = new AddAccountCommand
+            {
+                Code = "78zrt",
+                Description = "Test Account",
+                Domain = AccountDomain.Asset,
+                Category = AccountCategory.Liquidity,
+                CurrencyId = NewId.NextGuid(),
+                Label = "Test Account",
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, newAccount);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(e => e.Errors.First().Code == "ACCOUNT_CURRENCY_NOT_FOUND");
+        }
+
     }
 }
