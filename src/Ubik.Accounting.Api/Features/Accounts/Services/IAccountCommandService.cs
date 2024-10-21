@@ -7,5 +7,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
     public interface IAccountCommandService
     {
         public Task<Either<IServiceAndFeatureError, Account>> AddAsync(Account account);
+        public Task<Either<IServiceAndFeatureError, Account>> UpdateAsync(Account account);
     }
 }

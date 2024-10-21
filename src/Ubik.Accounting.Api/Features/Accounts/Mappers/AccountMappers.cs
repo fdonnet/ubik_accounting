@@ -62,19 +62,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             return account;
         }
 
-        public static Account ToAccount(this Account accountForUpd, Account account)
-        {
-            account.Id = accountForUpd.Id;
-            account.Code = accountForUpd.Code;
-            account.Label = accountForUpd.Label;
-            account.Category = accountForUpd.Category;
-            account.Domain = accountForUpd.Domain;
-            account.Description = accountForUpd.Description;
-            account.Version = accountForUpd.Version;
-            account.CurrencyId = accountForUpd.CurrencyId;
-            return account;
-        }
-
         public static Account ToAccount(this UpdateAccountCommand updateAccountCommand)
         {
             return new Account()
@@ -128,20 +115,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
-        public static AccountUpdated ToAccountUpdated(this Account account)
-        {
-            return new AccountUpdated
-            {
-                Code = account.Code,
-                Label = account.Label,
-                Category = account.Category,
-                Domain = account.Domain,
-                Description = account.Description,
-                Version = account.Version,
-                Id = account.Id,
-                TenantId = account.TenantId,
-                CurrencyId = account.CurrencyId
-            };
-        }
+
     }
 }

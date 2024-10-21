@@ -89,32 +89,23 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<UpdateAccountResult>> Update(Guid id, 
-            UpdateAccountCommand command, IRequestClient<UpdateAccountCommand> client)
+        public async Task<ActionResult<AccountStandardResult>> Update(Guid id, UpdateAccountCommand command)
         {
             if (command.Id != id)
                 return new ObjectResult(new ResourceIdNotMatchForUpdateError("Account",id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
-            var (result, error) = await client.GetResponse<UpdateAccountResult, IServiceAndFeatureError>(command);
+            var result = await commandService.UpdateAsync(command.ToAccount());
 
-            if (result.IsCompletedSuccessfully)
-            {
-                var updatedAccount = (await result).Message;
-                return Ok(updatedAccount);
-            }
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match(
+                Right: r => Ok(r.ToAccountStandardResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         /// <summary>

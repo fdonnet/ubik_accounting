@@ -46,20 +46,20 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 }));
         }
 
-        public async Task<Either<IServiceAndFeatureError, Account>> UpdateAsync(Account account)
-        {
-            return await GetAsync(account.Id).ToAsync()
-                .Map(ac => ac = account.ToAccount(ac))
-                .Bind(ac => ValidateIfNotAlreadyExistsWithOtherIdAsync(ac).ToAsync())
-                .Bind(ac => ValidateIfCurrencyExistsAsync(ac).ToAsync())
-                .Map(ac =>
-                {
-                    _context.Entry(ac).State = EntityState.Modified;
-                    _context.SetAuditAndSpecialFields();
+        //public async Task<Either<IServiceAndFeatureError, Account>> UpdateAsync(Account account)
+        //{
+        //    return await GetAsync(account.Id).ToAsync()
+        //        .Map(ac => ac = account.ToAccount(ac))
+        //        .Bind(ac => ValidateIfNotAlreadyExistsWithOtherIdAsync(ac).ToAsync())
+        //        .Bind(ac => ValidateIfCurrencyExistsAsync(ac).ToAsync())
+        //        .Map(ac =>
+        //        {
+        //            _context.Entry(ac).State = EntityState.Modified;
+        //            _context.SetAuditAndSpecialFields();
 
-                    return ac;
-                });
-        }
+        //            return ac;
+        //        });
+        //}
 
         public async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
         {
