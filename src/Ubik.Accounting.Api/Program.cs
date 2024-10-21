@@ -73,9 +73,9 @@ namespace Ubik.Accounting.Api
 
                     //TODO:review that
                     //Use to pass tenantid when message broker is used to contact the api (async)
-                    configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
+                    //configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
                     configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);
-                    configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
+                    //configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
                 });
 
                 config.AddEntityFrameworkOutbox<AccountingDbContext>(o =>

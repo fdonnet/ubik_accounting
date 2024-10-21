@@ -1,31 +1,35 @@
-﻿using LanguageExt;
+﻿using Dapper;
+using LanguageExt;
 using MassTransit;
-using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
+using Ubik.Accounting.Api.Features.Accounts.Errors;
 using Ubik.Accounting.Api.Features.Mappers;
 using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Events;
-using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
+using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Api.Features.Accounts.Services
 {
-    public class AccountCommandService(AccountingDbContext ctx, IPublishEndpoint publishEndpoint) : IAccountCommandService
+    public class AccountCommandService(AccountingDbContext ctx, ICurrentUser currentUser, IPublishEndpoint publishEndpoint) : IAccountCommandService
     {
-        public async Task<Either<IServiceAndFeatureError, Account>> AddAsync(Account account)
+        public async Task<Either<IServiceAndFeatureError, Account>> AddAsync(AddAccountCommand command)
         {
-            return await ValidateIfNotAlreadyExistsAsync(account)
+            return await ValidateIfNotAlreadyExistsAsync(command.ToAccount())
                 .BindAsync(ValidateIfCurrencyExistsAsync)
                 .BindAsync(AddInDbContextAsync)
                 .BindAsync(AddSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, Account>> UpdateAsync(Account account)
+        public async Task<Either<IServiceAndFeatureError, Account>> UpdateAsync(UpdateAccountCommand command)
         {
-            return await GetAsync(account.Id)
-                .BindAsync(ac => MapInDbContextAsync(ac, account))
+            var model = command.ToAccount();
+
+            return await GetAsync(model.Id)
+                .BindAsync(ac => MapInDbContextAsync(ac, model))
                 .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
                 .BindAsync(ValidateIfCurrencyExistsAsync)
                 .BindAsync(UpdateInDbContextAsync)
@@ -37,6 +41,66 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             return await GetAsync(id)
                 .BindAsync(DeleteInDbContextAsync)
                 .BindAsync(DeletedSaveAndPublishAsync);
+        }
+
+        public async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddInAccountGroupAsync(AddAccountInAccountGroupCommand command)
+        {
+            var model = command.ToAccountAccountGroup();
+            return await GetAsync(model.AccountId)
+                .BindAsync(a => ValidateIfExistsAccountGroupIdAsync(model))
+                .BindAsync(ValidateIfNotExistsInTheClassificationAsync)
+                .BindAsync(AddAccountGroupLinkInDbContextAsync)
+                .BindAsync(AddAccountGroupLinkSaveAndPublishAsync);
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddAccountGroupLinkSaveAndPublishAsync(AccountAccountGroup current)
+        {
+            await publishEndpoint.Publish(current.ToAccountAddedInAccountGroup(), CancellationToken.None);
+            await ctx.SaveChangesAsync();
+
+            return current;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddAccountGroupLinkInDbContextAsync(AccountAccountGroup current)
+        {
+            await ctx.AccountsAccountGroups.AddAsync(current);
+            ctx.SetAuditAndSpecialFields();
+
+            return current;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> ValidateIfNotExistsInTheClassificationAsync(AccountAccountGroup accountAccountGroup)
+        {
+            var p = new DynamicParameters();
+            p.Add("@id", accountAccountGroup.AccountId);
+            p.Add("@accountGroupId", accountAccountGroup.AccountGroupId);
+            p.Add("@tenantId", currentUser.TenantId);
+
+            var con = ctx.Database.GetDbConnection();
+            var sql = """
+                SELECT a.id
+                FROM account_groups ag 
+                INNER JOIN accounts_account_groups aag on aag.account_group_id = ag.id
+                INNER JOIN accounts a ON aag.account_id = a.id
+                WHERE a.tenant_id = @tenantId
+                AND a.id = @id
+                AND ag.classification_id = (SELECT c1.id
+                						   	FROM classifications c1
+                						 	INNER JOIN account_groups ag1 ON ag1.classification_id = c1.id
+                						   	WHERE ag1.id = @accountGroupId)
+                """;
+
+            return (await con.QueryFirstOrDefaultAsync<Account>(sql, p)) != null
+                ? new AccountAlreadyExistsInClassificationError(accountAccountGroup.AccountId, accountAccountGroup.AccountGroupId)
+                : accountAccountGroup;
+
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> ValidateIfExistsAccountGroupIdAsync(AccountAccountGroup accountAccountGroup)
+        {
+            return await ctx.AccountGroups.AnyAsync(ag => ag.Id == accountAccountGroup.AccountGroupId)
+                ? accountAccountGroup
+                : new BadParamExternalResourceNotFound("Account", "AccountGroup", "AccountGroupId", accountAccountGroup.AccountGroupId.ToString());
         }
 
         private async Task<Either<IServiceAndFeatureError, bool>> DeletedSaveAndPublishAsync(Account current)

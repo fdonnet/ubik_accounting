@@ -39,28 +39,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
-        public static AccountAccountGroup ToAccountAccountGroup(this AddAccountInAccountGroupCommand addAccountInAccountGroupCommand)
-        {
-            return new AccountAccountGroup()
-            {
-                Id = NewId.NextGuid(),
-                AccountId = addAccountInAccountGroupCommand.AccountId,
-                AccountGroupId = addAccountInAccountGroupCommand.AccountGroupId
-            };
-        }
 
-        public static Account ToAccount(this UpdateAccountCommand updateAccountCommand, Account account)
-        {
-            account.Id = updateAccountCommand.Id;
-            account.Code = updateAccountCommand.Code;
-            account.Label = updateAccountCommand.Label;
-            account.Category = updateAccountCommand.Category;
-            account.Domain = updateAccountCommand.Domain;
-            account.Description = updateAccountCommand.Description;
-            account.Version = updateAccountCommand.Version;
-            account.CurrencyId = updateAccountCommand.CurrencyId;
-            return account;
-        }
 
         public static Account ToAccount(this UpdateAccountCommand updateAccountCommand)
         {
@@ -77,15 +56,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
-        public static AccountAddedInAccountGroup ToAccountAddedInAccountGroup(this AccountAccountGroup accountAccountGroup)
-        {
-            return new AccountAddedInAccountGroup
-            {
-               AccountId = accountAccountGroup.AccountId,
-               AccountGroupId = accountAccountGroup.AccountGroupId
-            };
-        }
-
         public static AccountDeletedInAccountGroup ToAccountDeletedInAccountGroup(this AccountAccountGroup accountAccountGroup)
         {
             return new AccountDeletedInAccountGroup
@@ -95,9 +65,9 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
             };
         }
 
-        public static AddAccountInAccountGroupResult ToAddAccountInAccountGroupResult(this AccountAccountGroup accountAccountGroup)
+        public static AccountInAccountGroupStandardResult ToAddAccountInAccountGroupResult(this AccountAccountGroup accountAccountGroup)
         {
-            return new AddAccountInAccountGroupResult
+            return new AccountInAccountGroupStandardResult
             {
                 Id = accountAccountGroup.AccountId,
                 AccountId = accountAccountGroup.AccountId,

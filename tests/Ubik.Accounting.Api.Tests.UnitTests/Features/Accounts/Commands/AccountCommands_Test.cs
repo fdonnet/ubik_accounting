@@ -67,10 +67,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             var client = _harness.GetRequestClient<AddAccountInAccountGroupCommand>();
             var consumerHarness = _harness.GetConsumerHarness<AddAccountInAccountGroupConsumer>();
             //Act
-            var response = await client.GetResponse<AddAccountInAccountGroupResult>(_command);
+            var response = await client.GetResponse<AccountInAccountGroupStandardResult>(_command);
 
             //Assert
-            var sent = await _harness.Sent.Any<AddAccountInAccountGroupResult>();
+            var sent = await _harness.Sent.Any<AccountInAccountGroupStandardResult>();
             var consumed = await _harness.Consumed.Any<AddAccountInAccountGroupCommand>();
             var consumerConsumed = await consumerHarness.Consumed.Any<AddAccountInAccountGroupCommand>();
 
@@ -78,8 +78,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
             response.Message.Should()
-                .BeOfType<AddAccountInAccountGroupResult>()
-                .And.Match<AddAccountInAccountGroupResult>(a => a.AccountId == _command.AccountId);
+                .BeOfType<AccountInAccountGroupStandardResult>()
+                .And.Match<AccountInAccountGroupStandardResult>(a => a.AccountId == _command.AccountId);
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Accounts.Commands
             var client = _harness.GetRequestClient<AddAccountInAccountGroupCommand>();
 
             //Act
-            await client.GetResponse<AddAccountInAccountGroupResult>(_command);
+            await client.GetResponse<AccountInAccountGroupStandardResult>(_command);
 
             //Assert
             var sent = await _harness.Published.Any<AccountAddedInAccountGroup>();

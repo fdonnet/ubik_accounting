@@ -171,7 +171,7 @@
     private async Task ManageResponseReturns(HttpResponseMessage response)
     {
 
-        var result = await response.Content.ReadFromJsonAsync<AddAccountInAccountGroupResult>();
+        var result = await response.Content.ReadFromJsonAsync<AccountInAccountGroupStandardResult>();
 
         if (result == null)
             throw new ArgumentNullException("Cannot access response result for AddAccountInAccountGroupResult");

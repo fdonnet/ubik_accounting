@@ -82,7 +82,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AccountStandardResult>> Add(AddAccountCommand command)
         {
-            var result = await commandService.AddAsync(command.ToAccount());
+            var result = await commandService.AddAsync(command);
 
             return result.Match(
                 Right: r => CreatedAtAction(nameof(Get), new { id = r.Id }, r.ToAccountStandardResult()),
@@ -101,7 +101,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
                 return new ObjectResult(new ResourceIdNotMatchForUpdateError("Account",id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
-            var result = await commandService.UpdateAsync(command.ToAccount());
+            var result = await commandService.UpdateAsync(command);
 
             return result.Match(
                 Right: r => Ok(r.ToAccountStandardResult()),
@@ -113,32 +113,24 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         /// </summary>
         /// <param name="id"></param>
         /// <param name="accountGroupId"></param>
-        /// <param name="client"></param>
         /// <returns></returns>
-        [Authorize(Roles = "ubik_accounting_account_write")]
-        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
-        [HttpPost("{id}/AccountGroups/{accountGroupId}")]
+        [HttpPost("{id}/accountgroups/{accountGroupId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AddAccountInAccountGroupResult>> AddInAccountGroup(Guid id,
-            Guid accountGroupId, IRequestClient<AddAccountInAccountGroupCommand> client)
+        public async Task<ActionResult<AccountInAccountGroupStandardResult>> AddInAccountGroup(Guid id, Guid accountGroupId)
         {
-            var (result, error) = await client.GetResponse<AddAccountInAccountGroupResult
-                , IServiceAndFeatureError>(new AddAccountInAccountGroupCommand { AccountId = id, AccountGroupId=accountGroupId});
+            var result = await commandService.AddInAccountGroupAsync(new AddAccountInAccountGroupCommand
+            {
+                AccountId = id,
+                AccountGroupId = accountGroupId
+            });
 
-            if (result.IsCompletedSuccessfully)
-            {
-                var accountAccountGroup = (await result).Message;
-                return Ok(accountAccountGroup);
-            }
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match(
+                Right: r => Ok(r.ToAccountInAccountGroupStandardResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         [HttpDelete("{id}")]
