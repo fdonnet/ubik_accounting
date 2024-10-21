@@ -55,11 +55,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
             return Ok(result);
         }
 
-        /// <summary>
-        /// Account groups attached to this account (one account group per classification)
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         [HttpGet("{id}/accountgroups")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -107,12 +102,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        /// <summary>
-        /// Attach an account group to the account (one per classification)
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="accountGroupId"></param>
-        /// <returns></returns>
         [HttpPost("{id}/accountgroups/{accountGroupId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
@@ -146,13 +135,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        /// <summary>
-        /// Remove an account group from the account (detach)
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="accountGroupId"></param>
-        /// <returns></returns>
-        [HttpDelete("{id}/AccountGroups/{accountGroupId}")]
+        [HttpDelete("{id}/accountGroups/{accountGroupId}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
