@@ -2,6 +2,7 @@
 using Ubik.Accounting.Api.Features.Classifications.CustomPoco;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.Accounting.Contracts.Classifications.Events;
 using Ubik.Accounting.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.Api.Mappers
@@ -50,6 +51,52 @@ namespace Ubik.Accounting.Api.Mappers
                 Code = addClassificationCommand.Code,
                 Label = addClassificationCommand.Label,
                 Description = addClassificationCommand.Description
+            };
+        }
+
+        public static Classification ToClassification(this Classification forUpd, Classification classification)
+        {
+            classification.Id = forUpd.Id;
+            classification.Code = forUpd.Code;
+            classification.Label = forUpd.Label;
+            classification.Description = forUpd.Description;
+            classification.Version = forUpd.Version;
+
+            return classification;
+        }
+        public static ClassificationAdded ToClassificationAdded(this Classification classification)
+        {
+            return new ClassificationAdded
+            {
+                Id = classification.Id,
+                Code = classification.Code,
+                Label = classification.Label,
+                Description = classification.Description,
+                Version = classification.Version
+            };
+        }
+
+        public static ClassificationUpdated ToClassificationUpdated(this Classification classification)
+        {
+            return new ClassificationUpdated
+            {
+                Id = classification.Id,
+                Code = classification.Code,
+                Label = classification.Label,
+                Description = classification.Description,
+                Version = classification.Version
+            };
+        }
+
+        public static Classification ToClassification(this UpdateClassificationCommand updateClassificationCommand)
+        {
+            return new Classification()
+            {
+                Id = updateClassificationCommand.Id,
+                Code = updateClassificationCommand.Code,
+                Label = updateClassificationCommand.Label,
+                Description = updateClassificationCommand.Description,
+                Version = updateClassificationCommand.Version
             };
         }
     }

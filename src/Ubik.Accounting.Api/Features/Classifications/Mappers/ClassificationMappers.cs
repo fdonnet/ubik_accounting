@@ -11,53 +11,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
 {
     public static class ClassificationMappers
     {
-        public static Classification ToClassification(this Classification forUpd, Classification classification)
-        {
-            classification.Id = forUpd.Id;
-            classification.Code = forUpd.Code;
-            classification.Label = forUpd.Label;
-            classification.Description = forUpd.Description;
-            classification.Version = forUpd.Version;
-
-            return classification;
-        }
-
-        public static Classification ToClassification(this UpdateClassificationCommand updateClassificationCommand)
-        {
-            return new Classification()
-            {
-                Id = updateClassificationCommand.Id,
-                Code = updateClassificationCommand.Code,
-                Label = updateClassificationCommand.Label,
-                Description = updateClassificationCommand.Description,
-                Version = updateClassificationCommand.Version
-            };
-        }
-
-        public static ClassificationAdded ToClassificationAdded(this Classification classification)
-        {
-            return new ClassificationAdded
-            {
-                Id = classification.Id,
-                Code = classification.Code,
-                Label = classification.Label,
-                Description = classification.Description,
-                Version = classification.Version
-            };
-        }
-
-        public static ClassificationUpdated ToClassificationUpdated(this Classification classification)
-        {
-            return new ClassificationUpdated
-            {
-                Id = classification.Id,
-                Code = classification.Code,
-                Label = classification.Label,
-                Description = classification.Description,
-                Version = classification.Version
-            };
-        }
-
         public static ClassificationStandardResult ToAddClassificationResult(this Classification classification)
         {
             return new ClassificationStandardResult()
@@ -82,9 +35,9 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
             };
         }
 
-        public static DeleteClassificationResult ToDeleteClassificationResult(this IEnumerable<AccountGroup> accountGroups, Guid classificationId)
+        public static ClassificationDeleteResult ToDeleteClassificationResult(this IEnumerable<AccountGroup> accountGroups, Guid classificationId)
         {
-            return new DeleteClassificationResult
+            return new ClassificationDeleteResult
             {
                 Id = classificationId,
                 DeletedAccountGroups = accountGroups.Select(x => new AccountGroupStandardResult()

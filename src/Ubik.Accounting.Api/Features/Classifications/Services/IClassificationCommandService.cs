@@ -8,5 +8,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
     public interface IClassificationCommandService
     {
         public Task<Either<IServiceAndFeatureError, Classification>> AddAsync(AddClassificationCommand command);
+        public Task<Either<IServiceAndFeatureError, Classification>> UpdateAsync(UpdateClassificationCommand command);
     }
 }

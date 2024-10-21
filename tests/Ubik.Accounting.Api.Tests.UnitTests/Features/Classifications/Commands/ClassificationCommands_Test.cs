@@ -129,10 +129,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Commands
 
             //Act
             var testId = Guid.NewGuid();
-            var response = await client.GetResponse<DeleteClassificationResult>(new DeleteClassificationCommand { Id= testId });
+            var response = await client.GetResponse<ClassificationDeleteResult>(new DeleteClassificationCommand { Id= testId });
 
             //Assert
-            var sent = await _harness.Sent.Any<DeleteClassificationResult>();
+            var sent = await _harness.Sent.Any<ClassificationDeleteResult>();
             var consumed = await _harness.Consumed.Any<DeleteClassificationCommand>();
             var consumerConsumed = await consumerHarness.Consumed.Any<DeleteClassificationCommand>();
 
@@ -140,8 +140,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Commands
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
             response.Message.Should()
-                .BeOfType<DeleteClassificationResult>()
-                .And.Match<DeleteClassificationResult>(a => a.Id == testId);
+                .BeOfType<ClassificationDeleteResult>()
+                .And.Match<ClassificationDeleteResult>(a => a.Id == testId);
         }
         [Fact]
         public async Task Delete_Classification_OkClassificationDeletedPublished()
@@ -151,7 +151,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Commands
             var client = _harness.GetRequestClient<DeleteClassificationCommand>();
 
             //Act
-            await client.GetResponse<DeleteClassificationResult>(new DeleteClassificationCommand { Id=Guid.NewGuid() });
+            await client.GetResponse<ClassificationDeleteResult>(new DeleteClassificationCommand { Id=Guid.NewGuid() });
 
             //Assert
             var sent = await _harness.Published.Any<ClassificationDeleted>();

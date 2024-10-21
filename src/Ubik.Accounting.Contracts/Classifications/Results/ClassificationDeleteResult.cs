@@ -2,7 +2,7 @@
 
 namespace Ubik.Accounting.Contracts.Classifications.Results
 {
-    public record DeleteClassificationResult
+    public record ClassificationDeleteResult
     {
         public Guid Id { get; init; }
         public IEnumerable<AccountGroupStandardResult> DeletedAccountGroups { get; init; } = [];

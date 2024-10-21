@@ -112,33 +112,23 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        [Authorize(Roles = "ubik_accounting_classification_write")]
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<UpdateClassificationResult>> Update(Guid id,
-            UpdateClassificationCommand command, IRequestClient<UpdateClassificationCommand> client)
+        public async Task<ActionResult<ClassificationStandardResult>> Update(Guid id, UpdateClassificationCommand command)
         {
             if (command.Id != id)
                 return new ObjectResult(new ResourceIdNotMatchForUpdateError("Classification",id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
+            var result = await commandService.UpdateAsync(command);
 
-            var (result, error) = await client.GetResponse<UpdateClassificationResult, IServiceAndFeatureError>(command);
-
-            if (result.IsCompletedSuccessfully)
-            {
-                var updated = (await result).Message;
-                return Ok(updated);
-            }
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match(
+                            Right: ok => Ok(ok.ToClassificationStandardResult()),
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         /// <summary>
@@ -153,9 +143,9 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<DeleteClassificationResult>> Delete(Guid id, IRequestClient<DeleteClassificationCommand> client)
+        public async Task<ActionResult<ClassificationDeleteResult>> Delete(Guid id, IRequestClient<DeleteClassificationCommand> client)
         {
-            var (result, error) = await client.GetResponse<DeleteClassificationResult,
+            var (result, error) = await client.GetResponse<ClassificationDeleteResult,
             IServiceAndFeatureError>(new DeleteClassificationCommand { Id = id });
 
             if (result.IsCompletedSuccessfully)

@@ -131,20 +131,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 });
         }
 
-        public async Task<Either<IServiceAndFeatureError, Classification>> UpdateAsync(Classification classification)
-        {
-            return await GetAsync(classification.Id).ToAsync()
-                .Map(c => c = classification.ToClassification(c))
-                .Bind(c => ValidateIfNotAlreadyExistsWithOtherIdAsync(c).ToAsync())
-                .Map(c =>
-                {
-                    ctx.Entry(c).State = EntityState.Modified;
-                    ctx.SetAuditAndSpecialFields();
-
-                    return c;
-                });
-        }
-
         public async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id)
         {
             return await GetAsync(id).ToAsync()
