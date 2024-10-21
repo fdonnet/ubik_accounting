@@ -3,7 +3,7 @@ using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Contracts.Authorizations.Events;
 using Ubik.Security.Contracts.Authorizations.Results;
 
-namespace Ubik.Security.Api.Features.Mappers
+namespace Ubik.Security.Api.Mappers
 {
     public static class AuthorizationMappers
     {

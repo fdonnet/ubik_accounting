@@ -5,7 +5,7 @@ using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.Accounts.Errors;
-using Ubik.Accounting.Api.Features.Mappers;
+using Ubik.Accounting.Api.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Events;

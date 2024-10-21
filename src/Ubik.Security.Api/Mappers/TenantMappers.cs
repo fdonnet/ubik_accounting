@@ -3,7 +3,7 @@ using Ubik.Security.Contracts.Tenants.Commands;
 using Ubik.Security.Contracts.Tenants.Results;
 using Ubik.Security.Contracts.Tenants.Events;
 
-namespace Ubik.Security.Api.Features.Mappers
+namespace Ubik.Security.Api.Mappers
 {
     public static class TenantMappers
     {

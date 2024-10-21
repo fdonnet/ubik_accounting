@@ -43,7 +43,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
             classification.Label = forUpd.Label;
             classification.Description = forUpd.Description;
             classification.Version = forUpd.Version;
-          
+
             return classification;
         }
 

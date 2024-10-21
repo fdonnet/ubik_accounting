@@ -5,7 +5,7 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Events;
 using Ubik.Accounting.Contracts.Accounts.Results;
 
-namespace Ubik.Accounting.Api.Features.Mappers
+namespace Ubik.Accounting.Api.Mappers
 {
     public static class AccountMappers
     {

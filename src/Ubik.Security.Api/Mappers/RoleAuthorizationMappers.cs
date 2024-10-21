@@ -2,7 +2,7 @@
 using Ubik.Security.Contracts.RoleAuthorizations.Commands;
 using Ubik.Security.Contracts.RoleAuthorizations.Events;
 
-namespace Ubik.Security.Api.Features.Mappers
+namespace Ubik.Security.Api.Mappers
 {
     public static class RoleAuthorizationMappers
     {

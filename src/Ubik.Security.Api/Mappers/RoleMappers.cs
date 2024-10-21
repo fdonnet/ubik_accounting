@@ -3,7 +3,7 @@ using Ubik.Security.Contracts.Roles.Commands;
 using Ubik.Security.Contracts.Roles.Events;
 using Ubik.Security.Contracts.Roles.Results;
 
-namespace Ubik.Security.Api.Features.Mappers
+namespace Ubik.Security.Api.Mappers
 {
     public static class RoleMappers
     {

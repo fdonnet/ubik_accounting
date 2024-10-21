@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Api.Features.Authorizations.Services;
-using Ubik.Security.Api.Features.Mappers;
+using Ubik.Security.Api.Mappers;
 using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Contracts.Authorizations.Results;
 

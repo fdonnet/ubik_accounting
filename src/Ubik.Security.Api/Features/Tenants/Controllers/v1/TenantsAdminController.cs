@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
-using Ubik.Security.Api.Features.Mappers;
 using Ubik.Security.Api.Features.Tenants.Services;
+using Ubik.Security.Api.Mappers;
 using Ubik.Security.Contracts.Tenants.Commands;
 using Ubik.Security.Contracts.Tenants.Results;
 

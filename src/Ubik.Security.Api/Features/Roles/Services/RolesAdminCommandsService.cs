@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Security.Api.Data;
-using Ubik.Security.Api.Features.Mappers;
+using Ubik.Security.Api.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Roles.Commands;
 using Ubik.Security.Contracts.Roles.Events;

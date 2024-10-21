@@ -5,7 +5,7 @@ using Ubik.Accounting.Contracts.AccountGroups.Events;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Accounts.Events;
 
-namespace Ubik.Accounting.Api.Features.Mappers
+namespace Ubik.Accounting.Api.Mappers
 {
     public static class AccountGroupMappers
     {

@@ -5,7 +5,7 @@ using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Events;
 using Ubik.Security.Contracts.Users.Results;
 
-namespace Ubik.Security.Api.Features.Mappers
+namespace Ubik.Security.Api.Mappers
 {
     public static class UserMappers
     {
@@ -33,7 +33,7 @@ namespace Ubik.Security.Api.Features.Mappers
             };
         }
 
-        public static UserAdminResult ToUserAdminResult(this User current, Dictionary<Guid,List<AuthorizationStandardResult>> authorizationsByTenant)
+        public static UserAdminResult ToUserAdminResult(this User current, Dictionary<Guid, List<AuthorizationStandardResult>> authorizationsByTenant)
         {
             return new UserAdminResult()
             {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Data.Common;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.AccountGroups.Errors;
-using Ubik.Accounting.Api.Features.Mappers;
+using Ubik.Accounting.Api.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Events;

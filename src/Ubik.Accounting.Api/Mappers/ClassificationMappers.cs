@@ -1,7 +1,7 @@
 ﻿using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Classifications.Results;
 
-namespace Ubik.Accounting.Api.Features.Mappers
+namespace Ubik.Accounting.Api.Mappers
 {
     public static class ClassificationMappers
     {
