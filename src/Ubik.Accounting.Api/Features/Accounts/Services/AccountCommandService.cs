@@ -1,9 +1,12 @@
 ﻿using LanguageExt;
 using MassTransit;
+using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.Mappers;
 using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Contracts.Accounts.Events;
+using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 
@@ -25,8 +28,31 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 .BindAsync(ac => MapInDbContextAsync(ac, account))
                 .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
                 .BindAsync(ValidateIfCurrencyExistsAsync)
-                .BindAsync(UpdateInDbContext)
+                .BindAsync(UpdateInDbContextAsync)
                 .BindAsync(UpdateSaveAndPublishAsync);
+        }
+
+        public async Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id)
+        {
+            return await GetAsync(id)
+                .BindAsync(DeleteInDbContextAsync)
+                .BindAsync(DeletedSaveAndPublishAsync);
+        }
+
+        private async Task<Either<IServiceAndFeatureError, bool>> DeletedSaveAndPublishAsync(Account current)
+        {
+            await publishEndpoint.Publish(new AccountDeleted { Id = current.Id }, CancellationToken.None);
+            await ctx.SaveChangesAsync();
+
+            return true;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Account>> DeleteInDbContextAsync(Account current)
+        {
+            ctx.Entry(current).State = EntityState.Deleted;
+
+            await Task.CompletedTask;
+            return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, Account>> UpdateSaveAndPublishAsync(Account current)
@@ -53,7 +79,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 : account;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> UpdateInDbContext(Account current)
+        private async Task<Either<IServiceAndFeatureError, Account>> UpdateInDbContextAsync(Account current)
         {
             ctx.Entry(current).State = EntityState.Modified;
             ctx.SetAuditAndSpecialFields();

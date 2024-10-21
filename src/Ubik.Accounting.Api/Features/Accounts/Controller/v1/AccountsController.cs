@@ -141,24 +141,18 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
             }
         }
 
-        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpDelete("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult> Delete(Guid id, IRequestClient<DeleteAccountCommand> client)
+        public async Task<ActionResult> Delete(Guid id)
         {
-            var (result, error) = await client.GetResponse<DeleteAccountResult, 
-                IServiceAndFeatureError>(new DeleteAccountCommand { Id = id});
+            var result = await commandService.DeleteAsync(id);
 
-            if (result.IsCompletedSuccessfully)
-                return NoContent();
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match<ActionResult>(
+                Right: r => NoContent(),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         /// <summary>

@@ -8,5 +8,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
     {
         public Task<Either<IServiceAndFeatureError, Account>> AddAsync(Account account);
         public Task<Either<IServiceAndFeatureError, Account>> UpdateAsync(Account account);
+        public Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id);
     }
 }
