@@ -24,7 +24,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
             });
         }
 
-        public static AccountGroupLinkModel ToAccountGroupLinkModel(this AccountInAccountGroupStandardResult current)
+        public static AccountGroupLinkModel ToAccountGroupLinkModel(this AccountInAccountGroupResult current)
         {
             return new()
             {

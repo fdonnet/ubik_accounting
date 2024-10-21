@@ -7,7 +7,6 @@ namespace Ubik.Accounting.Api.Features
 {
     public interface IServiceManager
     {
-        IAccountService AccountService { get; }
         IClassificationService ClassificationService { get; }
         ICurrencyService CurrencyService { get; }
         //TODO: pass the cancellation token

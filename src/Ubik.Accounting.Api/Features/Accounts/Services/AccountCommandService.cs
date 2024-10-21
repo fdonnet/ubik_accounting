@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using LanguageExt;
 using MassTransit;
+using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Features.Accounts.Errors;
@@ -51,6 +52,40 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 .BindAsync(ValidateIfNotExistsInTheClassificationAsync)
                 .BindAsync(AddAccountGroupLinkInDbContextAsync)
                 .BindAsync(AddAccountGroupLinkSaveAndPublishAsync);
+        }
+
+        public async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> DeleteFromAccountGroupAsync(DeleteAccountInAccountGroupCommand command)
+        {
+            return await GetExistingAccountGroupRelationAsync(command.AccountId, command.AccountGroupId)
+                .BindAsync(DeleteAccountGroupLinkInDbContextAsync)
+                .BindAsync(DeleteAccountGroupLinkSaveAndPublishAsync);
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> DeleteAccountGroupLinkSaveAndPublishAsync(AccountAccountGroup current)
+        {
+            await publishEndpoint.Publish(current.ToAccountDeletedInAccountGroup(), CancellationToken.None);
+            await ctx.SaveChangesAsync();
+
+            return current;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> GetExistingAccountGroupRelationAsync(Guid id, Guid accountGroupId)
+        {
+            var accountAccountGroup = await ctx.AccountsAccountGroups.FirstOrDefaultAsync(aag =>
+                aag.AccountId == id
+                && aag.AccountGroupId == accountGroupId);
+
+            return accountAccountGroup == null ?
+                new AccountNotExistsInAccountGroupError(id, accountGroupId)
+                : accountAccountGroup;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> DeleteAccountGroupLinkInDbContextAsync(AccountAccountGroup current)
+        {
+            ctx.Entry(current).State = EntityState.Deleted;
+
+            await Task.CompletedTask;
+            return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddAccountGroupLinkSaveAndPublishAsync(AccountAccountGroup current)
@@ -161,7 +196,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
                 : account;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> MapInDbContextAsync
+        private static async Task<Either<IServiceAndFeatureError, Account>> MapInDbContextAsync
             (Account current, Account forUpdate)
         {
             current = forUpdate.ToAccount(current);

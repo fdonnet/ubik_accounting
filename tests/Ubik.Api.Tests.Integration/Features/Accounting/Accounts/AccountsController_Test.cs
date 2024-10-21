@@ -1065,14 +1065,14 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
 
             //Act
             var response = await _client.PostAsync($"{_baseUrlForV1}/14320000-5dd4-0015-8c30-08dcdb1c487d/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283",null);
-            var result = await response.Content.ReadFromJsonAsync<AccountInAccountGroupStandardResult>();
+            var result = await response.Content.ReadFromJsonAsync<AccountInAccountGroupResult>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<AccountInAccountGroupStandardResult>()
-                .And.Match<AccountInAccountGroupStandardResult>(x => x.AccountId == new Guid("14320000-5dd4-0015-8c30-08dcdb1c487d"));
+                .And.BeOfType<AccountInAccountGroupResult>()
+                .And.Match<AccountInAccountGroupResult>(x => x.AccountId == new Guid("14320000-5dd4-0015-8c30-08dcdb1c487d"));
         }
 
         [Fact]

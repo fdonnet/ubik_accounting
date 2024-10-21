@@ -11,18 +11,8 @@ namespace Ubik.Accounting.Api.Features
     {
         private readonly AccountingDbContext _context = context;
         private readonly ICurrentUser _currentUser = currentUser;
-        private IAccountService? _accountService;
         private IClassificationService? _classificationService;
         private ICurrencyService? _currencyService;
-
-        public IAccountService AccountService
-        {
-            get
-            {
-                _accountService ??= new AccountService(_context,_currentUser);
-                return _accountService;
-            }
-        }
 
         public IClassificationService ClassificationService
         {

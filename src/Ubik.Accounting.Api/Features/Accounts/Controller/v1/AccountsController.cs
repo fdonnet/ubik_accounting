@@ -2,7 +2,6 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Ubik.Accounting.Api.Features.Accounts.Mappers;
 using Ubik.Accounting.Api.Features.Accounts.Services;
 using Ubik.Accounting.Api.Features.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Commands;
@@ -120,7 +119,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AccountInAccountGroupStandardResult>> AddInAccountGroup(Guid id, Guid accountGroupId)
+        public async Task<ActionResult<AccountInAccountGroupResult>> AddInAccountGroup(Guid id, Guid accountGroupId)
         {
             var result = await commandService.AddInAccountGroupAsync(new AddAccountInAccountGroupCommand
             {
@@ -152,27 +151,23 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
         /// </summary>
         /// <param name="id"></param>
         /// <param name="accountGroupId"></param>
-        /// <param name="client"></param>
         /// <returns></returns>
-        [Authorize(Roles = "ubik_accounting_account_write")]
-        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpDelete("{id}/AccountGroups/{accountGroupId}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult> DeleteFromAccountGroup(Guid id, Guid accountGroupId, IRequestClient<DeleteAccountInAccountGroupCommand> client)
+        public async Task<ActionResult> DeleteFromAccountGroup(Guid id, Guid accountGroupId)
         {
-            var (result, error) = await client.GetResponse<DeleteAccountInAccountGroupResult,
-                IServiceAndFeatureError>(new DeleteAccountInAccountGroupCommand { AccountId = id,  AccountGroupId=accountGroupId });
-
-            if (result.IsCompletedSuccessfully)
-                return NoContent();
-            else
+            var result = await commandService.DeleteFromAccountGroupAsync(new DeleteAccountInAccountGroupCommand
             {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+                AccountId = id,
+                AccountGroupId = accountGroupId
+            });
+
+            return result.Match<ActionResult>(
+                Right: r => NoContent(),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
     }
 }

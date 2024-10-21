@@ -3,6 +3,7 @@ using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Events;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
+using Ubik.Accounting.Contracts.Accounts.Events;
 
 namespace Ubik.Accounting.Api.Features.Mappers
 {
@@ -112,6 +113,15 @@ namespace Ubik.Accounting.Api.Features.Mappers
                 Label = x.Label,
                 ParentAccountGroupId = x.ParentAccountGroupId,
             });
+        }
+
+        public static AccountDeletedInAccountGroup ToAccountDeletedInAccountGroup(this AccountAccountGroup accountAccountGroup)
+        {
+            return new AccountDeletedInAccountGroup
+            {
+                AccountId = accountAccountGroup.AccountId,
+                AccountGroupId = accountAccountGroup.AccountGroupId
+            };
         }
     }
 }

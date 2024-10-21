@@ -88,8 +88,6 @@ namespace Ubik.Accounting.Api
                 config.AddConsumers(Assembly.GetExecutingAssembly());
 
                 //Add commands clients
-                config.AddRequestClient<AddAccountInAccountGroupCommand>();
-                config.AddRequestClient<DeleteAccountInAccountGroupCommand>();
                 config.AddRequestClient<AddClassificationCommand>();
                 config.AddRequestClient<UpdateClassificationCommand>();
 

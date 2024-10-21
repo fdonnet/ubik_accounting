@@ -178,9 +178,9 @@ namespace Ubik.Accounting.Api.Features.Mappers
             };
         }
 
-        public static AccountInAccountGroupStandardResult ToAccountInAccountGroupStandardResult(this AccountAccountGroup accountAccountGroup)
+        public static AccountInAccountGroupResult ToAccountInAccountGroupStandardResult(this AccountAccountGroup accountAccountGroup)
         {
-            return new AccountInAccountGroupStandardResult
+            return new AccountInAccountGroupResult
             {
                 Id = accountAccountGroup.AccountId,
                 AccountId = accountAccountGroup.AccountId,
