@@ -9,38 +9,6 @@ namespace Ubik.Accounting.Api.Features.Accounts.Mappers
 {
     public static class AccountMappers
     {
-        public static AddAccountResult ToAddAccountResult(this Account account)
-        {
-            return new AddAccountResult()
-            {
-                Id = account.Id,
-                Code = account.Code,
-                Label = account.Label,
-                Category = account.Category,
-                Domain = account.Domain,
-                Description = account.Description,
-                CurrencyId = account.CurrencyId,
-                Version = account.Version
-            };
-        }
-
-        public static UpdateAccountResult ToUpdateAccountResult(this Account account)
-        {
-            return new UpdateAccountResult()
-            {
-                Id = account.Id,
-                Code = account.Code,
-                Label = account.Label,
-                Category = account.Category,
-                Domain = account.Domain,
-                Description = account.Description,
-                CurrencyId = account.CurrencyId,
-                Version = account.Version
-            };
-        }
-
-
-
         public static Account ToAccount(this UpdateAccountCommand updateAccountCommand)
         {
             return new Account()

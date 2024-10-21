@@ -1055,5 +1055,155 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
         }
+
+        [Fact]
+        public async Task Attach_Account_InAccountgroup_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/14320000-5dd4-0015-8c30-08dcdb1c487d/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283",null);
+            var result = await response.Content.ReadFromJsonAsync<AccountInAccountGroupStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<AccountInAccountGroupStandardResult>()
+                .And.Match<AccountInAccountGroupStandardResult>(x => x.AccountId == new Guid("14320000-5dd4-0015-8c30-08dcdb1c487d"));
+        }
+
+        [Fact]
+        public async Task Attach_Account_InAccountgroup_WithRO_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/14320000-5dd4-0015-8c30-08dcdb1c487d/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283", null);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Attach_Account_InAccountgroup_WithNoAuth_401()
+        {
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/14320000-5dd4-0015-8c30-08dcdb1c487d/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283", null);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Attach_Account_InAccountgroup_WithOtherTenant_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/14320000-5dd4-0015-8c30-08dcdb1c487d/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283", null);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Attach_Account_InAccountgroup_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/14320000-5dd4-0015-8c30-08dcdb1c487d/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283", null);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Attach_Account_InAccountgroup_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/14320000-5dd4-0015-8c30-08dcdb1c487d/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283", null);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Attach_Account_InAccountgroup_WithBadAccountId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/{NewId.NextGuid()}/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283", null);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Attach_Account_InAccountgroup_WithBadAccountGroupId_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/14320000-5dd4-0015-8c30-08dcdb1c487d/accountgroups/{NewId.NextGuid()}", null);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_ACCOUNTGROUP_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Attach_Account_InAccountgroup_WithAccountGroupNotExistInClassification_409()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.PostAsync($"{_baseUrlForV1}/248e0000-5dd4-0015-ebad-08dcd98b0949/accountgroups/cc100000-5dd4-0015-ca0c-08dcd967caca", null);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_ALREADY_EXISTS_IN_CLASSIFICATION");
+        }
+
+
+
     }
 }
