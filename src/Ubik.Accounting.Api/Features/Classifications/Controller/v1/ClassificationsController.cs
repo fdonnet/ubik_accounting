@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.Api.Features.Classifications.Mappers;
 using Ubik.Accounting.Api.Features.Classifications.Services;
 using Ubik.Accounting.Api.Features.Mappers;
+using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Errors;
@@ -45,18 +46,17 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Authorize(Roles = "ubik_accounting_classification_read")]
-        [Authorize(Roles = "ubik_accounting_account_read")]
-        [HttpGet("{id}/Accounts")]
+        [HttpGet("{id}/accounts")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<GetClassificationAccountsResult>>> GetAttachedAccounts(Guid id)
+        public async Task<ActionResult<IEnumerable<AccountStandardResult>>> GetAttachedAccounts(Guid id)
         {
-            var result = await serviceManager.ClassificationService.GetClassificationAccountsAsync(id);
+            var result = await queryService.GetClassificationAttachedAccountsAsync(id);
+
             return result.Match(
-                            Right: ok => Ok(ok.ToGetClassificationAccountsResult()),
+                            Right: ok => Ok(ok.ToAccountStandardResults()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
@@ -67,7 +67,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         /// <returns></returns>
         [Authorize(Roles = "ubik_accounting_classification_read")]
         [Authorize(Roles = "ubik_accounting_account_read")]
-        [HttpGet("{id}/MissingAccounts")]
+        [HttpGet("{id}/missingaccounts")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]

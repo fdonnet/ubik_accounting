@@ -21,21 +21,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
             };
         }
 
-        public static IEnumerable<GetClassificationAccountsResult> ToGetClassificationAccountsResult(this IEnumerable<Account> current)
-        {
-            return current.Select(x => new GetClassificationAccountsResult()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Label = x.Label,
-                Category = x.Category,
-                Domain = x.Domain,
-                Description = x.Description,
-                CurrencyId = x.CurrencyId,
-                Version = x.Version
-            });
-        }
-
         public static IEnumerable<GetClassificationAccountsMissingResult> ToGetClassificationAccountsMissingResult(this IEnumerable<Account> current)
         {
             return current.Select(x => new GetClassificationAccountsMissingResult()
