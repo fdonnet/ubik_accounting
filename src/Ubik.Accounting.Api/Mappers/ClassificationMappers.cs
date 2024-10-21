@@ -1,4 +1,7 @@
-﻿using Ubik.Accounting.Api.Models;
+﻿using MassTransit;
+using Ubik.Accounting.Api.Features.Classifications.CustomPoco;
+using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.Api.Mappers
@@ -26,6 +29,27 @@ namespace Ubik.Accounting.Api.Mappers
                 Label = current.Label,
                 Description = current.Description,
                 Version = current.Version
+            };
+        }
+
+        public static ClassificationStatusResult ToClassificationStatusResult(this ClassificationStatus current)
+        {
+            return new ClassificationStatusResult()
+            {
+                Id = current.Id,
+                IsReady = current.IsReady,
+                MissingAccounts = current.MissingAccounts.ToAccountStandardResults()
+            };
+        }
+
+        public static Classification ToClassification(this AddClassificationCommand addClassificationCommand)
+        {
+            return new Classification()
+            {
+                Id = NewId.NextGuid(),
+                Code = addClassificationCommand.Code,
+                Label = addClassificationCommand.Label,
+                Description = addClassificationCommand.Description
             };
         }
     }

@@ -16,7 +16,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class ClassificationsController(IClassificationQueryService queryService, IServiceManager serviceManager) : ControllerBase
+    public class ClassificationsController(IClassificationQueryService queryService, IClassificationCommandService commandService, IServiceManager serviceManager) : ControllerBase
     {
         [HttpGet]
         [ProducesResponseType(200)]
@@ -84,41 +84,32 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Authorize(Roles = "ubik_accounting_classification_read")]
-        [Authorize(Roles = "ubik_accounting_account_read")]
-        [HttpGet("{id}/Status")]
+        [HttpGet("{id}/status")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<GetClassificationStatusResult>> GetStatus(Guid id)
+        public async Task<ActionResult<ClassificationStatusResult>> GetStatus(Guid id)
         {
-            var result = await serviceManager.ClassificationService.GetClassificationStatusAsync(id);
+            var result = await queryService.GetClassificationStatusAsync(id);
+
             return result.Match(
-                            Right: ok => Ok(ok.ToGetClassificationStatusResult()),
+                            Right: ok => Ok(ok.ToClassificationStatusResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
-        [Authorize(Roles = "ubik_accounting_classification_write")]
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<ClassificationStandardResult>> Add(AddClassificationCommand command, IRequestClient<AddClassificationCommand> client)
+        public async Task<ActionResult<ClassificationStandardResult>> Add(AddClassificationCommand command)
         {
-            var (result, error) = await client.GetResponse<ClassificationStandardResult, IServiceAndFeatureError>(command);
+            var result = await commandService.AddAsync(command);
 
-            if (result.IsCompletedSuccessfully)
-            {
-                var ok = (await result).Message;
-                return CreatedAtAction(nameof(Get), new { id = ok.Id }, ok);
-            }
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match(
+                            Right: ok => CreatedAtAction(nameof(Get), new { id = ok.Id }, ok.ToClassificationStandardResult()),
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
         [Authorize(Roles = "ubik_accounting_classification_write")]

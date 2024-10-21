@@ -125,6 +125,7 @@ namespace Ubik.Accounting.Api
             builder.Services.AddScoped<IAccountQueryService, AccountQueryService>();
             builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
             builder.Services.AddScoped<IClassificationQueryService, ClassificationQueryService>();
+            builder.Services.AddScoped<IClassificationCommandService, ClassificationCommandService>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 

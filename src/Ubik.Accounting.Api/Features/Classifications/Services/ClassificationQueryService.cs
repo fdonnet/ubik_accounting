@@ -2,6 +2,7 @@
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Api.Data;
+using Ubik.Accounting.Api.Features.Classifications.CustomPoco;
 using Ubik.Accounting.Api.Models;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Services;
@@ -77,6 +78,27 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 });
 
             return await accounts;
+        }
+
+        public async Task<Either<IServiceAndFeatureError, ClassificationStatus>> GetClassificationStatusAsync(Guid id)
+        {
+            return (await GetClassificationMissingAccountsAsync(id))
+                .Map(c =>
+                {
+                    ClassificationStatus status = c.Any()
+                        ? new ClassificationStatus
+                        {
+                            Id = id,
+                            IsReady = false,
+                            MissingAccounts = c
+                        }
+                        : new ClassificationStatus
+                        {
+                            Id = id,
+                            IsReady = true
+                        };
+                    return status;
+                });
         }
     }
 }

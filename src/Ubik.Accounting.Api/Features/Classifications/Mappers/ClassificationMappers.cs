@@ -11,31 +11,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
 {
     public static class ClassificationMappers
     {
-        public static GetClassificationStatusResult ToGetClassificationStatusResult(this ClassificationStatus current)
-        {
-            return new GetClassificationStatusResult()
-            {
-                Id = current.Id,
-                IsReady = current.IsReady,
-                MissingAccounts = current.MissingAccounts.ToGetClassificationAccountsMissingResult()
-            };
-        }
-
-        public static IEnumerable<GetClassificationAccountsMissingResult> ToGetClassificationAccountsMissingResult(this IEnumerable<Account> current)
-        {
-            return current.Select(x => new GetClassificationAccountsMissingResult()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Label = x.Label,
-                Category = x.Category,
-                Domain = x.Domain,
-                Description = x.Description,
-                CurrencyId = x.CurrencyId,
-                Version = x.Version
-            });
-        }
-
         public static Classification ToClassification(this Classification forUpd, Classification classification)
         {
             classification.Id = forUpd.Id;
@@ -47,16 +22,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Mappers
             return classification;
         }
 
-        public static Classification ToClassification(this AddClassificationCommand addClassificationCommand)
-        {
-            return new Classification()
-            {
-                Id = NewId.NextGuid(),
-                Code = addClassificationCommand.Code,
-                Label = addClassificationCommand.Label,
-                Description = addClassificationCommand.Description
-            };
-        }
         public static Classification ToClassification(this UpdateClassificationCommand updateClassificationCommand)
         {
             return new Classification()
