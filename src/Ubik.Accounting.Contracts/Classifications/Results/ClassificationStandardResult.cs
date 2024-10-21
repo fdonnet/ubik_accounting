@@ -1,6 +1,6 @@
 ﻿namespace Ubik.Accounting.Contracts.Classifications.Results
 {
-    public record GetClassificationResult
+    public record ClassificationStandardResult
     {
         public Guid Id { get; init; }
         public string Code { get; init; } = default!;

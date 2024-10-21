@@ -117,7 +117,7 @@
         }
         else
         {
-            var result = await response.Content.ReadFromJsonAsync<AddClassificationResult>();
+            var result = await response.Content.ReadFromJsonAsync<ClassificationStandardResult>();
             if (result == null)
                 throw new ArgumentNullException("Cannot access response result for add a classification.");
 

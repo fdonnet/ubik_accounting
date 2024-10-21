@@ -20,6 +20,7 @@ using Ubik.ApiService.Common.Middlewares;
 using Ubik.Accounting.Api.Features.Application.Services;
 using Ubik.Accounting.Api.Features.AccountGroups.Services;
 using Ubik.Accounting.Api.Features.Accounts.Services;
+using Ubik.Accounting.Api.Features.Classifications.Services;
 
 namespace Ubik.Accounting.Api
 {
@@ -123,6 +124,7 @@ namespace Ubik.Accounting.Api
             builder.Services.AddScoped<IAccountGroupCommandService, AccountGroupCommandService>();
             builder.Services.AddScoped<IAccountQueryService, AccountQueryService>();
             builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
+            builder.Services.AddScoped<IClassificationQueryService, ClassificationQueryService>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 

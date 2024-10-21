@@ -50,10 +50,10 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Commands
             var consumerHarness = _harness.GetConsumerHarness<AddClassificationConsumer>();
 
             //Act
-            var response = await client.GetResponse<AddClassificationResult>(new AddClassificationCommand { Code="TEST",Label="TEST"});
+            var response = await client.GetResponse<ClassificationStandardResult>(new AddClassificationCommand { Code="TEST",Label="TEST"});
 
             //Assert
-            var sent = await _harness.Sent.Any<AddClassificationResult>();
+            var sent = await _harness.Sent.Any<ClassificationStandardResult>();
             var consumed = await _harness.Consumed.Any<AddClassificationCommand>();
             var consumerConsumed = await consumerHarness.Consumed.Any<AddClassificationCommand>();
 
@@ -61,8 +61,8 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Commands
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
             response.Message.Should()
-                .BeOfType<AddClassificationResult>()
-                .And.Match<AddClassificationResult>(a => a.Code == "TEST");
+                .BeOfType<ClassificationStandardResult>()
+                .And.Match<ClassificationStandardResult>(a => a.Code == "TEST");
         }
         [Fact]
         public async Task Add_Classification_OkClassificationAddedPublished()
@@ -72,7 +72,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Classifications.Commands
             var client = _harness.GetRequestClient<AddClassificationCommand>();
 
             //Act
-            await client.GetResponse<AddClassificationResult>(new AddClassificationCommand { Code = "TEST", Label = "TEST" });
+            await client.GetResponse<ClassificationStandardResult>(new AddClassificationCommand { Code = "TEST", Label = "TEST" });
 
             //Assert
             var sent = await _harness.Published.Any<ClassificationAdded>();

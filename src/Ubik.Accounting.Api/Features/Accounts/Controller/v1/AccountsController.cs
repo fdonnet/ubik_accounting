@@ -14,10 +14,8 @@ namespace Ubik.Accounting.Api.Features.Accounts.Controller.v1
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class AccountsController(IAccountQueryService queryService, IAccountCommandService commandService, IServiceManager serviceManager) : ControllerBase
+    public class AccountsController(IAccountQueryService queryService, IAccountCommandService commandService) : ControllerBase
     {
-        private readonly IServiceManager _serviceManager = serviceManager;
-
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]

@@ -44,7 +44,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
             };
         }
 
-        public static ClassificationModel ToClassificationModel(this AddClassificationResult current)
+        public static ClassificationModel ToClassificationModel(this ClassificationStandardResult current)
         {
             return new ClassificationModel()
             {
