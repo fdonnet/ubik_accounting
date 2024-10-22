@@ -9,5 +9,6 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
     {
         public Task<Either<IServiceAndFeatureError, Classification>> AddAsync(AddClassificationCommand command);
         public Task<Either<IServiceAndFeatureError, Classification>> UpdateAsync(UpdateClassificationCommand command);
+        public Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id);
     }
 }

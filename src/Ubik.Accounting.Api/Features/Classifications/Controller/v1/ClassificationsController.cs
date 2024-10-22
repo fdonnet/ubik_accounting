@@ -1,8 +1,6 @@
 ﻿using Asp.Versioning;
 using MassTransit;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Ubik.Accounting.Api.Features.Classifications.Mappers;
 using Ubik.Accounting.Api.Features.Classifications.Services;
 using Ubik.Accounting.Api.Mappers;
 using Ubik.Accounting.Contracts.Accounts.Results;
@@ -16,7 +14,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class ClassificationsController(IClassificationQueryService queryService, IClassificationCommandService commandService, IServiceManager serviceManager) : ControllerBase
+    public class ClassificationsController(IClassificationQueryService queryService, IClassificationCommandService commandService) : ControllerBase
     {
         [HttpGet]
         [ProducesResponseType(200)]
@@ -136,25 +134,18 @@ namespace Ubik.Accounting.Api.Features.Classifications.Controller.v1
         /// </summary>
         /// <remarks>Return All the account groups removed</remarks>
         /// <param name="id"></param>
-        /// <param name="client"></param>
-        [Authorize(Roles = "ubik_accounting_classification_write")]
         [HttpDelete("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<ClassificationDeleteResult>> Delete(Guid id, IRequestClient<DeleteClassificationCommand> client)
+        public async Task<ActionResult<ClassificationDeleteResult>> Delete(Guid id)
         {
-            var (result, error) = await client.GetResponse<ClassificationDeleteResult,
-            IServiceAndFeatureError>(new DeleteClassificationCommand { Id = id });
+            var result = await commandService.DeleteAsync(id);
 
-            if (result.IsCompletedSuccessfully)
-                return Ok((await result).Message);
-            else
-            {
-                var problem = await error;
-                return new ObjectResult(problem.Message.ToValidationProblemDetails(HttpContext));
-            }
+            return result.Match(
+                            Right: ok => Ok(ok.ToClassificationDeleteResult(id)),
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
     }

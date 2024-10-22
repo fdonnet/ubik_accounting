@@ -1,10 +1,14 @@
 ﻿using LanguageExt;
 using MassTransit;
+using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 using Ubik.Accounting.Api.Data;
 using Ubik.Accounting.Api.Mappers;
 using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.Accounting.Contracts.Classifications.Events;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 
@@ -28,6 +32,71 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
                 .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
                 .BindAsync(UpdateInDbContextAsync)
                 .BindAsync(UpdateSaveAndPublishAsync);
+        }
+
+        public async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id)
+        {
+            using var transaction = ctx.Database.BeginTransaction();
+            var deletedAccountGroups = new List<AccountGroup>();
+
+            return await GetAsync(id)
+                .BindAsync(c=> GetFirstLvlAccountGroupsAsync(id))
+                .BindAsync(ag => DeleteFromParentGroupsAsync(ag, deletedAccountGroups))
+                .BindAsync(del => DeleteClassificationAsync(id, del))
+                .BindAsync(del => DeleteSaveAndPublishAsync(id, del, transaction));
+        }
+
+        private async Task<Either<IServiceAndFeatureError,List<AccountGroup>>> DeleteSaveAndPublishAsync(Guid id, List<AccountGroup> ag, IDbContextTransaction trans)
+        {
+            await publishEndpoint.Publish(new ClassificationDeleted()
+            {
+                Id = id,
+                AccountGroupsDeleted = ag.ToAccountGroupStandardResults()
+
+            }, CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            trans.Commit();
+
+            return ag;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteClassificationAsync(Guid id, List<AccountGroup> deletedAccountGroups)
+        {
+            await ctx.Classifications.Where(x => x.Id == id).ExecuteDeleteAsync();
+            return deletedAccountGroups;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteFromParentGroupsAsync(List<AccountGroup> firstLvlAccountGroups, List<AccountGroup> deletedAccountGroups)
+        {
+            foreach (var ag in firstLvlAccountGroups)
+            {
+                deletedAccountGroups.Add(ag);
+                await DeleteAllChildrenAccountGroupsAsync(ag.Id, deletedAccountGroups);
+                await ctx.AccountGroups.Where(x => x.Id == ag.Id).ExecuteDeleteAsync();
+            }
+
+            return deletedAccountGroups;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAllChildrenAccountGroupsAsync(Guid id, List<AccountGroup> deletedAccountGroups)
+        {
+            var children = await ctx.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
+
+            foreach (var child in children)
+            {
+                await DeleteAllChildrenAccountGroupsAsync(child.Id, deletedAccountGroups);
+                deletedAccountGroups.Add(child);
+                await ctx.AccountGroups.Where(x => x.Id == child.Id).ExecuteDeleteAsync();
+            }
+
+            return deletedAccountGroups;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> GetFirstLvlAccountGroupsAsync(Guid classificationId)
+        {
+            return await ctx.AccountGroups
+                                    .Where(ag => ag.ClassificationId == classificationId
+                                                && ag.ParentAccountGroupId == null).ToListAsync();
         }
 
         private async Task<Either<IServiceAndFeatureError, Classification>> UpdateSaveAndPublishAsync(Classification current)

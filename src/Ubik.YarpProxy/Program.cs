@@ -90,7 +90,9 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanClassificationsRead", policy =>
         policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_classification_read"])))
     .AddPolicy("CanClassificationsAndAccountsRead", policy =>
-        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_classification_read", "accounting_account_read"])));
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_classification_read", "accounting_account_read"])))
+    .AddPolicy("CanClassificationsAndAccountGroupsWrite", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_classification_write", "accounting_accountgroup_write"])));
 
 //Proxy
 var configProxy = builder.Configuration.GetSection("ReverseProxy");

@@ -1,6 +1,8 @@
 ﻿using MassTransit;
 using Ubik.Accounting.Api.Features.Classifications.CustomPoco;
 using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Contracts.AccountGroups.Events;
+using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Contracts.Classifications.Events;
 using Ubik.Accounting.Contracts.Classifications.Results;
@@ -97,6 +99,36 @@ namespace Ubik.Accounting.Api.Mappers
                 Label = updateClassificationCommand.Label,
                 Description = updateClassificationCommand.Description,
                 Version = updateClassificationCommand.Version
+            };
+        }
+
+        public static ClassificationDeleted ToClassificationDeleted(this IEnumerable<AccountGroup> accountGroups, Guid classificationId)
+        {
+            return new ClassificationDeleted
+            {
+                Id = classificationId,
+                AccountGroupsDeleted = accountGroups.Select(x => new AccountGroupStandardResult()
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Label = x.Label,
+                    ParentAccountGroupId = x.ParentAccountGroupId,
+                })
+            };
+        }
+
+        public static ClassificationDeleteResult ToClassificationDeleteResult(this IEnumerable<AccountGroup> accountGroups, Guid classificationId)
+        {
+            return new ClassificationDeleteResult
+            {
+                Id = classificationId,
+                DeletedAccountGroups = accountGroups.Select(x => new AccountGroupStandardResult()
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Label = x.Label,
+                    ParentAccountGroupId = x.ParentAccountGroupId,
+                })
             };
         }
     }
