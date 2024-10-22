@@ -12,13 +12,13 @@ namespace Ubik.Accounting.WebApp.Controllers
     /// Works as a reverse proxy for interactive automode (wasm component)
     /// </summary>
     /// <param name="client"></param>
+    ///
     [Authorize]
     [ApiController]
     public class ReverseProxyWasmController(IAccountingApiClient client) : ControllerBase
     {
         readonly IAccountingApiClient client = client;
 
-        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet("/accounts")]
         public async Task AccountsList()
         {
@@ -26,7 +26,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet("/accounts/{id}")]
         public async Task Account(Guid id)
         {
@@ -34,8 +33,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-
-        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpPost("/accounts")]
         public async Task AddAccount(AddAccountCommand command)
         {
@@ -43,8 +40,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_account_write")]
-        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpPost("/accounts/{accountId}/accountGroups/{accountGroupId}")]
         public async Task AddAccount(AddAccountInAccountGroupCommand command)
         {
@@ -52,8 +47,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_account_write")]
-        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpDelete("/accounts/{accountId}/accountGroups/{accountGroupId}")]
         public async Task DeleteAccount(Guid accountId, Guid accountGroupId)
         {
@@ -61,7 +54,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpPut("/accounts/{id}")]
         public async Task UpdateAccount(Guid id, UpdateAccountCommand command)
         {
@@ -69,7 +61,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_account_write")]
         [HttpDelete("/accounts/{id}")]
         public async Task DeleteAccount(Guid id)
         {
@@ -77,7 +68,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_currency_read")]
         [HttpGet("/currencies")]
         public async Task CurrenciesList()
         {
@@ -85,7 +75,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_classification_read")]
         [HttpGet("/classifications")]
         public async Task ClassificationsList()
         {
@@ -93,8 +82,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_classification_read")]
-        [Authorize(Roles = "ubik_accounting_account_read")]
         [HttpGet("/classifications/{id}/missingaccounts")]
         public async Task ClassificationMissingAccountsList(Guid id)
         {
@@ -102,7 +89,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_classification_write")]
         [HttpPost("/classifications")]
         public async Task AddClassification(AddClassificationCommand command)
         {
@@ -110,7 +96,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_classification_write")]
         [HttpPut("/classifications/{id}")]
         public async Task UpdateClassification(Guid id, UpdateClassificationCommand command)
         {
@@ -118,7 +103,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_classification_write")]
         [HttpDelete("/classifications/{id}")]
         public async Task DeleteClassification(Guid id)
         {
@@ -126,7 +110,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
         [HttpGet("/accountgroups")]
         public async Task AccountGroupsList()
         {
@@ -134,7 +117,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpPost("/accountgroups")]
         public async Task AddAccountGroup(AddAccountGroupCommand command)
         {
@@ -142,7 +124,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpPut("/accountgroups/{id}")]
         public async Task UpdateAccountGroup(Guid id, UpdateAccountGroupCommand command)
         {
@@ -150,7 +131,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_accountgroup_write")]
         [HttpDelete("/accountgroups/{id}")]
         public async Task DeleteAccountGroup(Guid id)
         {
@@ -158,8 +138,6 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [Authorize(Roles = "ubik_accounting_account_read")]
-        [Authorize(Roles = "ubik_accounting_accountgroup_read")]
         [HttpGet("/accounts/allaccountgrouplinks")]
         public async Task AccountGroupLinks()
         {
