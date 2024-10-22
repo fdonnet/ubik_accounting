@@ -11,6 +11,7 @@ using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Contracts.Classifications.Commands;
+using MassTransit;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {
@@ -117,7 +118,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<List<ClassificationStandardResult>>()
-                .And.HaveCount(0);
+                .And.HaveCount(1);
         }
 
         [Fact]
@@ -578,7 +579,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var classification = new AddClassificationCommand
             {
-                Code = "TestCode",
+                Code = "TestCode2",
                 Description = "TestDescription",
                 Label = "TestLabel",
             };
@@ -697,5 +698,258 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
+
+        [Fact]
+        public async Task Update_Classification_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new UpdateClassificationCommand
+            {
+                Id = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd"),
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+                Version = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/1524f189-20dd-4888-88f8-428e59bbcddd", classification);
+            var result = await response.Content.ReadFromJsonAsync<ClassificationStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<ClassificationStandardResult>()
+                .And.Match<ClassificationStandardResult>(x => x.Code == classification.Code);
+        }
+
+        [Fact]
+        public async Task Update_Classification_WithBadVersion_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new UpdateClassificationCommand
+            {
+                Id = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd"),
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+                Version = new Guid("1514f189-20dd-4888-88f8-428e59bbcddd")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/1524f189-20dd-4888-88f8-428e59bbcddd", classification);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(CustomProblemDetails =>
+                    CustomProblemDetails.Errors.First().Code == "CLASSIFICATION_UPDATE_CONCURRENCY");
+        }
+
+        [Fact]
+        public async Task Update_Classification_WithRO_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new UpdateClassificationCommand
+            {
+                Id = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd"),
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+                Version = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/1524f189-20dd-4888-88f8-428e59bbcddd", classification);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Update_Classification_WithNoAuth_401()
+        {
+            //Arrange
+            var classification = new UpdateClassificationCommand
+            {
+                Id = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd"),
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+                Version = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/1524f189-20dd-4888-88f8-428e59bbcddd", classification);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Update_Classification_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new UpdateClassificationCommand
+            {
+                Id = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd"),
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+                Version = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/1524f189-20dd-4888-88f8-428e59bbcddd", classification);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Update_Classification_WithOtherTenant_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new UpdateClassificationCommand
+            {
+                Id = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd"),
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+                Version = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/1524f189-20dd-4888-88f8-428e59bbcddd", classification);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Update_Classification_WithBadId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var id = Guid.NewGuid();
+            var classification = new UpdateClassificationCommand
+            {
+                Id = id,
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+                Version = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{id}", classification);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Update_Classification_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new UpdateClassificationCommand
+            {
+                Id = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd"),
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+                Version = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/1524f189-20dd-4888-88f8-428e59bbcddd", classification);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Update_Classification_WithNotMatchId_400()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new UpdateClassificationCommand
+            {
+                Id = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd"),
+                Code = "TestCode",
+                Description = "TestDescription",
+                Label = "TestLabel",
+                Version = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{NewId.NextGuid()}", classification);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_UPDATE_IDS_NOT_MATCH");
+        }
+
+        [Fact]
+        public async Task Update_Classification_WithAlreadyExists_409()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var classification = new UpdateClassificationCommand
+            {
+                Id = new Guid("4c470000-5dd4-0015-f70f-08dcdb1e6d00"),
+                Code = "SWISSPLAN-FULL",
+                Description = "TestDescription",
+                Label = "TestLabel",
+                Version = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd")
+            };
+
+            //Act
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/4c470000-5dd4-0015-f70f-08dcdb1e6d00", classification);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_ALREADY_EXISTS");
+        }
+
+
     }
 }
