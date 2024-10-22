@@ -61,7 +61,6 @@ builder.Services.AddAuthentication(options =>
     {
         options.ExpireTimeSpan = TimeSpan.FromMinutes(authOptions.CookieRefreshTimeInMinutes);
         options.SlidingExpiration = true;
-        options.Cookie.SameSite = SameSiteMode.Strict;
 
         options.Events = new CookieAuthenticationEvents
         {

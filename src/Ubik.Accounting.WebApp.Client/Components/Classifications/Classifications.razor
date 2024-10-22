@@ -52,7 +52,7 @@
             </CascadingValue>
         }
 
-        @if (_currentClassificationId != null)
+        @if (_currentClassificationId != null && CurrentState.AccountGroupsRoot.Any())
         {
             @if (CurrentState.CurrentClassificationMissingAccounts.Count > 0)
             {
@@ -63,6 +63,7 @@
             }
             else
             {
+
                 <div class="mb-4 rounded-lg bg-green-50 p-4 text-sm text-green-800 dark:bg-gray-800 dark:text-green-400" role="alert">
                     <div class="font-medium">Classification ready!</div>
                     <div>You can now use it as accounts representation.</div>
