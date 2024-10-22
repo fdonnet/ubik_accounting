@@ -12,6 +12,7 @@ using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using MassTransit;
+using Ubik.Accounting.Api.Models;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {
@@ -20,7 +21,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
         private readonly static Guid _id = new("cc100000-5dd4-0015-d910-08dcd9665e79");
-        private readonly static Guid _idToDel = new("1524f190-20dd-4888-88f8-428e59bbc22c");
+        private readonly static Guid _idToDel = new("4c470000-5dd4-0015-f70f-08dcdb1e6d00");
 
         public ClassificationsController_Test(IntegrationTestProxyFactory factory) : base(factory)
         {
@@ -931,7 +932,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var classification = new UpdateClassificationCommand
             {
-                Id = new Guid("4c470000-5dd4-0015-f70f-08dcdb1e6d00"),
+                Id = new Guid("1524f189-20dd-4888-88f8-428e59bbcddd"),
                 Code = "SWISSPLAN-FULL",
                 Description = "TestDescription",
                 Label = "TestLabel",
@@ -939,7 +940,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
             };
 
             //Act
-            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/4c470000-5dd4-0015-f70f-08dcdb1e6d00", classification);
+            var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/1524f189-20dd-4888-88f8-428e59bbcddd", classification);
             var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
 
             //Assert
@@ -950,6 +951,112 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_ALREADY_EXISTS");
         }
 
+        [Fact]
+        public async Task Delete_Classification_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_idToDel}");
+            var result = await response.Content.ReadFromJsonAsync<ClassificationDeleteResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<ClassificationDeleteResult>();
+        }
+
+        [Fact]
+        public async Task Delete_Classification_WithRO_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_idToDel}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Delete_Classification_WithNoAuth_401()
+        {
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_idToDel}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Delete_Classification_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_idToDel}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Delete_Classification_WithOtherTenant_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_idToDel}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Delete_Classification_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{_idToDel}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Delete_Classification_WithBadId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/{Guid.NewGuid()}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_NOT_FOUND");
+        }
     }
 }
