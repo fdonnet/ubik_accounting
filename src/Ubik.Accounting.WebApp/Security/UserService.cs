@@ -20,7 +20,7 @@ namespace Ubik.Accounting.WebApp.Security
         , NavigationManager navigationManager)
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
-        private HttpClient _httpClient = factory.CreateClient("UserServiceClient");
+        private readonly HttpClient _httpClient = factory.CreateClient("UserServiceClient");
 
         public ClaimsPrincipal GetUser()
         {
@@ -29,10 +29,8 @@ namespace Ubik.Accounting.WebApp.Security
 
         public async Task<string> GetTokenAsync()
         {
-            var userEmail = _currentUser.FindFirst(ClaimTypes.Email)?.Value;
-
-            if (userEmail == null)
-                throw new InvalidOperationException("User not authenticated");
+            var userEmail = (_currentUser.FindFirst(ClaimTypes.Email)?.Value)
+                ?? throw new InvalidOperationException("User not authenticated");
 
             var token = await cache.GetUserTokenAsync(userEmail);
 
@@ -77,10 +75,8 @@ namespace Ubik.Accounting.WebApp.Security
 
         public async Task<UserAdminOrMeResult> GetUserInfo()
         {
-            var userEmail = _currentUser.FindFirst(ClaimTypes.Email)?.Value;
-
-            if (userEmail == null)
-                throw new InvalidOperationException("User not authenticated");
+            var userEmail = (_currentUser.FindFirst(ClaimTypes.Email)?.Value)
+                ?? throw new InvalidOperationException("User not authenticated");
 
             var userInfo = await cache.GetUserInfoAsync(userEmail);
 
@@ -88,7 +84,6 @@ namespace Ubik.Accounting.WebApp.Security
             {
                 var token = await GetTokenAsync();
                 _httpClient.DefaultRequestHeaders.Clear();
-                //_httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"Bearer {token}");
 
                 var response = await _httpClient.GetAsync("me/authinfo");

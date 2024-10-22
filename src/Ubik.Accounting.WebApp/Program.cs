@@ -20,6 +20,7 @@ using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Microsoft.AspNetCore.Authentication;
 using Ubik.Accounting.WebApp.Config;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,51 +59,66 @@ builder.Services.AddAuthentication(options =>
 })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
-        //options.ExpireTimeSpan = TimeSpan.FromDays(1);
-        options.ExpireTimeSpan = TimeSpan.FromDays(1);
-        //options.SlidingExpiration = true;
-        //options.Cookie.SameSite = SameSiteMode.Strict;
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(authOptions.CookieRefreshTimeInMinutes);
+        options.SlidingExpiration = true;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+
         options.Events = new CookieAuthenticationEvents
         {
             OnValidatePrincipal = async x =>
             {
                 var now = DateTimeOffset.UtcNow;
-                var timeElapsedForCookie = now.Subtract(x.Properties.IssuedUtc!.Value);
-                var timeRemainingForCookie = x.Properties.ExpiresUtc!.Value.Subtract(now);
+                var userId = x.Principal!.FindFirst(ClaimTypes.Email)!.Value;
 
-                if (timeElapsedForCookie > timeRemainingForCookie)
+                //Try to get user in cache
+                var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
+                var actualToken = await cache.GetUserTokenAsync(userId);
+
+                //If no token
+                if (actualToken == null)
                 {
-                    var userId = x.Principal!.FindFirst(ClaimTypes.Email)!.Value;
-                    //Try to get user in cache
-                    var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
-                    var actualToken = await cache.GetUserTokenAsync(userId);
+                    x.HttpContext.Response.Redirect("/account/logout");
+                    return;
+                }
 
-                    //If not token
-                    if (actualToken == null)
+                //If token expired
+                if (actualToken.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(-3))
+                {
+                    if (actualToken.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(-3))
+                    {
+                        x.HttpContext.Response.Redirect("/account/logout");
                         return;
-
-                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
+                    }
+                    else
                     {
-                        Address = authOptions.TokenUrl,
-                        ClientId = authOptions.ClientId,
-                        ClientSecret = authOptions.ClientSecret,
-                        RefreshToken = actualToken.RefreshToken,
-                        GrantType = "refresh_token",
-
-                    });
-
-                    if (!response.IsError)
-                    {
-                        await cache.SetUserTokenAsync(new TokenCacheEntry
+                        var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
                         {
-                            UserId = userId,
-                            RefreshToken = response.RefreshToken!,
-                            AccessToken = response.AccessToken!,
-                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
-                            ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.RefreshTokenExpTimeInMinutes)
+                            Address = authOptions.TokenUrl,
+                            ClientId = authOptions.ClientId,
+                            ClientSecret = authOptions.ClientSecret,
+                            RefreshToken = actualToken.RefreshToken,
+                            GrantType = "refresh_token",
+
                         });
 
-                        x.ShouldRenew = true;
+                        if (!response.IsError)
+                        {
+                            await cache.SetUserTokenAsync(new TokenCacheEntry
+                            {
+                                UserId = userId,
+                                RefreshToken = response.RefreshToken!,
+                                AccessToken = response.AccessToken!,
+                                ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
+                                ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.RefreshTokenExpTimeInMinutes)
+                            });
+
+                            x.ShouldRenew = true;
+                        }
+                        else
+                        {
+                            x.HttpContext.Response.Redirect("/account/logout");
+                            return;
+                        }
                     }
                 }
             }
@@ -123,10 +139,6 @@ builder.Services.AddAuthentication(options =>
             options.Scope.Add("offline_access");
             options.RequireHttpsMetadata = authOptions.RequireHttpsMetadata;
 
-            //options.TokenValidationParameters = new()
-            //{
-            //    NameClaimType = "email",
-            //};
 
             options.Events = new OpenIdConnectEvents
             {
@@ -144,7 +156,6 @@ builder.Services.AddAuthentication(options =>
                     };
                     x.Properties!.IsPersistent = true;
                     x.Properties.ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo;
-                    //x.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.CookieRefreshTimeInMinutes);
 
                     await cache.SetUserTokenAsync(token);
                 },

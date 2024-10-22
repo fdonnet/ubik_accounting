@@ -22,8 +22,6 @@ Welcome to your new app.
 </ul>
 
 @code {
-    private bool _isWriteAuthorized;
-    private bool _isReadAuthorized;
     [CascadingParameter]
     private Task<AuthenticationState>? _authenticationState { get; set; }
     private string authList = string.Empty;
