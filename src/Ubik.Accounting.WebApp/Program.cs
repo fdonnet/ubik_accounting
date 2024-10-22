@@ -77,16 +77,21 @@ builder.Services.AddAuthentication(options =>
                 //If no token
                 if (actualToken == null)
                 {
-                    x.HttpContext.Response.Redirect("/account/logout");
+                    x.RejectPrincipal();
+                    await x.HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
+                    await x.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                     return;
                 }
+                    
 
                 //If token expired
                 if (actualToken.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(-3))
                 {
                     if (actualToken.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(-3))
                     {
-                        x.HttpContext.Response.Redirect("/account/logout");
+                        x.RejectPrincipal();
+                        await x.HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
+                        await x.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                         return;
                     }
                     else
@@ -116,8 +121,9 @@ builder.Services.AddAuthentication(options =>
                         }
                         else
                         {
-                            x.HttpContext.Response.Redirect("/account/logout");
-                            return;
+                            x.RejectPrincipal();
+                            await x.HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
+                            await x.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                         }
                     }
                 }
@@ -158,6 +164,7 @@ builder.Services.AddAuthentication(options =>
                     x.Properties.ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo;
 
                     await cache.SetUserTokenAsync(token);
+                    x.Success();
                 },
                 //Only store the Id token for more security
                 OnTokenResponseReceived = async x =>
