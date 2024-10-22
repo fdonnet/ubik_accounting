@@ -1,13 +1,13 @@
 ﻿using Ubik.Accounting.Api.Models;
 using Ubik.Accounting.Contracts.Currencies.Results;
 
-namespace Ubik.Accounting.Api.Features.Currencies.Mappers
+namespace Ubik.Accounting.Api.Mappers
 {
     public static class CurrencyMappers
     {
-        public static IEnumerable<GetAllCurrenciesResult> ToGetAllCurrenciesResult(this IEnumerable<Currency> current)
+        public static IEnumerable<CurrencyStandardResult> ToCurrencyStandardResults(this IEnumerable<Currency> current)
         {
-            return current.Select(x => new GetAllCurrenciesResult()
+            return current.Select(x => new CurrencyStandardResult()
             {
                 Id = x.Id,
                 IsoCode = x.IsoCode,

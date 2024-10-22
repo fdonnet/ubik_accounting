@@ -59,7 +59,7 @@ namespace Ubik.Accounting.Api.Tests.UnitTests.Features.Currencies.Queries
             sent.Should().Be(true);
             consumed.Should().Be(true);
             consumerConsumed.Should().Be(true);
-            response.Message.Currencies.Should().AllBeOfType<GetAllCurrenciesResult>();
+            response.Message.Currencies.Should().AllBeOfType<CurrencyStandardResult>();
         }
         public async Task DisposeAsync()
         {

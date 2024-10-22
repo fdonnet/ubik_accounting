@@ -89,7 +89,7 @@
 
     private IQueryable<AccountModel>? _accounts;
     private int _numberOfAccounts = -1;
-    private List<GetAllCurrenciesResult>? _currencies;
+    private List<CurrencyStandardResult>? _currencies;
 
     private bool _isLoading = true;
     private UbikModal _dialog = default!;
@@ -227,7 +227,7 @@
 
         if (response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllCurrenciesResult>>() ?? []);
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<CurrencyStandardResult>>() ?? []);
             _currencies = result.OrderBy(c => c.IsoCode).ToList();
         }
         else

@@ -21,6 +21,7 @@ using Ubik.Accounting.Api.Features.Application.Services;
 using Ubik.Accounting.Api.Features.AccountGroups.Services;
 using Ubik.Accounting.Api.Features.Accounts.Services;
 using Ubik.Accounting.Api.Features.Classifications.Services;
+using Ubik.Accounting.Api.Features.Currencies.Services;
 
 namespace Ubik.Accounting.Api
 {
@@ -111,14 +112,13 @@ namespace Ubik.Accounting.Api
             builder.Services.AddTracingAndMetrics();
 
             //Swagger config
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, 
+            var xmlPath = Path.Combine(AppContext.BaseDirectory,
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
-            builder.Services.AddSwaggerGenWithAuth(authOptions,xmlPath);
+            builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
 
             //Services injection
             //TODO: see if we need to integrate the user service more
-            builder.Services.AddScoped<IServiceManager, ServiceManager>();
             builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
             builder.Services.AddScoped<IAccountGroupQueryService, AccountGroupQueryService>();
             builder.Services.AddScoped<IAccountGroupCommandService, AccountGroupCommandService>();
@@ -126,6 +126,7 @@ namespace Ubik.Accounting.Api
             builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
             builder.Services.AddScoped<IClassificationQueryService, ClassificationQueryService>();
             builder.Services.AddScoped<IClassificationCommandService, ClassificationCommandService>();
+            builder.Services.AddScoped<ICurrencyQueryService, CurrencyQueryService>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
@@ -134,7 +135,7 @@ namespace Ubik.Accounting.Api
             {
                 o.Filters.Add(new ProducesAttribute("application/json"));
             }).AddJsonOptions(options =>
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())); 
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddEndpointsApiExplorer();
@@ -163,7 +164,7 @@ namespace Ubik.Accounting.Api
                 var services = scope.ServiceProvider;
 
                 var context = services.GetRequiredService<AccountingDbContext>();
-                //context.Database.EnsureDeleted();
+                context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
 
                 await DbInitializer.InitializeAsync(context);

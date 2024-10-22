@@ -2,7 +2,7 @@
 
 namespace Ubik.Accounting.Api.Features.Currencies.Services
 {
-    public interface ICurrencyService
+    public interface ICurrencyQueryService
     {
         public Task<IEnumerable<Currency>> GetAllAsync();
     }
