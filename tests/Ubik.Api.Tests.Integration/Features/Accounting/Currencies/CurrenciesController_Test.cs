@@ -1,71 +1,123 @@
-﻿//using FluentAssertions;
-//using System.Net;
-//using System.Net.Http.Headers;
-//using System.Net.Http.Json;
-//using Ubik.Accounting.Api.Data.Init;
-//using Ubik.Api.Tests.Integration.Auth;
-//using Ubik.Accounting.Contracts.Currencies.Results;
+﻿using FluentAssertions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using Ubik.Accounting.Contracts.Classifications.Results;
+using Ubik.Accounting.Contracts.Currencies.Results;
 
-//namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
-//{
-//    public class CurrenciesController_Test : BaseIntegrationTestOld
-//    {
-//        private readonly BaseValuesForCurrencies _testValuesForCurrencies;
-//        private readonly string _baseUrlForV1;
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
+{
+    public class CurrenciesController_Test : BaseIntegrationTestAccounting
+    {
+        private readonly string _baseUrlForV1;
+        private readonly HttpClient _client;
 
-//        public CurrenciesController_Test(IntegrationTestAccoutingFactory factory) : base(factory)
-//        {
-//            _testValuesForCurrencies = new BaseValuesForCurrencies();
-//            _baseUrlForV1 = "/api/v1/Currencies";
-//        }
+        public CurrenciesController_Test(IntegrationTestProxyFactory factory) : base(factory)
+        {
+            _baseUrlForV1 = "/accounting/api/v1/currencies";
+            _client = Factory.CreateDefaultClient();
+        }
 
-//        [Fact]
-//        public async Task CheckAuth_401_NoAuth()
-//        {
-//            //Arrange
-//            var httpClient = Factory.CreateDefaultClient();
+        [Fact]
+        public async Task Get_Currencies_All_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-//            //Act
-//            var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+            var result = await response.Content.ReadFromJsonAsync<List<CurrencyStandardResult>>();
 
-//            //Assert
-//            responseGetAll.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-//        }
-//        [Fact]
-//        public async Task CheckHasRoleForAccount_403_NoRole()
-//        {
-//            //Arrange
-//            var httpClient = Factory.CreateDefaultClient();
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<List<CurrencyStandardResult>>();
+        }
 
-//            var accessToken = await AuthHelper.GetAccessTokenNoRole();
-//            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        [Fact]
+        public async Task Get_Currencies_All_WithRO_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-//            //Act
-//            var responseGetAll = await httpClient.GetAsync(_baseUrlForV1);
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+            var result = await response.Content.ReadFromJsonAsync<List<CurrencyStandardResult>>();
 
-//            //Assert
-//            responseGetAll.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-//        }
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<List<CurrencyStandardResult>>();
+        }
 
-//        [Fact]
-//        public async Task GetAll_Currencies_Ok()
-//        {
-//            //Arrange
-//            var httpClient = Factory.CreateDefaultClient();
+        [Fact]
+        public async Task Get_Currencies_All_WithNoAuth_401()
+        {
+            //Arrange
 
-//            var accessToken = await AuthHelper.GetAccessTokenReadOnly();
-//            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
 
-//            //Act
-//            var response = await httpClient.GetAsync(_baseUrlForV1);
-//            var result = await response.Content.ReadFromJsonAsync<IEnumerable<GetAllCurrenciesResult>>();
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
 
-//            //Assert
-//            response.StatusCode.Should().Be(HttpStatusCode.OK);
-//            result.Should()
-//                .NotBeNull()
-//                .And.AllBeOfType<GetAllCurrenciesResult>(); ;
-//        }
+        [Fact]
+        public async Task Get_Currencies_All_WithNoRole_403()
+        {
+            //Arrange
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-//    }
-//}
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_Currencies_All_WithAdmin_403()
+        {
+            //Arrange
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_Currencies_All_WithOtherTenant_OK()
+        {
+            //Arrange
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+            var result = await response.Content.ReadFromJsonAsync<List<CurrencyStandardResult>>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<List<CurrencyStandardResult>>();
+        }
+    }
+}
