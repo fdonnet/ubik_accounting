@@ -1,5 +1,8 @@
 ﻿using IdentityModel.Client;
 using MassTransit.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.Extensions.Options;
@@ -7,10 +10,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.Security.Contracts.Users.Results;
+using Microsoft.AspNetCore.Components;
 
 namespace Ubik.Accounting.WebApp.Security
 {
-    public class UserService(TokenCacheService cache, IOptions<AuthServerOptions> authOptions, IHttpClientFactory factory)
+    public class UserService(TokenCacheService cache
+        , IOptions<AuthServerOptions> authOptions
+        , IHttpClientFactory factory
+        , NavigationManager navigationManager)
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
         private HttpClient _httpClient = factory.CreateClient("UserServiceClient");
@@ -32,29 +39,37 @@ namespace Ubik.Accounting.WebApp.Security
             if (token == null)
                 return string.Empty;
 
-            if (token.ExpiresUtc < DateTimeOffset.UtcNow)
+            if (token.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(-3))
             {
-                var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
+                if(token.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(-3))
                 {
-                    Address = authOptions.Value.TokenUrl,
-                    ClientId = authOptions.Value.ClientId,
-                    ClientSecret = authOptions.Value.ClientSecret,
-                    RefreshToken = token.RefreshToken,
-                    GrantType = "refresh_token",
-                });
-
-                if (!response.IsError)
-                {
-                    await cache.SetUserTokenAsync(new TokenCacheEntry
-                    {
-                        UserId = userEmail,
-                        RefreshToken = response.RefreshToken!,
-                        AccessToken = response.AccessToken!,
-                        ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo
-                    });
+                    navigationManager.NavigateTo("/account/logout");
                 }
                 else
-                    throw new InvalidOperationException("Error refreshing token");
+                {
+                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
+                    {
+                        Address = authOptions.Value.TokenUrl,
+                        ClientId = authOptions.Value.ClientId,
+                        ClientSecret = authOptions.Value.ClientSecret,
+                        RefreshToken = token.RefreshToken,
+                        GrantType = "refresh_token",
+                    });
+
+                    if (!response.IsError)
+                    {
+                        await cache.SetUserTokenAsync(new TokenCacheEntry
+                        {
+                            UserId = userEmail,
+                            RefreshToken = response.RefreshToken!,
+                            AccessToken = response.AccessToken!,
+                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
+                            ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.Value.RefreshTokenExpTimeInMinutes)
+                        });
+                    }
+                    else
+                        throw new InvalidOperationException("Error refreshing token");
+                }    
             }
 
             return token.AccessToken;

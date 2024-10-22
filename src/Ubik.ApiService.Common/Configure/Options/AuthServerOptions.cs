@@ -12,6 +12,7 @@
         public string ClientId { get; set; } = string.Empty;
         public string ClientSecret { get; set; } = string.Empty;
         public int CookieRefreshTimeInMinutes { get; set; } = 0;
+        public int RefreshTokenExpTimeInMinutes { get; set; } = 25;
     }
 }
 

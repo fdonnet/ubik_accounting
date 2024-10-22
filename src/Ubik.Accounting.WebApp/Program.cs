@@ -58,7 +58,9 @@ builder.Services.AddAuthentication(options =>
 })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
+        //options.ExpireTimeSpan = TimeSpan.FromDays(1);
         options.ExpireTimeSpan = TimeSpan.FromDays(1);
+        //options.SlidingExpiration = true;
         //options.Cookie.SameSite = SameSiteMode.Strict;
         options.Events = new CookieAuthenticationEvents
         {
@@ -96,7 +98,8 @@ builder.Services.AddAuthentication(options =>
                             UserId = userId,
                             RefreshToken = response.RefreshToken!,
                             AccessToken = response.AccessToken!,
-                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo
+                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
+                            ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.RefreshTokenExpTimeInMinutes)
                         });
 
                         x.ShouldRenew = true;
@@ -136,10 +139,12 @@ builder.Services.AddAuthentication(options =>
                         UserId = x.Principal!.FindFirst(ClaimTypes.Email)!.Value,
                         AccessToken = x.TokenEndpointResponse!.AccessToken,
                         RefreshToken = x.TokenEndpointResponse.RefreshToken,
-                        ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo
+                        ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo,
+                        ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.RefreshTokenExpTimeInMinutes)
                     };
                     x.Properties!.IsPersistent = true;
                     x.Properties.ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo;
+                    //x.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.CookieRefreshTimeInMinutes);
 
                     await cache.SetUserTokenAsync(token);
                 },

@@ -72,5 +72,6 @@ namespace Ubik.Accounting.WebApp.Security
         public string AccessToken { get; set; } = default!;
         public string RefreshToken { get; set; } = default!;
         public DateTimeOffset ExpiresUtc { get; set; } = default!;
+        public DateTimeOffset ExpiresRefreshUtc { get; set; } = default!;
     }
 }
