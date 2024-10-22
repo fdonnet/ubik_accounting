@@ -35,6 +35,7 @@
     <ProjectReference Include="..\Ubik.Accounting.WebApp.Client\Ubik.Accounting.WebApp.Client.csproj" />
     <ProjectReference Include="..\Ubik.Accounting.Webapp.Shared\Ubik.Accounting.Webapp.Shared.csproj" />
     <ProjectReference Include="..\Ubik.ApiService.Common\Ubik.ApiService.Common.csproj" />
+    <ProjectReference Include="..\Ubik.Security.Contracts\Ubik.Security.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

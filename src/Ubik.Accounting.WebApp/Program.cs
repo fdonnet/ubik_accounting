@@ -19,6 +19,7 @@ using Ubik.Accounting.WebApp.Client.Components.Accounts;
 using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Microsoft.AspNetCore.Authentication;
 using Ubik.Accounting.WebApp.Config;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,7 +81,7 @@ builder.Services.AddAuthentication(options =>
                 else
                 {
                     //Refresh token
-                    if (actualToken.ExpiresUtc > now)
+                    if (actualToken.ExpiresUtc < now)
                     {
                         var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
                         {
@@ -181,10 +182,18 @@ builder.Services
     .AddTransient<CookieHandler>()
     .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
 
+builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
+
 builder.Services.Configure<ApiOptions>(
     builder.Configuration.GetSection(ApiOptions.Position));
+var userServiceClientOpt = new ApiOptions();
+builder.Configuration.GetSection(ApiOptions.Position).Bind(userServiceClientOpt);
 
-builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
+builder.Services.AddHttpClient("UserServiceClient", options =>
+{
+    options.BaseAddress = new Uri(userServiceClientOpt.SecurityUrl);
+});
+
 builder.Services.AddScoped<ClassificationStateService>();
 
 var app = builder.Build();

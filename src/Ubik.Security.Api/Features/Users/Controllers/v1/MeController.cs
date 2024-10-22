@@ -28,6 +28,19 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
+        [HttpGet("authinfo")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<UserAdminOrMeResult>> GetAuthInfo()
+        {
+            var result = await queryService.GetUserWithAuhtorizationsByTenants(currentUser.Id);
+            return result.Match(
+                            Right: Ok,
+                            Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
         [HttpGet("tenants/selected")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]

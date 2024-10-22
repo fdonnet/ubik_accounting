@@ -16,7 +16,7 @@ namespace Ubik.Security.Api.Features.Users.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<UserAdminResult>> Get(string email)
+        public async Task<ActionResult<UserAdminOrMeResult>> Get(string email)
         {
             var result = await queryService.GetUserWithAuhtorizationsByTenants(email);
 

@@ -2,7 +2,7 @@
 
 namespace Ubik.Security.Contracts.Users.Results
 {
-    public record UserAdminResult
+    public record UserAdminOrMeResult
     {
         public Guid Id { get; init; }
         public required string Firstname { get; init; }

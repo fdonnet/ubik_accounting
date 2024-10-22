@@ -16,7 +16,7 @@ namespace Ubik.YarpProxy.Services
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
-        public async Task<UserAdminResult?> GetUserInfoAsync(string? email)
+        public async Task<UserAdminOrMeResult?> GetUserInfoAsync(string? email)
         {
             if (email == null) return null;
 
@@ -33,7 +33,7 @@ namespace Ubik.YarpProxy.Services
                 {
                     try
                     {
-                        var userInfo = await response.Content.ReadFromJsonAsync<UserAdminResult>();
+                        var userInfo = await response.Content.ReadFromJsonAsync<UserAdminOrMeResult>();
 
                         if (userInfo == null)
                             return null;
@@ -56,11 +56,11 @@ namespace Ubik.YarpProxy.Services
             else
             {
                 //Cache
-                return JsonSerializer.Deserialize<UserAdminResult>(user, _serializerOptions);
+                return JsonSerializer.Deserialize<UserAdminOrMeResult>(user, _serializerOptions);
             }
         }
 
-        private async Task SetUserInfoInCacheAsync(UserAdminResult userInfo)
+        private async Task SetUserInfoInCacheAsync(UserAdminOrMeResult userInfo)
         {
             var toCache = JsonSerializer.SerializeToUtf8Bytes(userInfo, options: _serializerOptions);
 

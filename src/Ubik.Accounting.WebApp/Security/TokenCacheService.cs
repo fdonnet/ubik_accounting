@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Ubik.Accounting.WebApp.Shared.Security;
 using Ubik.ApiService.Common.Configure.Options;
+using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Accounting.WebApp.Security
 {
@@ -35,6 +37,26 @@ namespace Ubik.Accounting.WebApp.Security
             if (token == null) return null;
 
             var cachedResult = JsonSerializer.Deserialize<TokenCacheEntry>(token, _serializerOptions);
+
+            return cachedResult;
+        }
+
+        public async Task SetUserInfoAsync(UserAdminOrMeResult userInfo)
+        {
+            var toCache = JsonSerializer.SerializeToUtf8Bytes(userInfo, options: _serializerOptions);
+
+            await _cache.SetAsync($"{userInfo.Email}_auth", toCache, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(_authOptions.CookieRefreshTimeInMinutes + 120) });
+        }
+
+        public async Task<UserAdminOrMeResult?> GetUserInfoAsync(string? userEmail)
+        {
+            if (userEmail == null) return null;
+
+            var token = await _cache.GetAsync($"{userEmail}_auth");
+
+            if (token == null) return null;
+
+            var cachedResult = JsonSerializer.Deserialize<UserAdminOrMeResult>(token, _serializerOptions);
 
             return cachedResult;
         }

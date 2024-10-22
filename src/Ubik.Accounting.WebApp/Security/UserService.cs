@@ -6,12 +6,14 @@ using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Ubik.ApiService.Common.Configure.Options;
+using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Accounting.WebApp.Security
 {
-    public class UserService(TokenCacheService cache, IOptions<AuthServerOptions> authOptions, I)
+    public class UserService(TokenCacheService cache, IOptions<AuthServerOptions> authOptions, IHttpClientFactory factory)
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
+        private HttpClient _httpClient = factory.CreateClient("UserServiceClient");
 
         public ClaimsPrincipal GetUser()
         {
@@ -20,17 +22,17 @@ namespace Ubik.Accounting.WebApp.Security
 
         public async Task<string> GetTokenAsync()
         {
-            var userId = _currentUser.FindFirst(ClaimTypes.Email)?.Value;
+            var userEmail = _currentUser.FindFirst(ClaimTypes.Email)?.Value;
 
-            if (userId == null)
+            if (userEmail == null)
                 throw new InvalidOperationException("User not authenticated");
 
-            var token = await cache.GetUserTokenAsync(userId);
+            var token = await cache.GetUserTokenAsync(userEmail);
 
             if (token == null)
                 return string.Empty;
 
-            if(token.ExpiresUtc > DateTimeOffset.UtcNow)
+            if (token.ExpiresUtc < DateTimeOffset.UtcNow)
             {
                 var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
                 {
@@ -45,7 +47,7 @@ namespace Ubik.Accounting.WebApp.Security
                 {
                     await cache.SetUserTokenAsync(new TokenCacheEntry
                     {
-                        UserId = userId,
+                        UserId = userEmail,
                         RefreshToken = response.RefreshToken!,
                         AccessToken = response.AccessToken!,
                         ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo
@@ -56,6 +58,37 @@ namespace Ubik.Accounting.WebApp.Security
             }
 
             return token.AccessToken;
+        }
+
+        public async Task<UserAdminOrMeResult> GetUserInfo()
+        {
+            var userEmail = _currentUser.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (userEmail == null)
+                throw new InvalidOperationException("User not authenticated");
+
+            var userInfo = await cache.GetUserInfoAsync(userEmail);
+
+            if (userInfo == null)
+            {
+                var token = await GetTokenAsync();
+                _httpClient.DefaultRequestHeaders.Clear();
+                //_httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"Bearer {token}");
+
+                var response = await _httpClient.GetAsync("me/authinfo");
+                var result = await response.Content.ReadFromJsonAsync<UserAdminOrMeResult>();
+
+                if (response.IsSuccessStatusCode && result != null)
+                {
+                    await cache.SetUserInfoAsync(result);
+                    return result;
+                }
+                else
+                    throw new InvalidOperationException("Error getting user info");
+            }
+            else
+                return userInfo;
         }
 
         internal void SetUser(ClaimsPrincipal user)

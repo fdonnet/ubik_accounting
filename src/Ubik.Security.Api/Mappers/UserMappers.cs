@@ -33,9 +33,9 @@ namespace Ubik.Security.Api.Mappers
             };
         }
 
-        public static UserAdminResult ToUserAdminResult(this User current, Dictionary<Guid, List<AuthorizationStandardResult>> authorizationsByTenant)
+        public static UserAdminOrMeResult ToUserAdminOrMeResult(this User current, Dictionary<Guid, List<AuthorizationStandardResult>> authorizationsByTenant)
         {
-            return new UserAdminResult()
+            return new UserAdminOrMeResult()
             {
                 Id = current.Id,
                 Firstname = current.Firstname,

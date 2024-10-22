@@ -34,12 +34,22 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        _isWriteAuthorized = false;
+        _isReadAuthorized = false;
+
         if (_authenticationState is not null)
         {
             var auth = await _authenticationState;
 
-            _isWriteAuthorized = userService.GetUser();
-            _isReadAuthorized = auth.User.IsInRole("ubik_accounting_account_read");
+            var user = await userService.GetUserInfo();
+            if(user.SelectedTenantId != null)
+            {
+                if (user.AuthorizationsByTenantIds.TryGetValue((Guid)user.SelectedTenantId, out var authorizationsList))
+                {
+                    _isWriteAuthorized = authorizationsList.Any(a => a.Code == "accounting_account_write");
+                    _isReadAuthorized = authorizationsList.Any(a => a.Code == "accounting_account_read");
+                }
+            }
         }
     }
 }

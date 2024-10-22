@@ -27,13 +27,13 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Users
 
             //Act
             var response = await _client.GetAsync($"{_baseUrlForV1}?email=testrw@test.com");
-            var result = await response.Content.ReadFromJsonAsync<UserAdminResult>();
+            var result = await response.Content.ReadFromJsonAsync<UserAdminOrMeResult>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<UserAdminResult>(); ;
+                .And.BeOfType<UserAdminOrMeResult>(); ;
         }
 
         [Fact]

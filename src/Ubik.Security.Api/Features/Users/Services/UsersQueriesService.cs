@@ -56,13 +56,24 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, UserAdminResult>> GetUserWithAuhtorizationsByTenants(string email)
+        public async Task<Either<IServiceAndFeatureError, UserAdminOrMeResult>> GetUserWithAuhtorizationsByTenants(string email)
         {
             return await GetAsync(email)
                     .MapAsync(async u =>
                     {
                         var authorizations = await GetAllAuthorizationByTenantAsyc(u.Id);
-                        var result = u.ToUserAdminResult(authorizations);
+                        var result = u.ToUserAdminOrMeResult(authorizations);
+                        return result;
+                    });
+        }
+
+        public async Task<Either<IServiceAndFeatureError, UserAdminOrMeResult>> GetUserWithAuhtorizationsByTenants(Guid id)
+        {
+            return await GetAsync(id)
+                    .MapAsync(async u =>
+                    {
+                        var authorizations = await GetAllAuthorizationByTenantAsyc(u.Id);
+                        var result = u.ToUserAdminOrMeResult(authorizations);
                         return result;
                     });
         }
