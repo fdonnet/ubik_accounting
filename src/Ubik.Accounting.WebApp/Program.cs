@@ -58,8 +58,7 @@ builder.Services.AddAuthentication(options =>
 })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(authOptions.CookieRefreshTimeInMinutes);
-        options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromDays(1);
         options.Cookie.SameSite = SameSiteMode.Strict;
         options.Events = new CookieAuthenticationEvents
         {
@@ -68,7 +67,6 @@ builder.Services.AddAuthentication(options =>
                 var now = DateTimeOffset.UtcNow;
                 var timeElapsedForCookie = now.Subtract(x.Properties.IssuedUtc!.Value);
                 var timeRemainingForCookie = x.Properties.ExpiresUtc!.Value.Subtract(now);
-
 
                 if (timeElapsedForCookie > timeRemainingForCookie)
                 {
@@ -103,8 +101,6 @@ builder.Services.AddAuthentication(options =>
 
                         x.ShouldRenew = true;
                     }
-                    else
-                        await cache.RemoveUserTokenAsync(userId);
                 }
             }
         };
