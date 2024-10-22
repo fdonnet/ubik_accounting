@@ -87,11 +87,9 @@ namespace Ubik.Accounting.Api
                 });
 
                 //Add all consumers
-                config.AddConsumers(Assembly.GetExecutingAssembly());
+                //config.AddConsumers(Assembly.GetExecutingAssembly());
 
                 //Add commands clients
-                config.AddRequestClient<AddClassificationCommand>();
-                config.AddRequestClient<UpdateClassificationCommand>();
 
             });
 
