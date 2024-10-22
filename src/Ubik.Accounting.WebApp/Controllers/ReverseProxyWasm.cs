@@ -19,7 +19,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         readonly IAccountingApiClient client = client;
 
         [Authorize(Roles = "ubik_accounting_account_read")]
-        [HttpGet("/Accounts")]
+        [HttpGet("/accounts")]
         public async Task AccountsList()
         {
             var response = await client.GetAllAccountsAsync();
@@ -27,7 +27,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_account_read")]
-        [HttpGet("/Accounts/{id}")]
+        [HttpGet("/accounts/{id}")]
         public async Task Account(Guid id)
         {
             var response = await client.GetAccountAsync(id);
@@ -36,7 +36,7 @@ namespace Ubik.Accounting.WebApp.Controllers
 
 
         [Authorize(Roles = "ubik_accounting_account_write")]
-        [HttpPost("/Accounts")]
+        [HttpPost("/accounts")]
         public async Task AddAccount(AddAccountCommand command)
         {
             var response = await client.AddAccountAsync(command);
@@ -45,7 +45,7 @@ namespace Ubik.Accounting.WebApp.Controllers
 
         [Authorize(Roles = "ubik_accounting_account_write")]
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]
-        [HttpPost("/Accounts/{accountId}/AccountGroups/{accountGroupId}")]
+        [HttpPost("/accounts/{accountId}/accountGroups/{accountGroupId}")]
         public async Task AddAccount(AddAccountInAccountGroupCommand command)
         {
             var response = await client.AddAccountInAccountGroupAsync(command);
@@ -54,7 +54,7 @@ namespace Ubik.Accounting.WebApp.Controllers
 
         [Authorize(Roles = "ubik_accounting_account_write")]
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]
-        [HttpDelete("/Accounts/{accountId}/AccountGroups/{accountGroupId}")]
+        [HttpDelete("/accounts/{accountId}/accountGroups/{accountGroupId}")]
         public async Task DeleteAccount(Guid accountId, Guid accountGroupId)
         {
             var response = await client.DeleteAccountInAccountGroupAsync(new() { AccountGroupId = accountGroupId, AccountId = accountId });
@@ -62,7 +62,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]
-        [HttpPut("/Accounts/{id}")]
+        [HttpPut("/accounts/{id}")]
         public async Task UpdateAccount(Guid id, UpdateAccountCommand command)
         {
             var response = await client.UpdateAccountAsync(id,command);
@@ -70,7 +70,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_account_write")]
-        [HttpDelete("/Accounts/{id}")]
+        [HttpDelete("/accounts/{id}")]
         public async Task DeleteAccount(Guid id)
         {
             var response = await client.DeleteAccountAsync(id);
@@ -78,7 +78,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_currency_read")]
-        [HttpGet("/Currencies")]
+        [HttpGet("/currencies")]
         public async Task CurrenciesList()
         {
             var response = await client.GetAllCurrenciesAsync();
@@ -86,7 +86,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_classification_read")]
-        [HttpGet("/Classifications")]
+        [HttpGet("/classifications")]
         public async Task ClassificationsList()
         {
             var response = await client.GetAllClassificationsAsync();
@@ -95,7 +95,7 @@ namespace Ubik.Accounting.WebApp.Controllers
 
         [Authorize(Roles = "ubik_accounting_classification_read")]
         [Authorize(Roles = "ubik_accounting_account_read")]
-        [HttpGet("/Classifications/{id}/MissingAccounts")]
+        [HttpGet("/classifications/{id}/missingaccounts")]
         public async Task ClassificationMissingAccountsList(Guid id)
         {
             var response = await client.GetClassificationMissingAccountsAsync(id);
@@ -103,7 +103,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_classification_write")]
-        [HttpPost("/Classifications")]
+        [HttpPost("/classifications")]
         public async Task AddClassification(AddClassificationCommand command)
         {
             var response = await client.AddClassificationAsync(command);
@@ -111,7 +111,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_classification_write")]
-        [HttpPut("/Classifications/{id}")]
+        [HttpPut("/classifications/{id}")]
         public async Task UpdateClassification(Guid id, UpdateClassificationCommand command)
         {
             var response = await client.UpdateClassificationAsync(id, command);
@@ -119,7 +119,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_classification_write")]
-        [HttpDelete("/Classifications/{id}")]
+        [HttpDelete("/classifications/{id}")]
         public async Task DeleteClassification(Guid id)
         {
             var response = await client.DeleteClassificationAsync(id);
@@ -127,7 +127,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_accountgroup_read")]
-        [HttpGet("/AccountGroups")]
+        [HttpGet("/accountgroups")]
         public async Task AccountGroupsList()
         {
             var response = await client.GetAllAccountGroupsAsync();
@@ -135,7 +135,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]
-        [HttpPost("/AccountGroups")]
+        [HttpPost("/accountgroups")]
         public async Task AddAccountGroup(AddAccountGroupCommand command)
         {
             var response = await client.AddAccountGroupAsync(command);
@@ -143,7 +143,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]
-        [HttpPut("/AccountGroups/{id}")]
+        [HttpPut("/accountgroups/{id}")]
         public async Task UpdateAccountGroup(Guid id, UpdateAccountGroupCommand command)
         {
             var response = await client.UpdateAccountGroupAsync(id, command);
@@ -151,7 +151,7 @@ namespace Ubik.Accounting.WebApp.Controllers
         }
 
         [Authorize(Roles = "ubik_accounting_accountgroup_write")]
-        [HttpDelete("/AccountGroups/{id}")]
+        [HttpDelete("/accountgroups/{id}")]
         public async Task DeleteAccountGroup(Guid id)
         {
             var response = await client.DeleteAccountGroupAsync(id);
@@ -160,7 +160,7 @@ namespace Ubik.Accounting.WebApp.Controllers
 
         [Authorize(Roles = "ubik_accounting_account_read")]
         [Authorize(Roles = "ubik_accounting_accountgroup_read")]
-        [HttpGet("/Accounts/AllAccountGroupLinks")]
+        [HttpGet("/accounts/allaccountgrouplinks")]
         public async Task AccountGroupLinks()
         {
             var response = await client.GetAllAccountsLinksAsync();

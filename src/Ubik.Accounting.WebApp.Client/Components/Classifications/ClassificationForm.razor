@@ -109,7 +109,7 @@
     {
         if (EditMode)
         {
-            var result = await response.Content.ReadFromJsonAsync<UpdateClassificationResult>();
+            var result = await response.Content.ReadFromJsonAsync<ClassificationStandardResult>();
             if (result == null)
                 throw new ArgumentNullException("Cannot access response result for edit a classification.");
 

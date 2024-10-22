@@ -811,10 +811,14 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "Ye6Y36ocA4SaGqYzd0HgmqMhVaM2jlkE",
       "redirectUris": [
-        "https://localhost:7149/*"
+        "https://localhost:7149/*",
+        "https://localhost:7289/*",
+        "https://localhost:7249/*"
       ],
       "webOrigins": [
-        "https://localhost:7149"
+        "https://localhost:7149",
+        "https://localhost:7289",
+        "https://localhost:7249"
       ],
       "notBefore": 0,
       "bearerOnly": false,

@@ -277,7 +277,7 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            _classifications = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllClassificationsResult>>()
+            _classifications = (await response.Content.ReadFromJsonAsync<IEnumerable<ClassificationStandardResult>>()
                 ?? []).ToClassificationModel().OrderBy(c => c.Code).ToList();
         }
         else
@@ -288,7 +288,7 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            CurrentState.SetAccountGroups((await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupsResult>>()
+            CurrentState.SetAccountGroups((await response.Content.ReadFromJsonAsync<IEnumerable<AccountGroupStandardResult>>()
                 ?? []).ToAccountGroupModels());
         }
         else
@@ -299,7 +299,7 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            CurrentState.SetAccounts((await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>()
+            CurrentState.SetAccounts((await response.Content.ReadFromJsonAsync<IEnumerable<AccountStandardResult>>()
                     ?? []).ToAccountModels().ToDictionary(x => x.Id));
         }
         else
@@ -310,7 +310,7 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountGroupLinksResult>>()
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<AccountGroupLinkResult>>()
                     ?? []).ToAccountGroupLinkModels();
 
             CurrentState.BuildAccountLinksByParentDic(result);
@@ -323,7 +323,7 @@
     {
         if (response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetClassificationAccountsMissingResult>>()
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<AccountStandardResult>>()
                     ?? []).ToAccountModels().ToList();
 
             CurrentState.SetClassificationMissingAccounts(result);

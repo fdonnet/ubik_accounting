@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.AccountGroups.Results;
+using Ubik.Accounting.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 {
@@ -42,7 +43,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 
     public static class AccountGroupModelMappers
     {
-        public static IEnumerable<AccountGroupModel> ToAccountGroupModels(this IEnumerable<GetAllAccountGroupsResult> current)
+        public static IEnumerable<AccountGroupModel> ToAccountGroupModels(this IEnumerable<AccountGroupStandardResult> current)
         {
             return current.Select(x => new AccountGroupModel()
             {
@@ -52,8 +53,24 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
                 Description = x.Description,
                 ParentAccountGroupId = x.ParentAccountGroupId,
                 AccountGroupClassificationId = x.AccountGroupClassificationId,
-                Version = x.Version
+                Version = x.Version,
+                IsExpand = true
             });
+        }
+
+        public static AccountGroupModel ToAccountGroupModel(this AccountGroupStandardResult current)
+        {
+            return new()
+            {
+                Id = current.Id,
+                Code = current.Code,
+                Label = current.Label,
+                Description = current.Description,
+                ParentAccountGroupId = current.ParentAccountGroupId,
+                AccountGroupClassificationId = current.AccountGroupClassificationId,
+                Version = current.Version,
+                IsExpand = true
+            };
         }
 
         public static AddAccountGroupCommand ToAddAccountGroupCommand(this AccountGroupModel accountGroupModel)
@@ -68,47 +85,6 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
             };
         }
 
-        public static AccountGroupModel ToAccountGroupModel(this AddAccountGroupResult current)
-        {
-            return new AccountGroupModel()
-            {
-                AccountGroupClassificationId = current.AccountGroupClassificationId,
-                ParentAccountGroupId = current.ParentAccountGroupId,
-                Code = current.Code,
-                Label = current.Label,
-                Description = current.Description,
-                Id = current.Id,
-                IsExpand = true,
-                Version = current.Version
-            };
-        }
-
-        public static AccountGroupModel ToAccountGroupModel(this UpdateAccountGroupResult current)
-        {
-            return new AccountGroupModel()
-            {
-                AccountGroupClassificationId = current.AccountGroupClassificationId,
-                ParentAccountGroupId = current.ParentAccountGroupId,
-                Code = current.Code,
-                Label = current.Label,
-                Description = current.Description,
-                Id = current.Id,
-                IsExpand = true,
-                Version = current.Version
-            };
-        }
-
-        public static AccountGroupModel ToAccountGroupModel(this DeleteAccountGroupResult current)
-        {
-            return new AccountGroupModel()
-            {
-                ParentAccountGroupId = current.ParentAccountGroupId,
-                Code = current.Code,
-                Label = current.Label,
-                Id = current.Id,
-                IsExpand = true,
-            };
-        }
 
         public static UpdateAccountGroupCommand ToUpdateAccountGroupCommand(this AccountGroupModel accountGroupModel)
         {
@@ -121,14 +97,6 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
                 AccountGroupClassificationId = accountGroupModel.AccountGroupClassificationId,
                 ParentAccountGroupId = accountGroupModel.ParentAccountGroupId,
                 Version = accountGroupModel.Version
-            };
-        }
-
-        public static DeleteAccountGroupCommand ToDeleteAccountGroupCommand(this AccountGroupModel accountGroupModel)
-        {
-            return new DeleteAccountGroupCommand()
-            {
-                Id = accountGroupModel.Id,
             };
         }
     }

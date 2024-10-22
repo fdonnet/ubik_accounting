@@ -16,7 +16,7 @@ namespace Ubik.Accounting.WebApp.Security
 
         public async Task<string> GetTokenAsync()
         {
-            return (await _cache.GetUserTokenAsync(_currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value))?.AccessToken ?? string.Empty;
+            return (await _cache.GetUserTokenAsync(_currentUser.FindFirst(ClaimTypes.Email)?.Value))?.AccessToken ?? string.Empty;
         }
 
         internal void SetUser(ClaimsPrincipal user)

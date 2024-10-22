@@ -29,7 +29,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
 
     public static class AccountModelMappers
     {
-        public static IEnumerable<AccountModel> ToAccountModel(this IEnumerable<GetAllAccountsResult> current)
+        public static IEnumerable<AccountModel> ToAccountModel(this IEnumerable<AccountStandardResult> current)
         {
             return current.Select(x => new AccountModel()
             {

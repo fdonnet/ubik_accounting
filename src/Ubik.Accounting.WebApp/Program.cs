@@ -66,7 +66,7 @@ builder.Services.AddAuthentication(options =>
                 var timeElapsedForCookie = now.Subtract(x.Properties.IssuedUtc!.Value);
                 var timeRemainingForCookie = x.Properties.ExpiresUtc!.Value.Subtract(now);
 
-                var userId = x.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+                var userId = x.Principal!.FindFirst(ClaimTypes.Email)!.Value;
 
                 //Try to get user in cache
                 var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
@@ -126,10 +126,10 @@ builder.Services.AddAuthentication(options =>
             options.Scope.Add("offline_access");
             options.RequireHttpsMetadata = authOptions.RequireHttpsMetadata;
 
-            options.TokenValidationParameters = new()
-            {
-                NameClaimType = "name",
-            };
+            //options.TokenValidationParameters = new()
+            //{
+            //    NameClaimType = "name",
+            //};
 
             options.Events = new OpenIdConnectEvents
             {
@@ -139,7 +139,7 @@ builder.Services.AddAuthentication(options =>
                     var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
                     var token = new TokenCacheEntry
                     {
-                        UserId = x.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value,
+                        UserId = x.Principal!.FindFirst(ClaimTypes.Email)!.Value,
                         AccessToken = x.TokenEndpointResponse!.AccessToken,
                         RefreshToken = x.TokenEndpointResponse.RefreshToken,
                         ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo

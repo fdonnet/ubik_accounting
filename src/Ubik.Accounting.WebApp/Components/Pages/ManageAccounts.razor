@@ -35,6 +35,7 @@ else
         if (_authenticationState is not null)
         {
             var auth = await _authenticationState;
+
             _isWriteAuthorized = auth.User.IsInRole("ubik_accounting_account_write");
             _isReadAuthorized = auth.User.IsInRole("ubik_accounting_account_read");
         }

@@ -22,7 +22,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
 
     public static class ClassificationModelMappers
     {
-        public static IEnumerable<ClassificationModel> ToClassificationModel(this IEnumerable<GetAllClassificationsResult> current)
+        public static IEnumerable<ClassificationModel> ToClassificationModel(this IEnumerable<ClassificationStandardResult> current)
         {
             return current.Select(x => new ClassificationModel()
             {
@@ -45,18 +45,6 @@ namespace Ubik.Accounting.WebApp.Client.Components.Classifications
         }
 
         public static ClassificationModel ToClassificationModel(this ClassificationStandardResult current)
-        {
-            return new ClassificationModel()
-            {
-                Code = current.Code,
-                Label = current.Label,
-                Description = current.Description,
-                Id = current.Id,
-                Version = current.Version
-            };
-        }
-
-        public static ClassificationModel ToClassificationModel(this UpdateClassificationResult current)
         {
             return new ClassificationModel()
             {

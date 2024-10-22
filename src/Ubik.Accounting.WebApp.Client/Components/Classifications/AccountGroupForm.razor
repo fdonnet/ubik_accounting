@@ -107,7 +107,7 @@
     {
         if (EditMode)
         {
-            var result = await response.Content.ReadFromJsonAsync<UpdateAccountGroupResult>();
+            var result = await response.Content.ReadFromJsonAsync<AccountGroupStandardResult>();
 
             if (result == null)
                 throw new ArgumentNullException("Cannot access response result for AddAccountGroupResult");
@@ -119,7 +119,7 @@
         }
         else
         {
-            var result = await response.Content.ReadFromJsonAsync<AddAccountGroupResult>();
+            var result = await response.Content.ReadFromJsonAsync<AccountGroupStandardResult>();
 
             if (result == null)
                 throw new ArgumentNullException("Cannot access response result for AddAccountGroupResult");

@@ -1,11 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 <AuthorizeView>
     <Authorized>
-        <form method="post" class="items-center" action="Account/Logout">
-            <button type="submit" class="block mr-2 font-semibold text-gray-00 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-1.5">Log out</button>
+        <form method="post" class="items-center" action="account/logout">
+            <button type="submit" class="text-gray-00 mr-2 block rounded-lg p-1.5 font-semibold hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700">Log out</button>
         </form>
     </Authorized>
     <NotAuthorized>
-        <a class="block font-semibold rounded hover:bg-white dark:hover:bg-gray-800 px-2 py-1" href="Account/Login">Log in</a>
+        <a class="block rounded px-2 py-1 font-semibold hover:bg-white dark:hover:bg-gray-800" href="account/login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
