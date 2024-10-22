@@ -69,47 +69,42 @@ builder.Services.AddAuthentication(options =>
                 var timeElapsedForCookie = now.Subtract(x.Properties.IssuedUtc!.Value);
                 var timeRemainingForCookie = x.Properties.ExpiresUtc!.Value.Subtract(now);
 
-                var userId = x.Principal!.FindFirst(ClaimTypes.Email)!.Value;
 
-                //Try to get user in cache
-                var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
-                var actualToken = await cache.GetUserTokenAsync(userId);
-
-                //If not token
-                if (actualToken == null)
-                    x.RejectPrincipal();
-                else
+                if (timeElapsedForCookie > timeRemainingForCookie)
                 {
-                    //Refresh token
-                    if (actualToken.ExpiresUtc < now)
-                    {
-                        var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
-                        {
-                            Address = authOptions.TokenUrl,
-                            ClientId = authOptions.ClientId,
-                            ClientSecret = authOptions.ClientSecret,
-                            RefreshToken = actualToken.RefreshToken,
-                            GrantType = "refresh_token",
+                    var userId = x.Principal!.FindFirst(ClaimTypes.Email)!.Value;
+                    //Try to get user in cache
+                    var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
+                    var actualToken = await cache.GetUserTokenAsync(userId);
 
+                    //If not token
+                    if (actualToken == null)
+                        return;
+
+                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
+                    {
+                        Address = authOptions.TokenUrl,
+                        ClientId = authOptions.ClientId,
+                        ClientSecret = authOptions.ClientSecret,
+                        RefreshToken = actualToken.RefreshToken,
+                        GrantType = "refresh_token",
+
+                    });
+
+                    if (!response.IsError)
+                    {
+                        await cache.SetUserTokenAsync(new TokenCacheEntry
+                        {
+                            UserId = userId,
+                            RefreshToken = response.RefreshToken!,
+                            AccessToken = response.AccessToken!,
+                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo
                         });
 
-                        if (!response.IsError)
-                        {
-                            await cache.SetUserTokenAsync(new TokenCacheEntry
-                            {
-                                UserId = userId,
-                                RefreshToken = response.RefreshToken!,
-                                AccessToken = response.AccessToken!,
-                                ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo
-                            });
-                        }
-                        else
-                            x.RejectPrincipal();
-
-                        //Refresh cookie
-                        if (timeElapsedForCookie > timeRemainingForCookie)
-                            x.ShouldRenew = true;
+                        x.ShouldRenew = true;
                     }
+                    else
+                        await cache.RemoveUserTokenAsync(userId);
                 }
             }
         };
@@ -131,7 +126,7 @@ builder.Services.AddAuthentication(options =>
 
             //options.TokenValidationParameters = new()
             //{
-            //    NameClaimType = "name",
+            //    NameClaimType = "email",
             //};
 
             options.Events = new OpenIdConnectEvents
@@ -148,7 +143,7 @@ builder.Services.AddAuthentication(options =>
                         ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo
                     };
                     x.Properties!.IsPersistent = true;
-                    x.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.CookieRefreshTimeInMinutes);
+                    x.Properties.ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo;
 
                     await cache.SetUserTokenAsync(token);
                 },

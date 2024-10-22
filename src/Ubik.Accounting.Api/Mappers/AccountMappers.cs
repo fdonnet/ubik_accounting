@@ -16,6 +16,8 @@ namespace Ubik.Accounting.Api.Mappers
                 Id = x.Id,
                 Code = x.Code,
                 Label = x.Label,
+                Category = x.Category,
+                Domain = x.Domain,
                 Description = x.Description,
                 Version = x.Version,
                 CurrencyId = x.CurrencyId

@@ -20,6 +20,10 @@ namespace Ubik.Accounting.WebApp.Security
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
+        public async Task RemoveUserTokenAsync(string key)
+        {
+            await _cache.RemoveAsync(key);
+        }
 
         public async Task SetUserTokenAsync(TokenCacheEntry token)
         {

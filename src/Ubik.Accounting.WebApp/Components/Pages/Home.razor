@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Ubik.Accounting.WebApp.Security
-@inject UserService UserService;
+@using System.Text.Json;
+@inject UserService userService;
 @attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
@@ -9,12 +10,47 @@
 Welcome to your new app.
 
 <ul>
-    @foreach (var c in UserService.GetUser().Claims)
+    @foreach (var c in userService.GetUser().Claims)
     {
         <li>@c.Type         @c.Value</li>
     }
-    Ok account write role : @UserService.GetUser().IsInRole("ubik_accounting_account_write")
+    <b>User and Authorizations:</b>
+    <br />
+    TenantId =>  @tenantId <br />
+    Authorizations =>
+    @authList
 </ul>
 
+@code {
+    private bool _isWriteAuthorized;
+    private bool _isReadAuthorized;
+    [CascadingParameter]
+    private Task<AuthenticationState>? _authenticationState { get; set; }
+    private string authList = string.Empty;
+    private string tenantId = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (_authenticationState is not null)
+        {
+            var auth = await _authenticationState;
+
+            var user = await userService.GetUserInfo();
+
+            if(user.SelectedTenantId != null)
+            {
+                tenantId = user.SelectedTenantId?.ToString() ?? string.Empty ;
+                if (user.AuthorizationsByTenantIds.TryGetValue((Guid)user.SelectedTenantId!, out var authorizationsList))
+                {
+                    foreach (var authItem in authorizationsList)
+                    {
+                        authList += authItem.Code + " / ";
+                    }
+                }
+            }
+        }
+    }
+}
 
 
