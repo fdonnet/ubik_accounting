@@ -40,14 +40,14 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [HttpPost("/accounts/{accountId}/accountGroups/{accountGroupId}")]
+        [HttpPost("/accounts/{accountId}/accountgroups/{accountGroupId}")]
         public async Task AddAccount(AddAccountInAccountGroupCommand command)
         {
             var response = await client.AddAccountInAccountGroupAsync(command);
             await ForwardResponse(response);
         }
 
-        [HttpDelete("/accounts/{accountId}/accountGroups/{accountGroupId}")]
+        [HttpDelete("/accounts/{accountId}/accountgroups/{accountGroupId}")]
         public async Task DeleteAccount(Guid accountId, Guid accountGroupId)
         {
             var response = await client.DeleteAccountInAccountGroupAsync(new() { AccountGroupId = accountGroupId, AccountId = accountId });
@@ -138,7 +138,7 @@ namespace Ubik.Accounting.WebApp.Controllers
             await ForwardResponse(response);
         }
 
-        [HttpGet("/accounts/allaccountgrouplinks")]
+        [HttpGet("/accounts/accountgrouplinks")]
         public async Task AccountGroupLinks()
         {
             var response = await client.GetAllAccountsLinksAsync();

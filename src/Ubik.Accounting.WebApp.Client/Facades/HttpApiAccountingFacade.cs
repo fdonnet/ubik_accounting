@@ -108,7 +108,7 @@ namespace Ubik.Accounting.WebApp.Client.Facades
 
         public async Task<HttpResponseMessage> GetAllAccountsLinksAsync(CancellationToken cancellationToken = default)
         {
-            return await http.GetAsync("accounts/allaccountgrouplinks", cancellationToken: cancellationToken);
+            return await http.GetAsync("accounts/accountgrouplinks", cancellationToken: cancellationToken);
         }
     }
 }

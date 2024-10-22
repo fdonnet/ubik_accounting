@@ -51,7 +51,7 @@ else
                     List<string> writeRequierement = ["accounting_classification_write", "accounting_account_write", "accounting_accountgroup_write"];
                     List<string> readRequierement = ["accounting_classification_read", "accounting_account_read", "accounting_accountgroup_read"];
 
-                    _isWriteAuthorized = !writeRequierement.Except(authorizationsList.Select(a=>a.Code)).Any();
+                    _isWriteAuthorized = !writeRequierement.Except(authorizationsList.Select(a => a.Code)).Any();
                     _isReadAuthorized = !readRequierement.Except(authorizationsList.Select(a => a.Code)).Any();
                 }
             }
