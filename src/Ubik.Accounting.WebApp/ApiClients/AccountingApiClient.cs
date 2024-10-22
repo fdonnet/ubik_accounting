@@ -1,9 +1,12 @@
-﻿using System.Text;
+﻿using MassTransit.Configuration;
+using Microsoft.Extensions.Options;
+using System.Text;
 using System.Text.Json;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Webapp.Shared.Facades;
+using Ubik.Accounting.WebApp.Config;
 using Ubik.Accounting.WebApp.Security;
 
 namespace Ubik.Accounting.WebApp.ApiClients
@@ -12,12 +15,14 @@ namespace Ubik.Accounting.WebApp.ApiClients
     {
         private readonly HttpClient _client;
         private readonly UserService _user;
+        private readonly ApiOptions _apiOptions;
 
         //TODO: inject Ioption for API uri
-        public AccountingApiClient(HttpClient client, UserService user)
+        public AccountingApiClient(HttpClient client, UserService user, IOptions<ApiOptions> apiOptions)
         {
             _client = client;
-            _client.BaseAddress = new Uri("https://localhost:7289/api/v1/");
+            _apiOptions = apiOptions.Value;
+            _client.BaseAddress = new Uri(_apiOptions.AccountingUrl);
             _user = user;
         }
 

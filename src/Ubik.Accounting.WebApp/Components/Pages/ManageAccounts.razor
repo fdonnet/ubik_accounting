@@ -1,6 +1,8 @@
 ﻿@page "/booking-accounts"
 @using Ubik.Accounting.WebApp.Client.Components.Accounts
 @using Ubik.Accounting.WebApp.Client.Components.Authorization
+@using Ubik.Accounting.WebApp.Security
+@inject UserService userService; 
 @attribute [Authorize]
 
 <PageScript Src="./js/theme-switcher.js" />
@@ -36,7 +38,7 @@ else
         {
             var auth = await _authenticationState;
 
-            _isWriteAuthorized = auth.User.IsInRole("ubik_accounting_account_write");
+            _isWriteAuthorized = userService.GetUser();
             _isReadAuthorized = auth.User.IsInRole("ubik_accounting_account_read");
         }
     }

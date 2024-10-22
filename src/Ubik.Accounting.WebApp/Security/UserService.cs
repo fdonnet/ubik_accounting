@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using IdentityModel.Client;
+using MassTransit.Configuration;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
+using Microsoft.Extensions.Options;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Ubik.ApiService.Common.Configure.Options;
 
 namespace Ubik.Accounting.WebApp.Security
 {
-    public class UserService(TokenCacheService cache)
+    public class UserService(TokenCacheService cache, IOptions<AuthServerOptions> authOptions, I)
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
-        private readonly TokenCacheService _cache = cache;
 
         public ClaimsPrincipal GetUser()
         {
@@ -16,7 +20,42 @@ namespace Ubik.Accounting.WebApp.Security
 
         public async Task<string> GetTokenAsync()
         {
-            return (await _cache.GetUserTokenAsync(_currentUser.FindFirst(ClaimTypes.Email)?.Value))?.AccessToken ?? string.Empty;
+            var userId = _currentUser.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (userId == null)
+                throw new InvalidOperationException("User not authenticated");
+
+            var token = await cache.GetUserTokenAsync(userId);
+
+            if (token == null)
+                return string.Empty;
+
+            if(token.ExpiresUtc > DateTimeOffset.UtcNow)
+            {
+                var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
+                {
+                    Address = authOptions.Value.TokenUrl,
+                    ClientId = authOptions.Value.ClientId,
+                    ClientSecret = authOptions.Value.ClientSecret,
+                    RefreshToken = token.RefreshToken,
+                    GrantType = "refresh_token",
+                });
+
+                if (!response.IsError)
+                {
+                    await cache.SetUserTokenAsync(new TokenCacheEntry
+                    {
+                        UserId = userId,
+                        RefreshToken = response.RefreshToken!,
+                        AccessToken = response.AccessToken!,
+                        ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo
+                    });
+                }
+                else
+                    throw new InvalidOperationException("Error refreshing token");
+            }
+
+            return token.AccessToken;
         }
 
         internal void SetUser(ClaimsPrincipal user)

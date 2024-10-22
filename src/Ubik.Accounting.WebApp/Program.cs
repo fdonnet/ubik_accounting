@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Ubik.Accounting.WebApp.Client.Components.Accounts;
 using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Microsoft.AspNetCore.Authentication;
+using Ubik.Accounting.WebApp.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 //TODO: do better and use UserId in cache
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
+
 
 
 builder.Services.AddAuthentication(options =>
@@ -178,6 +180,9 @@ builder.Services.TryAddEnumerable(
 builder.Services
     .AddTransient<CookieHandler>()
     .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
+
+builder.Services.Configure<ApiOptions>(
+    builder.Configuration.GetSection(ApiOptions.Position));
 
 builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
 builder.Services.AddScoped<ClassificationStateService>();
