@@ -37,11 +37,12 @@ namespace Ubik.Accounting.WebApp.Security
             if (token == null)
                 return string.Empty;
 
-            if (token.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(-3))
+            if (token.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10))
             {
-                if(token.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(-3))
+                if(token.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(10))
                 {
-                    navigationManager.NavigateTo("/account/logout");
+                    await cache.RemoveUserTokenAsync(userEmail);
+                    return string.Empty;
                 }
                 else
                 {

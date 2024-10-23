@@ -141,6 +141,10 @@ namespace Ubik.Accounting.WebApp.ApiClients
         private async Task SetSecruityHeaderAsync()
         {
             var usertoken = await _user.GetTokenAsync();
+
+            if (string.IsNullOrEmpty(usertoken))
+                throw new ApplicationException("Cannot retrieve info, refresh your app");
+
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {usertoken}");
         }

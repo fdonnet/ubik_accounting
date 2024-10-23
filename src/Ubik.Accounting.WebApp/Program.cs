@@ -77,54 +77,7 @@ builder.Services.AddAuthentication(options =>
                 if (actualToken == null)
                 {
                     x.RejectPrincipal();
-                    await x.HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
-                    await x.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                     return;
-                }
-                    
-
-                //If token expired
-                if (actualToken.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(-3))
-                {
-                    if (actualToken.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(-3))
-                    {
-                        x.RejectPrincipal();
-                        await x.HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
-                        await x.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                        return;
-                    }
-                    else
-                    {
-                        var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
-                        {
-                            Address = authOptions.TokenUrl,
-                            ClientId = authOptions.ClientId,
-                            ClientSecret = authOptions.ClientSecret,
-                            RefreshToken = actualToken.RefreshToken,
-                            GrantType = "refresh_token",
-
-                        });
-
-                        if (!response.IsError)
-                        {
-                            await cache.SetUserTokenAsync(new TokenCacheEntry
-                            {
-                                UserId = userId,
-                                RefreshToken = response.RefreshToken!,
-                                AccessToken = response.AccessToken!,
-                                ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
-                                ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.RefreshTokenExpTimeInMinutes)
-                            });
-
-                            x.ShouldRenew = true;
-                        }
-                        else
-                        {
-                            x.RejectPrincipal();
-                            await x.HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
-                            await x.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                        }
-                    }
                 }
             }
         };
