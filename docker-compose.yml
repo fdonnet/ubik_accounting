@@ -3,44 +3,6 @@ networks:
     driver: bridge
 
 services:
-  # keycloak-old:
-
-  #   command:
-  #     - "start-dev"
-  #     - "--import-realm" 
-
-  #   container_name: "ubik-keycloak"
-
-  #   entrypoint:
-  #     - "/opt/keycloak/bin/kc.sh"
-
-  #   environment:
-  #     - "KEYCLOAK_ADMIN=admin"
-  #     - "KEYCLOAK_ADMIN_PASSWORD=admin"
-  #     - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-  #     - "LANG=en_US.UTF-8"
-
-  #   image: "quay.io/keycloak/keycloak:21.1"
-
-  #   ipc: "private"
-
-  #   volumes:
-  #     - ./tests/Ubik.Api.Tests.Integration/import_old/ubik-realm_old.json:/opt/keycloak/data/import/ubik-realm.json
-
-  #   logging:
-  #     driver: "json-file"
-  #     options: {}
-
-  #   networks:
-  #     ubik-network:
-  #       aliases:
-  #         - keycloak-old
-
-  #   ports:
-  #     - "8087:8087/tcp"
-
-  #   user: "1000"
-  
   keycloak-last:
 
     command:

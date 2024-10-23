@@ -22,7 +22,6 @@ services:
         condition: service_started
       ubik-postgres:
         condition: service_started
-      
     networks:
       - ubik-network
     ports:
@@ -54,6 +53,7 @@ services:
       
     networks:
       - ubik-network
+
     ports:
       - "5001:8080"
 
