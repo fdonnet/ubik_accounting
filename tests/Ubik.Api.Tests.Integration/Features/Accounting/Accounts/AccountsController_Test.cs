@@ -1064,7 +1064,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             //Act
-            var response = await _client.PostAsync($"{_baseUrlForV1}/a05e0000-5dd4-0015-4669-08dcda59fa2d/accountgroups/4c470000-5dd4-0015-4d88-08dcdb1e7a54",null);
+            var response = await _client.PostAsync($"{_baseUrlForV1}/ec860000-5dd4-0015-ce96-08dcda306be5/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283",null);
             var result = await response.Content.ReadFromJsonAsync<AccountInAccountGroupResult>();
 
             //Assert
@@ -1072,7 +1072,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<AccountInAccountGroupResult>()
-                .And.Match<AccountInAccountGroupResult>(x => x.AccountId == new Guid("a05e0000-5dd4-0015-4669-08dcda59fa2d"));
+                .And.Match<AccountInAccountGroupResult>(x => x.AccountId == new Guid("ec860000-5dd4-0015-ce96-08dcda306be5"));
         }
 
         [Fact]
