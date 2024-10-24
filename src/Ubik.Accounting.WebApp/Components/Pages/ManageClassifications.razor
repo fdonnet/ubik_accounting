@@ -1,6 +1,8 @@
 ﻿@page "/manage-classifications"
 @using Ubik.Accounting.WebApp.Client.Components.Classifications
 @using Ubik.Accounting.WebApp.Client.Components.Authorization
+@using Ubik.Accounting.WebApp.Security
+@inject UserService userService;
 @attribute [Authorize]
 
 <PageScript Src="./js/theme-switcher.js" />
@@ -34,16 +36,25 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        _isWriteAuthorized = false;
+        _isReadAuthorized = false;
+
         if (_authenticationState is not null)
         {
             var auth = await _authenticationState;
-            _isWriteAuthorized = auth.User.IsInRole("ubik_accounting_classification_write")
-                && auth.User.IsInRole("ubik_accounting_account_write")
-                && auth.User.IsInRole("ubik_accounting_accountgroup_write");
 
-            _isReadAuthorized = auth.User.IsInRole("ubik_accounting_classification_read")
-                && auth.User.IsInRole("ubik_accounting_account_read")
-                && auth.User.IsInRole("ubik_accounting_accountgroup_read");
+            var user = await userService.GetUserInfo();
+            if (user.SelectedTenantId != null)
+            {
+                if (user.AuthorizationsByTenantIds.TryGetValue((Guid)user.SelectedTenantId, out var authorizationsList))
+                {
+                    List<string> writeRequierement = ["accounting_classification_write", "accounting_account_write", "accounting_accountgroup_write"];
+                    List<string> readRequierement = ["accounting_classification_read", "accounting_account_read", "accounting_accountgroup_read"];
+
+                    _isWriteAuthorized = !writeRequierement.Except(authorizationsList.Select(a => a.Code)).Any();
+                    _isReadAuthorized = !readRequierement.Except(authorizationsList.Select(a => a.Code)).Any();
+                }
+            }
         }
     }
 }

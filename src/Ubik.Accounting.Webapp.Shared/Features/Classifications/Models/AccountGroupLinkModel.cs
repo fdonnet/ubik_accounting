@@ -13,7 +13,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 
     public static class AccountGroupLinkModelMappers
     {
-        public static IEnumerable<AccountGroupLinkModel> ToAccountGroupLinkModels(this IEnumerable<GetAllAccountGroupLinksResult> current)
+        public static IEnumerable<AccountGroupLinkModel> ToAccountGroupLinkModels(this IEnumerable<AccountGroupLinkResult> current)
         {
             return current.Select(x => new AccountGroupLinkModel()
             {
@@ -24,7 +24,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
             });
         }
 
-        public static AccountGroupLinkModel ToAccountGroupLinkModel(this AddAccountInAccountGroupResult current)
+        public static AccountGroupLinkModel ToAccountGroupLinkModel(this AccountInAccountGroupResult current)
         {
             return new()
             {
@@ -36,15 +36,6 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
         }
 
         public static DeleteAccountInAccountGroupCommand ToDeleteAccountInAccountGroupCommand(this AccountGroupLinkModel current)
-        {
-            return new()
-            {
-                AccountGroupId = current.AccountGroupId,
-                AccountId = current.AccountId,
-            };
-        }
-
-        public static AccountGroupLinkModel ToAccountGroupLinkModel(this DeleteAccountInAccountGroupResult current)
         {
             return new()
             {

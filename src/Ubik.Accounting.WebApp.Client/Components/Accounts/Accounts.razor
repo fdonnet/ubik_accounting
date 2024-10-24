@@ -1,6 +1,6 @@
 ﻿@using Ubik.Accounting.Contracts.Accounts.Results
 @using Ubik.Accounting.Contracts.Currencies.Results
-@using Ubik.Accounting.Contracts.Error
+@using Ubik.Common.Contracts.Error
 @using Ubik.Accounting.Webapp.Shared.Facades
 @using Ubik.Accounting.WebApp.Client.Components.Common.Modal
 @using Ubik.Accounting.WebApp.Client.Components.Common.Grid
@@ -89,7 +89,7 @@
 
     private IQueryable<AccountModel>? _accounts;
     private int _numberOfAccounts = -1;
-    private List<GetAllCurrenciesResult>? _currencies;
+    private List<CurrencyStandardResult>? _currencies;
 
     private bool _isLoading = true;
     private UbikModal _dialog = default!;
@@ -207,7 +207,7 @@
 
         if (response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllAccountsResult>>() ?? []).ToAccountModel();
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<AccountStandardResult>>() ?? []).ToAccountModel();
             _accounts = result.AsQueryable();
             _numberOfAccounts = _accounts.Count();
         }
@@ -227,7 +227,7 @@
 
         if (response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GetAllCurrenciesResult>>() ?? []);
+            var result = (await response.Content.ReadFromJsonAsync<IEnumerable<CurrencyStandardResult>>() ?? []);
             _currencies = result.OrderBy(c => c.IsoCode).ToList();
         }
         else

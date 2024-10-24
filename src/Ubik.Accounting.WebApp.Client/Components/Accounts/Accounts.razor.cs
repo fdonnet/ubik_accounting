@@ -1,6 +1,4 @@
-﻿using Ubik.Accounting.Contracts.Accounts.Results;
-
-namespace Ubik.Accounting.WebApp.Client.Components.Accounts
+﻿namespace Ubik.Accounting.WebApp.Client.Components.Accounts
 {
     public partial class Accounts
     {

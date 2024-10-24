@@ -1,8 +1,8 @@
 ﻿namespace Ubik.Accounting.Api.Data.Init
 {
-    public class DbInitializer
+    static internal class DbInitializer
     {
-        public async Task InitializeAsync(AccountingContext context)
+        static internal async Task InitializeAsync(AccountingDbContext context)
         {
             CurrenciesData.Load(context);
             ClassificationsData.Load(context);

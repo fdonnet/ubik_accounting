@@ -1,13 +1,13 @@
-﻿@using Ubik.Accounting.Contracts.Error
+﻿@using Ubik.Common.Contracts.Error
 @inject IJSRuntime JS
-<div id="@_alertId" class="hidden p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
+<div id="@_alertId" class="mb-4 hidden rounded-lg border border-red-300 bg-red-50 p-4 text-red-800 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
     <div class="flex items-center">
-        <svg class="flex-shrink-0 w-10 h-10 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="flex-shrink-0 me-2 h-10 w-10" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm-1.5-5.009c0-.867.659-1.491 1.491-1.491.85 0 1.509.624 1.509 1.491 0 .867-.659 1.509-1.509 1.509-.832 0-1.491-.642-1.491-1.509zM11.172 6a.5.5 0 0 0-.499.522l.306 7a.5.5 0 0 0 .5.478h1.043a.5.5 0 0 0 .5-.478l.305-7a.5.5 0 0 0-.5-.522h-1.655z" />
         </svg>
         <span class="sr-only">Error</span>
         <div class="ms-3 text-sm font-medium">
-            <p class="text-red-800 dark:text-red-400 font-bold">@MainErrorMsg</p>
+            <p class="font-bold text-red-800 dark:text-red-400">@MainErrorMsg</p>
             <ul class="ms-2 list-disc">
                 @foreach (var err in _currentError.Errors)
                 {
@@ -16,14 +16,14 @@
             </ul>
         </div>
     </div>
-    <div class="flex mt-4 sm:mt-5">
-        <button type="button" @onclick="ToggleErrorDetailsAsync" class="text-white bg-red-800 hover:bg-red-900 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 me-2 text-center inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+    <div class="mt-4 flex sm:mt-5">
+        <button type="button" @onclick="ToggleErrorDetailsAsync" class="me-2 inline-flex items-center rounded-lg bg-red-800 px-3 py-1.5 text-center text-xs font-medium text-white hover:bg-red-900 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
             <svg class="me-2 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
                 <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
             </svg>
             View details
         </button>
-        <button type="button" @onclick="DismissErrorAsync" class="text-red-800 bg-transparent border border-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-red-600 dark:border-red-600 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800" data-dismiss-target="#alert-additional-content-2" aria-label="Close">
+        <button type="button" @onclick="DismissErrorAsync" class="rounded-lg border border-red-800 bg-transparent px-3 py-1.5 text-center text-xs font-medium text-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 dark:border-red-600 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-800" data-dismiss-target="#alert-additional-content-2" aria-label="Close">
             Dismiss
         </button>
     </div>
@@ -33,11 +33,11 @@
                 <div>HTTP code:</div>
                 <div class="ms-2 sm:ms-4">@_currentError.Status</div>
             </div>
-            <div class="flex flex-col mt-2">
+            <div class="mt-2 flex flex-col">
                 <div>Error(s):</div>
                 @foreach (var err in _currentError.Errors)
                 {
-                    <div class="flex flex-col ms-3 mb-2">
+                    <div class="mb-2 ms-3 flex flex-col">
                         <div class="flex flex-row">
                             <div class="min-w-[70px]">Code:</div>
                             <div class="ms-2">@err.Code</div>

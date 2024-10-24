@@ -4,20 +4,13 @@ using Ubik.ApiService.Common.Services;
 //TODO: change filter thing to be set on selected tenant id (not the first)
 namespace Ubik.ApiService.Common.Filters
 {
-    public class TenantIdPublishFilter<T> :
+    public class TenantIdPublishFilter<T>(ICurrentUser currentUser) :
         IFilter<PublishContext<T>>
         where T : class
     {
-        private readonly ICurrentUserService _userService;
-
-        public TenantIdPublishFilter(ICurrentUserService userService)
-        {
-            _userService = userService;
-        }
-
         public Task Send(PublishContext<T> context, IPipe<PublishContext<T>> next)
         {
-            context.Headers.Set("TenantId", _userService.CurrentUser.TenantIds[0].ToString());
+            context.Headers.Set("TenantId", currentUser.TenantId.ToString());
 
             return next.Send(context);
         }

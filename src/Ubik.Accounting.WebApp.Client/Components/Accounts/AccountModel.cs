@@ -2,7 +2,6 @@
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Accounts.Enums;
 using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.Accounting.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Accounts
 {
@@ -30,7 +29,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
 
     public static class AccountModelMappers
     {
-        public static IEnumerable<AccountModel> ToAccountModel(this IEnumerable<GetAllAccountsResult> current)
+        public static IEnumerable<AccountModel> ToAccountModel(this IEnumerable<AccountStandardResult> current)
         {
             return current.Select(x => new AccountModel()
             {

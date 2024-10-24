@@ -17,6 +17,10 @@ using Ubik.Accounting.Webapp.Shared.Facades;
 using Microsoft.AspNetCore.Components.Authorization;
 using Ubik.Accounting.WebApp.Client.Components.Accounts;
 using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
+using Microsoft.AspNetCore.Authentication;
+using Ubik.Accounting.WebApp.Config;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +50,7 @@ var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
 
 
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -54,52 +59,25 @@ builder.Services.AddAuthentication(options =>
 })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
-        options.ExpireTimeSpan = TimeSpan.FromDays(1);
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(authOptions.CookieRefreshTimeInMinutes);
+        options.SlidingExpiration = true;
+
         options.Events = new CookieAuthenticationEvents
         {
             OnValidatePrincipal = async x =>
             {
-                // since our cookie lifetime is based on the access token one,
-                // check if we're more than halfway of the cookie lifetime
                 var now = DateTimeOffset.UtcNow;
-                var timeElapsed = now.Subtract(x.Properties.IssuedUtc!.Value);
-                var timeRemaining = x.Properties.ExpiresUtc!.Value.Subtract(now);
+                var userId = x.Principal!.FindFirst(ClaimTypes.Email)!.Value;
 
-                if (timeElapsed > timeRemaining)
+                //Try to get user in cache
+                var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
+                var actualToken = await cache.GetUserTokenAsync(userId);
+
+                //If no token
+                if (actualToken == null)
                 {
-                    var userId = x.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-                    var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
-                    var actualToken = await cache.GetUserTokenAsync(userId);
-
-                    if (actualToken == null)
-                        return;
-
-                    //Refresh from OpenId endpoint
-                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
-                    {
-                        Address = authOptions.TokenUrl,
-                        ClientId = authOptions.ClientId,
-                        ClientSecret = authOptions.ClientSecret,
-                        RefreshToken = actualToken.RefreshToken,
-                        GrantType = "refresh_token",
-
-                    });
-
-                    if (!response.IsError)
-                    {
-                        await cache.SetUserTokenAsync(new TokenCacheEntry
-                        {
-                            UserId = userId,
-                            RefreshToken = response.RefreshToken!,
-                            AccessToken = response.AccessToken!,
-                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo
-                        });
-
-                        // indicate to the cookie middleware to renew the session cookie
-                        // the new lifetime will be the same as the old one, so the alignment
-                        // between cookie and access token is preserved
-                        x.ShouldRenew = true;
-                    }
+                    x.RejectPrincipal();
+                    return;
                 }
             }
         };
@@ -112,20 +90,13 @@ builder.Services.AddAuthentication(options =>
             options.ClientSecret = authOptions.ClientSecret;
             options.ClientId = authOptions.ClientId;
             options.ResponseType = "code";
-            //TODO: not store the token in cookie, ask auth provider for initial JWT and store it (review that)
-            options.SaveTokens = true;
+            options.SaveTokens = false;
             options.GetClaimsFromUserInfoEndpoint = true;
             options.Scope.Clear();
             options.Scope.Add("openid");
             options.Scope.Add("offline_access");
+            options.RequireHttpsMetadata = authOptions.RequireHttpsMetadata;
 
-            //TODO: change for prod
-            options.RequireHttpsMetadata = false;
-
-            options.TokenValidationParameters = new()
-            {
-                NameClaimType = "name",
-            };
 
             options.Events = new OpenIdConnectEvents
             {
@@ -135,17 +106,30 @@ builder.Services.AddAuthentication(options =>
                     var cache = x.HttpContext.RequestServices.GetRequiredService<TokenCacheService>();
                     var token = new TokenCacheEntry
                     {
-                        UserId = x.Principal!.FindFirst(ClaimTypes.NameIdentifier)!.Value,
+                        UserId = x.Principal!.FindFirst(ClaimTypes.Email)!.Value,
                         AccessToken = x.TokenEndpointResponse!.AccessToken,
                         RefreshToken = x.TokenEndpointResponse.RefreshToken,
-                        ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo
+                        ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo,
+                        ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.RefreshTokenExpTimeInMinutes)
                     };
                     x.Properties!.IsPersistent = true;
                     x.Properties.ExpiresUtc = new JwtSecurityToken(x.TokenEndpointResponse.AccessToken).ValidTo;
 
                     await cache.SetUserTokenAsync(token);
+                    x.Success();
                 },
-                
+                //Only store the Id token for more security
+                OnTokenResponseReceived = async x =>
+                {
+                    ////Only store id_token in cookie
+                    x.Properties!.StoreTokens([ new AuthenticationToken
+                        {
+                            Name = "id_token",
+                            Value = x.TokenEndpointResponse.IdToken
+                        }]);
+
+                    await Task.CompletedTask;
+                },
             };
         }
     });
@@ -159,14 +143,23 @@ builder.Services.AddScoped<UserService>();
 builder.Services.TryAddEnumerable(
     ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
-//builder.Services.AddScoped<IClientContactFacade, ClientContactFacade>();
-
 //Http client (the base one for the webassembly component and other typed for external apis
 builder.Services
     .AddTransient<CookieHandler>()
     .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
 
 builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
+
+builder.Services.Configure<ApiOptions>(
+    builder.Configuration.GetSection(ApiOptions.Position));
+var userServiceClientOpt = new ApiOptions();
+builder.Configuration.GetSection(ApiOptions.Position).Bind(userServiceClientOpt);
+
+builder.Services.AddHttpClient("UserServiceClient", options =>
+{
+    options.BaseAddress = new Uri(userServiceClientOpt.SecurityUrl);
+});
+
 builder.Services.AddScoped<ClassificationStateService>();
 
 var app = builder.Build();

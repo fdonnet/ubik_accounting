@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <UserSecretsId>5ad2e1b9-75e7-42be-a44d-258316d55e78</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Features\Authorizations\Standard\**" />
+    <Compile Remove="Features\Tenants\Admin\**" />
+    <Compile Remove="Features\Tenants\Mappers\**" />
+    <Compile Remove="Features\Tenants\Standard\**" />
+    <Content Remove="Features\Authorizations\Standard\**" />
+    <Content Remove="Features\Tenants\Admin\**" />
+    <Content Remove="Features\Tenants\Mappers\**" />
+    <Content Remove="Features\Tenants\Standard\**" />
+    <EmbeddedResource Remove="Features\Authorizations\Standard\**" />
+    <EmbeddedResource Remove="Features\Tenants\Admin\**" />
+    <EmbeddedResource Remove="Features\Tenants\Mappers\**" />
+    <EmbeddedResource Remove="Features\Tenants\Standard\**" />
+    <None Remove="Features\Authorizations\Standard\**" />
+    <None Remove="Features\Tenants\Admin\**" />
+    <None Remove="Features\Tenants\Mappers\**" />
+    <None Remove="Features\Tenants\Standard\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+    <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+    <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ubik.Db.Common\Ubik.DB.Common\Ubik.DB.Common.csproj" />
+    <ProjectReference Include="..\Ubik.Security.Contracts\Ubik.Security.Contracts.csproj" />
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <Folder Include="Features\Authorizations\Errors\" />
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <None Update="Data\Init\AuthorizationsData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\RolesAuthorizationsData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\RolesData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\TenantsData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\UserRoleByTenantData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\UsersData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Init\UsersTenantsData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

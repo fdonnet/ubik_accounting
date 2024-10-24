@@ -10,7 +10,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Errors
         public AccountAlreadyExistsInClassificationError(Guid id, Guid accountGroupId)
         {
             ErrorType = ServiceAndFeatureErrorType.Conflict;
-            CustomErrors = new List<CustomError>() { new CustomError()
+            CustomErrors = new List<CustomError>() { new()
             {
                 ErrorCode = "ACCOUNT_ALREADY_EXISTS_IN_CLASSIFICATION",
                 ErrorFriendlyMessage = "This account already exists in the classification.",

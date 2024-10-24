@@ -5,7 +5,7 @@ namespace Ubik.Accounting.Api.Data.Init
 {
     internal static class ClassificationsData
     {
-        internal static void Load(AccountingContext context)
+        internal static void Load(AccountingDbContext context)
         {
             if (!context.Classifications.Any())
             {
@@ -38,7 +38,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Test data",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    Version = NewId.NextGuid(),
+                    Version = baseValuesForAccountGroupClassifications.ClassificationId2,
                     TenantId = baseValuesForTenants.TenantId
                     },
                     new Classification
@@ -51,7 +51,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Test data",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    Version = NewId.NextGuid(),
+                    Version = baseValuesForAccountGroupClassifications.ClassificationId3,
                     TenantId = baseValuesForTenants.TenantId
                     }
                 };

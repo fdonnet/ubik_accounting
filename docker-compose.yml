@@ -1,37 +1,52 @@
+networks:
+  ubik-network:
+    driver: bridge
+
 services:
-  keycloak:
+  keycloak-last:
 
     command:
       - "start-dev"
       - "--import-realm" 
 
-    container_name: "ubik-keycloak"
+    container_name: "ubik-keycloak-last"
 
     entrypoint:
       - "/opt/keycloak/bin/kc.sh"
 
+    volumes:
+      - ./tests/Ubik.Api.Tests.Integration/import/ubik-realm.json:/opt/keycloak/data/import/ubik-realm.json
+  
     environment:
       - "KEYCLOAK_ADMIN=admin"
+      - "KC_HEALTH_ENABLED=true"
       - "KEYCLOAK_ADMIN_PASSWORD=admin"
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       - "LANG=en_US.UTF-8"
 
-    image: "quay.io/keycloak/keycloak:21.1"
+    image: "keycloak/keycloak:26.0"
 
     ipc: "private"
-
-    volumes:
-      - ./tests/Ubik.Accounting.Api.Tests.Integration/import/ubik-realm.json:/opt/keycloak/data/import/ubik-realm.json
 
     logging:
       driver: "json-file"
       options: {}
 
-    network_mode: "bridge"
+    networks:
+      ubik-network:
+        aliases:
+          - keycloak
 
     ports:
       - "8080:8080/tcp"
 
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000;echo -e 'GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;"]
+      start_period: 10s
+      interval: 30s
+      retries: 3
+      timeout: 5s
+      
     user: "1000"
 
   rabbitmq:
@@ -52,12 +67,15 @@ services:
       - "LANG=C.UTF-8"
       - "LANGUAGE=C.UTF-8"
       - "LC_ALL=C.UTF-8"
-    image: "rabbitmq:3.12-management"
+    image: "rabbitmq:4.0-management"
     ipc: "private"
     logging:
       driver: "json-file"
       options: {}
-    network_mode: "bridge"
+    networks:
+      ubik-network:
+        aliases:
+          - rabbit
     ports:
       - "15672:15672/tcp"
       - "5672:5672/tcp"
@@ -66,48 +84,51 @@ services:
     volumes:
       - "ubik-rabbitmq-vol:/var/lib/rabbitmq"
 
-  redis-stack:
-    command:
-      - "/entrypoint.sh"
-    container_name: "ubik-redis-stack"
-    environment:
-      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-      - "REDISBLOOM_ARGS="
-      - "REDISEARCH_ARGS="
-      - "REDISJSON_ARGS="
-      - "REDISTIMESERIES_ARGS="
-      - "REDIS_ARGS="
+  ubik-webapp-client-cache:
+    container_name: "ubik-webapp-client-cache"
     image: "redis/redis-stack:latest"
-    ipc: "private"
     logging:
       driver: "json-file"
       options: {}
-    network_mode: "bridge"
+    networks:
+      - ubik-network
     ports:
       - "6379:6379/tcp"
       - "8001:8001/tcp"
+    expose:
+      - "6379"
+      - "8001"
 
+  ubik-proxy-cache:
+    container_name: "ubik-proxy-cache"
+    image: "redis/redis-stack:latest"
+    logging:
+      driver: "json-file"
+      options: {}
+    networks:
+      - ubik-network
+    ports:
+      - "6380:6379/tcp"
+      - "8004:8001/tcp"
+    expose:
+      - "6380"
+      - "8004"
+  
   ubik-postgres:
-    command:
-      - "postgres"
     container_name: "ubik-postgres"
-    entrypoint:
-      - "docker-entrypoint.sh"
     environment:
       - "POSTGRES_PASSWORD=test01"
       - "POSTGRES_USER=postgres"
-      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/16/bin"
-      - "GOSU_VERSION=1.16"
-      - "LANG=en_US.utf8"
-      - "PG_MAJOR=16"
-      - "PG_VERSION=16.0-1.pgdg120+1"
       - "PGDATA=/var/lib/postgresql/data"
-    image: "postgres:latest"
+    image: "postgres:16.4-alpine3.20"
     ipc: "private"
     logging:
       driver: "json-file"
       options: {}
-    network_mode: "bridge"
+    networks:
+      ubik-network:
+        aliases:
+          - db-test 
     volumes:
       - "ubik-postgresl-vol:/var/lib/postgresql/data"
     ports:
@@ -115,8 +136,22 @@ services:
     expose:
       - "5435"
 
-version: "3.6"
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: "ubik-pgadmin"
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@user.com
+      PGADMIN_DEFAULT_PASSWORD: test
+    volumes:
+      - ubik-pgadmin-vol:/var/lib/pgadmin
+    depends_on:
+      - ubik-postgres
+    networks:
+      - ubik-network
 
 volumes:
   ubik-rabbitmq-vol:
   ubik-postgresl-vol:
+  ubik-pgadmin-vol:

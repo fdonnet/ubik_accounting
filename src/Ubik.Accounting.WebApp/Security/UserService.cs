@@ -1,13 +1,25 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using IdentityModel.Client;
+using MassTransit.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
+using Microsoft.Extensions.Options;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Ubik.ApiService.Common.Configure.Options;
+using Ubik.Security.Contracts.Users.Results;
+using Microsoft.AspNetCore.Components;
 
 namespace Ubik.Accounting.WebApp.Security
 {
-    public class UserService(TokenCacheService cache)
+    public class UserService(TokenCacheService cache
+        , IOptions<AuthServerOptions> authOptions
+        , IHttpClientFactory factory)
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
-        private readonly TokenCacheService _cache = cache;
+        private readonly HttpClient _httpClient = factory.CreateClient("UserServiceClient");
 
         public ClaimsPrincipal GetUser()
         {
@@ -16,7 +28,77 @@ namespace Ubik.Accounting.WebApp.Security
 
         public async Task<string> GetTokenAsync()
         {
-            return (await _cache.GetUserTokenAsync(_currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value))?.AccessToken ?? string.Empty;
+            var userEmail = (_currentUser.FindFirst(ClaimTypes.Email)?.Value)
+                ?? throw new InvalidOperationException("User not authenticated");
+
+            var token = await cache.GetUserTokenAsync(userEmail);
+
+            if (token == null)
+                return string.Empty;
+
+            if (token.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10))
+            {
+                if(token.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(10))
+                {
+                    await cache.RemoveUserTokenAsync(userEmail);
+                    return string.Empty;
+                }
+                else
+                {
+                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
+                    {
+                        Address = authOptions.Value.TokenUrl,
+                        ClientId = authOptions.Value.ClientId,
+                        ClientSecret = authOptions.Value.ClientSecret,
+                        RefreshToken = token.RefreshToken,
+                        GrantType = "refresh_token",
+                    });
+
+                    if (!response.IsError)
+                    {
+                        await cache.SetUserTokenAsync(new TokenCacheEntry
+                        {
+                            UserId = userEmail,
+                            RefreshToken = response.RefreshToken!,
+                            AccessToken = response.AccessToken!,
+                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
+                            ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.Value.RefreshTokenExpTimeInMinutes)
+                        });
+                    }
+                    else
+                        throw new InvalidOperationException("Error refreshing token");
+                }    
+            }
+
+            return token.AccessToken;
+        }
+
+        public async Task<UserAdminOrMeResult> GetUserInfo()
+        {
+            var userEmail = (_currentUser.FindFirst(ClaimTypes.Email)?.Value)
+                ?? throw new InvalidOperationException("User not authenticated");
+
+            var userInfo = await cache.GetUserInfoAsync(userEmail);
+
+            if (userInfo == null)
+            {
+                var token = await GetTokenAsync();
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"Bearer {token}");
+
+                var response = await _httpClient.GetAsync("me/authinfo");
+                var result = await response.Content.ReadFromJsonAsync<UserAdminOrMeResult>();
+
+                if (response.IsSuccessStatusCode && result != null)
+                {
+                    await cache.SetUserInfoAsync(result);
+                    return result;
+                }
+                else
+                    throw new InvalidOperationException("Error getting user info");
+            }
+            else
+                return userInfo;
         }
 
         internal void SetUser(ClaimsPrincipal user)

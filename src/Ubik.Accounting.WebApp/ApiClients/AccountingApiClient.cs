@@ -1,11 +1,13 @@
-﻿using System.Text;
+﻿using MassTransit.Configuration;
+using Microsoft.Extensions.Options;
+using System.Text;
 using System.Text.Json;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using Ubik.Accounting.Webapp.Shared.Facades;
+using Ubik.Accounting.WebApp.Config;
 using Ubik.Accounting.WebApp.Security;
-using static System.Net.WebRequestMethods;
 
 namespace Ubik.Accounting.WebApp.ApiClients
 {
@@ -13,32 +15,34 @@ namespace Ubik.Accounting.WebApp.ApiClients
     {
         private readonly HttpClient _client;
         private readonly UserService _user;
+        private readonly ApiOptions _apiOptions;
 
         //TODO: inject Ioption for API uri
-        public AccountingApiClient(HttpClient client, UserService user)
+        public AccountingApiClient(HttpClient client, UserService user, IOptions<ApiOptions> apiOptions)
         {
             _client = client;
-            _client.BaseAddress = new Uri("https://localhost:7289/api/v1/");
+            _apiOptions = apiOptions.Value;
+            _client.BaseAddress = new Uri(_apiOptions.AccountingUrl);
             _user = user;
         }
 
         public async Task<HttpResponseMessage> GetAccountAsync(Guid id, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.GetAsync($"Accounts/{id}");
+            return await _client.GetAsync($"accounts/{id}");
         }
 
         public async Task<HttpResponseMessage> GetAllAccountsAsync(CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.GetAsync("Accounts");
+            return await _client.GetAsync("accounts");
         }
 
         public async Task<HttpResponseMessage> AddAccountAsync(AddAccountCommand account, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(account);
-            return await _client.PostAsync("Accounts", new StringContent(request, Encoding.UTF8, "application/json"));
+            return await _client.PostAsync("accounts", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
         public async Task<HttpResponseMessage> AddAccountInAccountGroupAsync(AddAccountInAccountGroupCommand accountInAccountGrp,
@@ -46,7 +50,7 @@ namespace Ubik.Accounting.WebApp.ApiClients
         {
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(accountInAccountGrp);
-            return await _client.PostAsync($"Accounts/{accountInAccountGrp.AccountId}/AccountGroups/{accountInAccountGrp.AccountGroupId}"
+            return await _client.PostAsync($"accounts/{accountInAccountGrp.AccountId}/accountgroups/{accountInAccountGrp.AccountGroupId}"
                 , new StringContent(request, Encoding.UTF8, "application/json"));
 
         }
@@ -54,89 +58,93 @@ namespace Ubik.Accounting.WebApp.ApiClients
             CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.DeleteAsync($"Accounts/{accountInAccountGrp.AccountId}/AccountGroups/{accountInAccountGrp.AccountGroupId}");
+            return await _client.DeleteAsync($"accounts/{accountInAccountGrp.AccountId}/accountgroups/{accountInAccountGrp.AccountGroupId}");
         }
 
         public async Task<HttpResponseMessage> UpdateAccountAsync(Guid id, UpdateAccountCommand account, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(account);
-            return await _client.PutAsync($"Accounts/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
+            return await _client.PutAsync($"accounts/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
         public async Task<HttpResponseMessage> DeleteAccountAsync(Guid id, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.DeleteAsync($"Accounts/{id}");
+            return await _client.DeleteAsync($"accounts/{id}");
         }
 
         public async Task<HttpResponseMessage> GetAllCurrenciesAsync(CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.GetAsync("Currencies");
+            return await _client.GetAsync("currencies");
         }
 
         public async Task<HttpResponseMessage> GetAllClassificationsAsync(CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.GetAsync("Classifications");
+            return await _client.GetAsync("classifications");
         }
 
         public async Task<HttpResponseMessage> GetClassificationMissingAccountsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.GetAsync($"Classifications/{id}/MissingAccounts");
+            return await _client.GetAsync($"classifications/{id}/missingaccounts");
         }
 
         public async Task<HttpResponseMessage> AddClassificationAsync(AddClassificationCommand classification, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(classification);
-            return await _client.PostAsync("Classifications", new StringContent(request, Encoding.UTF8, "application/json"));
+            return await _client.PostAsync("classifications", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
         public async Task<HttpResponseMessage> UpdateClassificationAsync(Guid id, UpdateClassificationCommand classification, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(classification);
-            return await _client.PutAsync($"Classifications/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
+            return await _client.PutAsync($"classifications/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
         public async Task<HttpResponseMessage> DeleteClassificationAsync(Guid id, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.DeleteAsync($"Classifications/{id}");
+            return await _client.DeleteAsync($"classifications/{id}");
         }
 
         public async Task<HttpResponseMessage> GetAllAccountGroupsAsync(CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.GetAsync("AccountGroups");
+            return await _client.GetAsync("accountGroups");
         }
 
         public async Task<HttpResponseMessage> AddAccountGroupAsync(AddAccountGroupCommand accountGroup, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(accountGroup);
-            return await _client.PostAsync("AccountGroups", new StringContent(request, Encoding.UTF8, "application/json"));
+            return await _client.PostAsync("accountgroups", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
         public async Task<HttpResponseMessage> UpdateAccountGroupAsync(Guid id, UpdateAccountGroupCommand accountGroup, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
             var request = JsonSerializer.Serialize(accountGroup);
-            return await _client.PutAsync($"AccountGroups/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
+            return await _client.PutAsync($"accountgroups/{id}", new StringContent(request, Encoding.UTF8, "application/json"));
         }
 
         public async Task<HttpResponseMessage> DeleteAccountGroupAsync(Guid id, CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.DeleteAsync($"AccountGroups/{id}");
+            return await _client.DeleteAsync($"accountgroups/{id}");
         }
 
         private async Task SetSecruityHeaderAsync()
         {
             var usertoken = await _user.GetTokenAsync();
+
+            if (string.IsNullOrEmpty(usertoken))
+                throw new ApplicationException("Cannot retrieve info, refresh your app");
+
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {usertoken}");
         }
@@ -144,7 +152,7 @@ namespace Ubik.Accounting.WebApp.ApiClients
         public async Task<HttpResponseMessage> GetAllAccountsLinksAsync(CancellationToken cancellationToken = default)
         {
             await SetSecruityHeaderAsync();
-            return await _client.GetAsync("Accounts/AllAccountGroupLinks");
+            return await _client.GetAsync("accounts/accountgrouplinks");
         }
     }
 }

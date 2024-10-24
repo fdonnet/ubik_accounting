@@ -8,15 +8,24 @@ namespace Ubik.DB.Common.Extensions
     public static class ChangeTrackerExtensions
     {
         //TODO: seems to work, need to manage special deletion when we don't remove a record from the table but only update a bool "deleted" field
-        //      new interface ISpecialDelete to be dev
-        public static void SetSpecialFields(this ChangeTracker changeTracker, ICurrentUserService currentUserService)
+        //      new interface ISpecialDelete to be dev => good idea do it.
+        public static void SetSpecialFields(this ChangeTracker changeTracker, ICurrentUser currentUser)
         {
             changeTracker.DetectChanges();
-            IEnumerable<EntityEntry> entities = changeTracker.Entries();
+            IEnumerable<EntityEntry> entries = changeTracker.Entries();
 
-            SetAuditFields(entities, currentUserService.CurrentUser);
-            SetTenantField(entities, currentUserService.CurrentUser);
-            SetConcurrencyField(entities);
+            SetAuditFields(entries, currentUser);
+            SetTenantField(entries, currentUser);
+            SetConcurrencyField(entries);
+        }
+
+        public static void SetSpecialFieldsForAdminUser(this ChangeTracker changeTracker, ICurrentUser currentUser)
+        {
+            changeTracker.DetectChanges();
+            IEnumerable<EntityEntry> entries = changeTracker.Entries();
+
+            SetAuditFields(entries, currentUser);
+            SetConcurrencyField(entries);
         }
 
         /// <summary>
@@ -76,7 +85,10 @@ namespace Ubik.DB.Common.Extensions
                 foreach (EntityEntry entry in tenantEntities)
                 {
                     ITenantEntity entity = (ITenantEntity)entry.Entity;
-                    entity.TenantId = currentUser.TenantIds[0];
+                    if (currentUser.TenantId == null)
+                        throw new InvalidDataException("TenanId is missing, cannot continue");
+
+                    entity.TenantId = (Guid)currentUser.TenantId;
                 }
             }
         }

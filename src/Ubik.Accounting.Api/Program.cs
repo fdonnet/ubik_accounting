@@ -16,7 +16,12 @@ using Ubik.Accounting.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Filters;
 using Ubik.Accounting.Contracts.AccountGroups.Commands;
 using Ubik.Accounting.Contracts.Classifications.Commands;
-using System.Runtime.CompilerServices;
+using Ubik.ApiService.Common.Middlewares;
+using Ubik.Accounting.Api.Features.Application.Services;
+using Ubik.Accounting.Api.Features.AccountGroups.Services;
+using Ubik.Accounting.Api.Features.Accounts.Services;
+using Ubik.Accounting.Api.Features.Classifications.Services;
+using Ubik.Accounting.Api.Features.Currencies.Services;
 
 namespace Ubik.Accounting.Api
 {
@@ -38,15 +43,22 @@ namespace Ubik.Accounting.Api
             var swaggerUIOptions = new SwaggerUIOptions();
             builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
 
-            //Auth server and JWT
-            builder.Services.AddAuthServerAndJwt(authOptions);
+            //Auth server and JWT (no need, no auth)
+            //builder.Services.AddAuthServerAndJwt(authOptions);
+
+            //Default httpclient
+            builder.Services.ConfigureHttpClientDefaults(http =>
+            {
+                http.AddStandardResilienceHandler();
+            });
 
             //DB
-            builder.Services.AddDbContextFactory<AccountingContext>(
+            builder.Services.AddDbContextFactory<AccountingDbContext>(
                  options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
 
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
+            //TODO: remove useless parts (only pub/sub)
             //MessageBroker with masstransit + outbox
             builder.Services.AddMassTransit(config =>
             {
@@ -61,32 +73,23 @@ namespace Ubik.Accounting.Api
 
                     configurator.ConfigureEndpoints(context);
 
+                    //TODO:review that
                     //Use to pass tenantid when message broker is used to contact the api (async)
-                    configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
+                    //configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
                     configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);
-                    configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
+                    //configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
                 });
 
-                config.AddEntityFrameworkOutbox<AccountingContext>(o =>
+                config.AddEntityFrameworkOutbox<AccountingDbContext>(o =>
                 {
                     o.UsePostgres();
                     o.UseBusOutbox();
                 });
 
                 //Add all consumers
-                config.AddConsumers(Assembly.GetExecutingAssembly());
+                //config.AddConsumers(Assembly.GetExecutingAssembly());
 
                 //Add commands clients
-                config.AddRequestClient<AddAccountCommand>();
-                config.AddRequestClient<AddAccountInAccountGroupCommand>();
-                config.AddRequestClient<DeleteAccountInAccountGroupCommand>();
-                config.AddRequestClient<DeleteAccountCommand>();
-                config.AddRequestClient<UpdateAccountCommand>();
-                config.AddRequestClient<AddAccountGroupCommand>();
-                config.AddRequestClient<DeleteAccountGroupCommand>();
-                config.AddRequestClient<UpdateAccountGroupCommand>();
-                config.AddRequestClient<AddClassificationCommand>();
-                config.AddRequestClient<UpdateClassificationCommand>();
 
             });
 
@@ -94,22 +97,35 @@ namespace Ubik.Accounting.Api
             //Api versioning
             builder.Services.AddApiVersionAndExplorer();
 
-            //Cors
+            //TODO: Cors
             builder.Services.AddCustomCors();
 
             //Tracing and metrics
+            builder.Logging.AddOpenTelemetry(logging =>
+            {
+                logging.IncludeFormattedMessage = true;
+                logging.IncludeScopes = true;
+            });
+
             builder.Services.AddTracingAndMetrics();
 
             //Swagger config
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, 
+            var xmlPath = Path.Combine(AppContext.BaseDirectory,
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
-            builder.Services.AddSwaggerGenWithAuth(authOptions,xmlPath);
+            builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
 
             //Services injection
             //TODO: see if we need to integrate the user service more
-            builder.Services.AddScoped<IServiceManager, ServiceManager>();
-            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
+            builder.Services.AddScoped<IAccountGroupQueryService, AccountGroupQueryService>();
+            builder.Services.AddScoped<IAccountGroupCommandService, AccountGroupCommandService>();
+            builder.Services.AddScoped<IAccountQueryService, AccountQueryService>();
+            builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
+            builder.Services.AddScoped<IClassificationQueryService, ClassificationQueryService>();
+            builder.Services.AddScoped<IClassificationCommandService, ClassificationCommandService>();
+            builder.Services.AddScoped<ICurrencyQueryService, CurrencyQueryService>();
+            builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
             //Strandard API things
@@ -117,10 +133,16 @@ namespace Ubik.Accounting.Api
             {
                 o.Filters.Add(new ProducesAttribute("application/json"));
             }).AddJsonOptions(options =>
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())); 
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddEndpointsApiExplorer();
+
+            //Route config
+            builder.Services.Configure<RouteOptions>(options =>
+            {
+                options.LowercaseUrls = true;
+            });
 
             //Build the app
             var app = builder.Build();
@@ -139,17 +161,28 @@ namespace Ubik.Accounting.Api
                 using var scope = app.Services.CreateScope();
                 var services = scope.ServiceProvider;
 
-                var context = services.GetRequiredService<AccountingContext>();
-                //context.Database.EnsureDeleted();
+                var context = services.GetRequiredService<AccountingDbContext>();
+                context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
 
-                var initDb = new DbInitializer();
-                await initDb.InitializeAsync(context);
+                await DbInitializer.InitializeAsync(context);
             }
 
+            app.UseWhen(
+                httpContext => httpContext.Request.Path.StartsWithSegments("/admin"),
+                subApp => subApp.UseMiddleware<MegaAdminUserInHeaderMiddleware>()
+            );
+
+            app.UseWhen(
+                httpContext => !httpContext.Request.Path.StartsWithSegments("/admin")
+                    && !httpContext.Request.Path.StartsWithSegments("/swagger"),
+
+                subApp => subApp.UseMiddleware<UserInHeaderMiddleware>()
+            );
+
             //app.UseHttpsRedirection();
-            app.UseAuthentication();
-            app.UseAuthorization();
+            //app.UseAuthentication();
+            //app.UseAuthorization();
 
             app.MapControllers();
             app.Run();

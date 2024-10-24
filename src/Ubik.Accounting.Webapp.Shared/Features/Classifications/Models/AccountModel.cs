@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Accounts.Enums;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.Accounting.Contracts.Classifications.Results;
@@ -44,7 +43,7 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
     }
     public static class AccountModelMappers
     {
-        public static IEnumerable<AccountModel> ToAccountModels(this IEnumerable<GetAllAccountsResult> current)
+        public static IEnumerable<AccountModel> ToAccountModels(this IEnumerable<AccountStandardResult> current)
         {
             return current.Select(x => new AccountModel()
             {
@@ -55,36 +54,6 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
                 Category = x.Category,
                 Domain = x.Domain,
                 CurrencyId = x.CurrencyId,
-                Version = x.Version
-            });
-        }
-
-        public static IEnumerable<AccountModel> ToAccountModels(this IEnumerable<GetClassificationAccountsResult> current)
-        {
-            return current.Select(x => new AccountModel()
-            {
-                Id = x.Id,
-                Label = x.Label,
-                Description = x.Description,
-                Category = x.Category,
-                Domain = x.Domain,
-                CurrencyId = x.CurrencyId,
-                Code = x.Code,
-                Version = x.Version
-            });
-        }
-
-        public static IEnumerable<AccountModel> ToAccountModels(this IEnumerable<GetClassificationAccountsMissingResult> current)
-        {
-            return current.Select(x => new AccountModel()
-            {
-                Id = x.Id,
-                Label = x.Label,
-                Description = x.Description,
-                Category = x.Category,
-                Domain = x.Domain,
-                CurrencyId = x.CurrencyId,
-                Code = x.Code,
                 Version = x.Version
             });
         }

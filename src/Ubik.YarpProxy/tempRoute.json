@@ -1,0 +1,33 @@
+"route_security_admin_authorization_get": {
+  "ClusterId": "ubik_users_admin",
+  "AuthorizationPolicy": "IsMegaAdmin",
+  "Match": {
+    "Path": "/usrmgt/admin/api/{apiversion}/authorizations/{Guid}",
+    "Methods": [ "GET" ]
+  },
+  "Transforms": [ { "PathPattern": "/admin/api/{apiversion}/authorizations/{Guid}" } ]
+}, "route_security_admin_authorization_add": {
+  "ClusterId": "ubik_users_admin",
+  "AuthorizationPolicy": "IsMegaAdmin",
+  "Match": {
+    "Path": "/usrmgt/admin/api/{apiversion}/authorizations",
+    "Methods": [ "POST" ]
+  },
+  "Transforms": [ { "PathPattern": "/admin/api/{apiversion}/authorizations" } ]
+}
+
+      "route_security_admin_users_get_byemail": {
+        "ClusterId": "ubik_users_admin",
+        "AuthorizationPolicy": "IsMegaAdmin",
+        "Match": {
+          "Path": "/usrmgt/admin/api/{apiversion}/users",
+          "Methods": [ "GET" ],
+          "QueryParameters": [
+            {
+              "Name": "email",
+              "Mode": "Exists"
+            }
+          ]
+        },
+        "Transforms": [ { "PathPattern": "/admin/api/{apiversion}/users" } ]
+      },

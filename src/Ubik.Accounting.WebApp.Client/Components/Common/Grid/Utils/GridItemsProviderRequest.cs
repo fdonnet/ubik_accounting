@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns;
+﻿using Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns;
 namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils
 {
     public readonly struct GridItemsProviderRequest<TGridItem>

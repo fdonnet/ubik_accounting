@@ -3,8 +3,6 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
 namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Utils
 {
     internal static class AsyncQueryExecutorSupplier
