@@ -88,7 +88,7 @@ Manages all the authorization stuff by calling the security api and forward the 
 
 -- Ubik.Security.Api --
 
-Used by the proxy to manage authorizations and admin and user endpoints to manages the authorizations/users/tenants config.
+Used by the proxy to manage authorizations and exposes admin and user endpoints to manage the authorizations/users/tenants config.
 
 ## Accounting Api
 
