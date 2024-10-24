@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounting-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accounting-api
+  template:
+    metadata:
+      labels:
+        app: accounting-api
+    spec:
+      containers:
+      - name: accounting-api
+        image: accounting-api
+        imagePullPolicy: Never
+        env:
+        - name: ConnectionStrings__AccountingContext
+          value: Host=postgres;Port=5432;Database=ubik_accounting;Username=postgres;Password=test01
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        ports:
+        - containerPort: 80
