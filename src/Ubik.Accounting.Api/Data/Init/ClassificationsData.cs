@@ -53,6 +53,19 @@ namespace Ubik.Accounting.Api.Data.Init
                     ModifiedAt = baseValuesGeneral.GenerationTime,
                     Version = baseValuesForAccountGroupClassifications.ClassificationId3,
                     TenantId = baseValuesForTenants.TenantId
+                    },
+                    new Classification
+                    {
+                    Id = baseValuesForAccountGroupClassifications.ClassificationIdForDel,
+                    CreatedBy = baseValuesForUsers.UserId1,
+                    CreatedAt = baseValuesGeneral.GenerationTime,
+                    Code = "SWISSPLAN-TESTZZZZ",
+                    Description = null,
+                    Label = "Test data",
+                    ModifiedBy = baseValuesForUsers.UserId1,
+                    ModifiedAt = baseValuesGeneral.GenerationTime,
+                    Version = baseValuesForAccountGroupClassifications.ClassificationId3,
+                    TenantId = baseValuesForTenants.TenantId
                     }
                 };
 

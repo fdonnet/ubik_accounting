@@ -21,7 +21,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
         private readonly static Guid _id = new("cc100000-5dd4-0015-d910-08dcd9665e79");
-        private readonly static Guid _idToDel = new("4c470000-5dd4-0015-f70f-08dcdb1e6d00");
+        private readonly static Guid _idToDel = new("1524f190-20dd-4888-88f8-428e59bbc22c");
 
         public ClassificationsController_Test(IntegrationTestProxyFactory factory) : base(factory)
         {
