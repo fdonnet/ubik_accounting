@@ -16,8 +16,7 @@ namespace Ubik.Accounting.WebApp.Security
 {
     public class UserService(TokenCacheService cache
         , IOptions<AuthServerOptions> authOptions
-        , IHttpClientFactory factory
-        , NavigationManager navigationManager)
+        , IHttpClientFactory factory)
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
         private readonly HttpClient _httpClient = factory.CreateClient("UserServiceClient");

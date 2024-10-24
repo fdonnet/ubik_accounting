@@ -94,7 +94,6 @@ namespace Ubik.Accounting.Api.Features.AccountGroups.Controller.v1
         /// </summary>
         /// <remarks>Return All the account groups removed</remarks>
         /// <param name="id"></param>
-        /// <param name="client"></param>
         [HttpDelete("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]

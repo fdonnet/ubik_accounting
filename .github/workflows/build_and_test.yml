@@ -5,9 +5,9 @@ name: build_and_test
 
 on:
   push:
-    branches: [ "tenants_and_users" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "tenants_and_users" ]
+    branches: [ "main" ]
 
 jobs:
   build:

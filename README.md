@@ -1,23 +1,21 @@
+NEW BIG PR implemented:
+
+- security api and tenant management
+- remove authorization via roles from keycloack
+- implement Yarp as a proxy and authorization manager (call the security api and forward request to backend apis, authorization via policy requierments for each route)
+- remove masstransit for request/response, keep it only for events (pub/sub)
+- review and simplify the test parts (complete review) => only integration tests for the moment. No real backend functions to unit test.
+- Blazor app now calls the Yarp proxy
+
 # Ubik - Accounting
 
 A .net8 project to manage double entry accounting. (it's the very beginning of a business use case)
 
 ## The Goal
 
-Design a system that can be used to manage small company business (accounting = first step).
-
-It can be used as a microservice and supports multi-tenants.
+Microservices arch and supports multi-tenants.
 
 But for now, it's an experimental project that references a lot of things about .net 8 - Backend and Frontend sides of things -.
-
-Not perfect at all, but the very first goal is to have a base architecture that I can come back on when needed (for others projects etc.)
-
-## How you can help
-
-- Look at the open issues and make a PR.
-- Correct bad technical decisions by opening an issue or propose a PR.
-- Share your "business" accounting skills and point out where I m conceptually wrong. (no expert here)
-- A lot of things can be upgraded in every layers, so don't hesitate, I made this repo public for that => to receive feedback.
 
 ## Not ready for production
 
@@ -30,30 +28,37 @@ At this stage, **DO NOT USE THIS SYSTEM ON A PRODUCTION** environnement.
 
 At the root of the repository. "Mount" the dependencies with Docker by running this command in your terminal:
 
-`docker compose up`
+`docker compose -f .\docker-compose.yml -f .\docker-integration-tests.yml up -d`
 
-> It will "mount" 4 containers:
+> It will "mount" all backend containers:
 >
-> - Redis: cache
+> - Redis: cache (one for webapp, one for Yarp proxy)
 > - Rabbitmq: message bus
 > - Keycloak: auth external provider with a example realm file loaded at the start
-> - Postgres: database
+> - Postgres: database (one with serveral DBs)
+> - Pgadmin: to admin your dbs if needed
+> - Apis: backend apis (security/accounting) for integration testing
 
 ### Ready to play
 
-#### For the api, in another terminal windows, at the root again
+#### Run backend Apis
 
 `dotnet run --launch-profile https --project ./src/Ubik.Accounting.Api/Ubik.Accounting.Api.csproj`
 
-You can now access Swagger here <https://localhost:7289/swagger> (click on authorize before trying an endpoint)
+`dotnet run --launch-profile https --project ./src/Ubik.Security.Api/Ubik.Security.Api.csproj`
 
-#### For the Blazor app, in another terminal windows, at the root again
+#### Run Yarp proxy
+
+`dotnet run --launch-profile https --project ./src/Ubik.YarpProxy/Ubik.YarpProxy.csproj`
+
+#### Run Blazor app 
 
 `dotnet run --launch-profile https --project ./src/Ubik.Accounting.WebApp/Ubik.Accounting.WebApp.csproj`
 
 And now, you can access the very first version of a the Blazor 8 webapp here <https://localhost:7249>
 
 *Don't change the ports of the api and the blazor apps. It's hard coded in the Blazor prj (need to be changed) because no service discovery for the moment.*
+*In Debug, create a multiple project startup that runs all this stuff*
 
 ### All the things are up
 
@@ -63,17 +68,29 @@ Login credentials:
 
 | User/Pass | Role |
 |----------- | -------- |
-| testrw/test | full access |
-| testro/test | read only access |
-| testnorole/test| access the app but has no role in it |
+| testrw@test.com/test | full access |
+| testro@test.com/test | read only access |
+| testnorole@test.com/test| access the app but has no role in it |
+| testothertenant@test.com/test| access the app but with rights on another tenant |
+| admin@test.com/test| megaadmin right to call admin endpoints |
 
 Try to log with different access rights and play with the only available "Accounts" and "Classifications" pages.
 
-NEW: The Classification page has been added (recursive tree view and minimal state UI service between Blazor components) => far from perfect. 
-
 Now you can run your preferred code editor and start to deep dive... (see below)
 
-## Backend Api
+## Yarp Proxy
+
+-- Ubik.YarpProxy --
+
+Manages all the authorization stuff by calling the security api and forward the requests to the backend. (cool af)
+
+## Security Api
+
+-- Ubik.Security.Api --
+
+Used by the proxy to manage authorizations and admin and user endpoints to manages the authorizations/users/tenants config.
+
+## Accounting Api
 
 -- Ubik.Accounting.Api --
 
@@ -88,38 +105,13 @@ Some used external libs:
 | [LanguageExt.Core](https://github.com/louthy/language-ext) | use Either<Left, Right> pattern |
 | [Masstransit](https://github.com/MassTransit/MassTransit) | message bus abstraction + inbox/outbox pattern |
 
-Send some love on github to this projects...
-
-In program.cs, you can access the config of:
-
-- Jwt auth
-- Ef 8
-- Masstransit + outbox + filters
-- Api versioning
-- Swagger gen and UI with enabled auth
-
-### Data folder
-
-Ef 8 stuff to create and init the database and db context.
-
-### Models folder
-
-Ef 8 models
-
-### Features folder
+## Features folder in backend Apis
 
 Contains the core features (in Vertical Slices mode).
 
-- Commands and queries "pattern"
-- All commands go to message bus (request/response) and are "consumed" by Masstransit consumers
-- All queries access the service layer directly but can be called from another service via message bus (request/response)
+- Command and query services
 - When a command is executed with success, an event is published to the message bus (pub/sub)
-- Manual mapping between models and contracts
-- Controllers versioning
-- Service and very minimal service manager (need to be reviewed)
-- Functional `Either<Error, Result>` patterns in all layers with usage of `bind`, `map` and `match` to transfer errors between layer and to keep the code not too dirty. (not an expert but I like it)
-- Masstransit usage of the tupple (result,error) to not raise exceptions via errors queue when it's a predictable error => usage of error queue only when it's a real exception
-- Problemdetails as returns of controller endpoints when in error (all cases => business errors and exception via global exception handling)
+- Functional `Either<Error, Result>` patterns in all layers to transfer errors between layer and to keep the code not too dirty. (not an expert but I like it)
 
 ## Frontend Blazor
 
@@ -167,8 +159,6 @@ In program.cs, you can access the config of:
 (client-auto side)
 
 - All components are able to run in auto mode (InteractiveServer or InteractiveWasm)
-- The very first business components about booking accounts management
-- NEW: The second business components to manage accounts classification
 - Authorization components (depending on authorized state)
 - Minimal common components (Alerts, Buttons, Form Inputs, Grid *(Microsoft inspired/copied)*, Modal, Spinners)
 - Tailwind Flowbite design for components
@@ -184,12 +174,9 @@ In program.cs, you can access the config of:
 
 ## Tests
 
--- Ubik.Accounting.Api.Tests.Integration -- / -- Ubik.Accounting.Api.Tests.UnitTest --
+-- Ubik.Accounting.Api.Tests.Integration -- 
 
-- Unit test all the bus messages with masstransit (be sure about request/ response and publish)
-- In integration tests, usage of testcontainers to test the backend api layers (controllers, service, and queries because they are not called from controllers)
-- Not a lot of unit tests now, because the business logic is very very limited
-- Not very clean part, can do better ....
+- In integration tests => test all proxy endpoints
 
 ## Others
 
