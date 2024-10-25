@@ -1,30 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accounting-api
+  name: security-api
   labels:
-    app: accounting-api
+    app: security-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: accounting-api
+      app: security-api
   template:
     metadata:
       labels:
-        app: accounting-api
+        app: security-api
     spec:
       containers:
-      - name: accounting-api
-        image: ubik-accounting-api-test:latest
+      - name: security-api
+        image: ubik-security-api-test:latest
         imagePullPolicy: Never
         env:
-        - name: ConnectionStrings__AccountingContext
-          value: 'Host=ubik-postgres-postgresql.default.svc.cluster.local;Port=5432;Database=ubik_accounting;Username=postgres;Password=test01'
         - name: ASPNETCORE_ENVIRONMENT
-          value: Development
-        - name: MessageBroker__Host
-          value: 'amqp://ubik-rabbitmq.default.svc.cluster.local:5672'
+          value: "Development"
         - name: AuthServer__MetadataAddress
           value: "http://keycloak-local:8080/realms/ubik/.well-known/openid-configuration"
         - name: AuthServer__Authority
@@ -33,7 +29,11 @@ spec:
           value: "http://keycloak-local:8080/realms/ubik/protocol/openid-connect/auth"
         - name: AuthServer__TokenUrl
           value: "http://keycloak-local:8080/realms/ubik/.protocol/openid-connect/token"
+        - name: ConnectionStrings__SecurityDbContext
+          value: "Host=ubik-postgres-postgresql.default.svc.cluster.local;Port=5432;Database=ubik_security;Username=postgres;Password=test01"
         - name: AuthManagerKeyCloakClient__RootUrl
-          value: "http://keycloak:8080/"
+          value: "http://keycloak-local:8080/"
+        - name: MessageBroker__Host
+          value: "amqp://ubik-rabbitmq.default.svc.cluster.local:5672"
         ports:
         - containerPort: 80
