@@ -13,6 +13,13 @@
 		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Compile Remove="Features\Classifications\Errors\**" />
+	  <Content Remove="Features\Classifications\Errors\**" />
+	  <EmbeddedResource Remove="Features\Classifications\Errors\**" />
+	  <None Remove="Features\Classifications\Errors\**" />
+	</ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
@@ -51,10 +58,6 @@
     <None Update="Data\Init\AccountsData.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\Classifications\Errors\" />
   </ItemGroup>
 
 </Project>
