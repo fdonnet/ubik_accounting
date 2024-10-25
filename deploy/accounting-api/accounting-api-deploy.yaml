@@ -1,7 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accounting-api
+  name: accounting-api-test
+  labels:
+    app: accounting-api
 spec:
   replicas: 1
   selector:
@@ -14,12 +16,14 @@ spec:
     spec:
       containers:
       - name: accounting-api
-        image: accounting-api
+        image: accounting-api:latest
         imagePullPolicy: Never
         env:
         - name: ConnectionStrings__AccountingContext
-          value: Host=postgres;Port=5432;Database=ubik_accounting;Username=postgres;Password=test01
+          value: 'Host=ubik-postgres-postgresql.default.svc.cluster.local;Port=5432;Database=ubik_accounting;Username=postgres;Password=test01'
         - name: ASPNETCORE_ENVIRONMENT
           value: Development
+        - name: MessageBroker__Host
+          value: 'amqp://ubik-rabbitmq.default.svc.cluster.local:5672'
         ports:
         - containerPort: 80

@@ -1,0 +1,1 @@
+helm install ubik-rabbitmq bitnami/rabbitmq

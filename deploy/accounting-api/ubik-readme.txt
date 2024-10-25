@@ -1,0 +1,1 @@
+build and pull account-api image in your docker and Apply deployment

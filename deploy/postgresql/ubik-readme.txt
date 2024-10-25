@@ -1,0 +1,1 @@
+helm install ubik-postgres bitnami/postgresql -f values-dev.yaml
