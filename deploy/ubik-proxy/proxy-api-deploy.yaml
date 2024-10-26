@@ -22,13 +22,13 @@ spec:
           - name: ASPNETCORE_ENVIRONMENT
             value: Development
           - name: AuthServer__MetadataAddress
-            value: http://keycloak-local:8080/realms/ubik/.well-known/openid-configuration
+            value: http://keycloak-local/realms/ubik/.well-known/openid-configuration
           - name: AuthServer__Authority
-            value: http://keycloak-local:8080/realms/ubik
+            value: http://keycloak-local/realms/ubik
           - name: AuthServer__AuthorizationUrl
-            value: http://keycloak-local:8080/realms/ubik/protocol/openid-connect/auth
+            value: http://keycloak-local/realms/ubik/protocol/openid-connect/auth
           - name: AuthServer__TokenUrl
-            value: http://keycloak-local:8080/realms/ubik/.protocol/openid-connect/token
+            value: http://keycloak-local/realms/ubik/protocol/openid-connect/token
           - name: ApiSecurityForAdmin__HostAndPort
             value: http://security-api/
           - name: ReverseProxy__Clusters__ubik_users_admin__Destinations__destination1__Address
