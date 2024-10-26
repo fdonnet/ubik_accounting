@@ -25,7 +25,7 @@ postgresql:
   enabled: false
 
 externalDatabase:
-  host: "ubik-postgres-postgresql.default.svc.cluster.local"
+  host: "ubik-postgres-postgresql"
   user: postgres
   database: keycloak
   password: "test01"

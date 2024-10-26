@@ -30,10 +30,10 @@ spec:
         - name: AuthServer__TokenUrl
           value: "http://keycloak-local:8080/realms/ubik/.protocol/openid-connect/token"
         - name: ConnectionStrings__SecurityDbContext
-          value: "Host=ubik-postgres-postgresql.default.svc.cluster.local;Port=5432;Database=ubik_security;Username=postgres;Password=test01"
+          value: "Host=ubik-postgres-postgresql;Port=5432;Database=ubik_security;Username=postgres;Password=test01"
         - name: AuthManagerKeyCloakClient__RootUrl
           value: "http://keycloak-local:8080/"
         - name: MessageBroker__Host
-          value: "amqp://ubik-rabbitmq.default.svc.cluster.local:5672"
+          value: "amqp://ubik-rabbitmq:5672"
         ports:
         - containerPort: 80

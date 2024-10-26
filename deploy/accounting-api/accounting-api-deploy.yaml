@@ -20,11 +20,11 @@ spec:
         imagePullPolicy: Never
         env:
         - name: ConnectionStrings__AccountingContext
-          value: 'Host=ubik-postgres-postgresql.default.svc.cluster.local;Port=5432;Database=ubik_accounting;Username=postgres;Password=test01'
+          value: 'Host=ubik-postgres-postgresql;Port=5432;Database=ubik_accounting;Username=postgres;Password=test01'
         - name: ASPNETCORE_ENVIRONMENT
           value: Development
         - name: MessageBroker__Host
-          value: 'amqp://ubik-rabbitmq.default.svc.cluster.local:5672'
+          value: 'amqp://ubik-rabbitmq:5672'
         - name: AuthServer__MetadataAddress
           value: "http://keycloak-local:8080/realms/ubik/.well-known/openid-configuration"
         - name: AuthServer__Authority
@@ -34,6 +34,6 @@ spec:
         - name: AuthServer__TokenUrl
           value: "http://keycloak-local:8080/realms/ubik/.protocol/openid-connect/token"
         - name: AuthManagerKeyCloakClient__RootUrl
-          value: "http://keycloak:8080/"
+          value: "http://keycloak-local:8080/"
         ports:
         - containerPort: 80
