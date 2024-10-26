@@ -20,4 +20,4 @@ spec:
           service:
             name: keycloak-local
             port:
-              number: 8080
+              number: 80
