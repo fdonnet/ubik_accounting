@@ -34,6 +34,18 @@ spec:
         - name: AuthServer__TokenUrl
           value: "http://keycloak-local:8080/realms/ubik/.protocol/openid-connect/token"
         - name: AuthManagerKeyCloakClient__RootUrl
-          value: "http://keycloak-local:8080/"
+          value: "http://keycloak-local-srv:8080/"
         ports:
-        - containerPort: 80
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: accounting-api
+spec:
+  selector:
+    app: accounting-api
+    ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
