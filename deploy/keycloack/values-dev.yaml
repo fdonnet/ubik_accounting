@@ -4,8 +4,8 @@ auth:
 
 service:
   ports:
-    http: 8080
-    https: 4433
+    http: 80
+    https: 443
 
 extraEnvVars:
   - name: KEYCLOAK_EXTRA_ARGS # override values from the conf file

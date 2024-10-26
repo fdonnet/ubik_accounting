@@ -1,1 +1,0 @@
-helm install ubik-rabbitmq bitnami/rabbitmq -f values-dev.yaml
