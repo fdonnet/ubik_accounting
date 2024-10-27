@@ -26,7 +26,7 @@ spec:
         - name: MessageBroker__Host
           value: 'amqp://ubik-rabbitmq:5672'
         - name: AuthServer__MetadataAddress
-          value: "http://keycloak-localrealms/ubik/.well-known/openid-configuration"
+          value: "http://keycloak-local/realms/ubik/.well-known/openid-configuration"
         - name: AuthServer__Authority
           value: "http://keycloak-local/realms/ubik"
         - name: AuthServer__AuthorizationUrl

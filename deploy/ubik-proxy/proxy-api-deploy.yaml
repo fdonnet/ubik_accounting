@@ -35,6 +35,8 @@ spec:
             value: http://security-api/
           - name: ReverseProxy__Clusters__ubik_accounting__Destinations__destination1__Address
             value: http://accounting-api/
+          - name: RedisCache__ConnectionString
+            value: ubik-cache-redis-master:6379
         ports:
         - containerPort: 8080
 ---

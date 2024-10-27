@@ -21,7 +21,7 @@ namespace Ubik.YarpProxy.Services
             if (email == null) return null;
 
             //Try cache
-            var user = await cache.GetAsync(email);
+            var user = await cache.GetAsync($"proxy_{email}");
 
             if (user == null)
             {
@@ -64,7 +64,7 @@ namespace Ubik.YarpProxy.Services
         {
             var toCache = JsonSerializer.SerializeToUtf8Bytes(userInfo, options: _serializerOptions);
 
-            await cache.SetAsync(userInfo.Email, toCache, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(60) });
+            await cache.SetAsync($"proxy_{userInfo.Email}", toCache, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(60) });
         }
     }
 }

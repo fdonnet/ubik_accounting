@@ -57,4 +57,65 @@ Create the db
 
 `kubectl apply -f ./keycloack/ingress-for-keycloack.yaml`
 
+## Redis
 
+`helm install ubik-cache bitnami/redis -f ./redis/values-dev.yaml`
+
+## Accounting Api
+
+Build image
+
+`docker build -t ubik-accounting-api-test:latest -f ../src/Ubik.Accounting.Api/Dockerfile ../`
+
+Load image in minikube
+
+`minikube image load ubik-accounting-api-test:latest`
+
+Apply deployement
+
+`kubectl apply -f ./accounting-api/accounting-api-deploy.yaml`
+
+## Security api
+
+Build image
+
+`docker build -t ubik-security-api-test:latest -f ../src/Ubik.Security.Api/Dockerfile ../`
+
+Load image in minikube
+
+`minikube image load ubik-security-api-test:latest`
+
+Apply deployement
+
+`kubectl apply -f ./security-api/security-api-deploy.yaml`
+
+## Ubik proxy (Yarp)
+
+Build image
+
+`docker build -t ubik-proxy-test:latest -f ../src/Ubik.YarpProxy/Dockerfile ../`
+
+Load image in minikube
+
+`minikube image load ubik-proxy-test:latest`
+
+Apply deployement
+
+`kubectl apply -f ./ubik-proxy/proxy-api-deploy.yaml`
+
+## Add param in your local hosts file
+
+- 127.0.0.1  keycloak-local
+- 127.0.0.1  ubik-proxy
+
+## Start minikube tunnel
+
+It will open your nginx/ingress services to your local host.
+
+`minikube tunnel`
+
+## Backend Endpoints
+
+After all this configuration, now, you can access Swagger here:
+
+http://ubik-proxy/swagger
