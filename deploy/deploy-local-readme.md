@@ -16,7 +16,6 @@
 
 `helm install ubik-rabbitmq bitnami/rabbitmq -f ./rabbitmq/values-dev.yaml`
 
-
 ## Keycloak
 
 ### Install ingress-nginx because normal ingress will not work if you use wsl.
@@ -114,8 +113,8 @@ It will open your nginx/ingress services to your local host.
 
 `minikube tunnel`
 
-## Backend Endpoints
+## The End
 
-After all this configuration, now, you can access Swagger here:
+After all this configuration, now, you can access backend Swagger here:
 
 http://ubik-proxy/swagger

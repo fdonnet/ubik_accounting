@@ -143,10 +143,11 @@ builder.Services.AddScoped<UserService>();
 builder.Services.TryAddEnumerable(
     ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
+
 //Http client (the base one for the webassembly component and other typed for external apis
-builder.Services
-    .AddTransient<CookieHandler>()
-    .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
+//builder.Services
+//    .AddTransient<CookieHandler>()
+//    .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
 
 builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
 

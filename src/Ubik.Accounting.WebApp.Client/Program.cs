@@ -4,11 +4,16 @@ using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Ubik.Accounting.Webapp.Shared.Render;
 using Ubik.Accounting.Webapp.Shared.Security;
+using Ubik.Accounting.WebApp.Client.Config;
 using Ubik.Accounting.WebApp.Client.Facades;
 using Ubik.Accounting.WebApp.Client.Render;
 using Ubik.Accounting.WebApp.Client.Security;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+var config = new Localconfig();
+builder.Configuration.GetSection(Localconfig.Position).Bind(config);
+
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
@@ -16,7 +21,7 @@ builder.Services.AddSingleton<IRenderContext, ClientRenderContext>();
 
 builder.Services
     .AddTransient<CookieHandler>()
-    .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
+    .AddHttpClient("WebApp", client => client.BaseAddress = new Uri(config.ReverseProxyUrl)).AddHttpMessageHandler<CookieHandler>();
 
 builder.Services.AddScoped<IAccountingApiClient, HttpApiAccountingFacade>();
 builder.Services.AddSingleton<ClassificationStateService>();
