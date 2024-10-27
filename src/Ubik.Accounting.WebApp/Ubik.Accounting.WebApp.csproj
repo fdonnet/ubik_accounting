@@ -49,6 +49,12 @@
     <None Include="wwwroot\js\theme-switcher.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\appsettings-minikube.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <!--<ItemGroup>
     <Watch Include="./Styles/app.css" Exclude="./wwwroot/**/*;obj\**\*;bin\**\*" />
   </ItemGroup>-->

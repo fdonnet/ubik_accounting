@@ -102,10 +102,25 @@ Apply deployement
 
 `kubectl apply -f ./ubik-proxy/proxy-api-deploy.yaml`
 
+## Ubik webapp
+
+Build image
+
+`docker build -t ubik-webapp-test:latest -f ../src/Ubik.Accounting.WebApp/Dockerfile ../`
+
+Load image in minikube
+
+`minikube image load ubik-webapp-test:latest`
+
+Apply deployement
+
+`kubectl apply -f ./ubik-webapp/webapp-deploy.yaml`
+
 ## Add param in your local hosts file
 
 - 127.0.0.1  keycloak-local
 - 127.0.0.1  ubik-proxy
+- 127.0.0.1  ubik-webapp
 
 ## Start minikube tunnel
 
@@ -118,3 +133,7 @@ It will open your nginx/ingress services to your local host.
 After all this configuration, now, you can access backend Swagger here:
 
 http://ubik-proxy/swagger
+
+and the Blazor webapp here:
+
+http://ubik-webapp

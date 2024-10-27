@@ -815,6 +815,7 @@
         "https://localhost:7289/*",
         "http://localhost:5002/*",
         "http://ubik-proxy/*",
+        "http://ubik-webapp/*",
         "https://localhost:7249/*"
       ],
       "webOrigins": [
@@ -822,6 +823,7 @@
         "https://localhost:7289",
         "http://localhost:5002",
         "http://ubik-proxy",
+        "http://ubik-webapp",
         "https://localhost:7249"
       ],
       "notBefore": 0,
@@ -839,7 +841,7 @@
         "oidc.ciba.grant.enabled": "false",
         "client.secret.creation.time": "1728482137",
         "backchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "https://localhost:7149/*##https://localhost:7249/*##http://localhost:5002/*##http://ubik-proxy/*",
+        "post.logout.redirect.uris": "https://localhost:7149/*##https://localhost:7249/*##http://localhost:5002/*##http://ubik-proxy/*##http://ubik-webapp/*",
         "oauth2.device.authorization.grant.enabled": "false",
         "display.on.consent.screen": "false",
         "backchannel.logout.revoke.offline.tokens": "false"
