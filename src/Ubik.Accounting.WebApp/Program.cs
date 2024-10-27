@@ -177,7 +177,7 @@ else
     app.UseWebAssemblyDebugging();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.UseAuthentication();
