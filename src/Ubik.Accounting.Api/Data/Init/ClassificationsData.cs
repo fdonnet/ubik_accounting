@@ -64,7 +64,7 @@ namespace Ubik.Accounting.Api.Data.Init
                     Label = "Test data",
                     ModifiedBy = baseValuesForUsers.UserId1,
                     ModifiedAt = baseValuesGeneral.GenerationTime,
-                    Version = baseValuesForAccountGroupClassifications.ClassificationId3,
+                    Version = baseValuesForAccountGroupClassifications.ClassificationIdForDel,
                     TenantId = baseValuesForTenants.TenantId
                     }
                 };

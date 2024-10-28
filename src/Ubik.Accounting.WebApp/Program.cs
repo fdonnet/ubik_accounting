@@ -8,8 +8,6 @@ using Ubik.Accounting.WebApp.ApiClients;
 using Ubik.Accounting.WebApp.Components;
 using Ubik.Accounting.WebApp.Security;
 using static Ubik.Accounting.WebApp.Security.UserService;
-using IdentityModel.Client;
-using Ubik.Accounting.Webapp.Shared.Security;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.Accounting.WebApp.Render;
 using Ubik.Accounting.Webapp.Shared.Render;
@@ -19,8 +17,6 @@ using Ubik.Accounting.WebApp.Client.Components.Accounts;
 using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Microsoft.AspNetCore.Authentication;
 using Ubik.Accounting.WebApp.Config;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -143,11 +139,6 @@ builder.Services.AddScoped<UserService>();
 builder.Services.TryAddEnumerable(
     ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
-//Http client (the base one for the webassembly component and other typed for external apis
-builder.Services
-    .AddTransient<CookieHandler>()
-    .AddHttpClient("WebApp", client => client.BaseAddress = new Uri("https://localhost:7249/")).AddHttpMessageHandler<CookieHandler>();
-
 builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
 
 builder.Services.Configure<ApiOptions>(
@@ -176,7 +167,7 @@ else
     app.UseWebAssemblyDebugging();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.UseAuthentication();

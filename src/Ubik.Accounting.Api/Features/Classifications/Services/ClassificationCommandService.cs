@@ -19,7 +19,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
         public async Task<Either<IServiceAndFeatureError, Classification>> AddAsync(AddClassificationCommand command)
         {
             return await ValidateIfNotAlreadyExistsAsync(command.ToClassification())
-                .BindAsync(AddSaveInDbContextAsync)
+                .BindAsync(AddInDbContextAsync)
                 .BindAsync(AddSaveAndPublishAsync);
         }
 
@@ -156,7 +156,7 @@ namespace Ubik.Accounting.Api.Features.Classifications.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Classification>> AddSaveInDbContextAsync(Classification current)
+        private async Task<Either<IServiceAndFeatureError, Classification>> AddInDbContextAsync(Classification current)
         {
             current.Id = NewId.NextGuid();
             await ctx.Classifications.AddAsync(current);

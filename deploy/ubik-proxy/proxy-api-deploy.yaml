@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubik-proxy
+  labels:
+    app: ubik-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubik-proxy
+  template:
+    metadata:
+      labels:
+        app: ubik-proxy
+    spec:
+      containers:
+      - name: ubik-proxy
+        image: ubik-proxy-test:latest 
+        imagePullPolicy: Never
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: AuthServer__MetadataAddress
+            value: http://keycloak-local/realms/ubik/.well-known/openid-configuration
+          - name: AuthServer__Authority
+            value: http://keycloak-local/realms/ubik
+          - name: AuthServer__AuthorizationUrl
+            value: http://keycloak-local/realms/ubik/protocol/openid-connect/auth
+          - name: AuthServer__TokenUrl
+            value: http://keycloak-local/realms/ubik/protocol/openid-connect/token
+          - name: ApiSecurityForAdmin__HostAndPort
+            value: http://security-api/
+          - name: ReverseProxy__Clusters__ubik_users_admin__Destinations__destination1__Address
+            value: http://security-api/
+          - name: ReverseProxy__Clusters__ubik_accounting__Destinations__destination1__Address
+            value: http://accounting-api/
+          - name: RedisCache__ConnectionString
+            value: ubik-cache-redis-master:6379
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ubik-proxy
+spec:
+  selector:
+    app: ubik-proxy
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ubik-proxy
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: ubik-proxy
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ubik-proxy
+            port:
+              number: 80

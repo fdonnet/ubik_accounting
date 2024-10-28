@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounting-api
+  labels:
+    app: accounting-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accounting-api
+  template:
+    metadata:
+      labels:
+        app: accounting-api
+    spec:
+      containers:
+      - name: accounting-api
+        image: ubik-accounting-api-test:latest
+        imagePullPolicy: Never
+        env:
+        - name: ConnectionStrings__AccountingContext
+          value: 'Host=ubik-postgres-postgresql;Port=5432;Database=ubik_accounting;Username=postgres;Password=test01'
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: MessageBroker__Host
+          value: 'amqp://ubik-rabbitmq:5672'
+        - name: AuthServer__MetadataAddress
+          value: "http://keycloak-local/realms/ubik/.well-known/openid-configuration"
+        - name: AuthServer__Authority
+          value: "http://keycloak-local/realms/ubik"
+        - name: AuthServer__AuthorizationUrl
+          value: "http://keycloak-local/realms/ubik/protocol/openid-connect/auth"
+        - name: AuthServer__TokenUrl
+          value: "http://keycloak-local/realms/ubik/protocol/openid-connect/token"
+        - name: AuthManagerKeyCloakClient__RootUrl
+          value: "http://keycloak-local/"
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: accounting-api
+spec:
+  selector:
+    app: accounting-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080

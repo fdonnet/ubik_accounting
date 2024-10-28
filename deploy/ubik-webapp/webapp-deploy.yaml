@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubik-webapp
+  labels:
+    app: ubik-webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubik-webapp
+  template:
+    metadata:
+      labels:
+        app: ubik-webapp
+    spec:
+      containers:
+      - name: ubik-webapp
+        image: ubik-webapp-test:latest
+        imagePullPolicy: Never
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: AuthServer__MetadataAddress
+          value: "http://keycloak-local/realms/ubik/.well-known/openid-configuration"
+        - name: AuthServer__Authority
+          value: "http://keycloak-local/realms/ubik"
+        - name: AuthServer__AuthorizationUrl
+          value: "http://keycloak-local/realms/ubik/protocol/openid-connect/auth"
+        - name: AuthServer__TokenUrl
+          value: "http://keycloak-local/realms/ubik/protocol/openid-connect/token"
+        - name: Apis__AccountingUrl
+          value: "http://ubik-proxy/accounting/api/v1/"
+        - name: Apis__SecurityUrl
+          value: "http://ubik-proxy/usrmgt/api/v1/"
+        - name: RedisCache__ConnectionString
+          value: ubik-cache-redis-master:6379
+        
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ubik-webapp
+spec:
+  selector:
+    app: ubik-webapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ubik-app-tls
+type: kubernetes.io/tls
+data:
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURTekNDQWpNQ0ZHVlBWNEh1YW5aQTRoTktVVlEvclVOMVI0R1FNQTBHQ1NxR1NJYjNEUUVCQ3dVQU1HSXgKQ3pBSkJnTlZCQVlUQWtOSU1Rc3dDUVlEVlFRSURBSldVekVOTUFzR0ExVUVCd3dFU0dWeVpURWhNQjhHQTFVRQpDZ3dZU1c1MFpYSnVaWFFnVjJsa1oybDBjeUJRZEhrZ1RIUmtNUlF3RWdZRFZRUUREQXQxWW1sckxYZGxZbUZ3CmNEQWVGdzB5TkRFd01qZ3hNRFF3TVRaYUZ3MHlOVEV3TWpneE1EUXdNVFphTUdJeEN6QUpCZ05WQkFZVEFrTkkKTVFzd0NRWURWUVFJREFKV1V6RU5NQXNHQTFVRUJ3d0VTR1Z5WlRFaE1COEdBMVVFQ2d3WVNXNTBaWEp1WlhRZwpWMmxrWjJsMGN5QlFkSGtnVEhSa01SUXdFZ1lEVlFRRERBdDFZbWxyTFhkbFltRndjRENDQVNJd0RRWUpLb1pJCmh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTWxOcHEzYzVsb2FhVGdPU01Ka0k0clZGRE1ZQ1U5Y2pQcjkKTUpwOU9FMXZrQ2xOTHhGbi9LckUvd0ZjM2sxK0Fyd25wYjhJRklPRkIrTnFaRFExVHdnVXQwOGViZzZ1M1FOWgoycUxMcGNvSTZGYXdKbFdMcnhTL2RuczREcHpnTTdmeUhGY1AxZlVBRlN1LzczdWVHNUM1R1R6bjQwbURUQ3d3CnZWaUJOT0UwbDZ0K0xWSWRhYmF0bldhUExZSE5naHdvOU5tRVZ2Wk5wMTV5OG9DUGI5N0psNVJwNXV6cmR1UTIKWForRTlZS2FlbnFtaUI3WDUzaUROcXRJM01zSFFqMHpJRUEyaXI1NituK3hkeXN0RzF3dGFNZENSZEE2bFdBMgo1SGJPcXViTllvc1ZmUlozQWRjYjdXc1FmU0pKNnJ0YTJDVXM3Q0c4ZkVCWGROcVZhRDBDQXdFQUFUQU5CZ2txCmhraUc5dzBCQVFzRkFBT0NBUUVBU2VZbzdRbm9ndXVLWVI0T2RxNTdySDFQVVpPS2EvaUJ2SkRKS0RtNFRKKysKRmhHZlJZTmlXalNqSWc2QUxValhMS2RmMlAyRTBTZlg2R1pqTDVyb1FJNlp1TmRpc1ZmNTNMamF3eVIzR2dsRQpWZWtmYnZXNVlLdG5WTjVhMUlWVVZEUnZBcW1CSEZhY3hhOU5CaTVXY3hRZHc3cU9UclJQK21vZUV3RUJTcUxoCkZXNnYvVC93aTFvWVB2bDBHTCtiLzh6anF3Vk5Vd2Uxb2xKTWN6UEx6OHJQWVR4dG5RVVVVbjZiSk9FSG5HK3YKay8vTC9QWHlVRHA3S2t2U2hCVjJxcERUZFc2MWlFemFZVjUvZW1tNUpaQTVsRk1MUzFCQXlXSlVRWGFDOEJtbAppS3JHbTNsOWN5d3RXTXl4L2N2TzFOTFBRR3MrbmtnajR2dHdWRG15Z1E9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRREpUYWF0M09aYUdtazQKRGtqQ1pDT0sxUlF6R0FsUFhJejYvVENhZlRoTmI1QXBUUzhSWi95cXhQOEJYTjVOZmdLOEo2Vy9DQlNEaFFmagphbVEwTlU4SUZMZFBIbTRPcnQwRFdkcWl5NlhLQ09oV3NDWlZpNjhVdjNaN09BNmM0RE8zOGh4WEQ5WDFBQlVyCnYrOTduaHVRdVJrODUrTkpnMHdzTUwxWWdUVGhOSmVyZmkxU0hXbTJyWjFtankyQnpZSWNLUFRaaEZiMlRhZGUKY3ZLQWoyL2V5WmVVYWViczYzYmtObDJmaFBXQ21ucDZwb2dlMStkNGd6YXJTTnpMQjBJOU15QkFOb3ErZXZwLwpzWGNyTFJ0Y0xXakhRa1hRT3BWZ051UjJ6cXJteldLTEZYMFdkd0hYRysxckVIMGlTZXE3V3RnbExPd2h2SHhBClYzVGFsV2c5QWdNQkFBRUNnZ0VBS0lvckVGWU5qT1ZIUGRzQWs2ZGprZ1RGNStGR0ZMVzBqYUphUEs2Tm5XaWoKalhIR0Voa1JSUm5kcWhwWUNaNmdNZURCTENiV0xNTm9lb2ZWVEw5VW5uRy9sZDh3dG1QSVRqRzFDblo5T2FJUQpHazhvdFM4bmtBUGIra1lvaVRiTXE1V0dXQkV3RzBKTVFTNks3ZWdDTUtQYVBZNE1rNlF0dmJPR0dsSVJBbTQvCmdYOUVPOXBJRWxYMFBTdVJ2d2tCeTlkY0xtRXJNRFVKbjgvdEN4WjdqMXZ1Z2Z6MFpSQmYxWDA2N1loQUxIbmcKRDJ1UXl0WVhBK0pUUTRuY3BrV2c5Q0gzUllIUHlBbWliZFhsckVIWnZOYzNJUXQ1VFdUZk1qNnV6dzRJUXBURgphR1oxS1FuNG5EVzBaelBUMHBzeG1JcW4wcWpyQjNMcVBsYkF1dThMQ1FLQmdRRDJ2b2FsT0xMRmZSWThCZG9QClIzOEEyQjN0VnMvQkM3MURYZ0VCZkdJcWUxTTRUbmlKV3VCMW00TnFiTHNuSUFyNnJpOVJFM0RKbFEyUHZCV3YKNzVVTzFzaEsvaXc4RWkycjArMkxDRXMxdnVxUFMvTU1Xc2FVa0c1dzE1ckxLN1MyL21sUXgvOWQxdlE5V05adwpVdkZwUXBLcXhDd3VCUTZ3NDFndzBFci9hUUtCZ1FEUTJzSU5ET1FXNFZ4bllpZ0FHUjFEN0NQUlVTRis1bDE2CllpVHpKNDQ1KzBucS9pRERYaXZuU2xzdXNTMW5QVm9zTXVmcUVRandtNXozU0Q4eFMrSGNzOGxsMGhpMm5MZncKdGNJRmVZem9COEl5cXFqQndYdnN4ZFcvTmRnSHUrUVoxdTlJcU5CUmpweUh1VEU2bnZYM3NaNVlzZVZ1KzFBbwpxazZOY3BEYnRRS0JnRENjQWt5a2FkdXNNK2dwUXZkRm40aWNDdkZKNiszZEVURW5ZTTFaSXNHNXdBQlV2VHhhCkVlUTVlZDlLZ21oSDBNSG45TnhsRnhBdmRCZC85MG5NeWpHOU1JSk5wb3RERFlwUFd2bkw3WDB1R21tV2pkQSsKUmViWXVWa3pzSVFjSFNMNzVlV0xNUXpjbnd0QzZDUUN3eHA0aWdwb1VVZlRxVHhCM1lyb1RnNFpBb0dBVnJrUApiTFhXbkQyVnpnUHZFaU5iaUpHc1NjVkRnRnNObzd6UEZQeHV6VnF2MWRrU0o2MlowMStIdnpxbzNMNllDOVJUCmdsanllbDVUYmtiY25vNmd5YkVKeHJMWHVqUVhHT2VRR2cvZjE1VXBLVHE5K2o1cVErWGVISml5REh3VGVqdEsKZnNSQ1JDdFFpZmIzSHgxVWl6YUF4dG1QcUdiSVlTcGVsZE5sblNVQ2dZRUExNDlvM2haYjZydTF5R3lMOHRQRApXZHBGaENyOUsyMHBrcFhkWmtwWDkxeTI4Q2cvcWNTVzlBZnlQaGxDdnVzTzA2RTRBZGpUbW1CTzVqVGM4UmQ4CkxvTWhScDFKbUNXMFN0N3E5UDd6QlViSkY0V3MwTGE5ZkFvcDZVNjBaYVdDN09XL3lOcHJGUFZLNVN3K0VEaVEKVkdIWXlQdnZMd0syejh6ZzRucGhxWkk9Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ubik-webapp
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - ubik-webapp
+    secretName: ubik-app-tls
+  rules:
+  - host: ubik-webapp
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ubik-webapp
+            port:
+              number: 80

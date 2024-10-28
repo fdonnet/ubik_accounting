@@ -24,6 +24,10 @@ At this stage, **DO NOT USE THIS SYSTEM ON A PRODUCTION** environnement.
 - **Don't forget to change all the "secrets" exposed here, and in the configuration files.**
 - **Never re-use the Keycloak realm configuration file.**
 
+## For the Kubernetes/Minikube guys
+
+For detailed instructions on deploying locally with Minikube, please refer to the [local deployment guide](./deploy/deploy-local-readme.md).
+
 ## Build and Run
 
 At the root of the repository. "Mount" the dependencies with Docker by running this command in your terminal:

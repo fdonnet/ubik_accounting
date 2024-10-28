@@ -9,7 +9,7 @@ services:
       - "AuthServer__MetadataAddress=http://keycloak:8080/realms/ubik/.well-known/openid-configuration"
       - "AuthServer__Authority=http://keycloak:8080/realms/ubik"
       - "AuthServer__AuthorizationUrl=http://keycloak:8080/realms/ubik/protocol/openid-connect/auth"
-      - "AuthServer__TokenUrl=http://keycloak:8080/realms/ubik/.protocol/openid-connect/token"
+      - "AuthServer__TokenUrl=http://keycloak:8080/realms/ubik/protocol/openid-connect/token"
       - "ApiSecurityForAdmin__HostAndPort=http://ubik-security-api-test:8080/"
       - "ReverseProxy__Clusters__ubik_users_admin__Destinations__destination1__Address=http://ubik-security-api-test:8080/"
       - "ReverseProxy__Clusters__ubik_accounting__Destinations__destination1__Address=http://ubik-accounting-api-test:8080/"

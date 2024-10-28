@@ -1,0 +1,31 @@
+auth:
+  adminUser: admin
+  adminPassword: "admin"
+
+service:
+  ports:
+    http: 80
+    https: 443
+
+extraEnvVars:
+  - name: KEYCLOAK_EXTRA_ARGS # override values from the conf file
+    value: --import-realm
+
+extraVolumes:
+  - name: realm-secret
+    secret:
+      secretName: realm-secret
+
+extraVolumeMounts:
+  - name: realm-secret
+    mountPath: "/opt/bitnami/keycloak/data/import"
+    readOnly: true
+
+postgresql:
+  enabled: false
+
+externalDatabase:
+  host: "ubik-postgres-postgresql"
+  user: postgres
+  database: keycloak
+  password: "test01"

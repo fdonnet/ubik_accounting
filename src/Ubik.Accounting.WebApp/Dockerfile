@@ -26,6 +26,7 @@ COPY ["src/Ubik.Security.Contracts/Ubik.Security.Contracts.csproj", "src/Ubik.Se
 RUN dotnet restore "./src/Ubik.Accounting.WebApp/Ubik.Accounting.WebApp.csproj"
 COPY . .
 WORKDIR "/src/Ubik.Accounting.WebApp"
+#RUN cp ./wwwroot/appsettings-minikube.json ./wwwroot/appsettings.json
 RUN dotnet build "./Ubik.Accounting.WebApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
