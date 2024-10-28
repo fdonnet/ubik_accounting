@@ -36,39 +36,28 @@ namespace Ubik.Accounting.WebApp.Security
             if (token == null)
                 return string.Empty;
 
-            if (token.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10))
+            var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
             {
-                if(token.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(10))
-                {
-                    await cache.RemoveUserTokenAsync(userEmail);
-                    return string.Empty;
-                }
-                else
-                {
-                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
-                    {
-                        Address = authOptions.Value.TokenUrl,
-                        ClientId = authOptions.Value.ClientId,
-                        ClientSecret = authOptions.Value.ClientSecret,
-                        RefreshToken = token.RefreshToken,
-                        GrantType = "refresh_token",
-                    });
+                Address = authOptions.Value.TokenUrl,
+                ClientId = authOptions.Value.ClientId,
+                ClientSecret = authOptions.Value.ClientSecret,
+                RefreshToken = token.RefreshToken,
+                GrantType = "refresh_token",
+            });
 
-                    if (!response.IsError)
-                    {
-                        await cache.SetUserTokenAsync(new TokenCacheEntry
-                        {
-                            UserId = userEmail,
-                            RefreshToken = response.RefreshToken!,
-                            AccessToken = response.AccessToken!,
-                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
-                            ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.Value.RefreshTokenExpTimeInMinutes)
-                        });
-                    }
-                    else
-                        throw new InvalidOperationException("Error refreshing token");
-                }    
+            if (!response.IsError)
+            {
+                await cache.SetUserTokenAsync(new TokenCacheEntry
+                {
+                    UserId = userEmail,
+                    RefreshToken = response.RefreshToken!,
+                    AccessToken = response.AccessToken!,
+                    ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
+                    ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.Value.RefreshTokenExpTimeInMinutes)
+                });
             }
+            else
+                throw new InvalidOperationException("Error refreshing token");
 
             return token.AccessToken;
         }
