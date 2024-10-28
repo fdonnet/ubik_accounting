@@ -30,7 +30,8 @@ namespace Ubik.Accounting.WebApp.Security
         {
             var toCache = JsonSerializer.SerializeToUtf8Bytes(token, options: _serializerOptions);
 
-            await _cache.SetAsync($"webapp_{token.UserId}", toCache, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(_authOptions.CookieRefreshTimeInMinutes + 60) });
+            await _cache.SetAsync($"webapp_{token.UserId}", toCache,
+                new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(120) });
         }
 
         public async Task<TokenCacheEntry?> GetUserTokenAsync(string? userId)
@@ -42,6 +43,17 @@ namespace Ubik.Accounting.WebApp.Security
             if (token == null) return null;
 
             var cachedResult = JsonSerializer.Deserialize<TokenCacheEntry>(token, _serializerOptions);
+
+            if (cachedResult == null) return null;
+
+            if (cachedResult.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10))
+            {
+                if (cachedResult.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(10))
+                {
+                    await RemoveUserTokenAsync($"webapp_{userId}");
+                    return null;
+                }
+            }
 
             return cachedResult;
         }
@@ -57,17 +69,17 @@ namespace Ubik.Accounting.WebApp.Security
         {
             if (userEmail == null) return null;
 
-            var token = await _cache.GetAsync($"webapp_{userEmail}_auth");
+            var user = await _cache.GetAsync($"webapp_{userEmail}_auth");
 
-            if (token == null) return null;
+            if (user == null) return null;
 
-            var cachedResult = JsonSerializer.Deserialize<UserAdminOrMeResult>(token, _serializerOptions);
+            var cachedResult = JsonSerializer.Deserialize<UserAdminOrMeResult>(user, _serializerOptions);
 
             return cachedResult;
         }
     }
 
-   public class TokenCacheEntry
+    public class TokenCacheEntry
     {
         public string UserId { get; set; } = default!;
         public string AccessToken { get; set; } = default!;
