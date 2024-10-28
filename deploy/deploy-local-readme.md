@@ -20,8 +20,13 @@
 
 ### Install ingress-nginx because normal ingress will not work if you use wsl.
 
-`helm upgrade --install ingress-nginx ingress-nginx \
-  --repo https://kubernetes.github.io/ingress-nginx`
+`helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx`
+
+`helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx`
+
+`helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --set controller.config.use-forwarded-headers="true" --set controller.config.compute-full-forwarded-for="true" --set controller.config.allow-snippet-annotations="true" --set controller.config.enable-underscores-in-headers="true"`  
+
+**NOT WORKING for Blazor**
 
 ### Import the test ubik realm in a secret
 
