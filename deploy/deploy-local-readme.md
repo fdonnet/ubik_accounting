@@ -51,7 +51,9 @@ Create the db
 
 `CREATE DATABASE keycloak;`
 
-### Install keycloack values-dev.yaml: contains config to access the already existing postgres db
+### Install keycloack values-dev.yaml:
+
+Contains config to access the already existing postgres db
 
 `helm install keycloak-local bitnami/keycloak -f ./keycloack/values-dev.yaml`
 
