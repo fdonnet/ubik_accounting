@@ -94,6 +94,13 @@ builder.Services.AddAuthentication(options =>
             options.Scope.Add("offline_access");
             options.RequireHttpsMetadata = authOptions.RequireHttpsMetadata;
 
+            if (authOptions.AuthorizeBadCert)
+            {
+                //TODO; remove that shit on prod... only for DEV keycloak Minikube
+                HttpClientHandler handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                options.BackchannelHttpHandler = handler;
+            }
 
             options.Events = new OpenIdConnectEvents
             {

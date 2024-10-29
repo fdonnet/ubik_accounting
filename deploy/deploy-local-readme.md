@@ -22,7 +22,7 @@
 
 `helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx`
 
-`helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --set controller.values.allow-snippet-annotations="true"`
+`helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --set controller.config.allow-snippet-annotations="true"`
 
 ### Import the test ubik realm in a secret
 
