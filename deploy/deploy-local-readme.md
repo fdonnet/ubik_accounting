@@ -55,6 +55,12 @@ Contains config to access the already existing postgres db
 
 `helm install keycloak-local bitnami/keycloak -f ./keycloack/values-dev.yaml`
 
+### Generate self signed certificate (if you want to change them in ingress)
+
+`openssl req -newkey rsa:2048 -nodes -keyout tls.key -out tls.csr`
+
+`openssl x509 -req -sha256 -days 365 -in tls.csr -signkey tls.key -out tls.crt`
+
 ### Apply ingress deployment
 
 `kubectl apply -f ./keycloack/ingress-for-keycloack.yaml`

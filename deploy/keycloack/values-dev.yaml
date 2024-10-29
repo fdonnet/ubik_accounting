@@ -24,6 +24,8 @@ extraVolumeMounts:
 postgresql:
   enabled: false
 
+proxy: edge
+
 externalDatabase:
   host: "ubik-postgres-postgresql"
   user: postgres

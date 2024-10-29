@@ -158,11 +158,14 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear(); // Clear the default networks
+    options.KnownProxies.Clear(); // Clear the default proxies
 });
 
 var app = builder.Build();
 app.UseForwardedHeaders();
-
+app.UseHttpsRedirection();
+//app.UseHsts();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
