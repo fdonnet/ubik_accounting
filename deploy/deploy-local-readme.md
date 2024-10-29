@@ -16,13 +16,15 @@
 
 `helm install ubik-rabbitmq bitnami/rabbitmq -f ./rabbitmq/values-dev.yaml`
 
-## Keycloak
+## Install ingress-nginx 
 
-### Install ingress-nginx because normal ingress will not work if you use wsl.
+Normal ingress will not work if you use wsl.
 
 `helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx`
 
 `helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --set controller.config.allow-snippet-annotations="true"`
+
+## Keycloak
 
 ### Import the test ubik realm in a secret
 
@@ -56,6 +58,8 @@ Contains config to access the already existing postgres db
 `helm install keycloak-local bitnami/keycloak -f ./keycloack/values-dev.yaml`
 
 ### Generate self signed certificate (if you want to change them in ingress)
+
+To remember the commands only:
 
 `openssl req -newkey rsa:2048 -nodes -keyout tls.key -out tls.csr`
 
