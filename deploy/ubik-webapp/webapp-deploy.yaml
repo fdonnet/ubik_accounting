@@ -29,6 +29,8 @@ spec:
           value: "https://keycloak-local/realms/ubik/protocol/openid-connect/auth"
         - name: AuthServer__TokenUrl
           value: "https://keycloak-local/realms/ubik/protocol/openid-connect/token"
+        - name: AuthServer__AuthorizeBadCert
+          value: "true"
         - name: Apis__AccountingUrl
           value: "http://ubik-proxy/accounting/api/v1/"
         - name: Apis__SecurityUrl

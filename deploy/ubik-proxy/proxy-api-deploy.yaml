@@ -29,6 +29,8 @@ spec:
             value: https://keycloak-local/realms/ubik/protocol/openid-connect/auth
           - name: AuthServer__TokenUrl
             value: https://keycloak-local/realms/ubik/protocol/openid-connect/token
+          - name: AuthServer__AuthorizeBadCert
+            value: "true"
           - name: ApiSecurityForAdmin__HostAndPort
             value: http://security-api/
           - name: ReverseProxy__Clusters__ubik_users_admin__Destinations__destination1__Address
