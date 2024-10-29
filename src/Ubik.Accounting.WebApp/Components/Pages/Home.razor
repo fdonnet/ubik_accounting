@@ -2,12 +2,14 @@
 @using Ubik.Accounting.WebApp.Security
 @using System.Text.Json;
 @inject UserService userService;
+@inject NavigationManager navigationManager;
 @attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
 <PageScript Src="./js/theme-switcher.js" />
 
 Welcome to your new app.
+<p>NavigationManager.BaseUri: @navigationManager.BaseUri</p>
 
 <ul>
     @foreach (var c in userService.GetUser().Claims)
