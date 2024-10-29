@@ -24,8 +24,6 @@
 
 `helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx`
 
-**NOT WORKING for Blazor**
-
 ### Import the test ubik realm in a secret
 
 `kubectl create secret generic realm-secret --from-file=../tests/Ubik.Api.Tests.Integration/import/ubik-realm.json`
