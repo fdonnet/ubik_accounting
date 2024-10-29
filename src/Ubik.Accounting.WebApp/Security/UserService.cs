@@ -59,7 +59,7 @@ namespace Ubik.Accounting.WebApp.Security
                     });
                 }
                 else
-                    throw new InvalidOperationException("Error refreshing token");
+                    return string.Empty;
             }
 
             return token.AccessToken;
