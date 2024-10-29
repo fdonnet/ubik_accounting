@@ -36,28 +36,31 @@ namespace Ubik.Accounting.WebApp.Security
             if (token == null)
                 return string.Empty;
 
-            var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
+            if (token.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10) && token.ExpiresRefreshUtc > DateTimeOffset.UtcNow.AddSeconds(10))
             {
-                Address = authOptions.Value.TokenUrl,
-                ClientId = authOptions.Value.ClientId,
-                ClientSecret = authOptions.Value.ClientSecret,
-                RefreshToken = token.RefreshToken,
-                GrantType = "refresh_token",
-            });
-
-            if (!response.IsError)
-            {
-                await cache.SetUserTokenAsync(new TokenCacheEntry
+                var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
                 {
-                    UserId = userEmail,
-                    RefreshToken = response.RefreshToken!,
-                    AccessToken = response.AccessToken!,
-                    ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
-                    ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.Value.RefreshTokenExpTimeInMinutes)
+                    Address = authOptions.Value.TokenUrl,
+                    ClientId = authOptions.Value.ClientId,
+                    ClientSecret = authOptions.Value.ClientSecret,
+                    RefreshToken = token.RefreshToken,
+                    GrantType = "refresh_token",
                 });
+
+                if (!response.IsError)
+                {
+                    await cache.SetUserTokenAsync(new TokenCacheEntry
+                    {
+                        UserId = userEmail,
+                        RefreshToken = response.RefreshToken!,
+                        AccessToken = response.AccessToken!,
+                        ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
+                        ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.Value.RefreshTokenExpTimeInMinutes)
+                    });
+                }
+                else
+                    throw new InvalidOperationException("Error refreshing token");
             }
-            else
-                throw new InvalidOperationException("Error refreshing token");
 
             return token.AccessToken;
         }
