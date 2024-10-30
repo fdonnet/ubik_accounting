@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Components;
 namespace Ubik.Accounting.WebApp.Security
 {
     public class UserService(TokenCacheService cache
-        , IOptions<AuthServerOptions> authOptions
         , IHttpClientFactory factory)
     {
         private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
@@ -35,32 +34,6 @@ namespace Ubik.Accounting.WebApp.Security
 
             if (token == null)
                 return string.Empty;
-
-            if (token.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10) && token.ExpiresRefreshUtc > DateTimeOffset.UtcNow.AddSeconds(10))
-            {
-                var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
-                {
-                    Address = authOptions.Value.TokenUrl,
-                    ClientId = authOptions.Value.ClientId,
-                    ClientSecret = authOptions.Value.ClientSecret,
-                    RefreshToken = token.RefreshToken,
-                    GrantType = "refresh_token",
-                });
-
-                if (!response.IsError)
-                {
-                    await cache.SetUserTokenAsync(new TokenCacheEntry
-                    {
-                        UserId = userEmail,
-                        RefreshToken = response.RefreshToken!,
-                        AccessToken = response.AccessToken!,
-                        ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
-                        ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.Value.RefreshTokenExpTimeInMinutes)
-                    });
-                }
-                else
-                    return string.Empty;
-            }
 
             return token.AccessToken;
         }

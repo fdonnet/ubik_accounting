@@ -18,6 +18,7 @@ using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Microsoft.AspNetCore.Authentication;
 using Ubik.Accounting.WebApp.Config;
 using Microsoft.AspNetCore.HttpOverrides;
+using IdentityModel.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +76,36 @@ builder.Services.AddAuthentication(options =>
                 {
                     x.RejectPrincipal();
                     return;
+                }
+
+                //If token expired
+                if (actualToken.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10) && actualToken.ExpiresRefreshUtc > DateTimeOffset.UtcNow.AddSeconds(10))
+                {
+                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
+                    {
+                        Address = authOptions.TokenUrl,
+                        ClientId = authOptions.ClientId,
+                        ClientSecret = authOptions.ClientSecret,
+                        RefreshToken = actualToken.RefreshToken,
+                        GrantType = "refresh_token",
+                    });
+
+                    if (!response.IsError)
+                    {
+                        await cache.SetUserTokenAsync(new TokenCacheEntry
+                        {
+                            UserId = userId,
+                            RefreshToken = response.RefreshToken!,
+                            AccessToken = response.AccessToken!,
+                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
+                            ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.RefreshTokenExpTimeInMinutes)
+                        });
+                    }
+                    else
+                    {
+                        x.RejectPrincipal();
+                        return;
+                    }
                 }
             }
         };
