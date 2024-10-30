@@ -17,6 +17,8 @@ using Ubik.Accounting.WebApp.Client.Components.Accounts;
 using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Microsoft.AspNetCore.Authentication;
 using Ubik.Accounting.WebApp.Config;
+using Microsoft.AspNetCore.HttpOverrides;
+using IdentityModel.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +77,36 @@ builder.Services.AddAuthentication(options =>
                     x.RejectPrincipal();
                     return;
                 }
+
+                //If token expired
+                if (actualToken.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10) && actualToken.ExpiresRefreshUtc > DateTimeOffset.UtcNow.AddSeconds(10))
+                {
+                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
+                    {
+                        Address = authOptions.TokenUrl,
+                        ClientId = authOptions.ClientId,
+                        ClientSecret = authOptions.ClientSecret,
+                        RefreshToken = actualToken.RefreshToken,
+                        GrantType = "refresh_token",
+                    });
+
+                    if (!response.IsError)
+                    {
+                        await cache.SetUserTokenAsync(new TokenCacheEntry
+                        {
+                            UserId = userId,
+                            RefreshToken = response.RefreshToken!,
+                            AccessToken = response.AccessToken!,
+                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
+                            ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.RefreshTokenExpTimeInMinutes)
+                        });
+                    }
+                    else
+                    {
+                        x.RejectPrincipal();
+                        return;
+                    }
+                }
             }
         };
     })
@@ -93,6 +125,13 @@ builder.Services.AddAuthentication(options =>
             options.Scope.Add("offline_access");
             options.RequireHttpsMetadata = authOptions.RequireHttpsMetadata;
 
+            if (authOptions.AuthorizeBadCert)
+            {
+                //TODO; remove that shit on prod... only for DEV keycloak Minikube
+                HttpClientHandler handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                options.BackchannelHttpHandler = handler;
+            }
 
             options.Events = new OpenIdConnectEvents
             {
@@ -153,14 +192,25 @@ builder.Services.AddHttpClient("UserServiceClient", options =>
 
 builder.Services.AddScoped<ClassificationStateService>();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear(); // Clear the default networks
+    options.KnownProxies.Clear(); // Clear the default proxies
+});
+
 var app = builder.Build();
+app.UseForwardedHeaders();
+app.UseHttpsRedirection();
+//app.UseHsts();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    //app.UseHsts();
 }
 else
 {

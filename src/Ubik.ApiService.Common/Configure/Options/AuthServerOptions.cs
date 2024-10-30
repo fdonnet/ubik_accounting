@@ -13,6 +13,7 @@
         public string ClientSecret { get; set; } = string.Empty;
         public int CookieRefreshTimeInMinutes { get; set; } = 0;
         public int RefreshTokenExpTimeInMinutes { get; set; } = 25;
+        public bool AuthorizeBadCert { get; set; } = false;
     }
 }
 

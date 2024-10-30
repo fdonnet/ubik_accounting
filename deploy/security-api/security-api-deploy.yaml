@@ -22,13 +22,13 @@ spec:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Development"
         - name: AuthServer__MetadataAddress
-          value: "http://keycloak-local/realms/ubik/.well-known/openid-configuration"
+          value: "https://keycloak-local/realms/ubik/.well-known/openid-configuration"
         - name: AuthServer__Authority
-          value: "http://keycloak-local/realms/ubik"
+          value: "https://keycloak-local/realms/ubik"
         - name: AuthServer__AuthorizationUrl
-          value: "http://keycloak-local/realms/ubik/protocol/openid-connect/auth"
+          value: "https://keycloak-local/realms/ubik/protocol/openid-connect/auth"
         - name: AuthServer__TokenUrl
-          value: "http://keycloak-local/realms/ubik/protocol/openid-connect/token"
+          value: "https://keycloak-local/realms/ubik/protocol/openid-connect/token"
         - name: ConnectionStrings__SecurityDbContext
           value: "Host=ubik-postgres-postgresql;Port=5432;Database=ubik_security;Username=postgres;Password=test01"
         - name: AuthManagerKeyCloakClient__RootUrl

@@ -22,13 +22,15 @@ spec:
         - name: ASPNETCORE_ENVIRONMENT
           value: Development
         - name: AuthServer__MetadataAddress
-          value: "http://keycloak-local/realms/ubik/.well-known/openid-configuration"
+          value: "https://keycloak-local/realms/ubik/.well-known/openid-configuration"
         - name: AuthServer__Authority
-          value: "http://keycloak-local/realms/ubik"
+          value: "https://keycloak-local/realms/ubik"
         - name: AuthServer__AuthorizationUrl
-          value: "http://keycloak-local/realms/ubik/protocol/openid-connect/auth"
+          value: "https://keycloak-local/realms/ubik/protocol/openid-connect/auth"
         - name: AuthServer__TokenUrl
-          value: "http://keycloak-local/realms/ubik/protocol/openid-connect/token"
+          value: "https://keycloak-local/realms/ubik/protocol/openid-connect/token"
+        - name: AuthServer__AuthorizeBadCert
+          value: "true"
         - name: Apis__AccountingUrl
           value: "http://ubik-proxy/accounting/api/v1/"
         - name: Apis__SecurityUrl
@@ -69,6 +71,13 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
     nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
     nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "affinity"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "14400"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "14400"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+        more_set_headers "X-Forwarded-Proto $scheme";
+        more_set_headers "X-Forwarded-For   $proxy_add_x_forwarded_for";
 spec:
   ingressClassName: nginx
   tls:

@@ -26,6 +26,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 o.Authority = authOptions.Authority;
                 o.Audience = authOptions.Audience;
                 o.RequireHttpsMetadata = authOptions.RequireHttpsMetadata;
+
+                if (authOptions.AuthorizeBadCert)
+                {
+                    //TODO; remove that shit on prod... only for DEV keycloak Minikube
+                    HttpClientHandler handler = new HttpClientHandler();
+                    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                    o.BackchannelHttpHandler = handler;
+                }
             });
 
 //Cache, for routes authorizations
