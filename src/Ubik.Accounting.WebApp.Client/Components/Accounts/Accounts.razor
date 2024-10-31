@@ -109,12 +109,15 @@
     {
         get
         {
-            if (_accounts == null || (!_accountFilters.IsFiltersApplied && _searchValue == string.Empty))
-                return _accounts;
+            if (_accounts == null)
+                return null;
+
+            if (!_accountFilters.IsFiltersApplied && _searchValue == string.Empty)
+                return _accounts.Where(a => a.Active == true);
 
             var result = _accounts;
 
-            if(!_accountFilters.ShowInactive)
+            if (!_accountFilters.ShowInactive)
                 result = result.Where(a => a.Active == true);
 
             if (_accountFilters.CurrencyFilter != null)
@@ -160,17 +163,17 @@
     {
         _editMode = true;
         _accountCurrent = new()
-        {
-            Category = currentAccount.Category,
-            Code = currentAccount.Code,
-            CurrencyId = currentAccount.CurrencyId,
-            Id = currentAccount.Id,
-            Description = currentAccount.Description,
-            Domain = currentAccount.Domain,
-            Label = currentAccount.Label,
-            Active = currentAccount.Active,
-            Version = currentAccount.Version
-        };
+            {
+                Category = currentAccount.Category,
+                Code = currentAccount.Code,
+                CurrencyId = currentAccount.CurrencyId,
+                Id = currentAccount.Id,
+                Description = currentAccount.Description,
+                Domain = currentAccount.Domain,
+                Label = currentAccount.Label,
+                Active = currentAccount.Active,
+                Version = currentAccount.Version
+            };
         _dialogTitle = $"Edit account ({currentAccount.Code})";
         await _dialog.ShowDialogAsync();
     }
