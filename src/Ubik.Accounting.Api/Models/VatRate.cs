@@ -12,8 +12,8 @@ namespace Ubik.Accounting.Api.Models
         public decimal Rate { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
-        public required DateTime CreatedAt { get; set; }
-        public required Guid CreatedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public Guid CreatedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public Guid? ModifiedBy { get; set; }
     }

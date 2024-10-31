@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using System.Text;
+using Ubik.Accounting.Api.Data;
 using Ubik.Security.Api.Data;
 
 namespace Ubik.CodeGenerator
 {
-    internal class ContractsGenerator(SecurityDbContext dbContext)
+    internal class ContractsGenerator(AccountingDbContext dbContext)
     {
         public void GenerateAllContracts(bool writeFiles, string? folderPath, string? type = null)
         {
@@ -339,6 +340,16 @@ namespace Ubik.CodeGenerator
 
                 sb.AppendLine($"[MaxLength({maxLength.Value})]");
             }
+
+            //var precision = property.GetPrecision();
+            //var scale = property.GetScale();
+            //if (precision != null && scale !=null)
+            //{
+            //    if (!firstLine || alreadyFoundOneAnnotation)
+            //        sb.Append($"        ");
+
+            //    sb.AppendLine($"[Precision({precision},{scale})]");
+            //}
 
             // Add other annotations as needed
 

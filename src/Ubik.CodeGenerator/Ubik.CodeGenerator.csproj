@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Ubik.Accounting.Api\Ubik.Accounting.Api.csproj" />
     <ProjectReference Include="..\Ubik.Security.Api\Ubik.Security.Api.csproj" />
   </ItemGroup>
 

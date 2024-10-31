@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Ubik.Accounting.Api.Data;
 using Ubik.ApiService.Common.Services;
 using Ubik.CodeGenerator;
 using Ubik.Security.Api.Data;
@@ -9,6 +10,8 @@ using Ubik.Security.Api.Data;
 var serviceProvider = new ServiceCollection()
     .AddSingleton<ICurrentUser, FakeUserService>()
     .AddDbContextFactory<SecurityDbContext>(
+        options => options.UseNpgsql("x"))
+    .AddDbContextFactory<AccountingDbContext>(
         options => options.UseNpgsql("x"))
     .AddSingleton<ContractsGenerator>()
     .AddSingleton<MappersGenerator>()
@@ -22,10 +25,10 @@ var myMappersGenerator = serviceProvider.GetRequiredService<MappersGenerator>();
 var myServicesGenerator = serviceProvider.GetRequiredService<ServicesGenerator>();
 var myControllerGenerator = serviceProvider.GetRequiredService<ControllerGenerator>();
 
-//myContractsGenerator.GenerateAllContracts(false, string.Empty, "Tenant");
-//myMappersGenerator.GenerateMappers("Tenant");
+myContractsGenerator.GenerateAllContracts(false, string.Empty, "VatRate");
+//myMappersGenerator.GenerateMappers("VatRate");
 //myServicesGenerator.GenerateAllServicesAndInterfaces("Tenant");
-myControllerGenerator.GenerateController("Tenant");
+//myControllerGenerator.GenerateController("Tenant");
 
 //FAKER to use the DBcontext
 internal class FakeUserService : ICurrentUser

@@ -13,8 +13,7 @@ namespace Ubik.Accounting.Api.Data.Config
                 .IsRequired();
 
             builder.Property(a => a.Description)
-                .HasMaxLength(200)
-                .IsRequired();
+                .HasMaxLength(200);
 
             builder.Property(a => a.Rate)
                 .HasPrecision(8, 5);
