@@ -22,9 +22,18 @@
             </div>
             <div class="col-span-1">
                 <UbikInputSelect Id="FilterCategory" TValue="AccountCategory?"
-                                 ValueExpression="@(() => Filters.CategoryFilter)" Value="@Filters.CategoryFilter"
+                                 ValueExpression="@(() => Filters.CategoryFilter)"
+                                 Value="@Filters.CategoryFilter"
                                  ValueChanged="@((AccountCategory? args) => Filters.CategoryFilter = args)"
                                  Label="Category" PlaceholderText=""></UbikInputSelect>
+            </div>
+            <div class="col-span-1">
+                <UbikInputToggle Id="FilterInactive"
+                                 Label="Show inactive"
+                                 Value="@Filters.ShowInactive"
+                                 ValueExpression="@(() => Filters.ShowInactive)"
+                                 ValueChanged="@((bool args) => Filters.ShowInactive = args)">
+                </UbikInputToggle>
             </div>
         </div>
         <div class="mt-3 flex justify-between">
@@ -53,13 +62,15 @@
         Filters.DomainFilter = null;
         Filters.CategoryFilter = null;
         Filters.CurrencyFilter = null;
+        Filters.ShowInactive = false;
     }
 
     public async Task ApplyFiltersAsync()
     {
         if (Filters.CurrencyFilter == null
             && Filters.DomainFilter == null
-            && Filters.CategoryFilter == null)
+            && Filters.CategoryFilter == null
+            && !Filters.ShowInactive)
             Filters.IsFiltersApplied = false;
         else
             Filters.IsFiltersApplied = true;

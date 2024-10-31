@@ -1,0 +1,26 @@
+﻿@inherits InputCheckbox
+<div class="flex flex-col">
+    <div>
+        <span class="mb-2 block cursor-default text-sm font-medium text-gray-900 dark:text-white">@Label</span>
+    </div>
+    <div>
+        <label for="@Id" class="inline-flex cursor-pointer items-center">
+            @if (CurrentValue)
+            {
+                <input id="@Id" type="checkbox" @bind-value="CurrentValue" checked class="peer sr-only">
+            }
+            else
+            {
+                <input id="@Id" type="checkbox" @bind-value="CurrentValue" class="peer sr-only">
+            }
+            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        </label>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = "toggle";
+    [Parameter]
+    public string Label { get; set; } = "Toggle me";
+}

@@ -114,6 +114,9 @@
 
             var result = _accounts;
 
+            if(!_accountFilters.ShowInactive)
+                result = result.Where(a => a.Active == true);
+
             if (_accountFilters.CurrencyFilter != null)
                 result = result.Where(a => a.CurrencyId == _accountFilters.CurrencyFilter);
 
@@ -165,6 +168,7 @@
             Description = currentAccount.Description,
             Domain = currentAccount.Domain,
             Label = currentAccount.Label,
+            Active = currentAccount.Active,
             Version = currentAccount.Version
         };
         _dialogTitle = $"Edit account ({currentAccount.Code})";
