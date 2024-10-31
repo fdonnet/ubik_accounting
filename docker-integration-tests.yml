@@ -30,8 +30,8 @@ services:
   accounting-api-test:
     build:
       context: ./
-      dockerfile: src/Ubik.Accounting.Api/Dockerfile
-    container_name: "ubik-accounting-api-test"
+      dockerfile: src/Ubik.Accounting.Structure.Api/Dockerfile
+    container_name: "ubik-accounting-structure-api-test"
     environment:
       - "ASPNETCORE_ENVIRONMENT=Development"
       - "AuthServer__MetadataAddress=http://keycloak:8080/realms/ubik/.well-known/openid-configuration"

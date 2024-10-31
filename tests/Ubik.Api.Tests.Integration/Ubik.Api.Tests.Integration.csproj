@@ -37,7 +37,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\Ubik.Accounting.Api\Ubik.Accounting.Api.csproj" />
+		<ProjectReference Include="..\..\src\Ubik.Accounting.Api\Ubik.Accounting.Structure.Api.csproj" />
+		<ProjectReference Include="..\..\src\Ubik.Accounting.Structure.Api\Ubik.Accounting.Structure.Api.csproj" />
 		<ProjectReference Include="..\..\src\Ubik.YarpProxy\Ubik.YarpProxy.csproj" />
 	</ItemGroup>
 

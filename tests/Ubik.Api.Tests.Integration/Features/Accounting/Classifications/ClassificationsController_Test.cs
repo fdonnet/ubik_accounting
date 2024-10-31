@@ -12,7 +12,7 @@ using Ubik.Accounting.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Contracts.Classifications.Commands;
 using MassTransit;
-using Ubik.Accounting.Api.Models;
+using Ubik.Accounting.Structure.Api.Models;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {

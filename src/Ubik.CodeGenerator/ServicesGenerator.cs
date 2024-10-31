@@ -1,4 +1,4 @@
-﻿using Ubik.Accounting.Api.Data;
+﻿using Ubik.Accounting.Structure.Api.Data;
 using Ubik.Security.Api.Data;
 
 namespace Ubik.CodeGenerator

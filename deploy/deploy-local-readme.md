@@ -73,19 +73,19 @@ To remember the commands only:
 
 `helm install ubik-cache bitnami/redis -f ./redis/values-dev.yaml`
 
-## Accounting Api
+## Accounting Structure Api
 
 Build image
 
-`docker build -t ubik-accounting-api-test:latest -f ../src/Ubik.Accounting.Api/Dockerfile ../`
+`docker build -t ubik-accounting-structure-api-test:latest -f ../src/Ubik.Accounting.Structure.Api/Dockerfile ../`
 
 Load image in minikube
 
-`minikube image load ubik-accounting-api-test:latest`
+`minikube image load ubik-accounting-structure-api-test:latest`
 
 Apply deployement
 
-`kubectl apply -f ./accounting-api/accounting-api-deploy.yaml`
+`kubectl apply -f ./accounting-structure-api/accounting-structure-api-deploy.yaml`
 
 ## Security api
 
