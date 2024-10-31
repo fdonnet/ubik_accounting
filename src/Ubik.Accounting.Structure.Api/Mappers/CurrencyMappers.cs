@@ -1,5 +1,5 @@
 ﻿using Ubik.Accounting.Structure.Api.Models;
-using Ubik.Accounting.Contracts.Currencies.Results;
+using Ubik.Accounting.Structure.Contracts.Currencies.Results;
 
 namespace Ubik.Accounting.Structure.Api.Mappers
 {

@@ -7,10 +7,10 @@ using System.Net.Http.Json;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.Accounting.Contracts.Classifications.Results;
+using Ubik.Accounting.Structure.Contracts.Accounts.Results;
+using Ubik.Accounting.Structure.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Exceptions;
-using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
 using MassTransit;
 using Ubik.Accounting.Structure.Api.Models;
 

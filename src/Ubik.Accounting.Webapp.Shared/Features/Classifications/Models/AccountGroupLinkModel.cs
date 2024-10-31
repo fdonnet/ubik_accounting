@@ -1,5 +1,5 @@
-﻿using Ubik.Accounting.Contracts.Accounts.Commands;
-using Ubik.Accounting.Contracts.Accounts.Results;
+﻿using Ubik.Accounting.Structure.Contracts.Accounts.Commands;
+using Ubik.Accounting.Structure.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 {

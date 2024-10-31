@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ubik.Accounting.Api\Ubik.Accounting.Structure.Api.csproj" />
     <ProjectReference Include="..\Ubik.Accounting.Structure.Api\Ubik.Accounting.Structure.Api.csproj" />
     <ProjectReference Include="..\Ubik.Security.Api\Ubik.Security.Api.csproj" />
   </ItemGroup>

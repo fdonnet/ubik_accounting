@@ -1,6 +1,6 @@
 ﻿using LanguageExt;
 using Ubik.Accounting.Structure.Api.Models;
-using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
 using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services

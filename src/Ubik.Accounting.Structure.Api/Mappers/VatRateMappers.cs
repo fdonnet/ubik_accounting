@@ -1,7 +1,7 @@
 ﻿using Ubik.Accounting.Structure.Api.Models;
-using Ubik.Accounting.Contracts.VatRate.Commands;
-using Ubik.Accounting.Contracts.VatRate.Events;
-using Ubik.Accounting.Contracts.VatRate.Results;
+using Ubik.Accounting.Structure.Contracts.VatRate.Commands;
+using Ubik.Accounting.Structure.Contracts.VatRate.Events;
+using Ubik.Accounting.Structure.Contracts.VatRate.Results;
 
 namespace Ubik.Accounting.Structure.Api.Mappers
 {

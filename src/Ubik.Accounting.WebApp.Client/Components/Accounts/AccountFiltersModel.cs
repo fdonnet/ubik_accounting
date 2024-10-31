@@ -1,4 +1,4 @@
-﻿using Ubik.Accounting.Contracts.Accounts.Enums;
+﻿using Ubik.Accounting.Structure.Contracts.Accounts.Enums;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Accounts
 {

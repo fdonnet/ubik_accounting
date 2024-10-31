@@ -1,9 +1,9 @@
 ﻿using MassTransit;
 using Ubik.Accounting.Structure.Api.Features.Accounts.CustomPoco;
 using Ubik.Accounting.Structure.Api.Models;
-using Ubik.Accounting.Contracts.Accounts.Commands;
-using Ubik.Accounting.Contracts.Accounts.Events;
-using Ubik.Accounting.Contracts.Accounts.Results;
+using Ubik.Accounting.Structure.Contracts.Accounts.Commands;
+using Ubik.Accounting.Structure.Contracts.Accounts.Events;
+using Ubik.Accounting.Structure.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.Structure.Api.Mappers
 {

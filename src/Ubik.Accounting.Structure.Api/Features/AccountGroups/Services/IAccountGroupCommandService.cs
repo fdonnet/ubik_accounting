@@ -1,6 +1,6 @@
 ﻿using LanguageExt;
 using Ubik.Accounting.Structure.Api.Models;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
 using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services

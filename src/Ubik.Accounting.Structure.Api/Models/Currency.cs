@@ -4,7 +4,7 @@ using Ubik.DB.Common;
 namespace Ubik.Accounting.Structure.Api.Models
 {
     //TODO: will be updated by another service
-    public class Currency : ITenantEntity, IConcurrencyCheckEntity
+    public class Currency : ITenantEntity
     {
         public Guid Id { get; set; }
         [StringLength(3)]

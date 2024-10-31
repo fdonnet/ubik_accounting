@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Contracts.Accounts.Enums;
-using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.Accounting.Contracts.Classifications.Results;
+using Ubik.Accounting.Structure.Contracts.Accounts.Enums;
+using Ubik.Accounting.Structure.Contracts.Accounts.Results;
+using Ubik.Accounting.Structure.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 {

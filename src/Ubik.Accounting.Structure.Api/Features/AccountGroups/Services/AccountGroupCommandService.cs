@@ -7,8 +7,8 @@ using Ubik.Accounting.Structure.Api.Data;
 using Ubik.Accounting.Structure.Api.Features.AccountGroups.Errors;
 using Ubik.Accounting.Structure.Api.Mappers;
 using Ubik.Accounting.Structure.Api.Models;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
-using Ubik.Accounting.Contracts.AccountGroups.Events;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Events;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 

@@ -11,9 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.ApiService.Common", "U
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Api.Tests.Integration", "..\tests\Ubik.Api.Tests.Integration\Ubik.Api.Tests.Integration.csproj", "{40D9982F-BB82-4922-B2DE-E2F6B02C6CBC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Api.Tests.UnitTests", "..\tests\Ubik.Accounting.Api.Tests.UnitTests\Ubik.Accounting.Api.Tests.UnitTests.csproj", "{28D8CCFA-1FA3-436E-AE22-0B46EEAAABC6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Contracts", "Ubik.Accounting.Contracts\Ubik.Accounting.Contracts.csproj", "{E7DE036A-E2E6-4A65-A1A9-40CF9EA5E449}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.Structure.Contracts", "Ubik.Accounting.Structure.Contracts\Ubik.Accounting.Structure.Contracts.csproj", "{E7DE036A-E2E6-4A65-A1A9-40CF9EA5E449}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.Accounting.WebApp", "Ubik.Accounting.WebApp\Ubik.Accounting.WebApp.csproj", "{49287A03-F87B-4CD9-B967-B1E205743B64}"
 EndProject
@@ -53,10 +51,6 @@ Global
 		{40D9982F-BB82-4922-B2DE-E2F6B02C6CBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40D9982F-BB82-4922-B2DE-E2F6B02C6CBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40D9982F-BB82-4922-B2DE-E2F6B02C6CBC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{28D8CCFA-1FA3-436E-AE22-0B46EEAAABC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{28D8CCFA-1FA3-436E-AE22-0B46EEAAABC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28D8CCFA-1FA3-436E-AE22-0B46EEAAABC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{28D8CCFA-1FA3-436E-AE22-0B46EEAAABC6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E7DE036A-E2E6-4A65-A1A9-40CF9EA5E449}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E7DE036A-E2E6-4A65-A1A9-40CF9EA5E449}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7DE036A-E2E6-4A65-A1A9-40CF9EA5E449}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -3,9 +3,9 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.Structure.Api.Features.Classifications.Services;
 using Ubik.Accounting.Structure.Api.Mappers;
-using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.Accounting.Contracts.Classifications.Commands;
-using Ubik.Accounting.Contracts.Classifications.Results;
+using Ubik.Accounting.Structure.Contracts.Accounts.Results;
+using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
+using Ubik.Accounting.Structure.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ubik.ApiService.Common.Exceptions;
 using Asp.Versioning;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Results;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
 using Ubik.ApiService.Common.Errors;
 using Ubik.Accounting.Structure.Api.Features.AccountGroups.Services;
-using Ubik.Accounting.Contracts.Accounts.Results;
+using Ubik.Accounting.Structure.Contracts.Accounts.Results;
 using Ubik.Accounting.Structure.Api.Mappers;
 
 namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Controller.v1

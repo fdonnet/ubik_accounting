@@ -13,7 +13,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /
 COPY ["src/Ubik.Accounting.Structure.Api/Ubik.Accounting.Structure.Api.csproj", "src/Ubik.Accounting.Structure.Api/"]
-COPY ["src/Ubik.Accounting.Contracts/Ubik.Accounting.Contracts.csproj", "src/Ubik.Accounting.Contracts/"]
+COPY ["src/Ubik.Accounting.Structure.Contracts/Ubik.Accounting.Structure.Contracts.csproj", "src/Ubik.Accounting.Structure.Contracts/"]
 COPY ["src/Ubik.Db.Common/Ubik.DB.Common/Ubik.DB.Common.csproj", "src/Ubik.Db.Common/Ubik.DB.Common/"]
 COPY ["src/Ubik.ApiService.Common/Ubik.ApiService.Common.csproj", "src/Ubik.ApiService.Common/"]
 #COPY ["src/mycert.cer", "src/"]

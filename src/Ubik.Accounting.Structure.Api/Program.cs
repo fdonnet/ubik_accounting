@@ -12,10 +12,10 @@ using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Ubik.Accounting.Contracts.Accounts.Commands;
+using Ubik.Accounting.Structure.Contracts.Accounts.Commands;
 using Ubik.ApiService.Common.Filters;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
-using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
 using Ubik.ApiService.Common.Middlewares;
 using Ubik.Accounting.Structure.Api.Features.Application.Services;
 using Ubik.Accounting.Structure.Api.Features.AccountGroups.Services;
@@ -23,7 +23,7 @@ using Ubik.Accounting.Structure.Api.Features.Accounts.Services;
 using Ubik.Accounting.Structure.Api.Features.Classifications.Services;
 using Ubik.Accounting.Structure.Api.Features.Currencies.Services;
 
-namespace Ubik.Accounting.Api
+namespace Ubik.Accounting.Structure.Api
 {
     public class Program
     {

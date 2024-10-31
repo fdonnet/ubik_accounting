@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.Structure.Api.Features.Currencies.Services;
 using Ubik.Accounting.Structure.Api.Mappers;
-using Ubik.Accounting.Contracts.Currencies.Results;
+using Ubik.Accounting.Structure.Contracts.Currencies.Results;
 using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Structure.Api.Features.Currencies.Controller.v1

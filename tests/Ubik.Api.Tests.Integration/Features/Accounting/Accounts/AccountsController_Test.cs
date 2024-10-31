@@ -7,10 +7,10 @@ using System.Net.Http.Json;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Ubik.Accounting.Contracts.Accounts.Results;
+using Ubik.Accounting.Structure.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
-using Ubik.Accounting.Contracts.Accounts.Commands;
-using Ubik.Accounting.Contracts.Accounts.Enums;
+using Ubik.Accounting.Structure.Contracts.Accounts.Commands;
+using Ubik.Accounting.Structure.Contracts.Accounts.Enums;
 using MassTransit;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts

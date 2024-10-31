@@ -8,11 +8,11 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Ubik.Security.Contracts.Roles.Results;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Results;
 using Ubik.ApiService.Common.Exceptions;
 using RabbitMQ.Client;
-using Ubik.Accounting.Contracts.Accounts.Results;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Structure.Contracts.Accounts.Results;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
 using MassTransit;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups

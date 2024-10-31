@@ -1,11 +1,11 @@
 ﻿using MassTransit;
 using Ubik.Accounting.Structure.Api.Features.Classifications.CustomPoco;
 using Ubik.Accounting.Structure.Api.Models;
-using Ubik.Accounting.Contracts.AccountGroups.Events;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.Accounting.Contracts.Classifications.Commands;
-using Ubik.Accounting.Contracts.Classifications.Events;
-using Ubik.Accounting.Contracts.Classifications.Results;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Events;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Results;
+using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
+using Ubik.Accounting.Structure.Contracts.Classifications.Events;
+using Ubik.Accounting.Structure.Contracts.Classifications.Results;
 
 namespace Ubik.Accounting.Structure.Api.Mappers
 {

@@ -7,8 +7,8 @@ using System.Data;
 using Ubik.Accounting.Structure.Api.Data;
 using Ubik.Accounting.Structure.Api.Mappers;
 using Ubik.Accounting.Structure.Api.Models;
-using Ubik.Accounting.Contracts.Classifications.Commands;
-using Ubik.Accounting.Contracts.Classifications.Events;
+using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
+using Ubik.Accounting.Structure.Contracts.Classifications.Events;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 

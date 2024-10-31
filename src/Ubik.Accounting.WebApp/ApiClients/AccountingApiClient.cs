@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
-using Ubik.Accounting.Contracts.Accounts.Commands;
-using Ubik.Accounting.Contracts.Classifications.Commands;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Structure.Contracts.Accounts.Commands;
+using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.WebApp.Config;
 using Ubik.Accounting.WebApp.Security;

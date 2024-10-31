@@ -7,8 +7,8 @@ using System.Net.Http.Json;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Ubik.Accounting.Contracts.Classifications.Results;
-using Ubik.Accounting.Contracts.Currencies.Results;
+using Ubik.Accounting.Structure.Contracts.Classifications.Results;
+using Ubik.Accounting.Structure.Contracts.Currencies.Results;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
 {
