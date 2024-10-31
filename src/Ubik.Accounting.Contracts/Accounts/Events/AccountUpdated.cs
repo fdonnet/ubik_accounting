@@ -9,6 +9,7 @@ namespace Ubik.Accounting.Contracts.Accounts.Events
         public required string Label { get; init; }
         public AccountCategory Category { get; init; }
         public AccountDomain Domain { get; init; }
+        public bool Active { get; init; } = true;
         public string? Description { get; init; }
         public Guid CurrencyId { get; init; }
         public Guid Version { get; init; }

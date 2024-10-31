@@ -7,7 +7,6 @@ using System.Net.Http.Json;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
 using Ubik.Accounting.Contracts.Accounts.Results;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Contracts.Accounts.Commands;
@@ -16,6 +15,7 @@ using MassTransit;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
 {
+    //TODO: write a test case when account is linked to existing accounting entries
     public class AccountsController_Test : BaseIntegrationTestAccounting
     {
         private readonly string _baseUrlForV1;

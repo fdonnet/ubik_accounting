@@ -40,6 +40,7 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
         public async Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id)
         {
             return await GetAsync(id)
+                .BindAsync(ValidateIfNotLinkedToExistingEntryAsync)
                 .BindAsync(DeleteInDbContextAsync)
                 .BindAsync(DeletedSaveAndPublishAsync);
         }
@@ -194,6 +195,15 @@ namespace Ubik.Accounting.Api.Features.Accounts.Services
             return exists
                 ? new ResourceAlreadyExistsError("Account", "Code", account.Code)
                 : account;
+        }
+
+        private async Task<Either<IServiceAndFeatureError, Account>> ValidateIfNotLinkedToExistingEntryAsync(Account current)
+        {
+            var exists = await ctx.Entries.AnyAsync(e => e.AccountId == current.Id);
+
+            return exists
+                ? new AccountLinkedToExistingEntriesError(current.Id)
+                : current;
         }
 
         private static async Task<Either<IServiceAndFeatureError, Account>> MapInDbContextAsync

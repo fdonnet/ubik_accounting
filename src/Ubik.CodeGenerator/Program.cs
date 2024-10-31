@@ -25,9 +25,9 @@ var myMappersGenerator = serviceProvider.GetRequiredService<MappersGenerator>();
 var myServicesGenerator = serviceProvider.GetRequiredService<ServicesGenerator>();
 var myControllerGenerator = serviceProvider.GetRequiredService<ControllerGenerator>();
 
-myContractsGenerator.GenerateAllContracts(false, string.Empty, "VatRate");
+//myContractsGenerator.GenerateAllContracts(false, string.Empty, "VatRate");
 //myMappersGenerator.GenerateMappers("VatRate");
-//myServicesGenerator.GenerateAllServicesAndInterfaces("Tenant");
+myServicesGenerator.GenerateAllServicesAndInterfaces("VatRate");
 //myControllerGenerator.GenerateController("Tenant");
 
 //FAKER to use the DBcontext

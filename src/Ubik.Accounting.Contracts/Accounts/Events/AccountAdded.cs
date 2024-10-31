@@ -10,6 +10,7 @@ namespace Ubik.Accounting.Contracts.Accounts.Events
         public AccountCategory Category { get; init; }
         public AccountDomain Domain { get; init; }
         public string? Description { get; init; }
+        public bool Active { get; init; } = true;
         public Guid CurrencyId { get; init; }
         public Guid Version { get; init; }
         public Guid TenantId { get; init; }

@@ -1,8 +1,9 @@
-﻿using Ubik.Security.Api.Data;
+﻿using Ubik.Accounting.Api.Data;
+using Ubik.Security.Api.Data;
 
 namespace Ubik.CodeGenerator
 {
-    internal class ServicesGenerator(SecurityDbContext dbContext)
+    internal class ServicesGenerator(AccountingDbContext dbContext)
     {
         public void  GenerateAllServicesAndInterfaces(string? type = null)
         {
@@ -95,7 +96,7 @@ namespace Ubik.CodeGenerator
         {
             return
                 """
-                public interface I{ClassName}sQueriesService
+                public interface I{ClassName}QueryService
                 {
                     Task<Either<IServiceAndFeatureError, {ClassName}>> GetAsync(Guid id);
                     Task<IEnumerable<{ClassName}>> GetAllAsync();
@@ -107,7 +108,7 @@ namespace Ubik.CodeGenerator
         {
             return
                 """
-                public class {ClassName}sQueriesService(SecurityDbContext ctx) : I{ClassName}sQueriesService
+                public class {ClassName}QueryService(SecurityDbContext ctx) : I{ClassName}QueryService
                 {
                     public async Task<IEnumerable<{ClassName}>> GetAllAsync()
                     {
@@ -132,11 +133,11 @@ namespace Ubik.CodeGenerator
         {
             return
                 """
-                public interface I{ClassName}sCommandsService
+                public interface I{ClassName}CommandService
                 {
                     public Task<Either<IServiceAndFeatureError, {ClassName}>> AddAsync(Add{ClassName}Command command);
                     public Task<Either<IServiceAndFeatureError, {ClassName}>> UpdateAsync(Update{ClassName}Command command);
-                    public Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id);
+                    public Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id);
                 }
                 """;
         }
@@ -144,66 +145,61 @@ namespace Ubik.CodeGenerator
         private static string GetTemplateForServiceCommandClass()
         {
             return
-                """
-                public class {ClassName}sCommandsService(SecurityDbContext ctx, IPublishEndpoint publishEndpoint) : I{ClassName}sCommandsService
-                {
+                """"
                     public async Task<Either<IServiceAndFeatureError, {ClassName}>> AddAsync(Add{ClassName}Command command)
                     {
-                        var result = await Add{ClassName}Async(command.To{ClassName}());
-
-                        return await result.MatchAsync<Either<IServiceAndFeatureError, {ClassName}>>(
-                        RightAsync: async r =>
-                        {
-                            await publishEndpoint.Publish(r.To{ClassName}Added(), CancellationToken.None);
-                            await ctx.SaveChangesAsync();
-                            return r;
-                        },
-                        Left: err =>
-                        {
-                            return Prelude.Left(err);
-                        });
+                        return await ValidateIfNotAlreadyExistsAsync(command.To{ClassName}())
+                            .BindAsync(AddInDbContextAsync)
+                            .BindAsync(AddSaveAndPublishAsync);
                     }
 
                     public async Task<Either<IServiceAndFeatureError, {ClassName}>> UpdateAsync(Update{ClassName}Command command)
                     {
-                        var result = await Update{ClassName}Async(command.To{ClassName}());
+                        var model = command.To{ClassName}();
 
-                        return await result.MatchAsync<Either<IServiceAndFeatureError, {ClassName}>>(
-                            RightAsync: async r =>
-                            {
-                                try
-                                {
-                                    //Store and publish AccountGroupAdded event
-                                    await publishEndpoint.Publish(r.To{ClassName}Updated(), CancellationToken.None);
-                                    await ctx.SaveChangesAsync();
-                                    return r;
-                                }
-                                catch (UpdateDbConcurrencyException)
-                                {
-                                    return new ResourceUpdateConcurrencyError("{ClassName}", r.Version.ToString());
-                                }
-                            },
-                            Left: err =>
-                            {
-                                return Prelude.Left(err);
-                            });
+                        return await GetAsync(model.Id)
+                            .BindAsync(x => MapInDbContextAsync(x, model))
+                            .BindAsync(ValidateIfNotAlreadyExistsWithOtherIdAsync)
+                            .BindAsync(UpdateInDbContextAsync)
+                            .BindAsync(UpdateSaveAndPublishAsync);
                     }
 
-                    public async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
+                    public async Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id)
                     {
-                        var res = await ExecuteDelete{ClassName}Async(id);
+                        return await GetAsync(id)
+                            .BindAsync(DeleteInDbContextAsync)
+                            .BindAsync(DeletedSaveAndPublishAsync);
+                    }
 
-                        return await res.MatchAsync<Either<IServiceAndFeatureError, bool>>(
-                            RightAsync: async r =>
-                            {
-                                await publishEndpoint.Publish(new {ClassName}Deleted { Id = id }, CancellationToken.None);
-                                await ctx.SaveChangesAsync();
-                                return true;
-                            },
-                            Left: err =>
-                            {
-                                return Prelude.Left(err);
-                            });
+                    private async Task<Either<IServiceAndFeatureError, bool>> DeletedSaveAndPublishAsync({ClassName} current)
+                    {
+                        await publishEndpoint.Publish(new {ClassName}Deleted { Id = current.Id }, CancellationToken.None);
+                        await ctx.SaveChangesAsync();
+
+                        return true;
+                    }
+
+                    private async Task<Either<IServiceAndFeatureError, {ClassName}>> DeleteInDbContextAsync({ClassName} current)
+                    {
+                        ctx.Entry(current).State = EntityState.Deleted;
+
+                        await Task.CompletedTask;
+                        return current;
+                    }
+
+                    private async Task<Either<IServiceAndFeatureError, {ClassName}>> UpdateSaveAndPublishAsync({ClassName} current)
+                    {
+                        try
+                        {
+                            await publishEndpoint.Publish(current.To{ClassName}Updated(), CancellationToken.None);
+                            await ctx.SaveChangesAsync();
+
+                            return current;
+                        }
+                        catch (UpdateDbConcurrencyException)
+                        {
+                            return new ResourceUpdateConcurrencyError("{ClassName}", current.Version.ToString());
+                        }
                     }
 
                     private async Task<Either<IServiceAndFeatureError, {ClassName}>> GetAsync(Guid id)
@@ -215,37 +211,13 @@ namespace Ubik.CodeGenerator
                             : result;
                     }
 
-                    private async Task<Either<IServiceAndFeatureError, {ClassName}>> Update{ClassName}Async({ClassName} current)
+                    private async Task<Either<IServiceAndFeatureError, {ClassName}>> UpdateInDbContextAsync({ClassName} current)
                     {
-                        return await GetAsync(current.Id).ToAsync()
-                           .Map(c => c = current.To{ClassName}(c))
-                           .Bind(c => ValidateIfNotAlreadyExistsWithOtherIdAsync(c).ToAsync())
-                           .Map(c =>
-                           {
-                               ctx.Entry(c).State = EntityState.Modified;
-                               ctx.SetAuditAndSpecialFields();
-                               return c;
-                           });
-                    }
+                        ctx.Entry(current).State = EntityState.Modified;
+                        ctx.SetAuditAndSpecialFields();
 
-                    private async Task<Either<IServiceAndFeatureError, {ClassName}>> Add{ClassName}Async({ClassName} current)
-                    {
-                        return await ValidateIfNotAlreadyExistsAsync(current).ToAsync()
-                           .MapAsync(async ac =>
-                           {
-                               ac.Id = NewId.NextGuid();
-                               await ctx.{ClassName}s.AddAsync(ac);
-                               ctx.SetAuditAndSpecialFields();
-                               return ac;
-                           });
-                    }
-
-                    private async Task<Either<IServiceAndFeatureError, {ClassName}>> ValidateIfNotAlreadyExistsAsync({ClassName} current)
-                    {
-                        var exists = await ctx.{ClassName}s.AnyAsync(a => a.Code == current.Code);
-                        return exists
-                            ? new ResourceAlreadyExistsError("{ClassName}", "Code", current.Code)
-                            : current;
+                        await Task.CompletedTask;
+                        return current;
                     }
 
                     private async Task<Either<IServiceAndFeatureError, {ClassName}>> ValidateIfNotAlreadyExistsWithOtherIdAsync({ClassName} current)
@@ -257,17 +229,37 @@ namespace Ubik.CodeGenerator
                             : current;
                     }
 
-                    private async Task<Either<IServiceAndFeatureError, bool>> ExecuteDelete{ClassName}Async(Guid id)
+                    private static async Task<Either<IServiceAndFeatureError, {ClassName}>> MapInDbContextAsync
+                        ({ClassName} current, {ClassName} forUpdate)
                     {
-                        return await GetAsync(id).ToAsync()
-                                .MapAsync(async ac =>
-                                {
-                                    await ctx.{ClassName}s.Where(x => x.Id == id).ExecuteDeleteAsync();
-                                    return true;
-                                });
+                        current = forUpdate.To{ClassName}(current);
+                        await Task.CompletedTask;
+                        return current;
                     }
-                }
-                """;
+
+                    private async Task<Either<IServiceAndFeatureError, {ClassName}>> AddSaveAndPublishAsync({ClassName} current)
+                    {
+                        await publishEndpoint.Publish(current.To{ClassName}Added(), CancellationToken.None);
+                        await ctx.SaveChangesAsync();
+                        return current;
+                    }
+
+                    private async Task<Either<IServiceAndFeatureError, {ClassName}>> AddInDbContextAsync({ClassName} current)
+                    {
+                        current.Id = NewId.NextGuid();
+                        await ctx.{ClassName}s.AddAsync(current);
+                        ctx.SetAuditAndSpecialFields();
+                        return current;
+                    }
+
+                    private async Task<Either<IServiceAndFeatureError, {ClassName}>> ValidateIfNotAlreadyExistsAsync({ClassName} current)
+                    {
+                        var exists = await ctx.{ClassName}s.AnyAsync(a => a.Code == current.Code);
+                        return exists
+                            ? new ResourceAlreadyExistsError("{ClassName}", "Code", current.Code)
+                            : current;
+                    }
+                """";
         }
     }
 }

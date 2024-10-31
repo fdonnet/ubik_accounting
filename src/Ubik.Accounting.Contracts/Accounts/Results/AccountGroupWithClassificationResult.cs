@@ -1,6 +1,6 @@
 ﻿namespace Ubik.Accounting.Contracts.Accounts.Results
 {
-    public  record AccountGroupWithClassificationResult
+    public record AccountGroupWithClassificationResult
     {
         public Guid Id { get; init; }
         public string Code { get; init; } = default!;

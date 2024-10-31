@@ -22,5 +22,7 @@ namespace Ubik.Accounting.Contracts.Accounts.Commands
         public AccountDomain Domain { get; init; }
         [Required]
         public Guid CurrencyId { get; init; }
+        [Required]
+        public bool Active { get; init; } = true;
     }
 }

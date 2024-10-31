@@ -22,6 +22,7 @@ namespace Ubik.Accounting.Contracts.Accounts.Commands
         public AccountDomain Domain { get; init; }
         [MaxLength(700)]
         public string? Description { get; init; }
+        public bool Active { get; init; } = true;
         [Required]
         public Guid Version { get; init; }
         [Required]
