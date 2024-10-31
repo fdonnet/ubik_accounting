@@ -35,6 +35,9 @@ namespace Ubik.Accounting.Api.Data.Config
             builder.Property(a => a.ExchangeRate)
                 .HasPrecision(18, 10);
 
+            builder.Property(a => a.VATAppliedRate)
+                .HasPrecision(8, 5);
+
             builder.Property(a => a.Version)
                 .IsConcurrencyToken();
 
@@ -66,6 +69,12 @@ namespace Ubik.Accounting.Api.Data.Config
             .WithMany()
             .HasForeignKey(e => e.OriginalCurrencyId)
             .IsRequired(true);
+
+            builder
+            .HasOne(e=> e.VatRate)
+            .WithMany()
+            .HasForeignKey(e => e.VatRateId)
+            .IsRequired(false);
         }
     }
 }

@@ -21,6 +21,8 @@ namespace Ubik.Accounting.Api.Data
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Entry> Entries { get; set; }
+        public DbSet<VatRate> VatRates { get; set; }
+        public DbSet<AccountVatConfig> AccountVatConfigs { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -76,6 +78,8 @@ namespace Ubik.Accounting.Api.Data
             new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
             new TransactionConfiguration().Configure(modelBuilder.Entity<Transaction>());
             new EntryConfiguration().Configure(modelBuilder.Entity<Entry>());
+            new VatRateConfiguration().Configure(modelBuilder.Entity<VatRate>());
+            new AccountVatConfigConfiguration().Configure(modelBuilder.Entity<AccountVatConfig>());
 
             base.OnModelCreating(modelBuilder);
         }
@@ -102,6 +106,12 @@ namespace Ubik.Accounting.Api.Data
 
             modelBuilder.Entity<Entry>()
                 .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
+
+            modelBuilder.Entity<VatRate>()
+               .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
+
+            modelBuilder.Entity<AccountVatConfig>()
+               .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
         }
     }
 }

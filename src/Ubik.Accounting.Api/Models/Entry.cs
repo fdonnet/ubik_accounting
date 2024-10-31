@@ -23,8 +23,13 @@ namespace Ubik.Accounting.Api.Models
         public Transaction? Transaction { get; set; }
         public required Guid AccountId { get; set; }
         public Account? Account { get; set; }
+        //Used to keep a trace of the VAT rate applied to the entry (at a time)
+        public decimal VATAppliedRate { get; set; }
+        public Guid? VatRateId { get; set; }
+        public VatRate? VatRate { get; set; }
         public string? Label { get; set; }
         public string? Description { get; set; }
+        //See if we want the amount with or without VAT
         public required decimal Amount { get; set; }
         public decimal? OriginalAmount { get; set; }
         public Guid? OriginalCurrencyId { get; set; }
