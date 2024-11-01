@@ -165,6 +165,7 @@ builder.Services.AddHttpClient("TokenClient", options =>
     options.BaseAddress = new Uri(authOptions.TokenUrl);
 }).ConfigurePrimaryHttpMessageHandler(() => {
 
+    //TODO; remove that shit on prod... only for DEV keycloak Minikube
     var httpClientHandler = new HttpClientHandler();
 
     if(authOptions.AuthorizeBadCert)
