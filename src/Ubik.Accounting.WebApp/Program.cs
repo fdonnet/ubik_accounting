@@ -45,7 +45,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
 //TODO: this is very dependant to distributed cache (if no cache => no site, see if it's bad)
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
-
+builder.Services.Configure<AuthServerOptions>(
+    builder.Configuration.GetSection(AuthServerOptions.Position));
 
 
 builder.Services.AddAuthentication(options =>
@@ -75,36 +76,6 @@ builder.Services.AddAuthentication(options =>
                 {
                     x.RejectPrincipal();
                     return;
-                }
-
-                //If token expired
-                if (actualToken.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10) && actualToken.ExpiresRefreshUtc > DateTimeOffset.UtcNow.AddSeconds(10))
-                {
-                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
-                    {
-                        Address = authOptions.TokenUrl,
-                        ClientId = authOptions.ClientId,
-                        ClientSecret = authOptions.ClientSecret,
-                        RefreshToken = actualToken.RefreshToken,
-                        GrantType = "refresh_token",
-                    });
-
-                    if (!response.IsError)
-                    {
-                        await cache.SetUserTokenAsync(new TokenCacheEntry
-                        {
-                            UserId = userId,
-                            RefreshToken = response.RefreshToken!,
-                            AccessToken = response.AccessToken!,
-                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
-                            ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.RefreshTokenExpTimeInMinutes)
-                        });
-                    }
-                    else
-                    {
-                        x.RejectPrincipal();
-                        return;
-                    }
                 }
             }
         };
@@ -187,6 +158,11 @@ builder.Configuration.GetSection(ApiOptions.Position).Bind(userServiceClientOpt)
 builder.Services.AddHttpClient("UserServiceClient", options =>
 {
     options.BaseAddress = new Uri(userServiceClientOpt.SecurityUrl);
+});
+
+builder.Services.AddHttpClient("TokenClient", options =>
+{
+    options.BaseAddress = new Uri(authOptions.TokenUrl);
 });
 
 builder.Services.AddScoped<ClassificationStateService>();

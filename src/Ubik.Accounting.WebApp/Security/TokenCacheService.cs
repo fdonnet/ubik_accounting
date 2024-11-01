@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using IdentityModel.Client;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Ubik.Accounting.WebApp.Shared.Security;
@@ -9,10 +11,12 @@ using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Accounting.WebApp.Security
 {
-    public class TokenCacheService(IDistributedCache cache, IOptions<AuthServerOptions> authOptions)
+    public class TokenCacheService(IDistributedCache cache, IOptions<AuthServerOptions> authOptions, IHttpClientFactory factory)
     {
         private readonly IDistributedCache _cache = cache;
         private readonly AuthServerOptions _authOptions = authOptions.Value;
+        private readonly HttpClient _httpClient = factory.CreateClient("TokenClient");
+
         private static readonly JsonSerializerOptions _serializerOptions = new()
         {
             PropertyNamingPolicy = null,
@@ -46,18 +50,65 @@ namespace Ubik.Accounting.WebApp.Security
 
             if (cachedResult == null) return null;
 
-            if (cachedResult.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10))
-            {
-                if (cachedResult.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(10))
-                {
-                    await RemoveUserTokenAsync(userId);
-                    return null;
-                }
-            }
+            cachedResult = await RefreshTokenAsync(cachedResult, userId);
 
             return cachedResult;
         }
 
+        private async Task<TokenCacheEntry?> RefreshTokenAsync(TokenCacheEntry actualToken, string userId)
+        {
+
+            if (actualToken.ExpiresUtc > DateTimeOffset.UtcNow.AddSeconds(10))
+            {
+                //No need to refresh
+                return actualToken;
+            }
+            else
+            {
+                if (actualToken.ExpiresRefreshUtc > DateTimeOffset.UtcNow.AddSeconds(10))
+                {
+                    //Can try a refresh
+                    var dict = ValuesForRefresh(actualToken.RefreshToken);
+                    HttpResponseMessage response = await _httpClient.PostAsync("", new FormUrlEncodedContent(dict));
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var token = await ProtocolResponse.FromHttpResponseAsync<TokenResponse>(response);
+
+                        if (token != null)
+                        {
+                            var newToken = new TokenCacheEntry
+                            {
+                                UserId = userId,
+                                RefreshToken = token.RefreshToken!,
+                                AccessToken = token.AccessToken!,
+                                ExpiresUtc = new JwtSecurityToken(token.AccessToken).ValidTo,
+                                ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(_authOptions.RefreshTokenExpTimeInMinutes)
+                            };
+
+                            //Refresh successful
+                            await SetUserTokenAsync(newToken);
+                            return newToken;
+                        }
+                    }
+                }
+                //Too old to refresh or refresh not successful
+                await RemoveUserTokenAsync(userId);
+                return null;
+            }
+        }
+
+        private Dictionary<string, string> ValuesForRefresh(string token)
+        {
+            return new Dictionary<string, string>
+            {
+                { "Content-Type", "application/x-www-form-urlencoded" },
+                { "client_id", _authOptions.ClientId },
+                { "client_secret", _authOptions.ClientSecret },
+                { "refresh_token", token },
+                { "grant_type", "refresh_token" },
+            };
+        }
         public async Task SetUserInfoAsync(UserAdminOrMeResult userInfo)
         {
             var toCache = JsonSerializer.SerializeToUtf8Bytes(userInfo, options: _serializerOptions);
