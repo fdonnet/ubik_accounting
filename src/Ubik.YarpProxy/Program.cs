@@ -30,8 +30,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 if (authOptions.AuthorizeBadCert)
                 {
                     //TODO; remove that shit on prod... only for DEV keycloak Minikube
-                    HttpClientHandler handler = new HttpClientHandler();
-                    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                    HttpClientHandler handler = new()
+                    {
+                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    };
                     o.BackchannelHttpHandler = handler;
                 }
             });

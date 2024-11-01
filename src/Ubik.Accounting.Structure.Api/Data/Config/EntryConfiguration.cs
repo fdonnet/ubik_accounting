@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Structure.Api.Models;
 
+//Will be put in a dedicated service
 namespace Ubik.Accounting.Structure.Api.Data.Config
 {
     //public class EntryConfiguration : IEntityTypeConfiguration<Entry>

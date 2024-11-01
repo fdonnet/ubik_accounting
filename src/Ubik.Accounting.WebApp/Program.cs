@@ -43,7 +43,6 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 //TODO: put that in a lib project Auth
 //TODO: this is very dependant to distributed cache (if no cache => no site, see if it's bad)
-//TODO: do better and use UserId in cache
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
 

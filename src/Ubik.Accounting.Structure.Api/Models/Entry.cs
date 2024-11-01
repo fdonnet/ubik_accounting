@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ubik.DB.Common;
 
+//Will be put in a dedicated service
 namespace Ubik.Accounting.Structure.Api.Models
 {
     //public enum DebitCredit

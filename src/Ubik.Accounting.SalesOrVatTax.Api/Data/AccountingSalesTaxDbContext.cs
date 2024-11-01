@@ -13,6 +13,8 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Data
         , ICurrentUser currentUser) : DbContext(options)
     {
         public DbSet<TaxRate> TaxRates { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<AccountTaxRateConfig> AccountTaxRateConfigs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -59,6 +61,8 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Data
 
             //Configure
             new TaxRateConfiguration().Configure(modelBuilder.Entity<TaxRate>());
+            new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
+            new AccountTaxRateConfigConfiguration().Configure(modelBuilder.Entity<AccountTaxRateConfig>());
 
 
             base.OnModelCreating(modelBuilder);
@@ -67,6 +71,12 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Data
         private void SetTenantId(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TaxRate>()
+                .HasQueryFilter(mt => mt.TenantId == currentUser.TenantId);
+
+            modelBuilder.Entity<Account>()
+                .HasQueryFilter(mt => mt.TenantId == currentUser.TenantId);
+
+            modelBuilder.Entity<AccountTaxRateConfig>()
                 .HasQueryFilter(mt => mt.TenantId == currentUser.TenantId);
         }
     }

@@ -14,9 +14,6 @@ namespace Ubik.Accounting.Structure.Api.Data.Config
                 .IsRequired()
                 .HasMaxLength(3);
 
-            builder.Property(a => a.Version)
-                .IsConcurrencyToken();
-
             builder.Property(a => a.TenantId)
                 .IsRequired();
 
