@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Ubik.Accounting.SalesOrVatTax.Api\Ubik.Accounting.SalesOrVatTax.Api.csproj" />
     <ProjectReference Include="..\Ubik.Accounting.Structure.Api\Ubik.Accounting.Structure.Api.csproj" />
     <ProjectReference Include="..\Ubik.Security.Api\Ubik.Security.Api.csproj" />
   </ItemGroup>

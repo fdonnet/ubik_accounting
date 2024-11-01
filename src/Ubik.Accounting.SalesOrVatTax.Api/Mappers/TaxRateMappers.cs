@@ -1,15 +1,15 @@
-﻿using Ubik.Accounting.Structure.Api.Models;
-using Ubik.Accounting.Structure.Contracts.VatRate.Commands;
-using Ubik.Accounting.Structure.Contracts.VatRate.Events;
-using Ubik.Accounting.Structure.Contracts.VatRate.Results;
+﻿using Ubik.Accounting.SalesOrVatTax.Api.Models;
+using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Events;
+using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Results;
 
-namespace Ubik.Accounting.Structure.Api.Mappers
+namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
 {
-    public static class VatRateMappers
+    public static class TaxRateMappers
     {
-        public static IEnumerable<VatRateStandardResult> ToVatRateStandardResults(this IEnumerable<VatRate> current)
+        public static IEnumerable<SalesOrVatTaxRateStandardResult> ToSalesOrVatTaxRateStandardResults(this IEnumerable<TaxRate> current)
         {
-            return current.Select(x => new VatRateStandardResult()
+            return current.Select(x => new SalesOrVatTaxRateStandardResult()
             {
                 Id = x.Id,
                 ValidFrom = x.ValidFrom,
@@ -21,9 +21,9 @@ namespace Ubik.Accounting.Structure.Api.Mappers
             });
         }
 
-        public static VatRate ToVatRate(this AddVatRateCommand current)
+        public static TaxRate ToSalesOrVatTaxRate(this AddSalesOrVatTaxRateCommand current)
         {
-            return new VatRate
+            return new TaxRate
             {
                 ValidFrom = current.ValidFrom,
                 ValidTo = current.ValidTo,
@@ -33,23 +33,9 @@ namespace Ubik.Accounting.Structure.Api.Mappers
             };
         }
 
-        public static VatRate ToVatRate(this UpdateVatRateCommand current)
+        public static TaxRate ToSalesOrVatTaxRate(this UpdateSalesOrVatTaxRateCommand current)
         {
-            return new VatRate
-            {
-                Id = current.Id,
-                ValidFrom = current.ValidFrom,
-                ValidTo = current.ValidTo,
-                Code = current.Code,
-                Description = current.Description,
-                Rate = current.Rate,
-                Version = current.Version,
-            };
-        }
-
-        public static VatRateAdded ToVatRateAdded(this VatRate current)
-        {
-            return new VatRateAdded()
+            return new TaxRate
             {
                 Id = current.Id,
                 ValidFrom = current.ValidFrom,
@@ -61,9 +47,9 @@ namespace Ubik.Accounting.Structure.Api.Mappers
             };
         }
 
-        public static VatRateUpdated ToVatRateUpdated(this VatRate current)
+        public static SalesOrVatTaxRateAdded ToSalesOrVatTaxRateAdded(this TaxRate current)
         {
-            return new VatRateUpdated()
+            return new SalesOrVatTaxRateAdded()
             {
                 Id = current.Id,
                 ValidFrom = current.ValidFrom,
@@ -75,7 +61,21 @@ namespace Ubik.Accounting.Structure.Api.Mappers
             };
         }
 
-        public static VatRate ToVatRate(this VatRate forUpd, VatRate model)
+        public static SalesOrVatTaxRateUpdated ToSalesOrVatTaxRateUpdated(this TaxRate current)
+        {
+            return new SalesOrVatTaxRateUpdated()
+            {
+                Id = current.Id,
+                ValidFrom = current.ValidFrom,
+                ValidTo = current.ValidTo,
+                Code = current.Code,
+                Description = current.Description,
+                Rate = current.Rate,
+                Version = current.Version,
+            };
+        }
+
+        public static TaxRate ToSalesOrVatTaxRate(this TaxRate forUpd, TaxRate model)
         {
             model.Id = forUpd.Id;
             model.ValidFrom = forUpd.ValidFrom;
@@ -88,9 +88,9 @@ namespace Ubik.Accounting.Structure.Api.Mappers
             return model;
         }
 
-        public static VatRateStandardResult ToVatRateStandardResult(this VatRate current)
+        public static SalesOrVatTaxRateStandardResult ToSalesOrVatTaxRateStandardResult(this TaxRate current)
         {
-            return new VatRateStandardResult()
+            return new SalesOrVatTaxRateStandardResult()
             {
                 Id = current.Id,
                 ValidFrom = current.ValidFrom,

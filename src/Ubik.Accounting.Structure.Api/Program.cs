@@ -62,7 +62,7 @@ namespace Ubik.Accounting.Structure.Api
             //MessageBroker with masstransit + outbox
             builder.Services.AddMassTransit(config =>
             {
-                config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(prefix: "AccountingApi", includeNamespace: false));
+                config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(prefix: "AccountingStructApi", includeNamespace: false));
                 config.UsingRabbitMq((context, configurator) =>
                 {
                     configurator.Host(new Uri(msgBrokerOptions.Host), h =>

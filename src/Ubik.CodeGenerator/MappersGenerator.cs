@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using System.Text;
+using Ubik.Accounting.SalesOrVatTax.Api.Data;
 using Ubik.Accounting.Structure.Api.Data;
 using Ubik.Security.Api.Data;
 
 namespace Ubik.CodeGenerator
 {
-    internal class MappersGenerator(AccountingDbContext dbContext)
+    internal class MappersGenerator(AccountingSalesTaxDbContext dbContext)
     {
         public void GenerateMappers(string? type = null)
         {

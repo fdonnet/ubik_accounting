@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubik.YarpProxy", "Ubik.Yarp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Accounting.SalesOrVatTax.Api", "Ubik.Accounting.SalesOrVatTax.Api\Ubik.Accounting.SalesOrVatTax.Api.csproj", "{88A5C638-DFC5-4723-8736-FBBEE524CF72}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Accounting.SalesOrVatTax.Contracts", "Ubik.Accounting.SalesOrVatTax.Contracts\Ubik.Accounting.SalesOrVatTax.Contracts.csproj", "{EE4F7875-98E7-47FD-9921-CD306448A8E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{88A5C638-DFC5-4723-8736-FBBEE524CF72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88A5C638-DFC5-4723-8736-FBBEE524CF72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88A5C638-DFC5-4723-8736-FBBEE524CF72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE4F7875-98E7-47FD-9921-CD306448A8E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE4F7875-98E7-47FD-9921-CD306448A8E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE4F7875-98E7-47FD-9921-CD306448A8E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE4F7875-98E7-47FD-9921-CD306448A8E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

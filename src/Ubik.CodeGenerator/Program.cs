@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Ubik.Accounting.SalesOrVatTax.Api.Data;
 using Ubik.Accounting.Structure.Api.Data;
 using Ubik.ApiService.Common.Services;
 using Ubik.CodeGenerator;
@@ -12,6 +13,8 @@ var serviceProvider = new ServiceCollection()
     .AddDbContextFactory<SecurityDbContext>(
         options => options.UseNpgsql("x"))
     .AddDbContextFactory<AccountingDbContext>(
+        options => options.UseNpgsql("x"))
+        .AddDbContextFactory<AccountingSalesTaxDbContext>(
         options => options.UseNpgsql("x"))
     .AddSingleton<ContractsGenerator>()
     .AddSingleton<MappersGenerator>()
@@ -26,8 +29,8 @@ var myServicesGenerator = serviceProvider.GetRequiredService<ServicesGenerator>(
 var myControllerGenerator = serviceProvider.GetRequiredService<ControllerGenerator>();
 
 //myContractsGenerator.GenerateAllContracts(false, string.Empty, "VatRate");
-//myMappersGenerator.GenerateMappers("VatRate");
-myServicesGenerator.GenerateAllServicesAndInterfaces("VatRate");
+myMappersGenerator.GenerateMappers("SalesOrVatTaxRate");
+//myServicesGenerator.GenerateAllServicesAndInterfaces("VatRate");
 //myControllerGenerator.GenerateController("Tenant");
 
 //FAKER to use the DBcontext

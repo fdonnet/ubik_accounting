@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using Ubik.Accounting.Structure.Api.Models;
+using Ubik.Accounting.SalesOrVatTax.Api.Models;
 
-namespace Ubik.Accounting.Structure.Api.Data.Config
+namespace Ubik.Accounting.SalesOrVatTax.Api.Data.Config
 {
-    public class VatRateConfiguration : IEntityTypeConfiguration<VatRate>
+    public class TaxRateConfiguration : IEntityTypeConfiguration<TaxRate>
     {
-        public void Configure(EntityTypeBuilder<VatRate> builder)
+        public void Configure(EntityTypeBuilder<TaxRate> builder)
         {
             builder.Property(a => a.Code)
                 .HasMaxLength(20)

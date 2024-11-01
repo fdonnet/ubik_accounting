@@ -86,9 +86,9 @@ builder.Services.AddMassTransit(config =>
     //Add all consumers
     config.AddConsumers(Assembly.GetExecutingAssembly());
 
-    //Add commands clients
-    config.AddRequestClient<AddUserCommand>();
-    config.AddRequestClient<AddAuthorizationCommand>();
+    ////Add commands clients
+    //config.AddRequestClient<AddUserCommand>();
+    //config.AddRequestClient<AddAuthorizationCommand>();
 });
 
 //Api versioning

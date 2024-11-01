@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ubik.Accounting.Structure.Contracts.VatRate.Events
+namespace Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Results
 {
-    public record VatRateUpdated
+    public record SalesOrVatTaxRateStandardResult
     {
         public Guid Id { get; init; }
         public DateTime ValidFrom { get; init; }

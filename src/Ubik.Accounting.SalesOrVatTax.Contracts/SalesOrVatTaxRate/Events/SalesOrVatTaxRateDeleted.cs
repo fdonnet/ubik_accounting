@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ubik.Accounting.Structure.Contracts.VatRate.Events
+namespace Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Events
 {
-    public record VatRateDeleted
+    public record SalesOrVatTaxRateDeleted
     {
         public Guid Id { get; init; }
     }

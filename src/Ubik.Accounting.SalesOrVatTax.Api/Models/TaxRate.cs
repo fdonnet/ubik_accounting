@@ -1,8 +1,8 @@
 ﻿using Ubik.DB.Common;
 
-namespace Ubik.Accounting.Structure.Api.Models
+namespace Ubik.Accounting.SalesOrVatTax.Api.Models
 {
-    public class VatRate : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
+    public class TaxRate : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
     {
         public Guid Id { get; set; }
         public DateTime ValidFrom { get; set; }
