@@ -10,17 +10,17 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
     {
         public async Task<IEnumerable<TaxRate>> GetAllAsync()
         {
-            var result = await ctx.SalesOrVatTaxRates.ToListAsync();
+            var result = await ctx.TaxRates.ToListAsync();
 
             return result;
         }
 
         public async Task<Either<IServiceAndFeatureError, TaxRate>> GetAsync(Guid id)
         {
-            var result = await ctx.SalesOrVatTaxRates.FindAsync(id);
+            var result = await ctx.TaxRates.FindAsync(id);
 
             return result == null
-                ? new ResourceNotFoundError("VatRate", "Id", id.ToString())
+                ? new ResourceNotFoundError("TaxRate", "Id", id.ToString())
                 : result;
         }
     }

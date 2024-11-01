@@ -66,16 +66,16 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
             }
             catch (UpdateDbConcurrencyException)
             {
-                return new ResourceUpdateConcurrencyError("VatRate", current.Version.ToString());
+                return new ResourceUpdateConcurrencyError("TaxRate", current.Version.ToString());
             }
         }
 
         private async Task<Either<IServiceAndFeatureError, TaxRate>> GetAsync(Guid id)
         {
-            var result = await ctx.SalesOrVatTaxRates.FindAsync(id);
+            var result = await ctx.TaxRates.FindAsync(id);
 
             return result == null
-                ? new ResourceNotFoundError("VatRate", "Id", id.ToString())
+                ? new ResourceNotFoundError("TaxRate", "Id", id.ToString())
                 : result;
         }
 
@@ -90,10 +90,10 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
 
         private async Task<Either<IServiceAndFeatureError, TaxRate>> ValidateIfNotAlreadyExistsWithOtherIdAsync(TaxRate current)
         {
-            var exists = await ctx.SalesOrVatTaxRates.AnyAsync(a => a.Code == current.Code && a.Id != current.Id);
+            var exists = await ctx.TaxRates.AnyAsync(a => a.Code == current.Code && a.Id != current.Id);
 
             return exists
-                ? new ResourceAlreadyExistsError("VatRate", "Code", current.Code)
+                ? new ResourceAlreadyExistsError("TaxRate", "Code", current.Code)
                 : current;
         }
 
@@ -115,16 +115,16 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
         private async Task<Either<IServiceAndFeatureError, TaxRate>> AddInDbContextAsync(TaxRate current)
         {
             current.Id = NewId.NextGuid();
-            await ctx.SalesOrVatTaxRates.AddAsync(current);
+            await ctx.TaxRates.AddAsync(current);
             ctx.SetAuditAndSpecialFields();
             return current;
         }
 
         private async Task<Either<IServiceAndFeatureError, TaxRate>> ValidateIfNotAlreadyExistsAsync(TaxRate current)
         {
-            var exists = await ctx.SalesOrVatTaxRates.AnyAsync(a => a.Code == current.Code);
+            var exists = await ctx.TaxRates.AnyAsync(a => a.Code == current.Code);
             return exists
-                ? new ResourceAlreadyExistsError("VatRate", "Code", current.Code)
+                ? new ResourceAlreadyExistsError("TaxRate", "Code", current.Code)
                 : current;
         }
     }

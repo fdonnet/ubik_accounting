@@ -1,8 +1,9 @@
-﻿using Ubik.Security.Api.Data;
+﻿using Ubik.Accounting.SalesOrVatTax.Api.Data;
+using Ubik.Security.Api.Data;
 
 namespace Ubik.CodeGenerator
 {
-    internal class ControllerGenerator(SecurityDbContext dbContext)
+    internal class ControllerGenerator(AccountingSalesTaxDbContext dbContext)
     {
         public void GenerateController(string? type = null)
         {
@@ -27,7 +28,7 @@ namespace Ubik.CodeGenerator
                 [ApiController]
                 [ApiVersion("1.0")]
                 [Route("api/v{version:apiVersion}/[controller]")]
-                public class {ClassName}sController(I{ClassName}sCommandsService commandService, I{ClassName}sQueriesService queryService) : ControllerBase
+                public class {ClassName}sController(I{ClassName}CommandService commandService, I{ClassName}QueryService queryService) : ControllerBase
                 {
                     [HttpGet]
                     [ProducesResponseType(200)]
@@ -92,7 +93,7 @@ namespace Ubik.CodeGenerator
                     [ProducesResponseType(typeof(CustomProblemDetails), 500)]
                     public async Task<ActionResult> Delete(Guid id)
                     {
-                        var result = await commandService.ExecuteDeleteAsync(id);
+                        var result = await commandService.DeleteAsync(id);
 
                         return result.Match<ActionResult>(
                             Right: ok => NoContent(),

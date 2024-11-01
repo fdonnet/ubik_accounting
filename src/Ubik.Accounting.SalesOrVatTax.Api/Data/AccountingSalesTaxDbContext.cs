@@ -12,7 +12,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Data
     public class AccountingSalesTaxDbContext(DbContextOptions<AccountingSalesTaxDbContext> options
         , ICurrentUser currentUser) : DbContext(options)
     {
-        public DbSet<TaxRate> SalesOrVatTaxRates { get; set; }
+        public DbSet<TaxRate> TaxRates { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

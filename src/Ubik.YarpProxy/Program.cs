@@ -102,7 +102,11 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanClassificationsAndAccountGroupsWrite", policy =>
         policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_classification_write", "accounting_accountgroup_write"])))
     .AddPolicy("CanCurrenciesRead", policy =>
-        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_currency_read"])));
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_currency_read"])))
+    .AddPolicy("CanSalesOrVatTaxRatesRead", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_read"])))
+    .AddPolicy("CanSalesOrVatTaxRatesWrite", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_write"])));
 
 //Proxy
 var configProxy = builder.Configuration.GetSection("ReverseProxy");
