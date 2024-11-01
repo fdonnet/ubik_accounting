@@ -92,7 +92,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                         """
                         SELECT r.*
                         FROM roles r
-                        INNER JOIN user_roles_by_tenants urt ON urt.role_id = r.id
+                        INNER JOIN users_roles_by_tenant urt ON urt.role_id = r.id
                         INNER JOIN users_tenants ut ON ut.id = urt.user_tenant_id
                         WHERE ut.user_id = @user_id
                         AND ut.tenant_id = @tenant_id
@@ -120,7 +120,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 """
                 SELECT r.*
                 FROM roles r
-                INNER JOIN user_roles_by_tenants urt ON urt.role_id = r.id
+                INNER JOIN users_roles_by_tenant urt ON urt.role_id = r.id
                 INNER JOIN users_tenants ut ON ut.id = urt.user_tenant_id
                 WHERE ut.user_id = @user_id
                 AND ut.tenant_id = @tenant_id
@@ -146,7 +146,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 SELECT DISTINCT ut.tenant_id, a.*
                 FROM users u
                 INNER JOIN users_tenants ut ON ut.user_id = u.id
-                INNER JOIN user_roles_by_tenants urt ON urt.user_tenant_id = ut.id
+                INNER JOIN users_roles_by_tenant urt ON urt.user_tenant_id = ut.id
                 INNER JOIN roles_authorizations ra ON ra.role_id = urt.role_id
                 INNER JOIN authorizations a ON a.id = ra.authorization_id
                 WHERE u.id = @userid
