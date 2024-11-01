@@ -163,6 +163,15 @@ builder.Services.AddHttpClient("UserServiceClient", options =>
 builder.Services.AddHttpClient("TokenClient", options =>
 {
     options.BaseAddress = new Uri(authOptions.TokenUrl);
+}).ConfigurePrimaryHttpMessageHandler(() => {
+
+    var httpClientHandler = new HttpClientHandler();
+
+    if(authOptions.AuthorizeBadCert)
+    {
+        httpClientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    }
+    return httpClientHandler;
 });
 
 builder.Services.AddScoped<ClassificationStateService>();
