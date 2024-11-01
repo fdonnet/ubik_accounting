@@ -50,7 +50,7 @@ namespace Ubik.Accounting.WebApp.Security
             {
                 if (cachedResult.ExpiresRefreshUtc < DateTimeOffset.UtcNow.AddSeconds(10))
                 {
-                    await RemoveUserTokenAsync($"webapp_{userId}");
+                    await RemoveUserTokenAsync(userId);
                     return null;
                 }
             }
