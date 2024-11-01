@@ -1,0 +1,6 @@
+@Ubik.Accounting.SalesOrVatTax.Api_HostAddress = http://localhost:5284
+
+GET {{Ubik.Accounting.SalesOrVatTax.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
