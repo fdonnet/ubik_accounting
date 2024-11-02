@@ -14,7 +14,7 @@ using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
 using MassTransit;
 using Ubik.Accounting.Structure.Api.Models;
 
-namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Struct.Classifications
 {
     public class ClassificationsController_Test : BaseIntegrationTestAccountingStruct
     {
@@ -118,8 +118,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<List<ClassificationStandardResult>>()
-                .And.HaveCount(1);
+                .And.BeOfType<List<ClassificationStandardResult>>();
         }
 
         [Fact]

@@ -15,7 +15,7 @@ using Ubik.Accounting.Structure.Contracts.Accounts.Results;
 using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
 using MassTransit;
 
-namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Struct.AccountGroups
 {
     public class AccountGroupsController_Test : BaseIntegrationTestAccountingStruct
     {

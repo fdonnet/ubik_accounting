@@ -37,6 +37,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\src\Ubik.Accounting.SalesOrVatTax.Contracts\Ubik.Accounting.SalesOrVatTax.Contracts.csproj" />
 		<ProjectReference Include="..\..\src\Ubik.Accounting.Structure.Api\Ubik.Accounting.Structure.Api.csproj" />
 		<ProjectReference Include="..\..\src\Ubik.Accounting.Structure.Contracts\Ubik.Accounting.Structure.Contracts.csproj" />
 		<ProjectReference Include="..\..\src\Ubik.YarpProxy\Ubik.YarpProxy.csproj" />

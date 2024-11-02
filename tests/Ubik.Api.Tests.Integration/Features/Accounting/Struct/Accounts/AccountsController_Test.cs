@@ -13,7 +13,7 @@ using Ubik.Accounting.Structure.Contracts.Accounts.Commands;
 using Ubik.Accounting.Structure.Contracts.Accounts.Enums;
 using MassTransit;
 
-namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Struct.Accounts
 {
     //TODO: write a test case when account is linked to existing accounting entries
     public class AccountsController_Test : BaseIntegrationTestAccountingStruct
@@ -1064,7 +1064,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             //Act
-            var response = await _client.PostAsync($"{_baseUrlForV1}/ec860000-5dd4-0015-ce96-08dcda306be5/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283",null);
+            var response = await _client.PostAsync($"{_baseUrlForV1}/ec860000-5dd4-0015-ce96-08dcda306be5/accountgroups/4c470000-5dd4-0015-ddd1-08dcdb1e7283", null);
             var result = await response.Content.ReadFromJsonAsync<AccountInAccountGroupResult>();
 
             //Assert

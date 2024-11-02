@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Ubik.Api.Tests.Integration
 {
-    internal class BaseIntegrationTestAccountingSalesVatTax : BaseIntegrationTest
+    public class BaseIntegrationTestAccountingSalesVatTax : BaseIntegrationTest
     {
-        internal BaseIntegrationTestAccountingSalesVatTax(IntegrationTestProxyFactory factory) : base(factory)
+        public BaseIntegrationTestAccountingSalesVatTax(IntegrationTestProxyFactory factory) : base(factory)
         {
         }
 
@@ -21,7 +21,7 @@ namespace Ubik.Api.Tests.Integration
                 var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.DeleteAsync($"/accounting/admin/api/v1/application/cleanupdb");
+                var response = await client.DeleteAsync($"/accounting/admin/api/v1/sales-vat-tax/application/cleanupdb");
                 response.EnsureSuccessStatusCode();
                 Factory.IsDbCleanedAccounting = true;
             }

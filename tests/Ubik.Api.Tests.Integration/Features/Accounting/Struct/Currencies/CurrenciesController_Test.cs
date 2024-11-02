@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Ubik.Accounting.Structure.Contracts.Classifications.Results;
 using Ubik.Accounting.Structure.Contracts.Currencies.Results;
 
-namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
+namespace Ubik.Api.Tests.Integration.Features.Accounting.Struct.Currencies
 {
     public class CurrenciesController_Test : BaseIntegrationTestAccountingStruct
     {
