@@ -5,8 +5,8 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Models
     public class TaxRate : ITenantEntity, IConcurrencyCheckEntity, IAuditEntity
     {
         public Guid Id { get; set; }
-        public DateTime ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
+        public DateOnly ValidFrom { get; set; }
+        public DateOnly? ValidTo { get; set; }
         public required string Code { get; set; }
         public string? Description { get; set; }
         public decimal Rate { get; set; }

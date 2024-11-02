@@ -5,9 +5,12 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
-using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Results;
+using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Results;
 using Ubik.ApiService.Common.Exceptions;
 using MassTransit;
+using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
+using Ubik.Accounting.Structure.Api.Models;
+using Ubik.Accounting.Structure.Contracts.Classifications.Results;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 {
@@ -230,6 +233,151 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TAXRATE_NOT_FOUND");
         }
 
+        [Fact]
+        public async Task Add_TaxRate_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new AddSalesOrVatTaxRateCommand
+            {
+                Code = "Test",
+                Description = "Description",
+                Rate = 7.4m,
+                ValidFrom = DateOnly.FromDateTime(DateTime.Now),
+                ValidTo = null,
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+            var tmp = await response.Content.ReadAsStringAsync();
+            var result = await response.Content.ReadFromJsonAsync<SalesOrVatTaxRateStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<SalesOrVatTaxRateStandardResult>()
+                .And.Match<SalesOrVatTaxRateStandardResult>(x => x.Code == command.Code);
+        }
+
+        [Fact]
+        public async Task Add_TaxRate_WithRO_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new AddSalesOrVatTaxRateCommand
+            {
+                Code = "Test",
+                Description = "Description",
+                Rate = 7.4m,
+                ValidFrom = DateOnly.FromDateTime(DateTime.Now),
+                ValidTo = null
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Add_TaxRate_WithNoToken_401()
+        {
+            //Arrange
+            var command = new AddSalesOrVatTaxRateCommand
+            {
+                Code = "Test",
+                Description = "Description",
+                Rate = 7.4m,
+                ValidFrom = DateOnly.FromDateTime(DateTime.Now),
+                ValidTo = null
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Add_TaxRate_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new AddSalesOrVatTaxRateCommand
+            {
+                Code = "Test",
+                Description = "Description",
+                Rate = 7.4m,
+                ValidFrom = DateOnly.FromDateTime(DateTime.Now),
+                ValidTo = null
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Add_TaxRate_WithOtherTenant_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new AddSalesOrVatTaxRateCommand
+            {
+                Code = "Test",
+                Description = "Description",
+                Rate = 7.4m,
+                ValidFrom = DateOnly.FromDateTime(DateTime.Now),
+                ValidTo = null
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+            var result = await response.Content.ReadFromJsonAsync<SalesOrVatTaxRateStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<SalesOrVatTaxRateStandardResult>()
+                .And.Match<SalesOrVatTaxRateStandardResult>(x => x.Code == command.Code);
+        }
+
+        [Fact]
+        public async Task Add_TaxRate_WithNoRole_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new AddSalesOrVatTaxRateCommand
+            {
+                Code = "Test",
+                Description = "Description",
+                Rate = 7.4m,
+                ValidFrom = DateOnly.FromDateTime(DateTime.Now),
+                ValidTo = null
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
 
     }
 }

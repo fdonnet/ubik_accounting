@@ -1,7 +1,7 @@
 ﻿using Ubik.Accounting.SalesOrVatTax.Api.Models;
-using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Commands;
-using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Events;
-using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Results;
+using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Events;
+using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Results;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
 {

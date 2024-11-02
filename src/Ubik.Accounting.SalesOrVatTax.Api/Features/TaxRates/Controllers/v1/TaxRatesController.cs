@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services;
 using Ubik.Accounting.SalesOrVatTax.Api.Mappers;
-using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Commands;
-using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Results;
+using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Results;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 

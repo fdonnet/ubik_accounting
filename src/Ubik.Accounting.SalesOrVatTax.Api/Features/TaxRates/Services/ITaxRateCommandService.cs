@@ -1,6 +1,6 @@
 ﻿using LanguageExt;
 using Ubik.Accounting.SalesOrVatTax.Api.Models;
-using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
 using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services

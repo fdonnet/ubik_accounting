@@ -5,9 +5,9 @@ using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.SalesOrVatTax.Api.Data;
 using Ubik.Accounting.SalesOrVatTax.Api.Models;
-using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Events;
-using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Events;
 using Ubik.Accounting.SalesOrVatTax.Api.Mappers;
+using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
 {

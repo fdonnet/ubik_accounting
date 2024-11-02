@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Events
+namespace Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Events
 {
     public record SalesOrVatTaxRateDeleted
     {
