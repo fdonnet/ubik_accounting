@@ -5,10 +5,9 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.Accounting.Structure.Contracts.Classifications.Results;
 using Ubik.Accounting.SalesOrVatTax.Contracts.VatRate.Results;
+using Ubik.ApiService.Common.Exceptions;
+using MassTransit;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 {
@@ -28,7 +27,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
         }
 
         [Fact]
-        public async Task Get_TaxRates_All_WithRW_OK()
+        public async Task Get_All_TaxRates_WithRW_OK()
         {
             //Arrange
             var token = await GetAccessTokenAsync(TokenType.RW);
@@ -44,6 +43,193 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
                 .NotBeNull()
                 .And.BeOfType<List<SalesOrVatTaxRateStandardResult>>();
         }
+
+        [Fact]
+        public async Task Get_All_TaxRates_WithRO_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+            var result = await response.Content.ReadFromJsonAsync<List<SalesOrVatTaxRateStandardResult>>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<List<SalesOrVatTaxRateStandardResult>>();
+        }
+
+        [Fact]
+        public async Task Get_All_TaxRates_WithNoToken_401()
+        {
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Get_All_TaxRates_WithNoRole_401()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_All_TaxRates_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_All_TaxRates_WithOtherTenant_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync(_baseUrlForV1);
+            var result = await response.Content.ReadFromJsonAsync<List<SalesOrVatTaxRateStandardResult>>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<List<SalesOrVatTaxRateStandardResult>>();
+        }
+
+        [Fact]
+        public async Task Get_TaxRate_By_Id_WithRW_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_id}");
+            var result = await response.Content.ReadFromJsonAsync<SalesOrVatTaxRateStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<SalesOrVatTaxRateStandardResult>();
+        }
+
+        [Fact]
+        public async Task Get_TaxRate_By_Id_WithRO_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_id}");
+            var result = await response.Content.ReadFromJsonAsync<SalesOrVatTaxRateStandardResult>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<SalesOrVatTaxRateStandardResult>();
+        }
+
+        [Fact]
+        public async Task Get_TaxRate_By_Id_WithNoToken_401()
+        {
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_id}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Get_TaxRate_By_Id_WithNoRole_401()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_id}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_TaxRate_By_Id_WithAdmin_403()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_id}");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Get_TaxRate_By_Id_WithOtherTenant_OK()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{_id}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TAXRATE_NOT_FOUND");
+        }
+
+        [Fact]
+        public async Task Get_TaxRate_By_Id_WithBadId_404()
+        {
+            //Arrange
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.GetAsync($"{_baseUrlForV1}/{NewId.NextGuid()}");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+                .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TAXRATE_NOT_FOUND");
+        }
+
 
     }
 }

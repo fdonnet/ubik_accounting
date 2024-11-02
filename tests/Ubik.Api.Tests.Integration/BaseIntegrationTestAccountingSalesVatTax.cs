@@ -15,7 +15,7 @@ namespace Ubik.Api.Tests.Integration
 
         protected override async Task CleanupDb()
         {
-            if (!Factory.IsDbCleanedAccounting)
+            if (!Factory.IsDbCleanedAccountingSalesVatTax)
             {
                 using var client = Factory.CreateClient();
                 var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
@@ -23,7 +23,7 @@ namespace Ubik.Api.Tests.Integration
 
                 var response = await client.DeleteAsync($"/accounting/admin/api/v1/sales-vat-tax/application/cleanupdb");
                 response.EnsureSuccessStatusCode();
-                Factory.IsDbCleanedAccounting = true;
+                Factory.IsDbCleanedAccountingSalesVatTax = true;
             }
         }
     }
