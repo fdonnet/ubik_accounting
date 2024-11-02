@@ -16,7 +16,7 @@ using Ubik.Accounting.Structure.Api.Models;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Classifications
 {
-    public class ClassificationsController_Test : BaseIntegrationTestAccounting
+    public class ClassificationsController_Test : BaseIntegrationTestAccountingStruct
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;

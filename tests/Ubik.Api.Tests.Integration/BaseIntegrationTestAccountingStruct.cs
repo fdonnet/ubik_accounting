@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Ubik.Api.Tests.Integration
 {
-    public abstract class BaseIntegrationTestAccounting : BaseIntegrationTest
+    public abstract class BaseIntegrationTestAccountingStruct : BaseIntegrationTest
     {
-        internal BaseIntegrationTestAccounting(IntegrationTestProxyFactory factory) : base(factory)
+        internal BaseIntegrationTestAccountingStruct(IntegrationTestProxyFactory factory) : base(factory)
         {
         }
 

@@ -17,7 +17,7 @@ using MassTransit;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.AccountGroups
 {
-    public class AccountGroupsController_Test : BaseIntegrationTestAccounting
+    public class AccountGroupsController_Test : BaseIntegrationTestAccountingStruct
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;

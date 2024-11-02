@@ -12,7 +12,7 @@ using Ubik.Accounting.Structure.Contracts.Currencies.Results;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Currencies
 {
-    public class CurrenciesController_Test : BaseIntegrationTestAccounting
+    public class CurrenciesController_Test : BaseIntegrationTestAccountingStruct
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;

@@ -16,7 +16,7 @@ using MassTransit;
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Accounts
 {
     //TODO: write a test case when account is linked to existing accounting entries
-    public class AccountsController_Test : BaseIntegrationTestAccounting
+    public class AccountsController_Test : BaseIntegrationTestAccountingStruct
     {
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;

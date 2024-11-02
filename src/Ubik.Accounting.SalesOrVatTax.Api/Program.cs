@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Ubik.Accounting.SalesOrVatTax.Api.Data;
+using Ubik.Accounting.SalesOrVatTax.Api.Data.Init;
 using Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services;
 using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
@@ -137,7 +138,7 @@ if (app.Environment.IsDevelopment())
     context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
 
-    //await DbInitializer.InitializeAsync(context);
+    await DbInitializer.InitializeAsync(context);
 }
 
 app.UseWhen(
