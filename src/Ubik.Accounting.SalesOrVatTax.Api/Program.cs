@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Ubik.Accounting.SalesOrVatTax.Api.Data;
 using Ubik.Accounting.SalesOrVatTax.Api.Data.Init;
+using Ubik.Accounting.SalesOrVatTax.Api.Features.Application.Services;
 using Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services;
 using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
@@ -96,6 +97,7 @@ builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddScoped<ITaxRateQueryService, TaxRateQueryService>();
 builder.Services.AddScoped<ITaxRateCommandService, TaxRateCommandService>();
+builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
 
