@@ -24,5 +24,11 @@ namespace Ubik.Accounting.Structure.Api.Features.Application.Services
 
             return false;
         }
+
+        public async Task<bool> IsReady()
+        {
+            await Task.CompletedTask;
+            return ctx.Application.IsReady;
+        }
     }
 }

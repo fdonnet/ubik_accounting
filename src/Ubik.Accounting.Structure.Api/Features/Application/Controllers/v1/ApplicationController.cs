@@ -20,5 +20,14 @@ namespace Ubik.Accounting.Structure.Api.Features.Application.Controllers.v1
             var result = await commandService.CleanupDatabaseInDevAsync();
             return result ? Ok(result) : StatusCode(500);
         }
+
+        [HttpGet("health")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(500)]
+        public async Task<ActionResult<bool>> IsReady()
+        {
+            var result = await commandService.IsReady();
+            return Ok(result);
+        }
     }
 }

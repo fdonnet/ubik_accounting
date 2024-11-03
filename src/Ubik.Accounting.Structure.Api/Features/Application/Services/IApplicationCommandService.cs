@@ -3,5 +3,6 @@
     public interface IApplicationCommandService
     {
         public Task<bool> CleanupDatabaseInDevAsync();
+        public Task<bool> IsReady();
     }
 }

@@ -19,6 +19,7 @@ namespace Ubik.Accounting.Structure.Api.Data
         public DbSet<AccountAccountGroup> AccountsAccountGroups { get; set; }
         public DbSet<Classification> Classifications { get; set; }
         public DbSet<Currency> Currencies { get; set; }
+        public DbSet<Application> Applications { get; set; }
         //public DbSet<Transaction> Transactions { get; set; }
         //public DbSet<Entry> Entries { get; set; }
 
@@ -27,6 +28,14 @@ namespace Ubik.Accounting.Structure.Api.Data
             optionsBuilder
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
                 .UseSnakeCaseNamingConvention();
+        }
+
+        public Application Application
+        {
+            get
+            {
+                return Applications.SingleOrDefault()!;
+            }
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -73,6 +82,7 @@ namespace Ubik.Accounting.Structure.Api.Data
             new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
+            new ApplicationConfiguration().Configure(modelBuilder.Entity<Application>());
             //new TransactionConfiguration().Configure(modelBuilder.Entity<Transaction>());
             //new EntryConfiguration().Configure(modelBuilder.Entity<Entry>());
 
