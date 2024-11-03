@@ -16,6 +16,12 @@ namespace Ubik.Accounting.Structure.Api.Data.Config
             builder.Property(a => a.IsReady)
                 .IsRequired()
                 .HasDefaultValue(false);
+
+            builder.HasData(new Application
+            {
+                Id = 1,
+                IsReady = false
+            });
         }
     }
 }
