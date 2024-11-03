@@ -7,7 +7,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Application.Controllers.v1
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("admin/api/v{version:apiVersion}/application")]
+    [Route("admin/api/v{version:apiVersion}/struct-app")]
     public class ApplicationController(IApplicationCommandService commandService) : ControllerBase
     {
         //Cannot be used in PROD, command and queries DB can be different

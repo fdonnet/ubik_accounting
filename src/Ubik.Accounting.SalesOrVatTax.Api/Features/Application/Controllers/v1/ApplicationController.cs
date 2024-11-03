@@ -7,7 +7,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.Application.Controllers.v1
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("admin/api/v{version:apiVersion}/sales-vat-tax/application")]
+    [Route("admin/api/v{version:apiVersion}/sales-vat-tax-app")]
     public class ApplicationController(IApplicationCommandService commandService) : ControllerBase
     {
         //Cannot be used in PROD, command and queries DB can be different
