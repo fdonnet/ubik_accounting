@@ -25,10 +25,17 @@ namespace Ubik.Accounting.Structure.Api.Features.Application.Services
             return false;
         }
 
+        //Not really a command...
         public async Task<bool> IsReady()
         {
-            await Task.CompletedTask;
-            return ctx.Application.IsReady;
+            if (env.IsDevelopment())
+            {
+                await Task.CompletedTask;
+                return ctx.Application.IsReady;
+            }
+
+            //TODO: implement health check for Live Env. (maybe to check different queries and commands in the controller)
+            return true;
         }
     }
 }
