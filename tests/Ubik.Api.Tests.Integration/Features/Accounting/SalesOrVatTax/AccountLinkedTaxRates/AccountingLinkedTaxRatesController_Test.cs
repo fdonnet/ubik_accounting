@@ -147,7 +147,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("60520000-5dd4-0015-5c21-08dcda58ab64"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
@@ -172,7 +172,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.RO);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("60520000-5dd4-0015-5c21-08dcda58ab64"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
@@ -189,7 +189,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
         [Fact]
         public async Task Add_AccountLinkedTaxRates_WithNoToken_401()
         {
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("60520000-5dd4-0015-5c21-08dcda58ab64"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
@@ -209,7 +209,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("60520000-5dd4-0015-5c21-08dcda58ab64"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
@@ -229,7 +229,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.OtherTenant);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("60520000-5dd4-0015-5c21-08dcda58ab64"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
@@ -249,7 +249,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.NoRole);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("60520000-5dd4-0015-5c21-08dcda58ab64"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
@@ -269,7 +269,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("78920000-5dd4-0015-6f96-08dcd9a78046"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
@@ -294,7 +294,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("248e0000-5dd4-0015-443b-08dcd98b545d"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
@@ -319,7 +319,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("60520000-5dd4-0015-5c21-08dcda58ab61"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
@@ -344,7 +344,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("ec860000-5dd4-0015-d472-08dcda1dc37c"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b914"),
@@ -369,7 +369,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("60520000-5dd4-0015-5c21-08dcda58ab64"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
@@ -394,7 +394,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddTaxRateToAccountCommand()
+            var command = new AddAccountTaxRateConfigCommand()
             {
                 AccountId = new Guid("4c6f0000-5dd4-0015-7cad-08dcda56e423"),
                 TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),

@@ -21,7 +21,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
             });
         }
 
-        public static AccountTaxRateConfig ToAccountTaxRateConfig(this AddTaxRateToAccountCommand current)
+        public static AccountTaxRateConfig ToAccountTaxRateConfig(this AddAccountTaxRateConfigCommand current)
         {
             return new AccountTaxRateConfig
             {

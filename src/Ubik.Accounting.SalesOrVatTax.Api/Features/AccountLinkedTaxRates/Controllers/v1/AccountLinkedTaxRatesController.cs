@@ -40,7 +40,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Contr
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
         public async Task<ActionResult<AccountTaxRateConfigStandardResult>> AddTaxRateToAccount
-            (Guid id, Guid taxRateId, AddTaxRateToAccountCommand command)
+            (Guid id, Guid taxRateId, AddAccountTaxRateConfigCommand command)
         {
             if (command.AccountId != id)
                 return new ObjectResult(new ResourceIdNotMatchWithCommandError("Account", id, command.AccountId)
