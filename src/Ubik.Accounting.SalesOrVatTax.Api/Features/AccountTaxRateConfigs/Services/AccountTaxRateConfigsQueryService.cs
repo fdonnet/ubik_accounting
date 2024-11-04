@@ -34,7 +34,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
             var result = await ctx.AccountTaxRateConfigs.Where(c => c.AccountId == accountId && c.TaxRateId == taxRateId).FirstOrDefaultAsync();
 
             return result == null
-                ? new LinkedTaxRateNotFoundError(accountId, taxRateId)
+                ? new AccountTaxRateConfigNotFoundError(accountId, taxRateId)
                 : result;
         }
 

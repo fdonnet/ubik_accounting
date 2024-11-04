@@ -80,7 +80,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
                             && x.TaxRateId == taxRateId);
 
             return result
-                ? new LinkedTaxRateAlreadyExist(accountId, taxRateId)
+                ? new AccountTaxRateConfigAlreadyExists(accountId, taxRateId)
                 : true;
         }
 

@@ -2,12 +2,12 @@
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Errors
 {
-    public record LinkedTaxRateNotFoundError : IServiceAndFeatureError
+    public record AccountTaxRateConfigNotFoundError : IServiceAndFeatureError
     {
           public ServiceAndFeatureErrorType ErrorType { get; init; }
             public List<CustomError> CustomErrors { get; init; }
 
-            public LinkedTaxRateNotFoundError(Guid accountId, Guid taxRateId)
+            public AccountTaxRateConfigNotFoundError(Guid accountId, Guid taxRateId)
             {
 
                 ErrorType = ServiceAndFeatureErrorType.NotFound;
