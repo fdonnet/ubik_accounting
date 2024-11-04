@@ -19,7 +19,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Servi
                         .BindAsync(t => GetAccountAsync(command.AccountId))
                         .BindAsync(t => GetTaxAccountAsync(command.TaxAccountId))
                         .BindAsync(t => ValidateIfLinkNotAlreadyExistsAsync(command.AccountId, command.TaxRateId)
-                        .BindAsync(l => AddTaxRateLinkInDbContextAsync(l, command))
+                        .BindAsync(l => AddTaxRateLinkInDbContextAsync(command))
                         .BindAsync(AddTaxRateLinkSaveAndPublishAsync));
         }
 
@@ -36,25 +36,23 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Servi
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> AddTaxRateLinkInDbContextAsync(AccountTaxRateConfig current
-            , AddTaxRateToAccountCommand command)
+        private async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> AddTaxRateLinkInDbContextAsync(AddTaxRateToAccountCommand command)
         {
-            current.TaxAccountId = command.TaxAccountId;
-
-            await ctx.AccountTaxRateConfigs.AddAsync(current);
+            var accountTaxRateConfig = command.ToAccountTaxRateConfig();
+            var result = await ctx.AccountTaxRateConfigs.AddAsync(command.ToAccountTaxRateConfig());
             ctx.SetAuditAndSpecialFields();
 
-            return current;
+            return accountTaxRateConfig;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> ValidateIfLinkNotAlreadyExistsAsync(Guid accountId, Guid taxRateId)
+        private async Task<Either<IServiceAndFeatureError, bool>> ValidateIfLinkNotAlreadyExistsAsync(Guid accountId, Guid taxRateId)
         {
             var result = await ctx.AccountTaxRateConfigs.AnyAsync(x => x.AccountId == accountId
                             && x.TaxRateId == taxRateId );
 
             return result
                 ? new LinkedTaxRateAlreadyExist(accountId,taxRateId)
-                : new AccountTaxRateConfig() { AccountId= accountId, TaxRateId=taxRateId};
+                : true;
         }
 
         private async Task<Either<IServiceAndFeatureError, Account>> GetAccountAsync(Guid accountId)

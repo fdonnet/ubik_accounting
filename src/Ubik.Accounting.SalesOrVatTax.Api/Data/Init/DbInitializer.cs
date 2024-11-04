@@ -6,6 +6,7 @@
         {
             await TaxRatesData.LoadAsync(context);
             await AccountsData.LoadAsync(context);
+            await AccountLinkedTaxRatesData.LoadAsync(context);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.SalesOrVatTax.Api.Models;
+﻿using MassTransit;
+using Ubik.Accounting.SalesOrVatTax.Api.Models;
 using Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Commands;
 using Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Events;
 using Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Results;
@@ -24,9 +25,11 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
         {
             return new AccountTaxRateConfig
             {
+                Id = NewId.NextGuid(),
                 AccountId = current.AccountId,
                 TaxRateId = current.TaxRateId,
                 TaxAccountId = current.TaxAccountId,
+                Version = NewId.NextGuid()
             };
         }
 
