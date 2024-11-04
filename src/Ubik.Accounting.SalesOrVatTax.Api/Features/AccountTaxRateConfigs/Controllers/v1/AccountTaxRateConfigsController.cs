@@ -1,14 +1,11 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Services;
+using Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Services;
 using Ubik.Accounting.SalesOrVatTax.Api.Mappers;
-using Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Commands;
-using Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Events;
-using Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Results;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Results;
+using Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Results;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Controllers.v1
 {
@@ -16,8 +13,8 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Contr
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/accounts")]
-    public class AccountLinkedTaxRatesController(IAccountLinkedTaxRatesQueryService queryService,
-        IAccountLinkedTaxRatesCommandService commandService) : ControllerBase
+    public class AccountTaxRateConfigsController(IAccountTaxRateConfigsQueryService queryService,
+        IAccountTaxRateConfigsCommandService commandService) : ControllerBase
     {
         [HttpGet("{id}/taxrates")]
         [ProducesResponseType(200)]
@@ -39,7 +36,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Contr
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<AccountTaxRateConfigStandardResult>> AddTaxRateToAccount
+        public async Task<ActionResult<AccountTaxRateConfigStandardResult>> AddAccountTaxRateConfig
             (Guid id, Guid taxRateId, AddAccountTaxRateConfigCommand command)
         {
             if (command.AccountId != id)
@@ -54,6 +51,24 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Contr
 
             return result.Match(
                 Right: r => Ok(r.ToAccountTaxRateConfigStandardResult()),
+                Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
+        }
+
+        [HttpDelete("{id}/taxrates/{taxRateId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 400)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 404)]
+        [ProducesResponseType(typeof(CustomProblemDetails), 500)]
+        public async Task<ActionResult<AccountTaxRateConfigStandardResult>> DeleteAccountTaxRateConfig(Guid id, Guid taxRateId)
+        {
+            var result = await commandService.DetachAsync(new DeleteAccountTaxRateConfigCommand()
+            {
+                AccountId = id,
+                TaxRateId = taxRateId
+            });
+
+            return result.Match<ActionResult>(
+                Right: r => NoContent(),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
     }

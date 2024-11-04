@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\Init\AccountLinkedTaxRatesData.sql">
+    <None Update="Data\Init\AccountTaxRateConfigsData.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Data\Init\AccountsData.sql">

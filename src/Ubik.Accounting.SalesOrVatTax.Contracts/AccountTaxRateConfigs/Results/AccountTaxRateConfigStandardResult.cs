@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Events
+namespace Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Results
 {
-    public record AccountTaxRateConfigAdded
+    public record AccountTaxRateConfigStandardResult
     {
         public Guid Id { get; init; }
         public Guid AccountId { get; init; }

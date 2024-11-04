@@ -1,6 +1,6 @@
 ﻿using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Errors
+namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Errors
 {
     public record LinkedTaxRateNotFoundError : IServiceAndFeatureError
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Events
+namespace Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Events
 {
     public record AccountTaxRateConfigDeleted
     {

@@ -3,17 +3,16 @@ using MassTransit;
 using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.SalesOrVatTax.Api.Data;
-using Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Errors;
+using Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Errors;
 using Ubik.Accounting.SalesOrVatTax.Api.Mappers;
 using Ubik.Accounting.SalesOrVatTax.Api.Models;
-using Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Commands;
-using Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Events;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Events;
+using Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Events;
 using Ubik.ApiService.Common.Errors;
 
-namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountLinkedTaxRates.Services
+namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Services
 {
-    public class AccountLinkedTaxRatesCommandService(AccountingSalesTaxDbContext ctx, IPublishEndpoint publishEndpoint) : IAccountLinkedTaxRatesCommandService
+    public class AccountTaxRateConfigsCommandService(AccountingSalesTaxDbContext ctx, IPublishEndpoint publishEndpoint) : IAccountTaxRateConfigsCommandService
     {
         public async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> AttachAsync(AddAccountTaxRateConfigCommand command)
         {
