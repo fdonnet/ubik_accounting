@@ -856,7 +856,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Struct.Accounts
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_UPDATE_IDS_NOT_MATCH");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_COMMAND_IDS_NOT_MATCH");
         }
 
         [Fact]

@@ -429,7 +429,6 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 
             //Act
             var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_idToUpd}", command);
-            var tmp = await response.Content.ReadAsStringAsync();
             var result = await response.Content.ReadFromJsonAsync<SalesOrVatTaxRateStandardResult>();
 
             //Assert
@@ -596,7 +595,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TAXRATE_UPDATE_IDS_NOT_MATCH");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TAXRATE_COMMAND_IDS_NOT_MATCH");
         }
 
         [Fact]

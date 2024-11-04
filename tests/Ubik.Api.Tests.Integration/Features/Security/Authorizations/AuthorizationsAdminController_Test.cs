@@ -339,7 +339,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Authorizations
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_UPDATE_IDS_NOT_MATCH");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "AUTHORIZATION_COMMAND_IDS_NOT_MATCH");
         }
 
         [Fact]

@@ -89,7 +89,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Controller.v1
         public async Task<ActionResult<AccountStandardResult>> Update(Guid id, UpdateAccountCommand command)
         {
             if (command.Id != id)
-                return new ObjectResult(new ResourceIdNotMatchForUpdateError("Account",id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchWithCommandError("Account",id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
             var result = await commandService.UpdateAsync(command);

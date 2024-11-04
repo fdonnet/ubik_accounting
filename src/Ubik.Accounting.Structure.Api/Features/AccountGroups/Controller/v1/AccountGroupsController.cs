@@ -79,7 +79,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Controller.v1
             UpdateAccountGroupCommand command)
         {
             if (command.Id != id)
-                return new ObjectResult(new ResourceIdNotMatchForUpdateError("AccountGroup", id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchWithCommandError("AccountGroup", id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
             var result = await commandService.UpdateAsync(command);

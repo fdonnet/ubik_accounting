@@ -417,7 +417,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Roles
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ROLE_UPDATE_IDS_NOT_MATCH");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ROLE_COMMAND_IDS_NOT_MATCH");
         }
 
         [Fact]

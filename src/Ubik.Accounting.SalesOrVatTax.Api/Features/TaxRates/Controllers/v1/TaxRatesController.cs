@@ -60,7 +60,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Controllers.v1
         public async Task<ActionResult<SalesOrVatTaxRateStandardResult>> Update(Guid id, UpdateSalesOrVatTaxRateCommand command)
         {
             if (command.Id != id)
-                return new ObjectResult(new ResourceIdNotMatchForUpdateError("TaxRate", id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchWithCommandError("TaxRate", id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
             var result = await commandService.UpdateAsync(command);

@@ -60,7 +60,7 @@ namespace Ubik.Security.Api.Features.Authorizations.Controllers.v1
         public async Task<ActionResult<AuthorizationStandardResult>> Update(Guid id, UpdateAuthorizationCommand command)
         {
             if (command.Id != id)
-                return new ObjectResult(new ResourceIdNotMatchForUpdateError("Authorization", id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchWithCommandError("Authorization", id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
             var result = await commandService.UpdateAsync(command);

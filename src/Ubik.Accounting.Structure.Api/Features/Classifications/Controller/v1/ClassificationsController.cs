@@ -119,7 +119,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Controller.v1
         public async Task<ActionResult<ClassificationStandardResult>> Update(Guid id, UpdateClassificationCommand command)
         {
             if (command.Id != id)
-                return new ObjectResult(new ResourceIdNotMatchForUpdateError("Classification",id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchWithCommandError("Classification",id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
             var result = await commandService.UpdateAsync(command);

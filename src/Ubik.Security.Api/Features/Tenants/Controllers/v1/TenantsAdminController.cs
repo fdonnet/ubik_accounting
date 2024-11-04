@@ -60,7 +60,7 @@ namespace Ubik.Security.Api.Features.Tenants.Controllers.v1
         public async Task<ActionResult<TenantStandardResult>> Update(Guid id, UpdateTenantCommand command)
         {
             if (command.Id != id)
-                return new ObjectResult(new ResourceIdNotMatchForUpdateError("Tenant", id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchWithCommandError("Tenant", id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
             var result = await commandService.UpdateAsync(command);

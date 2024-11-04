@@ -920,7 +920,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Struct.Classifications
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_UPDATE_IDS_NOT_MATCH");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "CLASSIFICATION_COMMAND_IDS_NOT_MATCH");
         }
 
         [Fact]

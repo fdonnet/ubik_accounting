@@ -21,7 +21,7 @@ namespace Ubik.Api.Tests.Integration
                 var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.DeleteAsync($"/accounting/admin/api/v1/sales-vat-tax/application/cleanupdb");
+                var response = await client.DeleteAsync($"/accounting/admin/api/v1/sales-vat-tax-app/cleanupdb");
                 response.EnsureSuccessStatusCode();
                 Factory.IsDbCleanedAccountingSalesVatTax = true;
             }

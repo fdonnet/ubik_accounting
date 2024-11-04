@@ -60,7 +60,7 @@ namespace Ubik.Security.Api.Features.Roles.Controllers.v1
         public async Task<ActionResult<RoleStandardResult>> Update(Guid id, UpdateRoleCommand command)
         {
             if (command.Id != id)
-                return new ObjectResult(new ResourceIdNotMatchForUpdateError("Role", id, command.Id)
+                return new ObjectResult(new ResourceIdNotMatchWithCommandError("Role", id, command.Id)
                     .ToValidationProblemDetails(HttpContext));
 
             var result = await commandService.UpdateAsync(command);

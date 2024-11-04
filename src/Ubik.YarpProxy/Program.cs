@@ -108,7 +108,11 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanSalesOrVatTaxRatesRead", policy =>
         policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_read"])))
     .AddPolicy("CanSalesOrVatTaxRatesWrite", policy =>
-        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_write"])));
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_write"])))
+    .AddPolicy("CanSalesOrVatTaxRatesAndAccountsRead", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_read", "accounting_account_read"])))
+    .AddPolicy("CanSalesOrVatTaxRatesAndAccountsWrite", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_write", "accounting_account_write"])));
 
 //Proxy
 var configProxy = builder.Configuration.GetSection("ReverseProxy");
