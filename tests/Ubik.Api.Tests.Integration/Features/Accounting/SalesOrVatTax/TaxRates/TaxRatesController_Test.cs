@@ -38,7 +38,6 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 
             //Act
             var response = await _client.GetAsync(_baseUrlForV1);
-            var tmp = await response.Content.ReadAsStringAsync();
             var result = await response.Content.ReadFromJsonAsync<List<SalesOrVatTaxRateStandardResult>>();
 
             //Assert
