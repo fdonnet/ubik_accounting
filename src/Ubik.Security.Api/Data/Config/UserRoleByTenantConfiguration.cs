@@ -17,13 +17,13 @@ namespace Ubik.Security.Api.Data.Config
                 .IsConcurrencyToken();
 
             builder
-            .HasOne(e => e.UserTenant)
+            .HasOne<UserTenant>()
             .WithMany()
             .HasForeignKey(e => e.UserTenantId).OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
             builder
-           .HasOne(e => e.Role)
+           .HasOne<Role>()
            .WithMany()
            .HasForeignKey(e => e.RoleId).OnDelete(DeleteBehavior.Cascade)
            .IsRequired();

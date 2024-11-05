@@ -6,11 +6,8 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Models
     {
         public Guid Id { get; set; }
         public Guid AccountId { get; set; }
-        public Account? Account { get; set; }
         public Guid TaxRateId { get; set; }
-        public TaxRate? TaxRate { get; set; }
         public Guid TaxAccountId { get; set; }
-        public Account? TaxAccount { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
         public DateTime CreatedAt { get; set; }

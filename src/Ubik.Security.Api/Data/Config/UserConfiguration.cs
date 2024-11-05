@@ -31,7 +31,7 @@ namespace Ubik.Security.Api.Data.Config
                 .IsUnique();
 
             builder
-                .HasOne(e => e.SelectedTenant)
+                .HasOne<Tenant>()
                 .WithMany()
                 .HasForeignKey(e => e.SelectedTenantId).OnDelete(DeleteBehavior.SetNull);
         }

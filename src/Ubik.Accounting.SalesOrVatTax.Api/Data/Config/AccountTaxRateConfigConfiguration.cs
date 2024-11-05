@@ -26,19 +26,19 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Data.Config
             builder.HasIndex(a => a.TenantId);
 
             builder
-            .HasOne(s => s.Account)
+            .HasOne<Account>()
             .WithMany()
             .HasForeignKey(e => e.AccountId)
             .IsRequired(true);
 
             builder
-            .HasOne(s => s.TaxRate)
+            .HasOne<TaxRate>()
             .WithMany()
             .HasForeignKey(e => e.TaxRateId)
             .IsRequired(true);
 
             builder
-             .HasOne(s => s.TaxAccount)
+            .HasOne<Account>()
             .WithMany()
             .HasForeignKey(e => e.TaxAccountId)
             .IsRequired(true);

@@ -33,7 +33,7 @@ namespace Ubik.Security.Api.Data.Config
 
             //When it's a role specific to a tenant
             builder
-                .HasOne(s => s.Tenant)
+                .HasOne<Tenant>()
                 .WithMany()
                 .HasForeignKey(e => e.TenantId);
         }

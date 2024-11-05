@@ -23,12 +23,12 @@ namespace Ubik.Security.Api.Data.Config
                 .IsConcurrencyToken();
 
             builder
-            .HasOne(e => e.Role)
+            .HasOne<Role>()
             .WithMany()
             .HasForeignKey(e => e.RoleId).OnDelete(DeleteBehavior.Cascade);
 
             builder
-           .HasOne(e => e.Authorization)
+           .HasOne<Authorization>()
            .WithMany()
            .HasForeignKey(e => e.AuthorizationId).OnDelete(DeleteBehavior.Cascade);
         }

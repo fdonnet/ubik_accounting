@@ -24,12 +24,12 @@ namespace Ubik.Security.Api.Data.Config
 
             //TODO: very dangerous, change that
             builder
-            .HasOne(e => e.User)
+            .HasOne<User>()
             .WithMany()
             .HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
 
             builder
-           .HasOne(e => e.Tenant)
+           .HasOne<Tenant>()
            .WithMany()
            .HasForeignKey(e => e.TenantId).OnDelete(DeleteBehavior.Cascade);
         }
