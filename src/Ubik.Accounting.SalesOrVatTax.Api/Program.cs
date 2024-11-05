@@ -53,7 +53,7 @@ builder.Services.AddMassTransit(config =>
 
         configurator.ConfigureEndpoints(context);
 
-        //TODO:review that
+        //TODO:review that Maybe not needed.... it was before I have the Yarp proxy...
         //Use to pass tenantid when message broker is used to contact the api (async)
         //configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
         configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);

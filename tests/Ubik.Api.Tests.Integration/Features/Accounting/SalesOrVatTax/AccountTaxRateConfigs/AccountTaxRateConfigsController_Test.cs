@@ -7,15 +7,15 @@ using Ubik.ApiService.Common.Exceptions;
 using MassTransit;
 using Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Commands;
 
-namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLinkedTaxRates
+namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountTaxRateConfigs
 {
-    public class AccountingLinkedTaxRatesController_Test : BaseIntegrationTestAccountingSalesVatTax
+    public class AccountTaxRateConfigsController_Test : BaseIntegrationTestAccountingSalesVatTax
     {
 
         private readonly string _baseUrlForV1;
         private readonly HttpClient _client;
 
-        public AccountingLinkedTaxRatesController_Test(IntegrationTestProxyFactory factory) : base(factory)
+        public AccountTaxRateConfigsController_Test(IntegrationTestProxyFactory factory) : base(factory)
         {
             _baseUrlForV1 = "/accounting/api/v1";
             _client = Factory.CreateDefaultClient();
