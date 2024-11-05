@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Ubik.Accounting.Transaction.Api.Data;
 using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.ApiService.Common.Exceptions;
@@ -116,9 +117,9 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
 
-    //var context = services.GetRequiredService<AccountingTxContext>();
-    //context.Database.EnsureDeleted();
-    //context.Database.EnsureCreated();
+    var context = services.GetRequiredService<AccountingTxContext>();
+    context.Database.EnsureDeleted();
+    context.Database.EnsureCreated();
 
     //await DbInitializer.InitializeAsync(context);
 }

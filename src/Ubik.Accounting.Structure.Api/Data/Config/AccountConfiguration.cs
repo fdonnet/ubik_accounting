@@ -53,6 +53,7 @@ namespace Ubik.Accounting.Structure.Api.Data.Config
                 .WithMany()
                 .HasForeignKey(a => a.CurrencyId).OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(true);
+
         }
     }
 }

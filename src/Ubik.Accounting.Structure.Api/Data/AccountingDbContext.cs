@@ -105,12 +105,6 @@ namespace Ubik.Accounting.Structure.Api.Data
 
             modelBuilder.Entity<Currency>()
                 .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
-
-            //modelBuilder.Entity<Transaction>()
-            //    .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
-
-            //modelBuilder.Entity<Entry>()
-            //    .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
         }
     }
 }
