@@ -7,7 +7,6 @@ using Ubik.Security.Api.Data;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Tenants.Commands;
 using Ubik.Security.Contracts.Tenants.Events;
-using Ubik.Security.Contracts.Roles.Events;
 using Ubik.Security.Api.Mappers;
 
 namespace Ubik.Security.Api.Features.Tenants.Services

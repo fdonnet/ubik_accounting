@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Results
+﻿namespace Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Results
 {
     public record AccountTaxRateConfigStandardResult
     {

@@ -1,7 +1,4 @@
 ﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
@@ -9,8 +6,6 @@ using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Results;
 using Ubik.ApiService.Common.Exceptions;
 using MassTransit;
 using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
-using Ubik.Accounting.Structure.Api.Models;
-using Ubik.Accounting.Structure.Contracts.Classifications.Results;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 {

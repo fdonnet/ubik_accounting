@@ -1,18 +1,11 @@
 ﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Results;
-using Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Results;
+using Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Results;
 using Ubik.ApiService.Common.Exceptions;
 using MassTransit;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
-using Ubik.Accounting.SalesOrVatTax.Contracts.AccountLinkedTaxRates.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Commands;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLinkedTaxRates
 {

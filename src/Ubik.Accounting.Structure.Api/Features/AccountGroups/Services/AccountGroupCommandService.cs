@@ -2,7 +2,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Data.Common;
 using Ubik.Accounting.Structure.Api.Data;
 using Ubik.Accounting.Structure.Api.Features.AccountGroups.Errors;
 using Ubik.Accounting.Structure.Api.Mappers;

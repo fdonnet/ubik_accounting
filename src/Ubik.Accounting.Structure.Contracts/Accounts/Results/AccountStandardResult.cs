@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.Accounting.Structure.Contracts.Accounts.Enums;
+﻿using Ubik.Accounting.Structure.Contracts.Accounts.Enums;
 
 namespace Ubik.Accounting.Structure.Contracts.Accounts.Results
 {

@@ -1,6 +1,5 @@
 ﻿using LanguageExt;
 using MassTransit;
-using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.SalesOrVatTax.Api.Data;
 using Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Errors;

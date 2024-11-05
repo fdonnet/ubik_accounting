@@ -3,7 +3,6 @@ using Ubik.Accounting.SalesOrVatTax.Api.Models;
 using Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Commands;
 using Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Events;
 using Ubik.Accounting.SalesOrVatTax.Contracts.AccountTaxRateConfigs.Results;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
 {

@@ -1,6 +1,4 @@
-﻿using Ubik.DB.Common;
-
-namespace Ubik.Accounting.Structure.Api.Models
+﻿namespace Ubik.Accounting.Structure.Api.Models
 {
     //Will be put in a dedicated service
     //Containes the entries packet 

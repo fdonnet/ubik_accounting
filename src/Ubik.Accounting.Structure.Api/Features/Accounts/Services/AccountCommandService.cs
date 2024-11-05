@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using LanguageExt;
 using MassTransit;
-using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Structure.Api.Data;
 using Ubik.Accounting.Structure.Api.Features.Accounts.Errors;

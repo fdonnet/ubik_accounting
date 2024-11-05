@@ -18,7 +18,6 @@ using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Microsoft.AspNetCore.Authentication;
 using Ubik.Accounting.WebApp.Config;
 using Microsoft.AspNetCore.HttpOverrides;
-using IdentityModel.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 

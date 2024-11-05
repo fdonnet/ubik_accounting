@@ -1,18 +1,12 @@
 ﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.Accounting.Structure.Contracts.Accounts.Results;
 using Ubik.Accounting.Structure.Contracts.Classifications.Results;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
 using MassTransit;
-using Ubik.Accounting.Structure.Api.Models;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.Struct.Classifications
 {

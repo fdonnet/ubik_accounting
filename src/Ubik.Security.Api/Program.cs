@@ -9,8 +9,6 @@ using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
-using Ubik.Security.Contracts.Users.Commands;
-using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Api.Data.Init;
 using Ubik.Security.Api.Features.Users.Services;
 using Ubik.ApiService.Common.Middlewares;

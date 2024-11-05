@@ -1,16 +1,9 @@
 ﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Ubik.Security.Contracts.Roles.Results;
 using Ubik.Accounting.Structure.Contracts.AccountGroups.Results;
 using Ubik.ApiService.Common.Exceptions;
-using RabbitMQ.Client;
 using Ubik.Accounting.Structure.Contracts.Accounts.Results;
 using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
 using MassTransit;

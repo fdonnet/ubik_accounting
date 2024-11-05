@@ -8,7 +8,6 @@ using Ubik.Security.Api.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.RoleAuthorizations.Commands;
 using Ubik.Security.Contracts.RoleAuthorizations.Events;
-using Ubik.Security.Contracts.Roles.Events;
 
 namespace Ubik.Security.Api.Features.RolesAuthorizations.Services
 {

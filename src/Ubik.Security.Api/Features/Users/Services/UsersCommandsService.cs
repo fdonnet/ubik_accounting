@@ -1,8 +1,6 @@
 ﻿using Dapper;
 using LanguageExt;
-using LanguageExt.Pipes;
 using MassTransit;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Services;
@@ -11,7 +9,6 @@ using Ubik.Security.Api.Features.Users.Errors;
 using Ubik.Security.Api.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Tenants.Commands;
-using Ubik.Security.Contracts.Tenants.Events;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Events;
 

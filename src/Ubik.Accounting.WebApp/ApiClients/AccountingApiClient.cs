@@ -1,5 +1,4 @@
-﻿using MassTransit.Configuration;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
 using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;

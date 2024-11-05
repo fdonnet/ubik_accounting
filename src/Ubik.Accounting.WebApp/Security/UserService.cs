@@ -1,16 +1,7 @@
-﻿using IdentityModel.Client;
-using MassTransit.Configuration;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.Extensions.Options;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Ubik.ApiService.Common.Configure.Options;
 using Ubik.Security.Contracts.Users.Results;
-using Microsoft.AspNetCore.Components;
 
 namespace Ubik.Accounting.WebApp.Security
 {

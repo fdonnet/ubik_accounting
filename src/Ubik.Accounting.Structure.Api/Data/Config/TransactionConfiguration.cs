@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Ubik.Accounting.Structure.Api.Models;
-
-//Will be put in a dedicated service
+﻿//Will be put in a dedicated service
 namespace Ubik.Accounting.Structure.Api.Data.Config
 {
     //public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>

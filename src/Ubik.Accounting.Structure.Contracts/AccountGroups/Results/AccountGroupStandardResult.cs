@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ubik.Accounting.Structure.Contracts.AccountGroups.Results
+﻿namespace Ubik.Accounting.Structure.Contracts.AccountGroups.Results
 {
     public record AccountGroupStandardResult
     {

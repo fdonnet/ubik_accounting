@@ -1,11 +1,9 @@
 ﻿using IdentityModel.Client;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Ubik.Accounting.WebApp.Shared.Security;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.Security.Contracts.Users.Results;
 

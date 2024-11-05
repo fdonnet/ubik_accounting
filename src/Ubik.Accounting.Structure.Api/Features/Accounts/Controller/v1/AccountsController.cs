@@ -1,5 +1,4 @@
 ﻿using Asp.Versioning;
-using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.Structure.Api.Features.Accounts.Services;
 using Ubik.Accounting.Structure.Api.Mappers;

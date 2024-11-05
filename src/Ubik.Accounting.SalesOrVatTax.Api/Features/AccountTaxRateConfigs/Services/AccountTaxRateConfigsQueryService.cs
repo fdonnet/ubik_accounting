@@ -1,11 +1,9 @@
-﻿using Dapper;
-using LanguageExt;
+﻿using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.SalesOrVatTax.Api.Data;
 using Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Errors;
 using Ubik.Accounting.SalesOrVatTax.Api.Models;
 using Ubik.ApiService.Common.Errors;
-using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Services
 {

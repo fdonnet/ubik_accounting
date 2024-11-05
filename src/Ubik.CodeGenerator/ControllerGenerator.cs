@@ -1,5 +1,4 @@
 ﻿using Ubik.Accounting.SalesOrVatTax.Api.Data;
-using Ubik.Security.Api.Data;
 
 namespace Ubik.CodeGenerator
 {
