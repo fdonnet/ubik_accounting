@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ubik.Accounting.SalesOrVatTax.Contracts\Ubik.Accounting.SalesOrVatTax.Contracts.csproj" />
+    <ProjectReference Include="..\Ubik.Accounting.Structure.Contracts\Ubik.Accounting.Structure.Contracts.csproj" />
     <ProjectReference Include="..\Ubik.ApiService.Common\Ubik.ApiService.Common.csproj" />
     <ProjectReference Include="..\Ubik.Db.Common\Ubik.DB.Common\Ubik.DB.Common.csproj" />
   </ItemGroup>
