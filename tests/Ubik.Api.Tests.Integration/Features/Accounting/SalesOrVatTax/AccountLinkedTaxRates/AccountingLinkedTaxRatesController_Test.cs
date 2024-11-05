@@ -405,5 +405,98 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.AccountLi
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "LINKED_TAX_RATE_ALREADY_EXIST");
         }
+
+        [Fact]
+        public async Task Delete_AccountLinkedTaxRates_WithRW_OK()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/accounts/4c6f0000-5dd4-0015-db2b-08dcda56e424/taxrates/08740000-3c36-7456-dc84-08dcfb48d62d");
+            
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        }
+
+        [Fact]
+        public async Task Delete_AccountLinkedTaxRates_WithRO_403()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RO);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/accounts/4c6f0000-5dd4-0015-db2b-08dcda56e424/taxrates/08740000-3c36-7456-dc84-08dcfb48d62d");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Delete_AccountLinkedTaxRates_WithNoToken_401()
+        {
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/accounts/4c6f0000-5dd4-0015-db2b-08dcda56e424/taxrates/08740000-3c36-7456-dc84-08dcfb48d62d");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Delete_AccountLinkedTaxRates_WithAdmin_403()
+        {
+            var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/accounts/4c6f0000-5dd4-0015-db2b-08dcda56e424/taxrates/08740000-3c36-7456-dc84-08dcfb48d62d");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Delete_AccountLinkedTaxRates_WithOtherTenant_404()
+        {
+            var token = await GetAccessTokenAsync(TokenType.OtherTenant);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/accounts/4c6f0000-5dd4-0015-db2b-08dcda56e424/taxrates/08740000-3c36-7456-dc84-08dcfb48d62d");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task Delete_AccountLinkedTaxRates_WithNoRole_403()
+        {
+            var token = await GetAccessTokenAsync(TokenType.NoRole);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/accounts/4c6f0000-5dd4-0015-db2b-08dcda56e424/taxrates/08740000-3c36-7456-dc84-08dcfb48d62d");
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Delete_AccountLinkedTaxRates_WithBadId_404()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //Act
+            var response = await _client.DeleteAsync($"{_baseUrlForV1}/accounts/4c6f0000-5dd4-0015-db2b-08dcda56e421/taxrates/08740000-3c36-7456-dc84-08dcfb48d62d");
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNTTAXRATECONFIG_NOT_FOUND");
+        }
     }
 }
