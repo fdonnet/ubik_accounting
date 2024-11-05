@@ -6,9 +6,7 @@ namespace Ubik.Accounting.Structure.Api.Models
     {
         public Guid Id { get; set; }
         public Guid AccountId { get; set; }
-        public Account? Account { get; set; }
         public Guid AccountGroupId { get; set; }
-        public AccountGroup? AccountGroup {  get; set; } 
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
         public DateTime CreatedAt { get; set; }

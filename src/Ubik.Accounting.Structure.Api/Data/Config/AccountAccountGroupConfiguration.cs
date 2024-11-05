@@ -23,12 +23,12 @@ namespace Ubik.Accounting.Structure.Api.Data.Config
             builder.HasIndex(a => a.TenantId);
 
             builder
-            .HasOne(e => e.Account)
+            .HasOne<Account>()
             .WithMany()
             .HasForeignKey(e => e.AccountId).OnDelete(DeleteBehavior.Cascade);
 
             builder
-           .HasOne(e => e.AccountGroup)
+           .HasOne<AccountGroup>()
            .WithMany()
            .HasForeignKey(e => e.AccountGroupId).OnDelete(DeleteBehavior.Cascade);
         }

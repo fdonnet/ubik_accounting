@@ -49,10 +49,9 @@ namespace Ubik.Accounting.Structure.Api.Data.Config
                 .IsRequired()
                 .HasConversion<int>();
 
-            builder
-                .HasOne(s => s.Currency)
+            builder.HasOne<Currency>()
                 .WithMany()
-                .HasForeignKey(e => e.CurrencyId)
+                .HasForeignKey(a => a.CurrencyId).OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(true);
         }
     }

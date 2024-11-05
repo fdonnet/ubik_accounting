@@ -9,8 +9,6 @@ namespace Ubik.Accounting.Structure.Api.Models
         public required string Code { get; set; }
         public required string Label { get; set; }
         public string? Description { get; set; }
-        public ICollection<AccountGroup>? OwnedAccountGroups { get; set; }
-        [ConcurrencyCheck]
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
         public DateTime CreatedAt { get; set; }

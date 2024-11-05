@@ -39,14 +39,14 @@ namespace Ubik.Accounting.Structure.Api.Data.Config
             builder.HasIndex(a => a.TenantId);
 
             builder
-                .HasOne(s => s.ParentAccountGroup)
-                .WithMany(m => m.ChildrenAccountGroups)
+                .HasOne<AccountGroup>()
+                .WithMany()
                 .HasForeignKey(e => e.ParentAccountGroupId).OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
             builder
-                .HasOne(a => a.Classification)
-                .WithMany(g => g.OwnedAccountGroups)
+                .HasOne<Classification>()
+                .WithMany()
                 .HasForeignKey(b => b.ClassificationId).OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
         }

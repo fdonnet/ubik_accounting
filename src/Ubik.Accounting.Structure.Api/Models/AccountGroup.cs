@@ -10,11 +10,7 @@ namespace Ubik.Accounting.Structure.Api.Models
         public required string Label { get; set; }
         public string? Description { get; set; }
         public Guid ClassificationId { get; set; }
-        public Classification? Classification { get; set; }
         public Guid? ParentAccountGroupId { get; set; }
-        public AccountGroup? ParentAccountGroup { get; set; }
-        public ICollection<AccountGroup>? ChildrenAccountGroups { get; set; }
-        public ICollection<Account>? Accounts { get; set; }
         [ConcurrencyCheck]
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }

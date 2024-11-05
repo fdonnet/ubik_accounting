@@ -9,7 +9,6 @@ namespace Ubik.Accounting.Structure.Api.Models
         public required string Code { get; set; }
         public required string Label { get; set; }
         public required Guid CurrencyId { get; set; }
-        public Currency? Currency { get; set; }
         public  string? Description { get; set; }
         public AccountCategory Category { get; set; }
         public AccountDomain Domain { get; set; }
