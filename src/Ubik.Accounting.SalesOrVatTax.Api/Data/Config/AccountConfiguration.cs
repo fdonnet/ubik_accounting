@@ -23,9 +23,6 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Data.Config
                 .IsRequired()
                 .HasDefaultValue(true);
 
-            builder.Property(a => a.Version)
-                .IsConcurrencyToken();
-
             builder.HasIndex(a => new { a.Code, a.TenantId })
                 .IsUnique();
 
