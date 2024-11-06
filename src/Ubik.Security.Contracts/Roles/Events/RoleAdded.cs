@@ -7,5 +7,6 @@ namespace Ubik.Security.Contracts.Roles.Events
         public required string Label { get; init; }
         public string? Description { get; init; }
         public Guid Version { get; init; }
+        public Guid? TenantId { get; set; }
     }
 }

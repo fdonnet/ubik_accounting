@@ -9,5 +9,6 @@
         public Guid? ParentAccountGroupId { get; init; }
         public Guid AccountGroupClassificationId { get; init; }
         public Guid Version { get; init; }
+        public Guid TenantId { get; init; }
     }
 }

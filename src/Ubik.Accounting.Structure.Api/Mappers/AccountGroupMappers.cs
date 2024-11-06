@@ -60,7 +60,8 @@ namespace Ubik.Accounting.Structure.Api.Mappers
                 Description = accountGroup.Description,
                 ParentAccountGroupId = accountGroup.ParentAccountGroupId,
                 AccountGroupClassificationId = accountGroup.ClassificationId,
-                Version = accountGroup.Version
+                Version = accountGroup.Version,
+                TenantId = accountGroup.TenantId
             };
         }
 
@@ -100,7 +101,8 @@ namespace Ubik.Accounting.Structure.Api.Mappers
                 Description = accountGroup.Description,
                 ParentAccountGroupId = accountGroup.ParentAccountGroupId,
                 AccountGroupClassificationId = accountGroup.ClassificationId,
-                Version = accountGroup.Version
+                Version = accountGroup.Version,
+                TenantId = accountGroup.TenantId
             };
         }
 
@@ -112,6 +114,7 @@ namespace Ubik.Accounting.Structure.Api.Mappers
                 Code = x.Code,
                 Label = x.Label,
                 ParentAccountGroupId = x.ParentAccountGroupId,
+                TenantId = x.TenantId,
             });
         }
 

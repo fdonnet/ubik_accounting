@@ -73,7 +73,8 @@ namespace Ubik.Accounting.Structure.Api.Mappers
                 Code = classification.Code,
                 Label = classification.Label,
                 Description = classification.Description,
-                Version = classification.Version
+                Version = classification.Version,
+                TenantId = classification.TenantId
             };
         }
 
@@ -85,7 +86,8 @@ namespace Ubik.Accounting.Structure.Api.Mappers
                 Code = classification.Code,
                 Label = classification.Label,
                 Description = classification.Description,
-                Version = classification.Version
+                Version = classification.Version,
+                TenantId = classification.TenantId
             };
         }
 

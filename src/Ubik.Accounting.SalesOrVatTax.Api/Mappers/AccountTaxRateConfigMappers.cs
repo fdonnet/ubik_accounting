@@ -41,6 +41,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
                 TaxRateId = current.TaxRateId,
                 TaxAccountId = current.TaxAccountId,
                 Version = current.Version,
+                TenantId = current.TenantId
             };
         }
 

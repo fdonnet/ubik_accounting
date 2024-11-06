@@ -7,5 +7,6 @@
         public string Label { get; init; } = default!;
         public string? Description { get; init; }
         public Guid Version { get; init; }
+        public Guid TenantId { get; init; }
     }
 }

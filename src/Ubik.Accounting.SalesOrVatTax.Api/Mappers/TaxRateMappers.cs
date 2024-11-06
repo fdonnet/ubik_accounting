@@ -58,6 +58,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
                 Description = current.Description,
                 Rate = current.Rate,
                 Version = current.Version,
+                TenantId = current.TenantId
             };
         }
 
@@ -72,6 +73,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
                 Description = current.Description,
                 Rate = current.Rate,
                 Version = current.Version,
+                TenantId = current.TenantId
             };
         }
 
