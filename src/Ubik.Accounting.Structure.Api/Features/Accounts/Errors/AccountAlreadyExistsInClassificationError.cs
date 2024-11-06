@@ -2,14 +2,14 @@
 
 namespace Ubik.Accounting.Structure.Api.Features.Accounts.Errors
 {
-    public class AccountAlreadyExistsInClassificationError : IServiceAndFeatureError
+    public class AccountAlreadyExistsInClassificationError : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public AccountAlreadyExistsInClassificationError(Guid id, Guid accountGroupId)
         {
-            ErrorType = ServiceAndFeatureErrorType.Conflict;
+            ErrorType = FeatureErrorType.Conflict;
             CustomErrors = new List<CustomError>() { new()
             {
                 ErrorCode = "ACCOUNT_ALREADY_EXISTS_IN_CLASSIFICATION",

@@ -7,8 +7,8 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
 {
     public interface IAccountGroupCommandService
     {
-        public Task<Either<IServiceAndFeatureError, AccountGroup>> AddAsync(AddAccountGroupCommand command);
-        public Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateAsync(UpdateAccountGroupCommand command);
-        public Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id);
+        public Task<Either<IFeatureError, AccountGroup>> AddAsync(AddAccountGroupCommand command);
+        public Task<Either<IFeatureError, AccountGroup>> UpdateAsync(UpdateAccountGroupCommand command);
+        public Task<Either<IFeatureError, List<AccountGroup>>> DeleteAsync(Guid id);
     }
 }

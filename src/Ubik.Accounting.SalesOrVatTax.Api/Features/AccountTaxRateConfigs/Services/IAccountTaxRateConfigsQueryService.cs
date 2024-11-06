@@ -6,7 +6,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
 {
     public interface IAccountTaxRateConfigsQueryService
     {
-        Task<Either<IServiceAndFeatureError, IEnumerable<AccountTaxRateConfig>>> GetAllAsync(Guid accountId);
-        Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> GetAsync(Guid accountId, Guid taxRateId);
+        Task<Either<IFeatureError, IEnumerable<AccountTaxRateConfig>>> GetAllAsync(Guid accountId);
+        Task<Either<IFeatureError, AccountTaxRateConfig>> GetAsync(Guid accountId, Guid taxRateId);
     }
 }

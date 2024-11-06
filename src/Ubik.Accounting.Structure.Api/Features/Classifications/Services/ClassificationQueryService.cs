@@ -16,7 +16,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
             return await ctx.Classifications.ToListAsync();
         }
 
-        public async Task<Either<IServiceAndFeatureError, Classification>> GetAsync(Guid id)
+        public async Task<Either<IFeatureError, Classification>> GetAsync(Guid id)
         {
             var result = await ctx.Classifications.FindAsync(id);
 
@@ -25,7 +25,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
                 : result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationAttachedAccountsAsync(Guid id)
+        public async Task<Either<IFeatureError, IEnumerable<Account>>> GetClassificationAttachedAccountsAsync(Guid id)
         {
             var accounts = (await GetAsync(id))
                 .MapAsync(a =>
@@ -51,7 +51,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
             return await accounts;
         }
 
-        public async Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationMissingAccountsAsync(Guid id)
+        public async Task<Either<IFeatureError, IEnumerable<Account>>> GetClassificationMissingAccountsAsync(Guid id)
         {
             var accounts = (await GetAsync(id))
                 .MapAsync(a =>
@@ -80,7 +80,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
             return await accounts;
         }
 
-        public async Task<Either<IServiceAndFeatureError, ClassificationStatus>> GetClassificationStatusAsync(Guid id)
+        public async Task<Either<IFeatureError, ClassificationStatus>> GetClassificationStatusAsync(Guid id)
         {
             return (await GetClassificationMissingAccountsAsync(id))
                 .Map(c =>

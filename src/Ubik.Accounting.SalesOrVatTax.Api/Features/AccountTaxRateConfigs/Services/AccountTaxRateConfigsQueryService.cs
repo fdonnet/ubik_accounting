@@ -10,13 +10,13 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
     public class AccountTaxRateConfigsQueryService(AccountingSalesTaxDbContext ctx)
         : IAccountTaxRateConfigsQueryService
     {
-        public async Task<Either<IServiceAndFeatureError,IEnumerable<AccountTaxRateConfig>>> GetAllAsync(Guid accountId)
+        public async Task<Either<IFeatureError,IEnumerable<AccountTaxRateConfig>>> GetAllAsync(Guid accountId)
         {
             return await GetAccountAsync(accountId)
                 .MapAsync(a => GetAccountTaxConfigs(a.Id));
         }
 
-        public async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> GetAsync(Guid accountId, Guid taxRateId)
+        public async Task<Either<IFeatureError, AccountTaxRateConfig>> GetAsync(Guid accountId, Guid taxRateId)
         {
             return await GetAccountAsync(accountId)
                 .BindAsync(a => GetAccountTaxConfig(a.Id, taxRateId));
@@ -27,7 +27,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
             return await ctx.AccountTaxRateConfigs.Where(c => c.AccountId == accountId).ToListAsync();
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> GetAccountTaxConfig(Guid accountId, Guid taxRateId)
+        private async Task<Either<IFeatureError, AccountTaxRateConfig>> GetAccountTaxConfig(Guid accountId, Guid taxRateId)
         {
             var result = await ctx.AccountTaxRateConfigs.Where(c => c.AccountId == accountId && c.TaxRateId == taxRateId).FirstOrDefaultAsync();
 
@@ -36,7 +36,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> GetAccountAsync(Guid accountId)
+        private async Task<Either<IFeatureError, Account>> GetAccountAsync(Guid accountId)
         {
             var result = await ctx.Accounts.FindAsync(accountId);
 

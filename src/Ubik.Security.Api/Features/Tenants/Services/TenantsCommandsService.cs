@@ -13,14 +13,14 @@ namespace Ubik.Security.Api.Features.Tenants.Services
 {
     public class TenantsCommandsService(SecurityDbContext ctx, IPublishEndpoint publishEndpoint) : ITenantsCommandsService
     {
-        public async Task<Either<IServiceAndFeatureError, Tenant>> AddAsync(AddTenantCommand command)
+        public async Task<Either<IFeatureError, Tenant>> AddAsync(AddTenantCommand command)
         {
             return await ValidateIfNotAlreadyExistsAsync(command.ToTenant())
                     .BindAsync(AddInDbContextAsync)
                     .BindAsync(AddSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, Tenant>> UpdateAsync(UpdateTenantCommand command)
+        public async Task<Either<IFeatureError, Tenant>> UpdateAsync(UpdateTenantCommand command)
         {
             var model = command.ToTenant();
             return await GetAsync(model.Id)
@@ -31,21 +31,21 @@ namespace Ubik.Security.Api.Features.Tenants.Services
         }
 
         //TODO: look at the deleted constrain and see if we want to expose that.
-        public async Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id)
+        public async Task<Either<IFeatureError, bool>> DeleteAsync(Guid id)
         {
             return await GetAsync(id)
                 .BindAsync(DeleteInDbContextAsync)
                 .BindAsync(DeleteSaveAndPublishAsync);
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> DeleteSaveAndPublishAsync(Tenant current)
+        private async Task<Either<IFeatureError, bool>> DeleteSaveAndPublishAsync(Tenant current)
         {
             await publishEndpoint.Publish(new TenantDeleted { Id = current.Id }, CancellationToken.None);
             await ctx.SaveChangesAsync();
             return true;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> UpdateSaveAndPublishAsync(Tenant current)
+        private async Task<Either<IFeatureError, Tenant>> UpdateSaveAndPublishAsync(Tenant current)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace Ubik.Security.Api.Features.Tenants.Services
             }
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> MapInDbContextAsync
+        private async Task<Either<IFeatureError, Tenant>> MapInDbContextAsync
             (Tenant current, Tenant forUpdate)
         {
             current = forUpdate.ToTenant(current);
@@ -67,14 +67,14 @@ namespace Ubik.Security.Api.Features.Tenants.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> AddSaveAndPublishAsync(Tenant current)
+        private async Task<Either<IFeatureError, Tenant>> AddSaveAndPublishAsync(Tenant current)
         {
             await publishEndpoint.Publish(current.ToTenantAdded(), CancellationToken.None);
             await ctx.SaveChangesAsync();
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> GetAsync(Guid id)
+        private async Task<Either<IFeatureError, Tenant>> GetAsync(Guid id)
         {
             var result = await ctx.Tenants.FindAsync(id);
 
@@ -83,7 +83,7 @@ namespace Ubik.Security.Api.Features.Tenants.Services
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> UpdateInDbContextAsync(Tenant current)
+        private async Task<Either<IFeatureError, Tenant>> UpdateInDbContextAsync(Tenant current)
         {
             ctx.Entry(current).State = EntityState.Modified;
             ctx.SetAuditAndSpecialFields();
@@ -92,7 +92,7 @@ namespace Ubik.Security.Api.Features.Tenants.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> AddInDbContextAsync(Tenant current)
+        private async Task<Either<IFeatureError, Tenant>> AddInDbContextAsync(Tenant current)
         {
             current.Id = NewId.NextGuid();
             await ctx.Tenants.AddAsync(current);
@@ -100,7 +100,7 @@ namespace Ubik.Security.Api.Features.Tenants.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> ValidateIfNotAlreadyExistsAsync(Tenant current)
+        private async Task<Either<IFeatureError, Tenant>> ValidateIfNotAlreadyExistsAsync(Tenant current)
         {
             var exists = await ctx.Tenants.AnyAsync(a => a.Code == current.Code);
             return exists
@@ -108,7 +108,7 @@ namespace Ubik.Security.Api.Features.Tenants.Services
                 : current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Tenant current)
+        private async Task<Either<IFeatureError, Tenant>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Tenant current)
         {
             var exists = await ctx.Tenants.AnyAsync(a => a.Code == current.Code && a.Id != current.Id);
 
@@ -117,7 +117,7 @@ namespace Ubik.Security.Api.Features.Tenants.Services
                 : current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> DeleteInDbContextAsync(Tenant current)
+        private async Task<Either<IFeatureError, Tenant>> DeleteInDbContextAsync(Tenant current)
         {
             ctx.Entry(current).State = EntityState.Deleted;
 

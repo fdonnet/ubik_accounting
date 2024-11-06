@@ -7,8 +7,8 @@ namespace Ubik.Security.Api.Features.Roles.Services
 {
     public interface IRolesAdminCommandsService
     {
-        public Task<Either<IServiceAndFeatureError, Role>> AddAsync(AddRoleCommand authorizationCommand);
-        public Task<Either<IServiceAndFeatureError, Role>> UpdateAsync(UpdateRoleCommand authorizationCommand);
-        public Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id);
+        public Task<Either<IFeatureError, Role>> AddAsync(AddRoleCommand authorizationCommand);
+        public Task<Either<IFeatureError, Role>> UpdateAsync(UpdateRoleCommand authorizationCommand);
+        public Task<Either<IFeatureError, bool>> DeleteAsync(Guid id);
     }
 }

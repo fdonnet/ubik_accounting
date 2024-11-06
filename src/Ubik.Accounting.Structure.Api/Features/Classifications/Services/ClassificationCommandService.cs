@@ -15,14 +15,14 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
 {
     public class ClassificationCommandService(AccountingDbContext ctx, IPublishEndpoint publishEndpoint) : IClassificationCommandService
     {
-        public async Task<Either<IServiceAndFeatureError, Classification>> AddAsync(AddClassificationCommand command)
+        public async Task<Either<IFeatureError, Classification>> AddAsync(AddClassificationCommand command)
         {
             return await ValidateIfNotAlreadyExistsAsync(command.ToClassification())
                 .BindAsync(AddInDbContextAsync)
                 .BindAsync(AddSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, Classification>> UpdateAsync(UpdateClassificationCommand command)
+        public async Task<Either<IFeatureError, Classification>> UpdateAsync(UpdateClassificationCommand command)
         {
             var model = command.ToClassification();
 
@@ -33,7 +33,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
                 .BindAsync(UpdateSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id)
+        public async Task<Either<IFeatureError, List<AccountGroup>>> DeleteAsync(Guid id)
         {
             using var transaction = ctx.Database.BeginTransaction();
             var deletedAccountGroups = new List<AccountGroup>();
@@ -45,7 +45,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
                 .BindAsync(del => DeleteSaveAndPublishAsync(id, del, transaction));
         }
 
-        private async Task<Either<IServiceAndFeatureError,List<AccountGroup>>> DeleteSaveAndPublishAsync(Guid id, List<AccountGroup> ag, IDbContextTransaction trans)
+        private async Task<Either<IFeatureError,List<AccountGroup>>> DeleteSaveAndPublishAsync(Guid id, List<AccountGroup> ag, IDbContextTransaction trans)
         {
             await publishEndpoint.Publish(new ClassificationDeleted()
             {
@@ -59,13 +59,13 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
             return ag;
         }
 
-        private async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteClassificationAsync(Guid id, List<AccountGroup> deletedAccountGroups)
+        private async Task<Either<IFeatureError, List<AccountGroup>>> DeleteClassificationAsync(Guid id, List<AccountGroup> deletedAccountGroups)
         {
             await ctx.Classifications.Where(x => x.Id == id).ExecuteDeleteAsync();
             return deletedAccountGroups;
         }
 
-        private async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteFromParentGroupsAsync(List<AccountGroup> firstLvlAccountGroups, List<AccountGroup> deletedAccountGroups)
+        private async Task<Either<IFeatureError, List<AccountGroup>>> DeleteFromParentGroupsAsync(List<AccountGroup> firstLvlAccountGroups, List<AccountGroup> deletedAccountGroups)
         {
             foreach (var ag in firstLvlAccountGroups)
             {
@@ -77,7 +77,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
             return deletedAccountGroups;
         }
 
-        private async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAllChildrenAccountGroupsAsync(Guid id, List<AccountGroup> deletedAccountGroups)
+        private async Task<Either<IFeatureError, List<AccountGroup>>> DeleteAllChildrenAccountGroupsAsync(Guid id, List<AccountGroup> deletedAccountGroups)
         {
             var children = await ctx.AccountGroups.Where(ag => ag.ParentAccountGroupId == id).ToListAsync();
 
@@ -91,14 +91,14 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
             return deletedAccountGroups;
         }
 
-        private async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> GetFirstLvlAccountGroupsAsync(Guid classificationId)
+        private async Task<Either<IFeatureError, List<AccountGroup>>> GetFirstLvlAccountGroupsAsync(Guid classificationId)
         {
             return await ctx.AccountGroups
                                     .Where(ag => ag.ClassificationId == classificationId
                                                 && ag.ParentAccountGroupId == null).ToListAsync();
         }
 
-        private async Task<Either<IServiceAndFeatureError, Classification>> UpdateSaveAndPublishAsync(Classification current)
+        private async Task<Either<IFeatureError, Classification>> UpdateSaveAndPublishAsync(Classification current)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
             }
         }
 
-        private async Task<Either<IServiceAndFeatureError, Classification>> UpdateInDbContextAsync(Classification current)
+        private async Task<Either<IFeatureError, Classification>> UpdateInDbContextAsync(Classification current)
         {
             ctx.Entry(current).State = EntityState.Modified;
             ctx.SetAuditAndSpecialFields();
@@ -122,7 +122,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
             return current;
         }
 
-        private static async Task<Either<IServiceAndFeatureError, Classification>> MapInDbContextAsync
+        private static async Task<Either<IFeatureError, Classification>> MapInDbContextAsync
             (Classification current, Classification forUpdate)
         {
             current = forUpdate.ToClassification(current);
@@ -130,7 +130,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Classification>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Classification classification)
+        private async Task<Either<IFeatureError, Classification>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Classification classification)
         {
             var exists = await ctx.Classifications.AnyAsync(a => a.Code == classification.Code && a.Id != classification.Id);
 
@@ -139,7 +139,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
                 : classification;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Classification>> GetAsync(Guid id)
+        private async Task<Either<IFeatureError, Classification>> GetAsync(Guid id)
         {
             var result = await ctx.Classifications.FindAsync(id);
 
@@ -148,14 +148,14 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Classification>> AddSaveAndPublishAsync(Classification current)
+        private async Task<Either<IFeatureError, Classification>> AddSaveAndPublishAsync(Classification current)
         {
             await publishEndpoint.Publish(current.ToClassificationAdded(), CancellationToken.None);
             await ctx.SaveChangesAsync();
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Classification>> AddInDbContextAsync(Classification current)
+        private async Task<Either<IFeatureError, Classification>> AddInDbContextAsync(Classification current)
         {
             current.Id = NewId.NextGuid();
             await ctx.Classifications.AddAsync(current);
@@ -164,7 +164,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Classification>> ValidateIfNotAlreadyExistsAsync(Classification classification)
+        private async Task<Either<IFeatureError, Classification>> ValidateIfNotAlreadyExistsAsync(Classification classification)
         {
             var exists = await ctx.Classifications.AnyAsync(a => a.Code == classification.Code);
 

@@ -8,8 +8,8 @@ namespace Ubik.Security.Api.Features.Users.Services
 {
     public interface IUsersCommandsService
     {
-        Task<Either<IServiceAndFeatureError, User>> AddAsync(AddUserCommand userCommand);
-        Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAsync(Guid userId,AddTenantCommand command);
-        Task<Either<IServiceAndFeatureError, Role>> AddRoleInTenantAsync(Guid userId, Guid roleId);
+        Task<Either<IFeatureError, User>> AddAsync(AddUserCommand userCommand);
+        Task<Either<IFeatureError, Tenant>> AddNewTenantAsync(Guid userId,AddTenantCommand command);
+        Task<Either<IFeatureError, Role>> AddRoleInTenantAsync(Guid userId, Guid roleId);
     }
 }

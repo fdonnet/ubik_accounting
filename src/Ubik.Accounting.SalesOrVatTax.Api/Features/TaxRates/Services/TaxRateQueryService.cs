@@ -15,7 +15,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
             return result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, TaxRate>> GetAsync(Guid id)
+        public async Task<Either<IFeatureError, TaxRate>> GetAsync(Guid id)
         {
             var result = await ctx.TaxRates.FindAsync(id);
 

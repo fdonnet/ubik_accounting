@@ -2,15 +2,15 @@
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Errors
 {
-    public record AccountTaxRateConfigAlreadyExists : IServiceAndFeatureError
+    public record AccountTaxRateConfigAlreadyExists : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public AccountTaxRateConfigAlreadyExists(Guid accountId, Guid taxRateId)
         {
 
-            ErrorType = ServiceAndFeatureErrorType.BadParams;
+            ErrorType = FeatureErrorType.BadParams;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "LINKED_TAX_RATE_ALREADY_EXIST",

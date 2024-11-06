@@ -1,14 +1,14 @@
 ﻿namespace Ubik.ApiService.Common.Errors
 {
-    public record ResourceAlreadyExistsError : IServiceAndFeatureError
+    public record ResourceAlreadyExistsError : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public ResourceAlreadyExistsError(string resourceName, string fieldName, string value)
         {
 
-            ErrorType = ServiceAndFeatureErrorType.Conflict;
+            ErrorType = FeatureErrorType.Conflict;
             CustomErrors = [ new()
             {
                 ErrorCode = $"{resourceName.ToUpper()}_ALREADY_EXISTS",

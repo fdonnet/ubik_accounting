@@ -1,14 +1,14 @@
 ﻿namespace Ubik.ApiService.Common.Errors
 {
-    public record ResourceIdNotMatchWithCommandError : IServiceAndFeatureError
+    public record ResourceIdNotMatchWithCommandError : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public ResourceIdNotMatchWithCommandError(string resourceName, Guid idFromQuery, Guid idFromCommand)
         {
 
-            ErrorType = ServiceAndFeatureErrorType.BadParams;
+            ErrorType = FeatureErrorType.BadParams;
             CustomErrors = [ new()
             {
                 ErrorCode = $"{resourceName.ToUpper()}_COMMAND_IDS_NOT_MATCH",

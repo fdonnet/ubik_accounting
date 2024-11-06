@@ -15,7 +15,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
             return await ctx.AccountGroups.ToListAsync();
         }
 
-        public async Task<Either<IServiceAndFeatureError, AccountGroup>> GetAsync(Guid id)
+        public async Task<Either<IFeatureError, AccountGroup>> GetAsync(Guid id)
         {
             var accountGroup = await ctx.AccountGroups.FindAsync(id);
 
@@ -24,7 +24,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
                 : accountGroup;
         }
 
-        public async Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetChildAccountsAsync(Guid id)
+        public async Task<Either<IFeatureError, IEnumerable<Account>>> GetChildAccountsAsync(Guid id)
         {
             return await GetAsync(id)
                 .MapAsync(async a =>

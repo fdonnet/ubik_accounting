@@ -13,7 +13,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
 {
     public class AccountTaxRateConfigsCommandService(AccountingSalesTaxDbContext ctx, IPublishEndpoint publishEndpoint) : IAccountTaxRateConfigsCommandService
     {
-        public async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> AttachAsync(AddAccountTaxRateConfigCommand command)
+        public async Task<Either<IFeatureError, AccountTaxRateConfig>> AttachAsync(AddAccountTaxRateConfigCommand command)
         {
             return await GetAsync(command.TaxRateId)
                         .BindAsync(t => GetAccountAsync(command.AccountId))
@@ -24,14 +24,14 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
         }
 
 
-        public async Task<Either<IServiceAndFeatureError, bool>> DetachAsync(DeleteAccountTaxRateConfigCommand command)
+        public async Task<Either<IFeatureError, bool>> DetachAsync(DeleteAccountTaxRateConfigCommand command)
         {
             return await GetAccountTaxRateConfigAsync(command.AccountId, command.TaxRateId)
                         .BindAsync(DeleteInDbContextAsync)
                         .BindAsync(DeletedSaveAndPublishAsync);
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> DeleteInDbContextAsync(AccountTaxRateConfig current)
+        private async Task<Either<IFeatureError, AccountTaxRateConfig>> DeleteInDbContextAsync(AccountTaxRateConfig current)
         {
             ctx.Entry(current).State = EntityState.Deleted;
 
@@ -39,7 +39,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> DeletedSaveAndPublishAsync(AccountTaxRateConfig current)
+        private async Task<Either<IFeatureError, bool>> DeletedSaveAndPublishAsync(AccountTaxRateConfig current)
         {
             await publishEndpoint.Publish(new AccountTaxRateConfigDeleted { Id = current.Id }, CancellationToken.None);
             await ctx.SaveChangesAsync();
@@ -47,7 +47,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
             return true;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> GetAccountTaxRateConfigAsync(Guid accountId, Guid taxRateId)
+        private async Task<Either<IFeatureError, AccountTaxRateConfig>> GetAccountTaxRateConfigAsync(Guid accountId, Guid taxRateId)
         {
             var result = await ctx.AccountTaxRateConfigs.FirstOrDefaultAsync(x => x.AccountId == accountId && x.TaxRateId == taxRateId);
 
@@ -56,7 +56,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> AddTaxRateLinkSaveAndPublishAsync(AccountTaxRateConfig current)
+        private async Task<Either<IFeatureError, AccountTaxRateConfig>> AddTaxRateLinkSaveAndPublishAsync(AccountTaxRateConfig current)
         {
             await publishEndpoint.Publish(current.ToAccountTaxRateConfigAdded(), CancellationToken.None);
             await ctx.SaveChangesAsync();
@@ -64,7 +64,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> AddTaxRateLinkInDbContextAsync(AddAccountTaxRateConfigCommand command)
+        private async Task<Either<IFeatureError, AccountTaxRateConfig>> AddTaxRateLinkInDbContextAsync(AddAccountTaxRateConfigCommand command)
         {
             var accountTaxRateConfig = command.ToAccountTaxRateConfig();
             var result = await ctx.AccountTaxRateConfigs.AddAsync(command.ToAccountTaxRateConfig());
@@ -73,7 +73,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
             return accountTaxRateConfig;
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> ValidateIfLinkNotAlreadyExistsAsync(Guid accountId, Guid taxRateId)
+        private async Task<Either<IFeatureError, bool>> ValidateIfLinkNotAlreadyExistsAsync(Guid accountId, Guid taxRateId)
         {
             var result = await ctx.AccountTaxRateConfigs.AnyAsync(x => x.AccountId == accountId
                             && x.TaxRateId == taxRateId);
@@ -83,7 +83,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
                 : true;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> GetAccountAsync(Guid accountId)
+        private async Task<Either<IFeatureError, Account>> GetAccountAsync(Guid accountId)
         {
             var result = await ctx.Accounts.FindAsync(accountId);
 
@@ -92,7 +92,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> GetTaxAccountAsync(Guid taxAccountId)
+        private async Task<Either<IFeatureError, Account>> GetTaxAccountAsync(Guid taxAccountId)
         {
             var result = await ctx.Accounts.FindAsync(taxAccountId);
 
@@ -101,7 +101,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, TaxRate>> GetAsync(Guid taxRateId)
+        private async Task<Either<IFeatureError, TaxRate>> GetAsync(Guid taxRateId)
         {
             var result = await ctx.TaxRates.FindAsync(taxRateId);
 

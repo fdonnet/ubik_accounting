@@ -2,14 +2,14 @@
 
 namespace Ubik.Accounting.Structure.Api.Features.Accounts.Errors
 {
-    public class AccountLinkedToExistingEntriesError : IServiceAndFeatureError
+    public class AccountLinkedToExistingEntriesError : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public AccountLinkedToExistingEntriesError(Guid id)
         {
-            ErrorType = ServiceAndFeatureErrorType.Conflict;
+            ErrorType = FeatureErrorType.Conflict;
             CustomErrors = new List<CustomError>() { new()
             {
                 ErrorCode = "CANNOT_DELETE_ACCOUNT_LINKED_TO_EXISTING_ENTRIES",

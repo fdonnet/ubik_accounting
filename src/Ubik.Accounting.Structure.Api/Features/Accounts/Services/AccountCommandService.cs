@@ -16,7 +16,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
 {
     public class AccountCommandService(AccountingDbContext ctx, ICurrentUser currentUser, IPublishEndpoint publishEndpoint) : IAccountCommandService
     {
-        public async Task<Either<IServiceAndFeatureError, Account>> AddAsync(AddAccountCommand command)
+        public async Task<Either<IFeatureError, Account>> AddAsync(AddAccountCommand command)
         {
             return await ValidateIfNotAlreadyExistsAsync(command.ToAccount())
                 .BindAsync(ValidateIfCurrencyExistsAsync)
@@ -24,7 +24,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
                 .BindAsync(AddSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, Account>> UpdateAsync(UpdateAccountCommand command)
+        public async Task<Either<IFeatureError, Account>> UpdateAsync(UpdateAccountCommand command)
         {
             var model = command.ToAccount();
 
@@ -36,14 +36,14 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
                 .BindAsync(UpdateSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id)
+        public async Task<Either<IFeatureError, bool>> DeleteAsync(Guid id)
         {
             return await GetAsync(id)
                 .BindAsync(DeleteInDbContextAsync)
                 .BindAsync(DeletedSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddInAccountGroupAsync(AddAccountInAccountGroupCommand command)
+        public async Task<Either<IFeatureError, AccountAccountGroup>> AddInAccountGroupAsync(AddAccountInAccountGroupCommand command)
         {
             var model = command.ToAccountAccountGroup();
             return await GetAsync(model.AccountId)
@@ -53,14 +53,14 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
                 .BindAsync(AddAccountGroupLinkSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> DeleteFromAccountGroupAsync(DeleteAccountInAccountGroupCommand command)
+        public async Task<Either<IFeatureError, AccountAccountGroup>> DeleteFromAccountGroupAsync(DeleteAccountInAccountGroupCommand command)
         {
             return await GetExistingAccountGroupRelationAsync(command.AccountId, command.AccountGroupId)
                 .BindAsync(DeleteAccountGroupLinkInDbContextAsync)
                 .BindAsync(DeleteAccountGroupLinkSaveAndPublishAsync);
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> DeleteAccountGroupLinkSaveAndPublishAsync(AccountAccountGroup current)
+        private async Task<Either<IFeatureError, AccountAccountGroup>> DeleteAccountGroupLinkSaveAndPublishAsync(AccountAccountGroup current)
         {
             await publishEndpoint.Publish(current.ToAccountDeletedInAccountGroup(), CancellationToken.None);
             await ctx.SaveChangesAsync();
@@ -68,7 +68,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> GetExistingAccountGroupRelationAsync(Guid id, Guid accountGroupId)
+        private async Task<Either<IFeatureError, AccountAccountGroup>> GetExistingAccountGroupRelationAsync(Guid id, Guid accountGroupId)
         {
             var accountAccountGroup = await ctx.AccountsAccountGroups.FirstOrDefaultAsync(aag =>
                 aag.AccountId == id
@@ -79,7 +79,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
                 : accountAccountGroup;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> DeleteAccountGroupLinkInDbContextAsync(AccountAccountGroup current)
+        private async Task<Either<IFeatureError, AccountAccountGroup>> DeleteAccountGroupLinkInDbContextAsync(AccountAccountGroup current)
         {
             ctx.Entry(current).State = EntityState.Deleted;
 
@@ -87,7 +87,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddAccountGroupLinkSaveAndPublishAsync(AccountAccountGroup current)
+        private async Task<Either<IFeatureError, AccountAccountGroup>> AddAccountGroupLinkSaveAndPublishAsync(AccountAccountGroup current)
         {
             await publishEndpoint.Publish(current.ToAccountAddedInAccountGroup(), CancellationToken.None);
             await ctx.SaveChangesAsync();
@@ -95,7 +95,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> AddAccountGroupLinkInDbContextAsync(AccountAccountGroup current)
+        private async Task<Either<IFeatureError, AccountAccountGroup>> AddAccountGroupLinkInDbContextAsync(AccountAccountGroup current)
         {
             await ctx.AccountsAccountGroups.AddAsync(current);
             ctx.SetAuditAndSpecialFields();
@@ -103,7 +103,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> ValidateIfNotExistsInTheClassificationAsync(AccountAccountGroup accountAccountGroup)
+        private async Task<Either<IFeatureError, AccountAccountGroup>> ValidateIfNotExistsInTheClassificationAsync(AccountAccountGroup accountAccountGroup)
         {
             var p = new DynamicParameters();
             p.Add("@id", accountAccountGroup.AccountId);
@@ -130,14 +130,14 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
 
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountAccountGroup>> ValidateIfExistsAccountGroupIdAsync(AccountAccountGroup accountAccountGroup)
+        private async Task<Either<IFeatureError, AccountAccountGroup>> ValidateIfExistsAccountGroupIdAsync(AccountAccountGroup accountAccountGroup)
         {
             return await ctx.AccountGroups.AnyAsync(ag => ag.Id == accountAccountGroup.AccountGroupId)
                 ? accountAccountGroup
                 : new BadParamExternalResourceNotFound("Account", "AccountGroup", "AccountGroupId", accountAccountGroup.AccountGroupId.ToString());
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> DeletedSaveAndPublishAsync(Account current)
+        private async Task<Either<IFeatureError, bool>> DeletedSaveAndPublishAsync(Account current)
         {
             await publishEndpoint.Publish(new AccountDeleted { Id = current.Id }, CancellationToken.None);
             await ctx.SaveChangesAsync();
@@ -145,7 +145,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
             return true;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> DeleteInDbContextAsync(Account current)
+        private async Task<Either<IFeatureError, Account>> DeleteInDbContextAsync(Account current)
         {
             ctx.Entry(current).State = EntityState.Deleted;
 
@@ -153,7 +153,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> UpdateSaveAndPublishAsync(Account current)
+        private async Task<Either<IFeatureError, Account>> UpdateSaveAndPublishAsync(Account current)
         {
             try
             {
@@ -168,7 +168,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
             }
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> GetAsync(Guid id)
+        private async Task<Either<IFeatureError, Account>> GetAsync(Guid id)
         {
             var account = await ctx.Accounts.FindAsync(id);
 
@@ -177,7 +177,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
                 : account;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> UpdateInDbContextAsync(Account current)
+        private async Task<Either<IFeatureError, Account>> UpdateInDbContextAsync(Account current)
         {
             ctx.Entry(current).State = EntityState.Modified;
             ctx.SetAuditAndSpecialFields();
@@ -186,7 +186,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Account account)
+        private async Task<Either<IFeatureError, Account>> ValidateIfNotAlreadyExistsWithOtherIdAsync(Account account)
         {
             var exists = await ctx.Accounts.AnyAsync(a => a.Code == account.Code && a.Id != account.Id);
 
@@ -204,7 +204,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
         //        : current;
         //}
 
-        private static async Task<Either<IServiceAndFeatureError, Account>> MapInDbContextAsync
+        private static async Task<Either<IFeatureError, Account>> MapInDbContextAsync
             (Account current, Account forUpdate)
         {
             current = forUpdate.ToAccount(current);
@@ -212,14 +212,14 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> AddSaveAndPublishAsync(Account account)
+        private async Task<Either<IFeatureError, Account>> AddSaveAndPublishAsync(Account account)
         {
             await publishEndpoint.Publish(account.ToAccountAdded(), CancellationToken.None);
             await ctx.SaveChangesAsync();
             return account;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> AddInDbContextAsync(Account account)
+        private async Task<Either<IFeatureError, Account>> AddInDbContextAsync(Account account)
         {
             account.Id = NewId.NextGuid();
             await ctx.Accounts.AddAsync(account);
@@ -227,7 +227,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
             return account;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> ValidateIfNotAlreadyExistsAsync(Account account)
+        private async Task<Either<IFeatureError, Account>> ValidateIfNotAlreadyExistsAsync(Account account)
         {
             var exists = await ctx.Accounts.AnyAsync(a => a.Code == account.Code);
             return exists
@@ -235,7 +235,7 @@ namespace Ubik.Accounting.Structure.Api.Features.Accounts.Services
                 : account;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Account>> ValidateIfCurrencyExistsAsync(Account account)
+        private async Task<Either<IFeatureError, Account>> ValidateIfCurrencyExistsAsync(Account account)
         {
             return await ctx.Currencies.AnyAsync(c => c.Id == account.CurrencyId)
                 ? account

@@ -13,14 +13,14 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
 {
     public class TaxRateCommandService(AccountingSalesTaxDbContext ctx, IPublishEndpoint publishEndpoint) : ITaxRateCommandService
     {
-        public async Task<Either<IServiceAndFeatureError, TaxRate>> AddAsync(AddSalesOrVatTaxRateCommand command)
+        public async Task<Either<IFeatureError, TaxRate>> AddAsync(AddSalesOrVatTaxRateCommand command)
         {
             return await ValidateIfNotAlreadyExistsAsync(command.ToSalesOrVatTaxRate())
                 .BindAsync(AddInDbContextAsync)
                 .BindAsync(AddSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, TaxRate>> UpdateAsync(UpdateSalesOrVatTaxRateCommand command)
+        public async Task<Either<IFeatureError, TaxRate>> UpdateAsync(UpdateSalesOrVatTaxRateCommand command)
         {
             var model = command.ToSalesOrVatTaxRate();
 
@@ -32,14 +32,14 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
         }
 
         //TODO: need to implement check if used in transactions and soft delete
-        public async Task<Either<IServiceAndFeatureError, bool>> DeleteAsync(Guid id)
+        public async Task<Either<IFeatureError, bool>> DeleteAsync(Guid id)
         {
             return await GetAsync(id)
                 .BindAsync(DeleteInDbContextAsync)
                 .BindAsync(DeletedSaveAndPublishAsync);
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> DeletedSaveAndPublishAsync(TaxRate current)
+        private async Task<Either<IFeatureError, bool>> DeletedSaveAndPublishAsync(TaxRate current)
         {
             await publishEndpoint.Publish(new SalesOrVatTaxRateDeleted { Id = current.Id }, CancellationToken.None);
             await ctx.SaveChangesAsync();
@@ -47,7 +47,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
             return true;
         }
 
-        private async Task<Either<IServiceAndFeatureError, TaxRate>> DeleteInDbContextAsync(TaxRate current)
+        private async Task<Either<IFeatureError, TaxRate>> DeleteInDbContextAsync(TaxRate current)
         {
             ctx.Entry(current).State = EntityState.Deleted;
 
@@ -55,7 +55,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, TaxRate>> UpdateSaveAndPublishAsync(TaxRate current)
+        private async Task<Either<IFeatureError, TaxRate>> UpdateSaveAndPublishAsync(TaxRate current)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
             }
         }
 
-        private async Task<Either<IServiceAndFeatureError, TaxRate>> GetAsync(Guid id)
+        private async Task<Either<IFeatureError, TaxRate>> GetAsync(Guid id)
         {
             var result = await ctx.TaxRates.FindAsync(id);
 
@@ -79,7 +79,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, TaxRate>> UpdateInDbContextAsync(TaxRate current)
+        private async Task<Either<IFeatureError, TaxRate>> UpdateInDbContextAsync(TaxRate current)
         {
             ctx.Entry(current).State = EntityState.Modified;
             ctx.SetAuditAndSpecialFields();
@@ -88,7 +88,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, TaxRate>> ValidateIfNotAlreadyExistsWithOtherIdAsync(TaxRate current)
+        private async Task<Either<IFeatureError, TaxRate>> ValidateIfNotAlreadyExistsWithOtherIdAsync(TaxRate current)
         {
             var exists = await ctx.TaxRates.AnyAsync(a => a.Code == current.Code && a.Id != current.Id);
 
@@ -97,7 +97,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
                 : current;
         }
 
-        private static async Task<Either<IServiceAndFeatureError, TaxRate>> MapInDbContextAsync
+        private static async Task<Either<IFeatureError, TaxRate>> MapInDbContextAsync
             (TaxRate current, TaxRate forUpdate)
         {
             current = forUpdate.ToSalesOrVatTaxRate(current);
@@ -105,14 +105,14 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, TaxRate>> AddSaveAndPublishAsync(TaxRate current)
+        private async Task<Either<IFeatureError, TaxRate>> AddSaveAndPublishAsync(TaxRate current)
         {
             await publishEndpoint.Publish(current.ToSalesOrVatTaxRateAdded(), CancellationToken.None);
             await ctx.SaveChangesAsync();
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, TaxRate>> AddInDbContextAsync(TaxRate current)
+        private async Task<Either<IFeatureError, TaxRate>> AddInDbContextAsync(TaxRate current)
         {
             current.Id = NewId.NextGuid();
             await ctx.TaxRates.AddAsync(current);
@@ -120,7 +120,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, TaxRate>> ValidateIfNotAlreadyExistsAsync(TaxRate current)
+        private async Task<Either<IFeatureError, TaxRate>> ValidateIfNotAlreadyExistsAsync(TaxRate current)
         {
             var exists = await ctx.TaxRates.AnyAsync(a => a.Code == current.Code);
             return exists

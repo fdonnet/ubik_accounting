@@ -14,20 +14,20 @@ namespace Ubik.Security.Api.Features.Users.Services
         private readonly HttpClient _httpClient = httpClient;
         private readonly AuthProviderKeycloakOptions _authProviderKeycloakOptions = authProviderOption.Value;
 
-        public async Task<Either<IServiceAndFeatureError, bool>> AddUserAsync(AddUserCommand user)
+        public async Task<Either<IFeatureError, bool>> AddUserAsync(AddUserCommand user)
         {
             return await GetServiceTokenAsync()
                 .BindAsync(token => SendAddRequestToAuthProviderAsync(user, token));
         }
 
-        public async Task<Either<IServiceAndFeatureError, bool>> CheckIfUsersPresentInAuth()
+        public async Task<Either<IFeatureError, bool>> CheckIfUsersPresentInAuth()
         {
             return await GetServiceTokenAsync()
                     .BindAsync(token => CheckIfUsersRequestToAuthProviderAsync(token));
 
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> SendAddRequestToAuthProviderAsync(AddUserCommand user, string token)
+        private async Task<Either<IFeatureError, bool>> SendAddRequestToAuthProviderAsync(AddUserCommand user, string token)
         {
             var userPayload = new AddUserInKeycloakRealm()
             {
@@ -55,7 +55,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                     : new UserCannotBeAddedInAuthProviderBadParams(user);
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> CheckIfUsersRequestToAuthProviderAsync(string token)
+        private async Task<Either<IFeatureError, bool>> CheckIfUsersRequestToAuthProviderAsync(string token)
         {
             var code = "{@code null}";
 
@@ -80,7 +80,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 return new UserCannotCheckIfPresentInAuth();
         }
 
-        private async Task<Either<IServiceAndFeatureError, string>> GetServiceTokenAsync()
+        private async Task<Either<IFeatureError, string>> GetServiceTokenAsync()
         {
             var dict = new Dictionary<string, string>
             {

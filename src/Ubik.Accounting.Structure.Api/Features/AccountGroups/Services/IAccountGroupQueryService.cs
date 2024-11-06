@@ -7,7 +7,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
     public interface IAccountGroupQueryService
     {
         Task<IEnumerable<AccountGroup>> GetAllAsync();
-        Task<Either<IServiceAndFeatureError, AccountGroup>> GetAsync(Guid id);
-        Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetChildAccountsAsync(Guid id);
+        Task<Either<IFeatureError, AccountGroup>> GetAsync(Guid id);
+        Task<Either<IFeatureError, IEnumerable<Account>>> GetChildAccountsAsync(Guid id);
     }
 }

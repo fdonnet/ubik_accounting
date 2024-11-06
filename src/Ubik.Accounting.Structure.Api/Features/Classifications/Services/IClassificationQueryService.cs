@@ -8,9 +8,9 @@ namespace Ubik.Accounting.Structure.Api.Features.Classifications.Services
     public interface IClassificationQueryService
     {
         public Task<IEnumerable<Classification>> GetAllAsync();
-        public Task<Either<IServiceAndFeatureError, Classification>> GetAsync(Guid id);
-        public Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationAttachedAccountsAsync(Guid id);
-        public Task<Either<IServiceAndFeatureError, IEnumerable<Account>>> GetClassificationMissingAccountsAsync(Guid id);
-        public Task<Either<IServiceAndFeatureError, ClassificationStatus>> GetClassificationStatusAsync(Guid id);
+        public Task<Either<IFeatureError, Classification>> GetAsync(Guid id);
+        public Task<Either<IFeatureError, IEnumerable<Account>>> GetClassificationAttachedAccountsAsync(Guid id);
+        public Task<Either<IFeatureError, IEnumerable<Account>>> GetClassificationMissingAccountsAsync(Guid id);
+        public Task<Either<IFeatureError, ClassificationStatus>> GetClassificationStatusAsync(Guid id);
     }
 }

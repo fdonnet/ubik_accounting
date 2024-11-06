@@ -15,7 +15,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
 {
     public class AccountGroupCommandService(AccountingDbContext ctx, IPublishEndpoint publishEndpoint) : IAccountGroupCommandService
     {
-        public async Task<Either<IServiceAndFeatureError, AccountGroup>> AddAsync(AddAccountGroupCommand command)
+        public async Task<Either<IFeatureError, AccountGroup>> AddAsync(AddAccountGroupCommand command)
         {
             return await ValidateIfNotAlreadyExistsAsync(command.ToAccountGroup())
                         .BindAsync(ValidateIfParentAccountGroupExistsAsync)
@@ -24,7 +24,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
                         .BindAsync(AddSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateAsync(UpdateAccountGroupCommand command)
+        public async Task<Either<IFeatureError, AccountGroup>> UpdateAsync(UpdateAccountGroupCommand command)
         {
             var model = command.ToAccountGroup();
 
@@ -37,7 +37,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
                 .BindAsync(UpdateSaveAndPublishAsync);
         }
 
-        public async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteAsync(Guid id)
+        public async Task<Either<IFeatureError, List<AccountGroup>>> DeleteAsync(Guid id)
         {
             using var transaction = ctx.Database.BeginTransaction();
             var deletedAccountGroups = new List<AccountGroup>();
@@ -48,7 +48,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
                 .BindAsync(ag => DeleteSaveCommitAndPublishAsync(ag, deletedAccountGroups, transaction));
         }
 
-        private async Task<Either<IServiceAndFeatureError, List<AccountGroup>>> DeleteSaveCommitAndPublishAsync(AccountGroup current,
+        private async Task<Either<IFeatureError, List<AccountGroup>>> DeleteSaveCommitAndPublishAsync(AccountGroup current,
             List<AccountGroup> childAccountGroups, IDbContextTransaction trans)
         {
             childAccountGroups.Add(current);
@@ -58,7 +58,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
             return childAccountGroups;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> DeleteAllChildrenOfAsync(AccountGroup current, List<AccountGroup> deletedAccountGroups)
+        private async Task<Either<IFeatureError, AccountGroup>> DeleteAllChildrenOfAsync(AccountGroup current, List<AccountGroup> deletedAccountGroups)
         {
             var children = await ctx.AccountGroups.Where(ag => ag.ParentAccountGroupId == current.Id).ToListAsync();
 
@@ -72,7 +72,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> DeleteInDbContextAsync(AccountGroup current)
+        private async Task<Either<IFeatureError, AccountGroup>> DeleteInDbContextAsync(AccountGroup current)
         {
             ctx.Entry(current).State = EntityState.Deleted;
 
@@ -80,7 +80,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> MapInDbContextAsync
+        private async Task<Either<IFeatureError, AccountGroup>> MapInDbContextAsync
             (AccountGroup current, AccountGroup forUpdate)
         {
             current = forUpdate.ToAccountGroup(current);
@@ -88,14 +88,14 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> AddSaveAndPublishAsync(AccountGroup accountGroup)
+        private async Task<Either<IFeatureError, AccountGroup>> AddSaveAndPublishAsync(AccountGroup accountGroup)
         {
             await publishEndpoint.Publish(accountGroup.ToAccountGroupAdded(), CancellationToken.None);
             await ctx.SaveChangesAsync();
             return accountGroup;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateSaveAndPublishAsync(AccountGroup accountGroup)
+        private async Task<Either<IFeatureError, AccountGroup>> UpdateSaveAndPublishAsync(AccountGroup accountGroup)
         {
             try
             {
@@ -109,7 +109,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
             }
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> UpdateInDbContext(AccountGroup accountGroup)
+        private async Task<Either<IFeatureError, AccountGroup>> UpdateInDbContext(AccountGroup accountGroup)
         {
             ctx.Entry(accountGroup).State = EntityState.Modified;
             ctx.SetAuditAndSpecialFields();
@@ -118,7 +118,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
             return accountGroup;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfNotAlreadyExistsWithOtherIdAsync(AccountGroup accountGroup)
+        private async Task<Either<IFeatureError, AccountGroup>> ValidateIfNotAlreadyExistsWithOtherIdAsync(AccountGroup accountGroup)
         {
             var exists = await ctx.AccountGroups.AnyAsync(a => a.Code == accountGroup.Code
                         && a.ClassificationId == accountGroup.ClassificationId
@@ -130,7 +130,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
                 : accountGroup;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> GetAsync(Guid id)
+        private async Task<Either<IFeatureError, AccountGroup>> GetAsync(Guid id)
         {
             var accountGroup = await ctx.AccountGroups.FindAsync(id);
 
@@ -139,7 +139,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
                 : accountGroup;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> AddInDbContextAsync(AccountGroup accountGroup)
+        private async Task<Either<IFeatureError, AccountGroup>> AddInDbContextAsync(AccountGroup accountGroup)
         {
             accountGroup.Id = NewId.NextGuid();
             await ctx.AccountGroups.AddAsync(accountGroup);
@@ -149,7 +149,7 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
 
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfNotAlreadyExistsAsync(AccountGroup accountGroup)
+        private async Task<Either<IFeatureError, AccountGroup>> ValidateIfNotAlreadyExistsAsync(AccountGroup accountGroup)
         {
             var exists = await ctx.AccountGroups.AnyAsync(a => a.Code == accountGroup.Code
                         && a.ClassificationId == accountGroup.ClassificationId);
@@ -160,14 +160,14 @@ namespace Ubik.Accounting.Structure.Api.Features.AccountGroups.Services
                 : accountGroup;
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfClassificationExistsAsync(AccountGroup accountGroup)
+        private async Task<Either<IFeatureError, AccountGroup>> ValidateIfClassificationExistsAsync(AccountGroup accountGroup)
         {
             return await ctx.Classifications.AnyAsync(a => a.Id == accountGroup.ClassificationId)
                 ? accountGroup
                 : new BadParamExternalResourceNotFound("AccountGroup", "Classification", "ClassificationId", accountGroup.ClassificationId.ToString());
         }
 
-        private async Task<Either<IServiceAndFeatureError, AccountGroup>> ValidateIfParentAccountGroupExistsAsync(AccountGroup accountGroup)
+        private async Task<Either<IFeatureError, AccountGroup>> ValidateIfParentAccountGroupExistsAsync(AccountGroup accountGroup)
         {
             return accountGroup.ParentAccountGroupId != null
                 ? await ctx.AccountGroups.AnyAsync(a => a.Id == (Guid)accountGroup.ParentAccountGroupId)

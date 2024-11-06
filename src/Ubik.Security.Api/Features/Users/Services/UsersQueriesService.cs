@@ -15,7 +15,7 @@ namespace Ubik.Security.Api.Features.Users.Services
     public class UsersQueriesService(SecurityDbContext ctx, ICurrentUser currentUser) : IUsersQueriesService
     {
 
-        public async Task<Either<IServiceAndFeatureError, User>> GetUserInSelectedTenantAsync(Guid id)
+        public async Task<Either<IFeatureError, User>> GetUserInSelectedTenantAsync(Guid id)
         {
             var p = new DynamicParameters();
             p.Add("@user_id", id);
@@ -38,7 +38,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, User>> GetAsync(Guid id)
+        public async Task<Either<IFeatureError, User>> GetAsync(Guid id)
         {
             var result = await ctx.Users.FindAsync(id);
 
@@ -47,7 +47,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, User>> GetAsync(string email)
+        public async Task<Either<IFeatureError, User>> GetAsync(string email)
         {
             var result = await ctx.Users.FirstOrDefaultAsync(u => u.Email == email);
 
@@ -56,7 +56,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, UserAdminOrMeResult>> GetUserWithAuhtorizationsByTenants(string email)
+        public async Task<Either<IFeatureError, UserAdminOrMeResult>> GetUserWithAuhtorizationsByTenants(string email)
         {
             return await GetAsync(email)
                     .MapAsync(async u =>
@@ -67,7 +67,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                     });
         }
 
-        public async Task<Either<IServiceAndFeatureError, UserAdminOrMeResult>> GetUserWithAuhtorizationsByTenants(Guid id)
+        public async Task<Either<IFeatureError, UserAdminOrMeResult>> GetUserWithAuhtorizationsByTenants(Guid id)
         {
             return await GetAsync(id)
                     .MapAsync(async u =>
@@ -78,7 +78,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                     });
         }
 
-        public async Task<Either<IServiceAndFeatureError, IEnumerable<Role>>> GetUserRolesInSelectedTenantAsync(Guid id)
+        public async Task<Either<IFeatureError, IEnumerable<Role>>> GetUserRolesInSelectedTenantAsync(Guid id)
         {
             return await GetUserInSelectedTenantAsync(id)
                 .MapAsync(async u =>
@@ -102,13 +102,13 @@ namespace Ubik.Security.Api.Features.Users.Services
                 });
         }
 
-        public async Task<Either<IServiceAndFeatureError, Role>> GetUserRoleInSelectedTenantAsync(Guid id, Guid roleId)
+        public async Task<Either<IFeatureError, Role>> GetUserRoleInSelectedTenantAsync(Guid id, Guid roleId)
         {
             return await GetUserInSelectedTenantAsync(id)
                 .BindAsync(u => GetRoleForUserAsync(u.Id, roleId));
         }
 
-        private async Task<Either<IServiceAndFeatureError, Role>> GetRoleForUserAsync(Guid id,Guid roleId)
+        private async Task<Either<IFeatureError, Role>> GetRoleForUserAsync(Guid id,Guid roleId)
         {
             var p = new DynamicParameters();
             p.Add("@user_id", id);
@@ -177,7 +177,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return dic;
         }
 
-        public async Task<Either<IServiceAndFeatureError, Tenant>> GetUserSelectedTenantAsync(Guid userId)
+        public async Task<Either<IFeatureError, Tenant>> GetUserSelectedTenantAsync(Guid userId)
         {
             var result = await GetAsync(userId)
                 .BindAsync(u => GetTenantAsync(u.SelectedTenantId))
@@ -186,7 +186,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, Tenant>> GetUserTenantAsync(Guid userId, Guid tenantId)
+        public async Task<Either<IFeatureError, Tenant>> GetUserTenantAsync(Guid userId, Guid tenantId)
         {
             var result = await GetAsync(userId)
                  .BindAsync(u => GetTenantAsync(tenantId))
@@ -195,7 +195,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, IEnumerable<Tenant>>> GetUserAllTenantsAsync(Guid userId)
+        public async Task<Either<IFeatureError, IEnumerable<Tenant>>> GetUserAllTenantsAsync(Guid userId)
         {
             var tenants = (await GetAsync(userId))
                 .MapAsync(async u =>
@@ -218,7 +218,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return await tenants;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> GetTenantAsync(Guid? tenantId)
+        private async Task<Either<IFeatureError, Tenant>> GetTenantAsync(Guid? tenantId)
         {
             if (tenantId == null) return new UserTenantNotFound(tenantId);
 
@@ -230,7 +230,7 @@ namespace Ubik.Security.Api.Features.Users.Services
         }
 
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> ValidateIfExistsForTheUserAsync(Tenant tenant, Guid userId)
+        private async Task<Either<IFeatureError, Tenant>> ValidateIfExistsForTheUserAsync(Tenant tenant, Guid userId)
         {
             var result = await ctx.UsersTenants.FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TenantId == tenant.Id);
 

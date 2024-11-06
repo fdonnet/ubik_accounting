@@ -7,7 +7,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.AccountTaxRateConfigs.Servi
 {
     public interface IAccountTaxRateConfigsCommandService
     {
-        Task<Either<IServiceAndFeatureError, AccountTaxRateConfig>> AttachAsync(AddAccountTaxRateConfigCommand command);
-        Task<Either<IServiceAndFeatureError, bool>> DetachAsync(DeleteAccountTaxRateConfigCommand command);
+        Task<Either<IFeatureError, AccountTaxRateConfig>> AttachAsync(AddAccountTaxRateConfigCommand command);
+        Task<Either<IFeatureError, bool>> DetachAsync(DeleteAccountTaxRateConfigCommand command);
     }
 }

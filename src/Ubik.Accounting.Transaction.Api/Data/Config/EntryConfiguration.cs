@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Transaction.Api.Models;
+using System.Globalization;
 
 namespace Ubik.Accounting.Transaction.Api.Data.Config
 {
@@ -28,35 +29,6 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
                 .HasForeignKey(a => a.AccountId).OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
 
-            //TODO: see that tomorrow... I want to be able to enrich the model and link it
-            // to the DB in a smart way.
-            builder.OwnsOne(a => a.TaxInfo, taxInfo =>
-            {
-                taxInfo.Property(t => t.TaxAppliedRate)
-                    .HasPrecision(8, 5)
-                    .IsRequired(false)
-                    .HasConversion<decimal?>();
-
-                taxInfo.Property(t => t.TaxRateId)
-                    .IsRequired(false);
-            });
-
-            //builder.OwnsOne(a => a.AmountExchangeInfo, exchangeInfo =>
-            //{
-            //    exchangeInfo.Property(t => t.OriginalAmount)
-            //        .HasPrecision(18, 4)
-            //        .IsRequired(false);
-
-            //    exchangeInfo.Property(t => t.ExchangeRate)
-            //        .HasPrecision(18, 10)
-            //        .IsRequired(false);
-
-            //    exchangeInfo.HasOne<Currency>()
-            //        .WithMany()
-            //        .HasForeignKey(e => e.OriginalCurrencyId)
-            //        .IsRequired(false);
-            //});
-
             builder.Property(a => a.Label)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -67,6 +39,48 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
             builder.Property(a => a.Amount)
                 .IsRequired()
                 .HasPrecision(18, 4);
+
+            builder.OwnsOne(a => a.AmountAdditionnalInfo, exchangeInfo =>
+            {
+                exchangeInfo.Ignore(t => t.OriginalCurrencyId);
+                exchangeInfo.Ignore(t => t.ExchangeRate);
+                exchangeInfo.Ignore(t => t.OriginalAmount);
+
+                exchangeInfo.Property("_originalAmount")
+                    .HasColumnName("original_amount")
+                    .HasPrecision(18, 4)
+                    .IsRequired(false);
+
+                exchangeInfo.Property("_exchangeRate")
+                    .HasColumnName("exchange_rate")
+                    .HasPrecision(18, 10)
+                    .IsRequired(false);
+
+                exchangeInfo.Property("_originalCurrencyId")
+                    .HasColumnName("original_currency_id")
+                    .IsRequired(false);
+
+                exchangeInfo.HasOne<Currency>()
+                    .WithMany()
+                    .HasForeignKey("_originalCurrencyId")
+                    .IsRequired(false);
+            });
+
+            builder.OwnsOne(a => a.TaxInfo, taxInfo =>
+            {
+                taxInfo.Ignore(t => t.TaxAppliedRate);
+
+                taxInfo.Property("_taxAppliedRate")
+                    .HasColumnName("tax_applied_rate")
+                    .HasPrecision(8, 5)
+                    .IsRequired(false);
+
+                taxInfo.Ignore(t => t.TaxRateId);
+
+                taxInfo.Property("_taxRateId")
+                    .HasColumnName("tax_rate_id")
+                    .IsRequired(false);
+            });
 
             builder.Property(a => a.Version)
                 .IsConcurrencyToken();
