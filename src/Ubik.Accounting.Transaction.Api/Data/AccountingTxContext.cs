@@ -13,6 +13,7 @@ namespace Ubik.Accounting.Transaction.Api.Data
         , ICurrentUser userService) : DbContext(options)
     {
         public DbSet<Entry> Entries { get; set; }
+        public DbSet<Account> Accounts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -62,7 +63,7 @@ namespace Ubik.Accounting.Transaction.Api.Data
 
             //Configure
             new EntryConfiguration().Configure(modelBuilder.Entity<Entry>());
-            //new ClassificationConfiguration().Configure(modelBuilder.Entity<Classification>());
+            new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             //new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
             //new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             //new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
@@ -78,8 +79,8 @@ namespace Ubik.Accounting.Transaction.Api.Data
             modelBuilder.Entity<Entry>()
                 .HasQueryFilter(mt => mt.TenantId == userService.TenantId);
 
-            //modelBuilder.Entity<AccountGroup>()
-            //    .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);
+            modelBuilder.Entity<Account>()
+                .HasQueryFilter(mt => mt.TenantId == userService.TenantId);
 
             //modelBuilder.Entity<Classification>()
             //    .HasQueryFilter(mt => mt.TenantId == _currentUser.TenantId);

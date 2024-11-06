@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Ubik.Accounting.Transaction.Api.Data;
+using Ubik.Accounting.Transaction.Api.Features.Accounts.Services;
 using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.ApiService.Common.Exceptions;
@@ -79,6 +80,7 @@ builder.Logging.AddOpenTelemetry(logging =>
 
 //Services
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
 builder.Services.AddTracingAndMetrics();

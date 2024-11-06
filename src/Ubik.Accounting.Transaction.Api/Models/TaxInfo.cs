@@ -20,16 +20,12 @@ namespace Ubik.Accounting.Transaction.Api.Models
             private set => _taxRateId = value;
         }
 
-        public static async Task<Either<IFeatureError,TaxInfo>> Create(decimal taxAppliedRate, Guid taxRateId)
+        public TaxInfo(decimal taxAppliedRate, Guid taxRateId)
         {
-            await Task.CompletedTask;
-
-            return new TaxInfo
-            {
-                TaxAppliedRate = taxAppliedRate,
-                TaxRateId = taxRateId
-            };
+            TaxAppliedRate = taxAppliedRate;
+            TaxRateId = taxRateId;
         }
+
         private TaxInfo()
         {
         }
