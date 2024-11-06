@@ -23,8 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Init\" />
     <Folder Include="Features\Entries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\Init\AccountsData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
