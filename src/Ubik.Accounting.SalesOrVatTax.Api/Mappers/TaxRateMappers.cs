@@ -1,15 +1,15 @@
 ﻿using Ubik.Accounting.SalesOrVatTax.Api.Models;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Events;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Results;
+using Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Events;
+using Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Results;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
 {
     public static class TaxRateMappers
     {
-        public static IEnumerable<SalesOrVatTaxRateStandardResult> ToSalesOrVatTaxRateStandardResults(this IEnumerable<TaxRate> current)
+        public static IEnumerable<TaxRateStandardResult> ToTaxRateStandardResults(this IEnumerable<TaxRate> current)
         {
-            return current.Select(x => new SalesOrVatTaxRateStandardResult()
+            return current.Select(x => new TaxRateStandardResult()
             {
                 Id = x.Id,
                 ValidFrom = x.ValidFrom,
@@ -21,7 +21,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
             });
         }
 
-        public static TaxRate ToSalesOrVatTaxRate(this TaxRateCommand current)
+        public static TaxRate ToTaxRate(this AddTaxRateCommand current)
         {
             return new TaxRate
             {
@@ -33,7 +33,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
             };
         }
 
-        public static TaxRate ToSalesOrVatTaxRate(this UpdateSalesOrVatTaxRateCommand current)
+        public static TaxRate ToTaxRate(this UpdateTaxRateCommand current)
         {
             return new TaxRate
             {
@@ -47,9 +47,9 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
             };
         }
 
-        public static SalesOrVatTaxRateAdded ToSalesOrVatTaxRateAdded(this TaxRate current)
+        public static TaxRateAdded ToTaxRateAdded(this TaxRate current)
         {
-            return new SalesOrVatTaxRateAdded()
+            return new TaxRateAdded()
             {
                 Id = current.Id,
                 ValidFrom = current.ValidFrom,
@@ -61,9 +61,9 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
             };
         }
 
-        public static SalesOrVatTaxRateUpdated ToSalesOrVatTaxRateUpdated(this TaxRate current)
+        public static TaxRateUpdated ToTaxRateUpdated(this TaxRate current)
         {
-            return new SalesOrVatTaxRateUpdated()
+            return new TaxRateUpdated()
             {
                 Id = current.Id,
                 ValidFrom = current.ValidFrom,
@@ -75,7 +75,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
             };
         }
 
-        public static TaxRate ToSalesOrVatTaxRate(this TaxRate forUpd, TaxRate model)
+        public static TaxRate ToTaxRate(this TaxRate forUpd, TaxRate model)
         {
             model.Id = forUpd.Id;
             model.ValidFrom = forUpd.ValidFrom;
@@ -88,9 +88,9 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers
             return model;
         }
 
-        public static SalesOrVatTaxRateStandardResult ToSalesOrVatTaxRateStandardResult(this TaxRate current)
+        public static TaxRateStandardResult ToTaxRateStandardResult(this TaxRate current)
         {
-            return new SalesOrVatTaxRateStandardResult()
+            return new TaxRateStandardResult()
             {
                 Id = current.Id,
                 ValidFrom = current.ValidFrom,

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services;
 using Ubik.Accounting.SalesOrVatTax.Api.Mappers;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Results;
+using Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Results;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 
@@ -18,9 +18,9 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Controllers.v1
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<IEnumerable<SalesOrVatTaxRateStandardResult>>> GetAll()
+        public async Task<ActionResult<IEnumerable<TaxRateStandardResult>>> GetAll()
         {
-            var results = (await queryService.GetAllAsync()).ToSalesOrVatTaxRateStandardResults();
+            var results = (await queryService.GetAllAsync()).ToTaxRateStandardResults();
             return Ok(results);
         }
 
@@ -29,11 +29,11 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<SalesOrVatTaxRateStandardResult>> Get(Guid id)
+        public async Task<ActionResult<TaxRateStandardResult>> Get(Guid id)
         {
             var result = await queryService.GetAsync(id);
             return result.Match(
-                            Right: ok => Ok(ok.ToSalesOrVatTaxRateStandardResult()),
+                            Right: ok => Ok(ok.ToTaxRateStandardResult()),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
@@ -42,12 +42,12 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<SalesOrVatTaxRateStandardResult>> AddAsync(TaxRateCommand command)
+        public async Task<ActionResult<TaxRateStandardResult>> AddAsync(AddTaxRateCommand command)
         {
             var result = await commandService.AddAsync(command);
 
             return result.Match(
-                Right: ok => CreatedAtAction(nameof(Get), new { id = ok.Id }, ok.ToSalesOrVatTaxRateStandardResult()),
+                Right: ok => CreatedAtAction(nameof(Get), new { id = ok.Id }, ok.ToTaxRateStandardResult()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 
@@ -57,7 +57,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 404)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<SalesOrVatTaxRateStandardResult>> Update(Guid id, UpdateSalesOrVatTaxRateCommand command)
+        public async Task<ActionResult<TaxRateStandardResult>> Update(Guid id, UpdateTaxRateCommand command)
         {
             if (command.Id != id)
                 return new ObjectResult(new ResourceIdNotMatchWithCommandError("TaxRate", id, command.Id)
@@ -66,7 +66,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Controllers.v1
             var result = await commandService.UpdateAsync(command);
 
             return result.Match(
-                Right: ok => Ok(ok.ToSalesOrVatTaxRateStandardResult()),
+                Right: ok => Ok(ok.ToTaxRateStandardResult()),
                 Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));
         }
 

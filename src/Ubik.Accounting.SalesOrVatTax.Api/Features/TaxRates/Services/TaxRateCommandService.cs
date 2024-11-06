@@ -5,24 +5,24 @@ using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.Accounting.SalesOrVatTax.Api.Data;
 using Ubik.Accounting.SalesOrVatTax.Api.Models;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Events;
 using Ubik.Accounting.SalesOrVatTax.Api.Mappers;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Events;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
 {
     public class TaxRateCommandService(AccountingSalesTaxDbContext ctx, IPublishEndpoint publishEndpoint) : ITaxRateCommandService
     {
-        public async Task<Either<IFeatureError, TaxRate>> AddAsync(TaxRateCommand command)
+        public async Task<Either<IFeatureError, TaxRate>> AddAsync(AddTaxRateCommand command)
         {
-            return await ValidateIfNotAlreadyExistsAsync(command.ToSalesOrVatTaxRate())
+            return await ValidateIfNotAlreadyExistsAsync(command.ToTaxRate())
                 .BindAsync(AddInDbContextAsync)
                 .BindAsync(AddSaveAndPublishAsync);
         }
 
-        public async Task<Either<IFeatureError, TaxRate>> UpdateAsync(UpdateSalesOrVatTaxRateCommand command)
+        public async Task<Either<IFeatureError, TaxRate>> UpdateAsync(UpdateTaxRateCommand command)
         {
-            var model = command.ToSalesOrVatTaxRate();
+            var model = command.ToTaxRate();
 
             return await GetAsync(model.Id)
                 .BindAsync(x => MapInDbContextAsync(x, model))
@@ -41,7 +41,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
 
         private async Task<Either<IFeatureError, bool>> DeletedSaveAndPublishAsync(TaxRate current)
         {
-            await publishEndpoint.Publish(new SalesOrVatTaxRateDeleted { Id = current.Id }, CancellationToken.None);
+            await publishEndpoint.Publish(new TaxRateDeleted { Id = current.Id }, CancellationToken.None);
             await ctx.SaveChangesAsync();
 
             return true;
@@ -59,7 +59,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
         {
             try
             {
-                await publishEndpoint.Publish(current.ToSalesOrVatTaxRateUpdated(), CancellationToken.None);
+                await publishEndpoint.Publish(current.ToTaxRateUpdated(), CancellationToken.None);
                 await ctx.SaveChangesAsync();
 
                 return current;
@@ -100,14 +100,14 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
         private static async Task<Either<IFeatureError, TaxRate>> MapInDbContextAsync
             (TaxRate current, TaxRate forUpdate)
         {
-            current = forUpdate.ToSalesOrVatTaxRate(current);
+            current = forUpdate.ToTaxRate(current);
             await Task.CompletedTask;
             return current;
         }
 
         private async Task<Either<IFeatureError, TaxRate>> AddSaveAndPublishAsync(TaxRate current)
         {
-            await publishEndpoint.Publish(current.ToSalesOrVatTaxRateAdded(), CancellationToken.None);
+            await publishEndpoint.Publish(current.ToTaxRateAdded(), CancellationToken.None);
             await ctx.SaveChangesAsync();
             return current;
         }

@@ -9,5 +9,6 @@
         public string? Description { get; init; }
         public Decimal Rate { get; init; }
         public Guid Version { get; init; }
+        public Guid TenantId { get; init; }
     }
 }

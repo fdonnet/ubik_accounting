@@ -1,5 +1,4 @@
 ﻿using Ubik.Accounting.SalesOrVatTax.Api.Models;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
 using Ubik.Accounting.Structure.Contracts.Accounts.Events;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Mappers

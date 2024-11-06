@@ -2,10 +2,10 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Results;
 using Ubik.ApiService.Common.Exceptions;
 using MassTransit;
-using Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Commands;
+using Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Results;
 
 namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 {
@@ -33,13 +33,13 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 
             //Act
             var response = await _client.GetAsync(_baseUrlForV1);
-            var result = await response.Content.ReadFromJsonAsync<List<SalesOrVatTaxRateStandardResult>>();
+            var result = await response.Content.ReadFromJsonAsync<List<TaxRateStandardResult>>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<List<SalesOrVatTaxRateStandardResult>>();
+                .And.BeOfType<List<TaxRateStandardResult>>();
         }
 
         [Fact]
@@ -51,13 +51,13 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 
             //Act
             var response = await _client.GetAsync(_baseUrlForV1);
-            var result = await response.Content.ReadFromJsonAsync<List<SalesOrVatTaxRateStandardResult>>();
+            var result = await response.Content.ReadFromJsonAsync<List<TaxRateStandardResult>>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<List<SalesOrVatTaxRateStandardResult>>();
+                .And.BeOfType<List<TaxRateStandardResult>>();
         }
 
         [Fact]
@@ -107,13 +107,13 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 
             //Act
             var response = await _client.GetAsync(_baseUrlForV1);
-            var result = await response.Content.ReadFromJsonAsync<List<SalesOrVatTaxRateStandardResult>>();
+            var result = await response.Content.ReadFromJsonAsync<List<TaxRateStandardResult>>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<List<SalesOrVatTaxRateStandardResult>>();
+                .And.BeOfType<List<TaxRateStandardResult>>();
         }
 
         [Fact]
@@ -125,13 +125,13 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 
             //Act
             var response = await _client.GetAsync($"{_baseUrlForV1}/{_id}");
-            var result = await response.Content.ReadFromJsonAsync<SalesOrVatTaxRateStandardResult>();
+            var result = await response.Content.ReadFromJsonAsync<TaxRateStandardResult>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<SalesOrVatTaxRateStandardResult>();
+                .And.BeOfType<TaxRateStandardResult>();
         }
 
         [Fact]
@@ -143,13 +143,13 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 
             //Act
             var response = await _client.GetAsync($"{_baseUrlForV1}/{_id}");
-            var result = await response.Content.ReadFromJsonAsync<SalesOrVatTaxRateStandardResult>();
+            var result = await response.Content.ReadFromJsonAsync<TaxRateStandardResult>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<SalesOrVatTaxRateStandardResult>();
+                .And.BeOfType<TaxRateStandardResult>();
         }
 
         [Fact]
@@ -235,7 +235,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new TaxRateCommand
+            var command = new AddTaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -247,14 +247,14 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             //Act
             var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
             var tmp = await response.Content.ReadAsStringAsync();
-            var result = await response.Content.ReadFromJsonAsync<SalesOrVatTaxRateStandardResult>();
+            var result = await response.Content.ReadFromJsonAsync<TaxRateStandardResult>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             result.Should()
             .NotBeNull()
-                .And.BeOfType<SalesOrVatTaxRateStandardResult>()
-                .And.Match<SalesOrVatTaxRateStandardResult>(x => x.Code == command.Code);
+                .And.BeOfType<TaxRateStandardResult>()
+                .And.Match<TaxRateStandardResult>(x => x.Code == command.Code);
         }
 
         [Fact]
@@ -264,7 +264,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new TaxRateCommand
+            var command = new AddTaxRateCommand
             {
                 Code = "v81",
                 Description = "Description",
@@ -293,7 +293,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.RO);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new TaxRateCommand
+            var command = new AddTaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -313,7 +313,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
         public async Task Add_TaxRate_WithNoToken_401()
         {
             //Arrange
-            var command = new TaxRateCommand
+            var command = new AddTaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -336,7 +336,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new TaxRateCommand
+            var command = new AddTaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -359,7 +359,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.OtherTenant);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new TaxRateCommand
+            var command = new AddTaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -370,14 +370,14 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 
             //Act
             var response = await _client.PostAsJsonAsync(_baseUrlForV1, command);
-            var result = await response.Content.ReadFromJsonAsync<SalesOrVatTaxRateStandardResult>();
+            var result = await response.Content.ReadFromJsonAsync<TaxRateStandardResult>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<SalesOrVatTaxRateStandardResult>()
-                .And.Match<SalesOrVatTaxRateStandardResult>(x => x.Code == command.Code);
+                .And.BeOfType<TaxRateStandardResult>()
+                .And.Match<TaxRateStandardResult>(x => x.Code == command.Code);
         }
 
         [Fact]
@@ -387,7 +387,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.NoRole);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new TaxRateCommand
+            var command = new AddTaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -410,7 +410,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new UpdateSalesOrVatTaxRateCommand
+            var command = new UpdateTaxRateCommand
             {
                 Id = _idToUpd,
                 Code = "Test2",
@@ -423,14 +423,14 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
 
             //Act
             var response = await _client.PutAsJsonAsync($"{_baseUrlForV1}/{_idToUpd}", command);
-            var result = await response.Content.ReadFromJsonAsync<SalesOrVatTaxRateStandardResult>();
+            var result = await response.Content.ReadFromJsonAsync<TaxRateStandardResult>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
                 .NotBeNull()
-                .And.BeOfType<SalesOrVatTaxRateStandardResult>()
-                .And.Match<SalesOrVatTaxRateStandardResult>(x => x.Code == command.Code);
+                .And.BeOfType<TaxRateStandardResult>()
+                .And.Match<TaxRateStandardResult>(x => x.Code == command.Code);
         }
 
         [Fact]
@@ -440,7 +440,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.RO);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new UpdateSalesOrVatTaxRateCommand
+            var command = new UpdateTaxRateCommand
             {
                 Id = _idToUpd,
                 Code = "Test2",
@@ -462,7 +462,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
         public async Task Update_TaxRate_WithNoToken_401()
         {
             //Arrange
-            var command = new UpdateSalesOrVatTaxRateCommand
+            var command = new UpdateTaxRateCommand
             {
                 Id = _idToUpd,
                 Code = "Test2",
@@ -487,7 +487,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new UpdateSalesOrVatTaxRateCommand
+            var command = new UpdateTaxRateCommand
             {
                 Id = _idToUpd,
                 Code = "Test2",
@@ -512,7 +512,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.OtherTenant);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new UpdateSalesOrVatTaxRateCommand
+            var command = new UpdateTaxRateCommand
             {
                 Id = _idToUpd,
                 Code = "Test2",
@@ -542,7 +542,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.NoRole);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new UpdateSalesOrVatTaxRateCommand
+            var command = new UpdateTaxRateCommand
             {
                 Id = _idToUpd,
                 Code = "Test2",
@@ -569,7 +569,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new UpdateSalesOrVatTaxRateCommand
+            var command = new UpdateTaxRateCommand
             {
                 Id = NewId.NextGuid(),
                 Code = "Test3",
@@ -599,7 +599,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new UpdateSalesOrVatTaxRateCommand
+            var command = new UpdateTaxRateCommand
             {
                 Id = _idToUpd,
                 Code = "v81",
@@ -630,7 +630,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var id = NewId.NextGuid();
-            var command = new UpdateSalesOrVatTaxRateCommand
+            var command = new UpdateTaxRateCommand
             {
                 Id = id,
                 Code = "v81",
