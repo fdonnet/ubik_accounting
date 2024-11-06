@@ -16,7 +16,7 @@ namespace Ubik.Accounting.Transaction.Api.Models
         public string? Description { get; set; }
         //See if we want the amount with or without VAT
         public required decimal Amount { get; set; }
-        public AmountAdditionnalInfo? AmountAdditionnalInfo { get; set; }
+        public AmountAdditionalInfo? AmountAdditionnalInfo { get; set; }
         public TaxInfo? TaxInfo { get; set; } = default!;
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }

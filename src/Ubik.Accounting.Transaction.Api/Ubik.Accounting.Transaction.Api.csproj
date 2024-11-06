@@ -24,6 +24,8 @@
 
   <ItemGroup>
     <Folder Include="Features\Entries\" />
+    <Folder Include="Features\TaxRates\Consumers\" />
+    <Folder Include="Features\TaxRates\Services\" />
   </ItemGroup>
 
   <ItemGroup>

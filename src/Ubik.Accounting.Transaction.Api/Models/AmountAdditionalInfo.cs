@@ -1,6 +1,6 @@
 ﻿namespace Ubik.Accounting.Transaction.Api.Models
 {
-    public class AmountAdditionnalInfo
+    public class AmountAdditionalInfo
     {
         private decimal? _originalAmount;
         public decimal OriginalAmount
@@ -23,14 +23,14 @@
             private set => _exchangeRate = value;
         }
 
-        public AmountAdditionnalInfo(decimal originalAmount, Guid originalCurrencyId, decimal exchangeRate)
+        public AmountAdditionalInfo(decimal originalAmount, Guid originalCurrencyId, decimal exchangeRate)
         {
             _originalAmount = originalAmount;
             _originalCurrencyId = originalCurrencyId;
             _exchangeRate = exchangeRate;
         }
 
-        private AmountAdditionnalInfo()
+        private AmountAdditionalInfo()
         {
         }
     }
