@@ -5,6 +5,7 @@
         static internal async Task InitializeAsync(AccountingTxContext context)
         {
             await AccountsData.LoadAsync(context);
+            await TaxRatesData.LoadAsync(context);
         }
     }
 }
