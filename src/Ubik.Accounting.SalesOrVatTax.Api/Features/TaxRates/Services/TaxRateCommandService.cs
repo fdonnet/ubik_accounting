@@ -13,7 +13,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
 {
     public class TaxRateCommandService(AccountingSalesTaxDbContext ctx, IPublishEndpoint publishEndpoint) : ITaxRateCommandService
     {
-        public async Task<Either<IFeatureError, TaxRate>> AddAsync(AddSalesOrVatTaxRateCommand command)
+        public async Task<Either<IFeatureError, TaxRate>> AddAsync(TaxRateCommand command)
         {
             return await ValidateIfNotAlreadyExistsAsync(command.ToSalesOrVatTaxRate())
                 .BindAsync(AddInDbContextAsync)

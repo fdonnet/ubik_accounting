@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using Ubik.Accounting.Transaction.Api.Data;
 using Ubik.Accounting.Transaction.Api.Data.Init;
 using Ubik.Accounting.Transaction.Api.Features.Accounts.Services;
+using Ubik.Accounting.Transaction.Api.Features.TaxRates.Services;
 using Ubik.ApiService.Common.Configure;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.ApiService.Common.Exceptions;
@@ -82,6 +83,7 @@ builder.Logging.AddOpenTelemetry(logging =>
 //Services
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
+builder.Services.AddScoped<ITaxRateCommandService, TaxRateCommandService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
 builder.Services.AddTracingAndMetrics();

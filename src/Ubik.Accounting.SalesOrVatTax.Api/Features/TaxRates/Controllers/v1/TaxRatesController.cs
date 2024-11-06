@@ -42,7 +42,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Controllers.v1
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 409)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<SalesOrVatTaxRateStandardResult>> AddAsync(AddSalesOrVatTaxRateCommand command)
+        public async Task<ActionResult<SalesOrVatTaxRateStandardResult>> AddAsync(TaxRateCommand command)
         {
             var result = await commandService.AddAsync(command);
 

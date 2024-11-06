@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands
+namespace Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Commands
 {
-    public record UpdateSalesOrVatTaxRateCommand
+    public record AddTaxRateCommand
     {
-        [Required]
-        public Guid Id { get; init; }
         [Required]
         public DateOnly ValidFrom { get; init; }
         public DateOnly? ValidTo { get; init; }
@@ -16,7 +14,5 @@ namespace Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Commands
         public string? Description { get; init; }
         [Required]
         public decimal Rate { get; init; }
-        [Required]
-        public Guid Version { get; init; }
     }
 }

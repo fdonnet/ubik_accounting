@@ -1,4 +1,4 @@
-﻿namespace Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Results
+﻿namespace Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Results
 {
     public record SalesOrVatTaxRateStandardResult
     {

@@ -1,6 +1,6 @@
-﻿namespace Ubik.Accounting.SalesOrVatTax.Contracts.SalesOrVatTaxRate.Events
+﻿namespace Ubik.Accounting.SalesOrVatTax.Contracts.TaxRates.Events
 {
-    public record SalesOrVatTaxRateAdded
+    public record TaxRateAdded
     {
         public Guid Id { get; init; }
         public DateOnly ValidFrom { get; init; }

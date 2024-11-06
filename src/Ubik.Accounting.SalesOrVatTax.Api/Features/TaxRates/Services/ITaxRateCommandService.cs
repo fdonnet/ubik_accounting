@@ -7,7 +7,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.TaxRates.Services
 {
     public interface ITaxRateCommandService
     {
-        public Task<Either<IFeatureError, TaxRate>> AddAsync(AddSalesOrVatTaxRateCommand command);
+        public Task<Either<IFeatureError, TaxRate>> AddAsync(TaxRateCommand command);
         public Task<Either<IFeatureError, TaxRate>> UpdateAsync(UpdateSalesOrVatTaxRateCommand command);
         public Task<Either<IFeatureError, bool>> DeleteAsync(Guid id);
     }

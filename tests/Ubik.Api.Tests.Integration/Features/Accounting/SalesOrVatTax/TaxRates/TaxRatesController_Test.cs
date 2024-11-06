@@ -235,7 +235,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddSalesOrVatTaxRateCommand
+            var command = new TaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -264,7 +264,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.RW);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddSalesOrVatTaxRateCommand
+            var command = new TaxRateCommand
             {
                 Code = "v81",
                 Description = "Description",
@@ -293,7 +293,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.RO);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddSalesOrVatTaxRateCommand
+            var command = new TaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -313,7 +313,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
         public async Task Add_TaxRate_WithNoToken_401()
         {
             //Arrange
-            var command = new AddSalesOrVatTaxRateCommand
+            var command = new TaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -336,7 +336,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.MegaAdmin);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddSalesOrVatTaxRateCommand
+            var command = new TaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -359,7 +359,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.OtherTenant);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddSalesOrVatTaxRateCommand
+            var command = new TaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
@@ -387,7 +387,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.SalesOrVatTax.TaxRates
             var token = await GetAccessTokenAsync(TokenType.NoRole);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var command = new AddSalesOrVatTaxRateCommand
+            var command = new TaxRateCommand
             {
                 Code = "Test",
                 Description = "Description",
