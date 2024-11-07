@@ -1,4 +1,5 @@
 ﻿using Ubik.DB.Common;
+using Ubik.DB.Common.Models;
 
 namespace Ubik.Accounting.Transaction.Api.Models
 {
@@ -10,9 +11,6 @@ namespace Ubik.Accounting.Transaction.Api.Models
         public decimal Amount { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
-        public required DateTime CreatedAt { get; set; }
-        public required Guid CreatedBy { get; set; }
-        public DateTime? ModifiedAt { get; set; }
-        public Guid? ModifiedBy { get; set; }
+        public AuditData AuditInfo { get; set; } = default!;
     }
 }

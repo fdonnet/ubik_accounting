@@ -1,6 +1,32 @@
-﻿namespace Ubik.Accounting.Transaction.Api.Data.Config
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using Ubik.Accounting.Transaction.Api.Models;
+
+namespace Ubik.Accounting.Transaction.Api.Data.Config
 {
-    public class TxConfiguration
+    public class TxConfiguration : IEntityTypeConfiguration<Tx>
     {
+        public void Configure(EntityTypeBuilder<Tx> builder)
+        {
+            builder.OwnsOne(x => x.AuditInfo, auditInfo =>
+            {
+                auditInfo.Property(a => a.ModifiedAt)
+                    .HasColumnName("modified_at")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.ModifiedBy)
+                    .HasColumnName("modified_by")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.CreatedAt)
+                    .HasColumnName("created_at")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.CreatedBy)
+                    .HasColumnName("created_by")
+                    .IsRequired();
+            });
+        }
     }
+
 }

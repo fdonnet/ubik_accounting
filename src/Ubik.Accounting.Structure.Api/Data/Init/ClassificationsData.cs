@@ -1,5 +1,7 @@
 ﻿using MassTransit;
+using System.Security.Cryptography.Xml;
 using Ubik.Accounting.Structure.Api.Models;
+using Ubik.DB.Common.Models;
 
 namespace Ubik.Accounting.Structure.Api.Data.Init
 {
@@ -18,52 +20,44 @@ namespace Ubik.Accounting.Structure.Api.Data.Init
                     new Classification
                     {
                     Id = baseValuesForAccountGroupClassifications.ClassificationId1,
-                    CreatedBy = baseValuesForUsers.UserId1,
-                    CreatedAt = baseValuesGeneral.GenerationTime,
                     Code = "SWISSPLAN-FULL",
                     Description = "For testing purposes",
                     Label = "Standard Swiss Plan (full)",
-                    ModifiedBy = baseValuesForUsers.UserId1,
-                    ModifiedAt = baseValuesGeneral.GenerationTime,
+                    AuditInfo = new AuditData(baseValuesGeneral.GenerationTime, baseValuesForUsers.UserId1
+                        ,baseValuesGeneral.GenerationTime, baseValuesForUsers.UserId1),
                     Version = NewId.NextGuid(),
                     TenantId = baseValuesForTenants.TenantId
                     },
                     new Classification
                     {
                     Id = baseValuesForAccountGroupClassifications.ClassificationId2,
-                    CreatedBy = baseValuesForUsers.UserId1,
-                    CreatedAt = baseValuesGeneral.GenerationTime,
+                    AuditInfo = new AuditData(baseValuesGeneral.GenerationTime, baseValuesForUsers.UserId1
+                        ,baseValuesGeneral.GenerationTime, baseValuesForUsers.UserId1),
                     Code = "SWISSPLAN-TEST1",
                     Description = null,
                     Label = "Test data",
-                    ModifiedBy = baseValuesForUsers.UserId1,
-                    ModifiedAt = baseValuesGeneral.GenerationTime,
                     Version = baseValuesForAccountGroupClassifications.ClassificationId2,
                     TenantId = baseValuesForTenants.TenantId
                     },
                     new Classification
                     {
                     Id = baseValuesForAccountGroupClassifications.ClassificationId3,
-                    CreatedBy = baseValuesForUsers.UserId1,
-                    CreatedAt = baseValuesGeneral.GenerationTime,
+                    AuditInfo = new AuditData(baseValuesGeneral.GenerationTime, baseValuesForUsers.UserId1
+                        ,baseValuesGeneral.GenerationTime, baseValuesForUsers.UserId1),
                     Code = "SWISSPLAN-TEST2",
                     Description = null,
                     Label = "Test data",
-                    ModifiedBy = baseValuesForUsers.UserId1,
-                    ModifiedAt = baseValuesGeneral.GenerationTime,
                     Version = baseValuesForAccountGroupClassifications.ClassificationId3,
                     TenantId = baseValuesForTenants.TenantId
                     },
                     new Classification
                     {
                     Id = baseValuesForAccountGroupClassifications.ClassificationIdForDel,
-                    CreatedBy = baseValuesForUsers.UserId1,
-                    CreatedAt = baseValuesGeneral.GenerationTime,
+                    AuditInfo = new AuditData(baseValuesGeneral.GenerationTime, baseValuesForUsers.UserId1
+                        ,baseValuesGeneral.GenerationTime, baseValuesForUsers.UserId1),
                     Code = "SWISSPLAN-TESTZZZZ",
                     Description = null,
                     Label = "Test data",
-                    ModifiedBy = baseValuesForUsers.UserId1,
-                    ModifiedAt = baseValuesGeneral.GenerationTime,
                     Version = baseValuesForAccountGroupClassifications.ClassificationIdForDel,
                     TenantId = baseValuesForTenants.TenantId
                     }

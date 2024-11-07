@@ -5,6 +5,7 @@ using Ubik.Accounting.Transaction.Api.Models;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
+using Ubik.DB.Common;
 using Ubik.DB.Common.Extensions;
 
 namespace Ubik.Accounting.Transaction.Api.Data
@@ -13,6 +14,7 @@ namespace Ubik.Accounting.Transaction.Api.Data
         , ICurrentUser userService) : DbContext(options)
     {
         public DbSet<Entry> Entries { get; set; }
+        public DbSet<Tx> Txs { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<TaxRate> TaxRates { get; set; }
 
@@ -54,24 +56,19 @@ namespace Ubik.Accounting.Transaction.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //Build for Masstransit inbox/outbox
+            // Build for Masstransit inbox/outbox
             modelBuilder.AddInboxStateEntity();
             modelBuilder.AddOutboxMessageEntity();
             modelBuilder.AddOutboxStateEntity();
 
-            //TenantId
+            // TenantId
             SetTenantId(modelBuilder);
 
-            //Configure
+            // Configure
             new EntryConfiguration().Configure(modelBuilder.Entity<Entry>());
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             new TaxRateConfiguration().Configure(modelBuilder.Entity<TaxRate>());
-            //new AccountGroupConfiguration().Configure(modelBuilder.Entity<AccountGroup>());
-            //new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
-            //new AccountAccountGroupConfiguration().Configure(modelBuilder.Entity<AccountAccountGroup>());
-            //new ApplicationConfiguration().Configure(modelBuilder.Entity<Application>());
-            //new TransactionConfiguration().Configure(modelBuilder.Entity<Transaction>());
-            //new EntryConfiguration().Configure(modelBuilder.Entity<Entry>());
+            new TxConfiguration().Configure(modelBuilder.Entity<Tx>());
 
             base.OnModelCreating(modelBuilder);
         }
@@ -85,6 +82,9 @@ namespace Ubik.Accounting.Transaction.Api.Data
                 .HasQueryFilter(mt => mt.TenantId == userService.TenantId);
 
             modelBuilder.Entity<TaxRate>()
+                .HasQueryFilter(mt => mt.TenantId == userService.TenantId);
+
+            modelBuilder.Entity<Tx>()
                 .HasQueryFilter(mt => mt.TenantId == userService.TenantId);
 
             //modelBuilder.Entity<Classification>()

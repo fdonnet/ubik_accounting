@@ -1,6 +1,7 @@
 ﻿using LanguageExt;
 using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
 using Ubik.DB.Common;
+using Ubik.DB.Common.Models;
 
 namespace Ubik.Accounting.Transaction.Api.Models
 {
@@ -20,9 +21,6 @@ namespace Ubik.Accounting.Transaction.Api.Models
         public TaxInfo? TaxInfo { get; set; } = default!;
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
-        public required DateTime CreatedAt { get; set; }
-        public required Guid CreatedBy { get; set; }
-        public DateTime? ModifiedAt { get; set; }
-        public Guid? ModifiedBy { get; set; }
+        public AuditData AuditInfo { get; set; } = default!;
     }
 }

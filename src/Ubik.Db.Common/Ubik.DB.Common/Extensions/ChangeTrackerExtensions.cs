@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Ubik.ApiService.Common.Services;
+using Ubik.DB.Common.Models;
 
 namespace Ubik.DB.Common.Extensions
 {
@@ -53,14 +54,10 @@ namespace Ubik.DB.Common.Extensions
                     switch (entry.State)
                     {
                         case EntityState.Added:
-                            entity.CreatedAt = timestamp;
-                            entity.CreatedBy = userId;
-                            entity.ModifiedAt = timestamp;
-                            entity.ModifiedBy = userId;
+                            entity.AuditInfo = new AuditData(timestamp, userId, timestamp, userId);
                             break;
                         case EntityState.Modified:
-                            entity.ModifiedAt = timestamp;
-                            entity.ModifiedBy = userId;
+                            entity.AuditInfo.SetModified(timestamp, userId);
                             break;
                     }
                 }

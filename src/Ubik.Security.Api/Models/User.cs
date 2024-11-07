@@ -1,4 +1,5 @@
 ﻿using Ubik.DB.Common;
+using Ubik.DB.Common.Models;
 
 namespace Ubik.Security.Api.Models
 {
@@ -12,9 +13,6 @@ namespace Ubik.Security.Api.Models
         public bool IsMegaAdmin { get; set; } = false;
         public Guid? SelectedTenantId { get; set; }
         public Guid Version { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public Guid CreatedBy { get; set; }
-        public DateTime? ModifiedAt { get; set; }
-        public Guid? ModifiedBy { get; set; }
+        public AuditData AuditInfo { get; set; } = default!;
     }
 }

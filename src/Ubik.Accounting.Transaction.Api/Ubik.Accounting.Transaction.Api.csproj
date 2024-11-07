@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Entries\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Data\Init\AccountsData.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

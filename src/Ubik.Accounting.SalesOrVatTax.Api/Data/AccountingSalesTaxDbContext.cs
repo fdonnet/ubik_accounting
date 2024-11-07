@@ -1,10 +1,12 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using Ubik.Accounting.SalesOrVatTax.Api.Data.Config;
 using Ubik.Accounting.SalesOrVatTax.Api.Models;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
+using Ubik.DB.Common;
 using Ubik.DB.Common.Extensions;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Data
@@ -63,7 +65,6 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Data
             new TaxRateConfiguration().Configure(modelBuilder.Entity<TaxRate>());
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             new AccountTaxRateConfigConfiguration().Configure(modelBuilder.Entity<AccountTaxRateConfig>());
-
 
             base.OnModelCreating(modelBuilder);
         }

@@ -13,6 +13,25 @@ namespace Ubik.Security.Api.Data.Config
             builder.HasIndex(a => new { a.UserTenantId, a.RoleId })
             .IsUnique();
 
+            builder.OwnsOne(x => x.AuditInfo, auditInfo =>
+            {
+                auditInfo.Property(a => a.ModifiedAt)
+                    .HasColumnName("modified_at")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.ModifiedBy)
+                    .HasColumnName("modified_by")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.CreatedAt)
+                    .HasColumnName("created_at")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.CreatedBy)
+                    .HasColumnName("created_by")
+                    .IsRequired();
+            });
+
             builder.Property(a => a.Version)
                 .IsConcurrencyToken();
 

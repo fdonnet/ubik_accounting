@@ -1,5 +1,6 @@
 ﻿using Ubik.Accounting.Structure.Contracts.Accounts.Enums;
 using Ubik.DB.Common;
+using Ubik.DB.Common.Models;
 
 namespace Ubik.Accounting.Structure.Api.Models
 {
@@ -15,9 +16,6 @@ namespace Ubik.Accounting.Structure.Api.Models
         public bool Active { get; set; } = true;
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public Guid CreatedBy { get; set; }
-        public DateTime? ModifiedAt { get; set; }
-        public Guid? ModifiedBy { get; set; }
+        public AuditData AuditInfo { get; set; } = default!;
     }
 }
