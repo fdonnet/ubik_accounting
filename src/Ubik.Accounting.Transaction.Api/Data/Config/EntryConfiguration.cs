@@ -9,7 +9,12 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
     {
         public void Configure(EntityTypeBuilder<Entry> builder)
         {
-            builder.ToTable("entries");
+            //builder.ToTable("entries");
+
+            builder.ToTable("entries", t =>
+            {
+                t.HasCheckConstraint("ck_entry_label_main_type", "type != 0 OR label IS NOT NULL");
+            });
 
             builder.Property(a => a.Type)
                 .IsRequired()
@@ -66,6 +71,8 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
                     .IsRequired(false);
             });
 
+            builder.Navigation(m => m.AmountAdditionnalInfo).IsRequired(false);
+
             builder.OwnsOne(a => a.TaxInfo, taxInfo =>
             {
                 taxInfo.Ignore(t => t.TaxAppliedRate);
@@ -81,6 +88,8 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
                     .HasColumnName("tax_rate_id")
                     .IsRequired(false);
             });
+
+            builder.Navigation(m => m.TaxInfo).IsRequired(false);
 
             builder.Property(a => a.Version)
                 .IsConcurrencyToken();
@@ -108,6 +117,7 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
             });
 
             builder.HasIndex(a => a.TenantId);
+
         }
     }
 }

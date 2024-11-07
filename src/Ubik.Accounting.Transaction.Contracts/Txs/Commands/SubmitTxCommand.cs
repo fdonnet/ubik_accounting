@@ -12,7 +12,6 @@ namespace Ubik.Accounting.Transaction.Contracts.Txs.Commands
     {
         public Guid Id { get; init; }
         public required DateOnly ValueDate { get; init; }
-        public required string Label { get; init; }
         public decimal Amount { get; init; }
         public IEnumerable<TxEntry> Entries { get; init; } = default!;
     }
@@ -22,11 +21,11 @@ namespace Ubik.Accounting.Transaction.Contracts.Txs.Commands
         public required EntryType Type { get; init; }
         public required DebitCredit Sign { get; init; }
         public required Guid AccountId { get; init; }
-        public string? Label { get; set; }
-        public string? Description { get; set; }
-        public required decimal Amount { get; set; }
-        public TxEntryAdditionalAmountInfo? AmountAdditionnalInfo { get; set; }
-        public TxEntryTaxInfo? TaxInfo { get; set; } = default!;
+        public string? Label { get; init; }
+        public string? Description { get; init; }
+        public required decimal Amount { get; init; }
+        public TxEntryAdditionalAmountInfo? AmountAdditionnalInfo { get; init; }
+        public TxEntryTaxInfo? TaxInfo { get; init; } = default!;
     }
 
     public record TxEntryAdditionalAmountInfo

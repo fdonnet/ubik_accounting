@@ -7,7 +7,6 @@ namespace Ubik.Accounting.Transaction.Api.Models
     {
         public Guid Id { get; set; }
         public required DateOnly ValueDate { get; set; }
-        public required string Label { get; set; }
         public decimal Amount { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }

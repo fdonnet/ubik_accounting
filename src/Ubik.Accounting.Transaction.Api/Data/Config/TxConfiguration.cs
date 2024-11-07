@@ -8,6 +8,23 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
     {
         public void Configure(EntityTypeBuilder<Tx> builder)
         {
+            builder.Property(x => x.Amount)
+                .IsRequired()
+                .HasPrecision(18, 4);
+
+            builder.Property(x => x.ValueDate)
+                .IsRequired();
+
+            builder.Property(a => a.Version)
+               .IsConcurrencyToken();
+
+            builder.Property(a => a.TenantId)
+               .IsRequired();
+
+            builder.HasIndex(x => x.TenantId).IsUnique();
+
+            builder.HasIndex(x => x.ValueDate);
+
             builder.OwnsOne(x => x.AuditInfo, auditInfo =>
             {
                 auditInfo.Property(a => a.ModifiedAt)
