@@ -1,57 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
+using Ubik.Accounting.Transaction.Contracts.Txs.Commands;
 
-namespace Ubik.Accounting.Transaction.Contracts.Txs.Commands
+namespace Ubik.Accounting.Transaction.Contracts.Txs.Events
 {
-    public record SubmitTxCommand
+    public record class TxSubmited
     {
         public Guid Id { get; init; }
-        [Required]
         public required DateOnly ValueDate { get; init; }
-        [Required]
         public required decimal Amount { get; init; }
-        public IEnumerable<SubmitTxEntry> Entries { get; init; } = default!;
+        public IEnumerable<TxEntrySubmited> Entries { get; init; } = default!;
     }
 
-    public record SubmitTxEntry
+    public record TxEntrySubmited
     {
-        [Required]
         public required EntryType Type { get; init; }
-        [Required]
         public required DebitCredit Sign { get; init; }
-        [Required]
         public required Guid AccountId { get; init; }
-        [MaxLength(100)]
         public string? Label { get; init; }
-        [MaxLength(700)]
         public string? Description { get; init; }
-        [Required]
         public required decimal Amount { get; init; }
-        public SubmitTxEntryAdditionalAmountInfo? AmountAdditionnalInfo { get; init; }
-        public SubmitTxEntryTaxInfo? TaxInfo { get; init; } = default!;
+        public TxEntryAdditionalAmountInfoSubmited? AmountAdditionnalInfo { get; init; }
+        public TxEntryTaxInfoSubmited? TaxInfo { get; init; } = default!;
     }
 
-    public record SubmitTxEntryAdditionalAmountInfo
+    public record TxEntryAdditionalAmountInfoSubmited
     {
-        [Required]
         public required decimal OriginalAmount { get; init; }
-        [Required]
         public required Guid OriginalCurrencyId { get; init; }
-        [Required]
         public decimal ExchangeRate { get; init; }
     }
 
-    public record SubmitTxEntryTaxInfo
+    public record TxEntryTaxInfoSubmited
     {
-        [Required]
         public required decimal TaxAppliedRate { get; init; }
-        [Required]
         public required Guid TaxRateId { get; init; }
     }
 }
