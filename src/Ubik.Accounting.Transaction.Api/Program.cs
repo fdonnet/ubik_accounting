@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using Ubik.Accounting.Transaction.Api.Data;
 using Ubik.Accounting.Transaction.Api.Data.Init;
 using Ubik.Accounting.Transaction.Api.Features.Accounts.Services;
+using Ubik.Accounting.Transaction.Api.Features.Application.Services;
 using Ubik.Accounting.Transaction.Api.Features.TaxRates.Services;
 using Ubik.Accounting.Transaction.Api.Features.Txs.Services;
 using Ubik.ApiService.Common.Configure;
@@ -86,6 +87,7 @@ builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
 builder.Services.AddScoped<ITaxRateCommandService, TaxRateCommandService>();
 builder.Services.AddScoped<ITxCommandService, TxCommandService>();
+builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
 builder.Services.AddTracingAndMetrics();

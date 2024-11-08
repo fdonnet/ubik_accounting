@@ -20,7 +20,7 @@ COPY ["src/Ubik.ApiService.Common/Ubik.ApiService.Common.csproj", "src/Ubik.ApiS
 COPY ["src/Ubik.Db.Common/Ubik.DB.Common/Ubik.DB.Common.csproj", "src/Ubik.Db.Common/Ubik.DB.Common/"]
 RUN dotnet restore "./src/Ubik.Accounting.Transaction.Api/Ubik.Accounting.Transaction.Api.csproj"
 COPY . .
-WORKDIR "/src/src/Ubik.Accounting.Transaction.Api"
+WORKDIR "/src/Ubik.Accounting.Transaction.Api"
 RUN dotnet build "./Ubik.Accounting.Transaction.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

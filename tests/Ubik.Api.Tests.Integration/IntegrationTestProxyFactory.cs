@@ -10,6 +10,7 @@ namespace Ubik.Api.Tests.Integration
         private readonly HttpClient _client = new();
         public bool IsDbCleanedAccountingStruct { get; set; } = false;
         public bool IsDbCleanedAccountingSalesVatTax { get; set; } = false;
+        public bool IsDbCleanedAccountingTx { get; set; } = false;
         public bool IsDbCleanedSecurity { get; set; } = false;
 
         public IntegrationTestProxyFactory()
@@ -44,6 +45,7 @@ namespace Ubik.Api.Tests.Integration
             Environment.SetEnvironmentVariable("ReverseProxy__Clusters__ubik_users_admin__Destinations__destination1__Address", $"http://localhost:5000/");
             Environment.SetEnvironmentVariable("ReverseProxy__Clusters__ubik_accounting_struct__Destinations__destination1__Address", $"http://localhost:5001/");
             Environment.SetEnvironmentVariable("ReverseProxy__Clusters__ubik_accounting_sales_vat_tax__Destinations__destination1__Address", $"http://localhost:5002/");
+            Environment.SetEnvironmentVariable("ReverseProxy__Clusters__ubik_accounting_tx__Destinations__destination1__Address", $"http://localhost:5003/");
             Environment.SetEnvironmentVariable("ApiSecurityForAdmin__HostAndPort", $"http://localhost:5000/");
             var authTokenUrl = $"http://localhost:8080/";
 
