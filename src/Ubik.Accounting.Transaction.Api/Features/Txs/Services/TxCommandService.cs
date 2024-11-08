@@ -18,8 +18,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
         {
             return await ValidateOnlyOneMainEntryAsync(command)
                 .BindAsync(ValidateBalanceAsync)
-                .BindAsync(ValidateEntriesAmountsAsync)
-                .BindAsync(ValidateExchangeRatesInfoAsync)
+                .BindAsync(ValidateEntriesInfoAsync)
                 .BindAsync(ValidateEntriesAccountsAsync)
                 .BindAsync(PublishSubmittedAsync);
         }
@@ -59,13 +58,61 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 
                 return tx;
             else
-                return new BalanceError(tx.Amount,totalDebit,totalCredit);
+                return new BalanceError(tx.Amount, totalDebit, totalCredit);
         }
 
         private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntriesInfoAsync(SubmitTxCommand tx)
         {
-            var err = new List<SubmitTxEntry>();
+            var errExchangeRates = new List<SubmitTxEntry>();
+            var errAmounts = new List<SubmitTxEntry>();
 
+            foreach (var entry in tx.Entries)
+            {
+                if (!ValidateExchangeRatesInfo(entry))
+                    errExchangeRates.Add(entry);
+
+                if (!ValidateEntriesAmounts(entry))
+                    errAmounts.Add(entry);
+            }
+
+            await Task.CompletedTask;
+
+            if (errExchangeRates.Count == 0 && errAmounts.Count == 0)
+                return tx;
+            else
+            {
+                if(errExchangeRates.Count > 0)
+                    return new ExchangeRateErrors(errExchangeRates);
+                else
+                    return new AmountErrors(errAmounts);
+            }
+        }
+
+        private static bool ValidateEntriesAmounts(SubmitTxEntry entry)
+        {
+            if (entry.Amount <= 0)
+                return false;
+
+            if (entry.AmountAdditionnalInfo != null
+                && entry.AmountAdditionnalInfo.OriginalAmount <= 0)
+
+                return false;
+
+            return true;
+        }
+
+        private bool ValidateExchangeRatesInfo(SubmitTxEntry entry)
+        {
+            if (entry.AmountAdditionnalInfo != null)
+            {
+                if (entry.AmountAdditionnalInfo.ExchangeRate <= 0)
+                    return false;
+
+                var calculatedAmount = entry.AmountAdditionnalInfo.OriginalAmount * entry.AmountAdditionnalInfo.ExchangeRate;
+                if (calculatedAmount != entry.Amount)
+                    return false;
+            }
+            return true;
         }
 
         private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntriesAccountsAsync(SubmitTxCommand tx)
@@ -89,58 +136,6 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
             }
         }
 
-        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateExchangeRatesInfoAsync(SubmitTxCommand tx)
-        {
-            var exchangeRateEntriesInErr = new List<SubmitTxEntry>();
 
-            foreach (var entry in tx.Entries)
-            {
-                if (entry.AmountAdditionnalInfo != null)
-                {
-                    if (entry.AmountAdditionnalInfo.ExchangeRate <= 0)
-                        exchangeRateEntriesInErr.Add(entry);
-
-                    var calculatedAmount = entry.AmountAdditionnalInfo.OriginalAmount * entry.AmountAdditionnalInfo.ExchangeRate;
-                    if (calculatedAmount != entry.Amount)
-                        exchangeRateEntriesInErr.Add(entry);
-                }
-            }
-
-            if (exchangeRateEntriesInErr.Count > 0)
-                return new ExchangeRateErrors(exchangeRateEntriesInErr);
-            else
-            {
-                await Task.CompletedTask;
-                return tx;
-            }
-        }
-
-        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntriesAmountsAsync(SubmitTxCommand tx)
-        {
-            var errEntries = new List<SubmitTxEntry>();
-            foreach (var entry in tx.Entries)
-            {
-                if (entry.Amount <= 0)
-                {
-                    errEntries.Add(entry);
-                }
-
-                if (entry.AmountAdditionnalInfo != null)
-                {
-                    if (entry.AmountAdditionnalInfo.OriginalAmount <= 0)
-                    {
-                        errEntries.Add(entry);
-                    }
-                }
-            }
-            if(errEntries.Count > 0)
-                return new AmountErrors(errEntries);
-            else
-            {
-                //Maybe we will need to be async... (very dirty check for now)
-                await Task.CompletedTask;
-                return tx;
-            }
-        }
     }
 }
