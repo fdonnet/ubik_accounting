@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using Ubik.Accounting.Transaction.Api.Models;
-using System.Globalization;
 
 namespace Ubik.Accounting.Transaction.Api.Data.Config
 {

@@ -1,6 +1,5 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Ubik.Accounting.Structure.Contracts.Accounts.Results;
 using Ubik.Accounting.Transaction.Api.Features.Txs.Services;
 using Ubik.Accounting.Transaction.Contracts.Txs.Commands;
 using Ubik.Accounting.Transaction.Contracts.Txs.Events;

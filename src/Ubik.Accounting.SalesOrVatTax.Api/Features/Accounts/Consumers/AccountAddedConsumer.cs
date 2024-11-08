@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using Ubik.Accounting.SalesOrVatTax.Api.Data;
 using Ubik.Accounting.SalesOrVatTax.Api.Features.Accounts.Services;
 using Ubik.Accounting.Structure.Contracts.Accounts.Events;
 

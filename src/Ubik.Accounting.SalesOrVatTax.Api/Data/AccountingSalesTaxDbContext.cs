@@ -1,12 +1,10 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 using Ubik.Accounting.SalesOrVatTax.Api.Data.Config;
 using Ubik.Accounting.SalesOrVatTax.Api.Models;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
-using Ubik.DB.Common;
 using Ubik.DB.Common.Extensions;
 
 namespace Ubik.Accounting.SalesOrVatTax.Api.Data

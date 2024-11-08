@@ -1,14 +1,9 @@
-﻿using Dapper;
-using LanguageExt;
+﻿using LanguageExt;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
 using Ubik.Accounting.Transaction.Api.Data;
-using Ubik.Accounting.Transaction.Api.Models;
 using Ubik.Accounting.Transaction.Api.Features.Txs.Errors;
 using Ubik.Accounting.Transaction.Contracts.Txs.Commands;
 using Ubik.ApiService.Common.Errors;
-using Ubik.ApiService.Common.Services;
-using MassTransit.Transports;
 using MassTransit;
 using Ubik.Accounting.Transaction.Contracts.Txs.Events;
 using Ubik.Accounting.Transaction.Api.Mappers;

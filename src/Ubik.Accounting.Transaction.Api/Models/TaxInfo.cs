@@ -1,7 +1,4 @@
-﻿using LanguageExt;
-using Ubik.ApiService.Common.Errors;
-
-namespace Ubik.Accounting.Transaction.Api.Models
+﻿namespace Ubik.Accounting.Transaction.Api.Models
 {
     //EF core hack to have a nullable tax info owned entity but when it's present, fields are mandatory
     public class TaxInfo

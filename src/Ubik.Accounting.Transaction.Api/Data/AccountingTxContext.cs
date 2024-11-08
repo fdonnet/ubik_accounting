@@ -5,7 +5,6 @@ using Ubik.Accounting.Transaction.Api.Models;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
-using Ubik.DB.Common;
 using Ubik.DB.Common.Extensions;
 
 namespace Ubik.Accounting.Transaction.Api.Data

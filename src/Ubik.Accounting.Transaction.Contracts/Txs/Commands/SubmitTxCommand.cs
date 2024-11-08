@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
 
 namespace Ubik.Accounting.Transaction.Contracts.Txs.Commands

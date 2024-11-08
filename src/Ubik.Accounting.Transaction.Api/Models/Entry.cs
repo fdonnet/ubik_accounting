@@ -1,5 +1,4 @@
-﻿using LanguageExt;
-using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
+﻿using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
 using Ubik.DB.Common;
 using Ubik.DB.Common.Models;
 

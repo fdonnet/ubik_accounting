@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using System.Security.Cryptography.Xml;
 using Ubik.Accounting.Structure.Api.Models;
 using Ubik.DB.Common.Models;
 
