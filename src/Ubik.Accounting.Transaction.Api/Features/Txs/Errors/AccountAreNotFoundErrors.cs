@@ -4,12 +4,12 @@ using Ubik.ApiService.Common.Errors;
 namespace Ubik.Accounting.Transaction.Api.Features.Txs.Errors
 {
     //TODO: do better error reporting (see when UI)
-    public record AccountsInEntriesAreNotFoundError: IFeatureError
+    public record AccountAreNotFoundErrors: IFeatureError
     {
         public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountsInEntriesAreNotFoundError(IEnumerable<SubmitTxEntry> entriesInError)
+        public AccountAreNotFoundErrors(IEnumerable<SubmitTxEntry> entriesInError)
         {
 
             ErrorType = FeatureErrorType.BadParams;

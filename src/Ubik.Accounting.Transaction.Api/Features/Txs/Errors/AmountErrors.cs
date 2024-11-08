@@ -4,12 +4,12 @@ using Ubik.ApiService.Common.Errors;
 namespace Ubik.Accounting.Transaction.Api.Features.Txs.Errors
 {
     //TODO: do better error reporting (see when UI)
-    public record EntriesAmountsError : IFeatureError
+    public record AmountErrors : IFeatureError
     {
         public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public EntriesAmountsError(IEnumerable<SubmitTxEntry> entriesInError)
+        public AmountErrors(IEnumerable<SubmitTxEntry> entriesInError)
         {
 
             ErrorType = FeatureErrorType.BadParams;
@@ -20,8 +20,8 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Errors
                 CustomErrors.Add(new CustomError()
                 {
                     ErrorCode = "BAD_AMOUNT_PARAMS_FOR_ENTRY",
-                    ErrorFriendlyMessage = "This entry contains invalid amount value(s)",
-                    ErrorValueDetails = $"Can be the amount or the additional amount info"
+                    ErrorFriendlyMessage = "This entry contains invalid amount value(s). Amount > 0",
+                    ErrorValueDetails = $"Field:Amount / Value:{entry.Amount} - Field:OriginalAmount / Value:{entry.AmountAdditionnalInfo?.OriginalAmount}"
                 });
             }
         }

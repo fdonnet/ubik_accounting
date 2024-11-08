@@ -7,6 +7,7 @@ using Ubik.ApiService.Common.Errors;
 using MassTransit;
 using Ubik.Accounting.Transaction.Contracts.Txs.Events;
 using Ubik.Accounting.Transaction.Api.Mappers;
+using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
 
 namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 {
@@ -15,8 +16,11 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
     {
         public async Task<Either<IFeatureError, TxSubmited>> SubmitTx(SubmitTxCommand command)
         {
-            return await ValidateEntriesAccountsAsync(command)
+            return await ValidateOnlyOneMainEntryAsync(command)
+                .BindAsync(ValidateBalanceAsync)
                 .BindAsync(ValidateEntriesAmountsAsync)
+                .BindAsync(ValidateExchangeRatesInfoAsync)
+                .BindAsync(ValidateEntriesAccountsAsync)
                 .BindAsync(PublishSubmittedAsync);
         }
 
@@ -30,6 +34,39 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
             return submited;
         }
 
+        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateOnlyOneMainEntryAsync(SubmitTxCommand tx)
+        {
+            var count = tx.Entries.Count(e => e.Type == EntryType.Main);
+
+            await Task.CompletedTask;
+
+            if (count == 1)
+                return tx;
+            else
+                return new MoreThanOneMainEntryError();
+        }
+
+        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateBalanceAsync(SubmitTxCommand tx)
+        {
+            var totalDebit = tx.Entries.Where(e => e.Sign == DebitCredit.Debit).Sum(e => e.Amount);
+            var totalCredit = tx.Entries.Where(e => e.Sign == DebitCredit.Credit).Sum(e => e.Amount);
+
+            await Task.CompletedTask;
+
+            if (totalDebit == totalCredit
+                && totalCredit == tx.Amount
+                && totalDebit == tx.Amount)
+
+                return tx;
+            else
+                return new BalanceError(tx.Amount,totalDebit,totalCredit);
+        }
+
+        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntriesInfoAsync(SubmitTxCommand tx)
+        {
+            var err = new List<SubmitTxEntry>();
+
+        }
 
         private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntriesAccountsAsync(SubmitTxCommand tx)
         {
@@ -48,7 +85,33 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
             else
             {
                 var badEntries = tx.Entries.Where(e => missingAccounts.Contains(e.AccountId));
-                return new AccountsInEntriesAreNotFoundError(badEntries);
+                return new AccountAreNotFoundErrors(badEntries);
+            }
+        }
+
+        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateExchangeRatesInfoAsync(SubmitTxCommand tx)
+        {
+            var exchangeRateEntriesInErr = new List<SubmitTxEntry>();
+
+            foreach (var entry in tx.Entries)
+            {
+                if (entry.AmountAdditionnalInfo != null)
+                {
+                    if (entry.AmountAdditionnalInfo.ExchangeRate <= 0)
+                        exchangeRateEntriesInErr.Add(entry);
+
+                    var calculatedAmount = entry.AmountAdditionnalInfo.OriginalAmount * entry.AmountAdditionnalInfo.ExchangeRate;
+                    if (calculatedAmount != entry.Amount)
+                        exchangeRateEntriesInErr.Add(entry);
+                }
+            }
+
+            if (exchangeRateEntriesInErr.Count > 0)
+                return new ExchangeRateErrors(exchangeRateEntriesInErr);
+            else
+            {
+                await Task.CompletedTask;
+                return tx;
             }
         }
 
@@ -68,17 +131,10 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
                     {
                         errEntries.Add(entry);
                     }
-
-                    //TODO: make a special case for that
-                    var expectedAmount = entry.AmountAdditionnalInfo.OriginalAmount * entry.AmountAdditionnalInfo.ExchangeRate;
-                    if (expectedAmount != entry.Amount)
-                    {
-                        errEntries.Add(entry);
-                    }
                 }
             }
             if(errEntries.Count > 0)
-                return new EntriesAmountsError(errEntries);
+                return new AmountErrors(errEntries);
             else
             {
                 //Maybe we will need to be async... (very dirty check for now)
