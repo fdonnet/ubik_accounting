@@ -11,7 +11,6 @@ namespace Ubik.Accounting.Transaction.Contracts.Txs.Events
 {
     public record class TxSubmited
     {
-        public Guid Id { get; init; }
         public required DateOnly ValueDate { get; init; }
         public required decimal Amount { get; init; }
         public IEnumerable<TxEntrySubmited> Entries { get; init; } = default!;

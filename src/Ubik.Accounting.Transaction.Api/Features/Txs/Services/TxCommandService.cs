@@ -16,7 +16,6 @@ using Ubik.Accounting.Transaction.Api.Mappers;
 namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 {
     public class TxCommandService(AccountingTxContext ctx
-        , ICurrentUser currentUser
         , IPublishEndpoint publishEndpoint) : ITxCommandService
     {
         public async Task<Either<IFeatureError, TxSubmited>> SubmitTx(SubmitTxCommand command)
@@ -31,6 +30,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
             //Publish that a tx as been submitted and checked for the ez validation
             var submited = current.ToTxSubmited();
             await publishEndpoint.Publish(submited, CancellationToken.None);
+            await ctx.SaveChangesAsync();
 
             return submited;
         }
@@ -41,22 +41,12 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
             //Check all the accounts at the same time
             var targetAccountIds = tx.Entries.Select(e => e.AccountId).Distinct().ToList();
 
-            var p = new DynamicParameters();
-            p.Add("@ids", targetAccountIds);
-            p.Add("@tenantId", currentUser.TenantId);
+            var results = await ctx.Accounts
+                   .Where(a => targetAccountIds.Contains(a.Id))
+                   .Select(a => a.Id)
+                   .ToListAsync();
 
-            var con = ctx.Database.GetDbConnection();
-
-            var sql = """
-                       SELECT a.Id
-                       FROM accounts a
-                       WHERE id IN @ids
-                       AND a.tenant_id = @tenantId
-                       """;
-
-            var results = await con.QueryAsync<Account>(sql, p);
-
-            var missingAccounts = targetAccountIds.Except(results.Select(r => r.Id)).ToList();
+            var missingAccounts = targetAccountIds.Except(results.Select(r => r)).ToList();
 
             if (missingAccounts.Count == 0)
                 return tx;

@@ -11,7 +11,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Controllers.v1
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class TxController(ITxCommandService commandService) : ControllerBase
+    public class TxsController(ITxCommandService commandService) : ControllerBase
     {
         [HttpPost("submit")]
         [ProducesResponseType(200)]

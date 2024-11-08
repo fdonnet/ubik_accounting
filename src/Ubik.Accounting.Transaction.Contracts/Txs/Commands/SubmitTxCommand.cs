@@ -11,7 +11,6 @@ namespace Ubik.Accounting.Transaction.Contracts.Txs.Commands
 {
     public record SubmitTxCommand
     {
-        public Guid Id { get; init; }
         [Required]
         public required DateOnly ValueDate { get; init; }
         [Required]
