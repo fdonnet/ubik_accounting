@@ -11,6 +11,9 @@ using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
 
 namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 {
+    //TODO: implement a better error management for transaction. Return a special errors payload
+    //with all the details for each error, the user needs to receive ONE error payload.
+    //or maybe not... return when 1 error or test for all errors...
     public class TxCommandService(AccountingTxContext ctx
         , IPublishEndpoint publishEndpoint) : ITxCommandService
     {

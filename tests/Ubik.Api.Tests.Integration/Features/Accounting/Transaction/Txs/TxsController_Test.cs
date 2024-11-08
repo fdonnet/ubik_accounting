@@ -298,5 +298,106 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND_FOR_ENTRY");
         }
+
+        [Fact]
+        public async Task Submit_Tx_WithMoreThanOneMainEntry_400()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new SubmitTxCommand()
+            {
+                Amount = 1000,
+                ValueDate = DateOnly.FromDateTime(DateTime.Now),
+                Entries = new List<SubmitTxEntry>()
+                {
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
+                        Amount = 1000,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Debit,
+                        TaxInfo = null,
+                        Type = EntryType.Main
+                    },
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-48fb-08dcd98b4a28"),
+                        Amount = 1000,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Credit,
+                        TaxInfo = null,
+                        Type = EntryType.Main
+                    }
+                }
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TX_COUNTAINS_MORE_THAN_ONE_MAIN_ENTRY");
+        }
+
+        [Theory]
+        [InlineData(1001, 1000, 1000)]
+        [InlineData(1000, 1001, 1000)]
+        [InlineData(1000, 1000, 1001)]
+        public async Task Submit_Tx_WithBadBalance_400(decimal total, decimal mainAmount, decimal cpAmount)
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new SubmitTxCommand()
+            {
+                Amount = total,
+                ValueDate = DateOnly.FromDateTime(DateTime.Now),
+                Entries = new List<SubmitTxEntry>()
+                {
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
+                        Amount = mainAmount,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Debit,
+                        TaxInfo = null,
+                        Type = EntryType.Main
+                    },
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-48fb-08dcd98b4a28"),
+                        Amount = cpAmount,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Credit,
+                        TaxInfo = null,
+                        Type = EntryType.Counterparty
+                    }
+                }
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TX_BALANCE_ERROR");
+        }
     }
 }
