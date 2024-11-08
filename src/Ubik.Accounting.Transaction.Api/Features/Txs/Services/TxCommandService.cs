@@ -18,7 +18,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
         {
             return await ValidateOnlyOneMainEntryAsync(command)
                 .BindAsync(ValidateBalanceAsync)
-                .BindAsync(ValidateEntriesInfoAsync)
+                .BindAsync(ValidateEntriesInfoAsync) //Exchange rates, amounts and currencies
                 .BindAsync(ValidateEntriesAccountsAsync)
                 .BindAsync(PublishSubmittedAsync);
         }
@@ -33,16 +33,15 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
             return submited;
         }
 
-        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateOnlyOneMainEntryAsync(SubmitTxCommand tx)
+        private static async Task<Either<IFeatureError, SubmitTxCommand>> ValidateOnlyOneMainEntryAsync(SubmitTxCommand tx)
         {
             var count = tx.Entries.Count(e => e.Type == EntryType.Main);
 
             await Task.CompletedTask;
 
-            if (count == 1)
-                return tx;
-            else
-                return new MoreThanOneMainEntryError();
+            return count == 1
+                ? tx
+                : new MoreThanOneMainEntryError();
         }
 
         private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateBalanceAsync(SubmitTxCommand tx)
@@ -52,19 +51,18 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 
             await Task.CompletedTask;
 
-            if (totalDebit == totalCredit
+            return totalDebit == totalCredit
                 && totalCredit == tx.Amount
-                && totalDebit == tx.Amount)
-
-                return tx;
-            else
-                return new BalanceError(tx.Amount, totalDebit, totalCredit);
+                && totalDebit == tx.Amount
+                ? tx
+                : new BalanceError(tx.Amount, totalDebit, totalCredit);
         }
 
         private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntriesInfoAsync(SubmitTxCommand tx)
         {
             var errExchangeRates = new List<SubmitTxEntry>();
             var errAmounts = new List<SubmitTxEntry>();
+            var errCurrencies = new List<SubmitTxEntry>();
 
             foreach (var entry in tx.Entries)
             {
@@ -73,35 +71,39 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 
                 if (!ValidateEntriesAmounts(entry))
                     errAmounts.Add(entry);
+
+                if (!await ValidateCurrencyAsync(entry))
+                    errCurrencies.Add(entry);
             }
 
             await Task.CompletedTask;
 
-            if (errExchangeRates.Count == 0 && errAmounts.Count == 0)
+            if (errExchangeRates.Count == 0
+                && errAmounts.Count == 0
+                && errCurrencies.Count == 0)
+
                 return tx;
             else
             {
-                if(errExchangeRates.Count > 0)
-                    return new ExchangeRateErrors(errExchangeRates);
-                else
-                    return new AmountErrors(errAmounts);
+                var dic = new Dictionary<EntryErrorType, List<SubmitTxEntry>>();
+                if (errExchangeRates.Count > 0)
+                    dic[EntryErrorType.ExchangeRate] = errExchangeRates;
+                if (errAmounts.Count > 0)
+                    dic[EntryErrorType.Amount] = errAmounts;
+                if (errCurrencies.Count > 0)
+                    dic[EntryErrorType.Currency] = errCurrencies;
+
+                return new EntriesInfoErrors(dic);
             }
         }
 
         private static bool ValidateEntriesAmounts(SubmitTxEntry entry)
         {
-            if (entry.Amount <= 0)
-                return false;
-
-            if (entry.AmountAdditionnalInfo != null
-                && entry.AmountAdditionnalInfo.OriginalAmount <= 0)
-
-                return false;
-
-            return true;
+            return entry.Amount > 0
+                  && (entry.AmountAdditionnalInfo == null || entry.AmountAdditionnalInfo.OriginalAmount > 0);
         }
 
-        private bool ValidateExchangeRatesInfo(SubmitTxEntry entry)
+        private static bool ValidateExchangeRatesInfo(SubmitTxEntry entry)
         {
             if (entry.AmountAdditionnalInfo != null)
             {
@@ -112,6 +114,19 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
                 if (calculatedAmount != entry.Amount)
                     return false;
             }
+            return true;
+        }
+
+        private async Task<bool> ValidateCurrencyAsync(SubmitTxEntry entry)
+        {
+            if (entry.AmountAdditionnalInfo != null)
+            {
+                var exist = await ctx.Currencies.FindAsync(entry.AmountAdditionnalInfo.OriginalCurrencyId);
+
+                if (exist == null)
+                    return false;
+            }
+
             return true;
         }
 
@@ -135,7 +150,5 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
                 return new AccountAreNotFoundErrors(badEntries);
             }
         }
-
-
     }
 }

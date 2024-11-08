@@ -1,7 +1,9 @@
-﻿namespace Ubik.Accounting.Transaction.Api.Models
+﻿using Ubik.DB.Common;
+
+namespace Ubik.Accounting.Transaction.Api.Models
 {
     // Source of truth => Accounting.SalesOrVatTax
-    public class TaxRate
+    public class TaxRate : ITenantEntity
     {
         public Guid Id { get; set; }
         public required string Code { get; set; }

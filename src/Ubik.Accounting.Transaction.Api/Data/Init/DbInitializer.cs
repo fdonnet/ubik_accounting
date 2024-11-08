@@ -6,6 +6,7 @@
         {
             await AccountsData.LoadAsync(context);
             await TaxRatesData.LoadAsync(context);
+            await CurrenciesData.LoadAsync(context);
         }
     }
 }

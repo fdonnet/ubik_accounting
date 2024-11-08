@@ -1,4 +1,5 @@
-﻿using Ubik.Accounting.Transaction.Contracts.Txs.Commands;
+﻿using MassTransit;
+using Ubik.Accounting.Transaction.Contracts.Txs.Commands;
 using Ubik.Accounting.Transaction.Contracts.Txs.Events;
 
 namespace Ubik.Accounting.Transaction.Api.Mappers
@@ -9,6 +10,7 @@ namespace Ubik.Accounting.Transaction.Api.Mappers
         {
             return new TxSubmited
             {
+                Id = NewId.NextGuid(),
                 ValueDate = current.ValueDate,
                 Amount = current.Amount,
                 Entries = current.Entries.Select(x => x.ToTxEntrySubmited())
@@ -19,6 +21,7 @@ namespace Ubik.Accounting.Transaction.Api.Mappers
         {
             return new TxEntrySubmited
             {
+                Id = NewId.NextGuid(),
                 Description = current.Description,
                 AccountId = current.AccountId,
                 Amount = current.Amount,

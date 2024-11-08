@@ -1,13 +1,11 @@
-﻿using MassTransit;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
-using Ubik.Accounting.Structure.Api.Models;
 
-namespace Ubik.Accounting.Structure.Api.Data.Init
+namespace Ubik.Accounting.Transaction.Api.Data.Init
 {
     internal static class CurrenciesData
     {
-        internal static async Task LoadAsync(AccountingDbContext context)
+        internal static async Task LoadAsync(AccountingTxContext context)
         {
             if (!context.Currencies.Any())
             {

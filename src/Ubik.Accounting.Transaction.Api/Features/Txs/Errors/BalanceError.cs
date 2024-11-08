@@ -22,4 +22,3 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Errors
         }
     }
 }
-}

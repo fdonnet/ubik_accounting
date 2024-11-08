@@ -16,6 +16,7 @@ namespace Ubik.Accounting.Transaction.Api.Data
         public DbSet<Tx> Txs { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<TaxRate> TaxRates { get; set; }
+        public DbSet<Currency> Currencies { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -68,6 +69,7 @@ namespace Ubik.Accounting.Transaction.Api.Data
             new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
             new TaxRateConfiguration().Configure(modelBuilder.Entity<TaxRate>());
             new TxConfiguration().Configure(modelBuilder.Entity<Tx>());
+            new CurrencyConfiguration().Configure(modelBuilder.Entity<Currency>());
 
             base.OnModelCreating(modelBuilder);
         }
@@ -84,6 +86,9 @@ namespace Ubik.Accounting.Transaction.Api.Data
                 .HasQueryFilter(mt => mt.TenantId == userService.TenantId);
 
             modelBuilder.Entity<Tx>()
+                .HasQueryFilter(mt => mt.TenantId == userService.TenantId);
+
+            modelBuilder.Entity<Currency>()
                 .HasQueryFilter(mt => mt.TenantId == userService.TenantId);
 
             //modelBuilder.Entity<Classification>()

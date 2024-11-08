@@ -4,6 +4,7 @@ namespace Ubik.Accounting.Transaction.Contracts.Txs.Events
 {
     public record class TxSubmited
     {
+        public required Guid Id { get; init; }
         public required DateOnly ValueDate { get; init; }
         public required decimal Amount { get; init; }
         public IEnumerable<TxEntrySubmited> Entries { get; init; } = default!;
@@ -11,6 +12,7 @@ namespace Ubik.Accounting.Transaction.Contracts.Txs.Events
 
     public record TxEntrySubmited
     {
+        public required Guid Id { get; init; }
         public required EntryType Type { get; init; }
         public required DebitCredit Sign { get; init; }
         public required Guid AccountId { get; init; }

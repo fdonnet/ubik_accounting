@@ -3,7 +3,7 @@ using Ubik.DB.Common;
 
 namespace Ubik.Accounting.Structure.Api.Models
 {
-    //TODO: will be updated by another service
+    //Source of truth => To be determined
     public class Currency : ITenantEntity
     {
         public Guid Id { get; set; }
