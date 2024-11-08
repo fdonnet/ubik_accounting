@@ -20,14 +20,14 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
     {
         public async Task<Either<IFeatureError, TxSubmited>> SubmitTx(SubmitTxCommand command)
         {
-            return await ValidateEntryAccounts(command)
-                .BindAsync(ValidateEntriesAmounts)
+            return await ValidateEntriesAccountsAsync(command)
+                .BindAsync(ValidateEntriesAmountsAsync)
                 .BindAsync(PublishSubmittedAsync);
         }
 
         private async Task<Either<IFeatureError, TxSubmited>> PublishSubmittedAsync(SubmitTxCommand current)
         {
-            //Publish that a tx as been submitted and checked for the ez validation
+            //Publish that a tx has been submitted and checked for the ez validation
             var submited = current.ToTxSubmited();
             await publishEndpoint.Publish(submited, CancellationToken.None);
             await ctx.SaveChangesAsync();
@@ -36,7 +36,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
         }
 
 
-        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntryAccounts(SubmitTxCommand tx)
+        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntriesAccountsAsync(SubmitTxCommand tx)
         {
             //Check all the accounts at the same time
             var targetAccountIds = tx.Entries.Select(e => e.AccountId).Distinct().ToList();
@@ -53,11 +53,11 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
             else
             {
                 var badEntries = tx.Entries.Where(e => missingAccounts.Contains(e.AccountId));
-                return new AccountsInEntriesAreMissingError(badEntries);
+                return new AccountsInEntriesAreNotFoundError(badEntries);
             }
         }
 
-        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntriesAmounts(SubmitTxCommand tx)
+        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntriesAmountsAsync(SubmitTxCommand tx)
         {
             var errEntries = new List<SubmitTxEntry>();
             foreach (var entry in tx.Entries)
@@ -74,6 +74,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
                         errEntries.Add(entry);
                     }
 
+                    //TODO: make a special case for that
                     var expectedAmount = entry.AmountAdditionnalInfo.OriginalAmount * entry.AmountAdditionnalInfo.ExchangeRate;
                     if (expectedAmount != entry.Amount)
                     {

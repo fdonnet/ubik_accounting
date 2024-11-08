@@ -4,12 +4,12 @@ using Ubik.ApiService.Common.Errors;
 namespace Ubik.Accounting.Transaction.Api.Features.Txs.Errors
 {
     //TODO: do better error reporting (see when UI)
-    public record AccountsInEntriesAreMissingError: IFeatureError
+    public record AccountsInEntriesAreNotFoundError: IFeatureError
     {
         public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
-        public AccountsInEntriesAreMissingError(IEnumerable<SubmitTxEntry> entriesInError)
+        public AccountsInEntriesAreNotFoundError(IEnumerable<SubmitTxEntry> entriesInError)
         {
 
             ErrorType = FeatureErrorType.BadParams;
@@ -19,9 +19,9 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Errors
             {
                 CustomErrors.Add(new CustomError()
                 {
-                    ErrorCode = "ACCOUNT_ID_NOT_FOUND_FOR_THIS_ENTRY",
-                    ErrorFriendlyMessage = "This account id is not found and cannot be used.",
-                    ErrorValueDetails = $"Field:AccountId / Value:{entry.AccountId} - Field:Amount / Value:{entry.Amount}"
+                    ErrorCode = "ACCOUNT_NOT_FOUND_FOR_ENTRY",
+                    ErrorFriendlyMessage = "This account is not found.",
+                    ErrorValueDetails = $"Field:AccountId / Value:{entry.AccountId}"
                 });
             }
         }
