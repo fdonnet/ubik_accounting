@@ -8,8 +8,6 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
     {
         public void Configure(EntityTypeBuilder<Entry> builder)
         {
-            //builder.ToTable("entries");
-
             builder.ToTable("entries", t =>
             {
                 t.HasCheckConstraint("ck_entry_label_main_type", "type != 0 OR label IS NOT NULL");
@@ -89,6 +87,24 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
             });
 
             builder.Navigation(m => m.TaxInfo).IsRequired(false);
+
+            builder.OwnsOne(a => a.Link, link =>
+            {
+                link.Ignore(t => t.EntryId);
+
+                link.Property("_entryId")
+                    .HasColumnName("link_entry_id")
+                    .IsRequired(false);
+
+                link.Ignore(t => t.LinkType);
+
+                link.Property("_linkType")
+                    .HasColumnName("link_type")
+                    .HasConversion<int>()
+                    .IsRequired(false);
+            });
+
+            builder.Navigation(m => m.Link).IsRequired(false);
 
             builder.Property(a => a.Version)
                 .IsConcurrencyToken();

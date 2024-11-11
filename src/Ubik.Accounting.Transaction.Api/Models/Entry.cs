@@ -18,6 +18,7 @@ namespace Ubik.Accounting.Transaction.Api.Models
         public required decimal Amount { get; set; }
         public AmountAdditionalInfo? AmountAdditionnalInfo { get; set; }
         public TaxInfo? TaxInfo { get; set; } = default!;
+        public EntryLink? Link { get; set; }
         public Guid Version { get; set; }
         public Guid TenantId { get; set; }
         public AuditData AuditInfo { get; set; } = default!;
