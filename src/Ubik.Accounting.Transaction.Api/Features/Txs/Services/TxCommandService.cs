@@ -23,6 +23,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
                 .BindAsync(ValidateBalanceAsync)
                 .BindAsync(ValidateEntriesInfoAsync) //Exchange rates, amounts and currencies
                 .BindAsync(ValidateEntriesAccountsAsync)
+                .BindAsync(ValidateEntriesTaxRatesInfoAsync)
                 .BindAsync(PublishSubmittedAsync);
         }
 
@@ -72,7 +73,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
                 if (!ValidateExchangeRatesInfo(entry))
                     errExchangeRates.Add(entry);
 
-                if (!ValidateEntriesAmounts(entry))
+                if (!ValidateEntryAmounts(entry))
                     errAmounts.Add(entry);
 
                 if (!await ValidateCurrencyAsync(entry))
@@ -100,7 +101,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
             }
         }
 
-        private static bool ValidateEntriesAmounts(SubmitTxEntry entry)
+        private static bool ValidateEntryAmounts(SubmitTxEntry entry)
         {
             return entry.Amount > 0
                   && (entry.AmountAdditionnalInfo == null || entry.AmountAdditionnalInfo.OriginalAmount > 0);
@@ -152,6 +153,47 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
                 var badEntries = tx.Entries.Where(e => missingAccounts.Contains(e.AccountId));
                 return new AccountAreNotFoundErrors(badEntries);
             }
+        }
+
+        private async Task<Either<IFeatureError, SubmitTxCommand>> ValidateEntriesTaxRatesInfoAsync(SubmitTxCommand tx)
+        {
+            //All entries with tax info
+            var taxRateEntries = tx.Entries
+                .Where(e => e.TaxInfo != null)
+                .Distinct()
+                .ToList();
+
+            //All tax rates used
+            var foundTaxRates = await ctx.TaxRates
+                .Where(tr => taxRateEntries.Select(t => t.TaxInfo!.TaxRateId).Contains(tr.Id))
+                .ToListAsync();
+
+            //Missing tax rates ids
+            var missingTaxRateIds = taxRateEntries.Select(t => t.TaxInfo!.TaxRateId).Except(foundTaxRates.Select(f => f.Id)).ToList();
+
+            //If missing tax rates
+            if (missingTaxRateIds.Count > 0)
+            {
+                var badEntriesMissingRate = tx.Entries
+                    .Where(e => e.TaxInfo != null && missingTaxRateIds.Contains(e.TaxInfo!.TaxRateId))
+                    .ToList();
+                return new TaxRatesNotFoundError(badEntriesMissingRate);
+            }
+
+            //If tax rates found not respect the configured rate
+            var badEntriesTaxRateNotMatch = new List<SubmitTxEntry>();
+            foreach (var entry in taxRateEntries)
+            {
+                var taxRate = foundTaxRates.First(tr => tr.Id == entry.TaxInfo!.TaxRateId);
+                if (taxRate.Rate != entry.TaxInfo!.TaxAppliedRate)
+                {
+                    badEntriesTaxRateNotMatch.Add(entry);
+                }
+            }
+
+            return badEntriesTaxRateNotMatch.Count > 0
+                ? new TaxRatesNotMatchError(badEntriesTaxRateNotMatch)
+                : tx;
         }
     }
 }

@@ -38,8 +38,8 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
             {
                 Amount = 1000,
                 ValueDate = DateOnly.FromDateTime(DateTime.Now),
-                Entries = new List<SubmitTxEntry>()
-                {
+                Entries =
+                [
                     new SubmitTxEntry()
                     {
                         AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
@@ -62,7 +62,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
                         TaxInfo = null,
                         Type = EntryType.Counterparty
                     }
-                }
+                ]
             };
 
             //Act
@@ -87,9 +87,9 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
             {
                 Amount = 1000,
                 ValueDate = DateOnly.FromDateTime(DateTime.Now),
-                Entries = new List<SubmitTxEntry>()
-                {
-                    new SubmitTxEntry()
+                Entries =
+                [
+                    new()
                     {
                         AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
                         Amount = 1000,
@@ -100,7 +100,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
                         TaxInfo = null,
                         Type = EntryType.Main
                     },
-                    new SubmitTxEntry()
+                    new()
                     {
                         AccountId = new Guid("248e0000-5dd4-0015-48fb-08dcd98b4a28"),
                         Amount = 1000,
@@ -111,7 +111,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
                         TaxInfo = null,
                         Type = EntryType.Counterparty
                     }
-                }
+                ]
             };
 
             //Act
@@ -128,8 +128,8 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
             {
                 Amount = 1000,
                 ValueDate = DateOnly.FromDateTime(DateTime.Now),
-                Entries = new List<SubmitTxEntry>()
-                {
+                Entries =
+                [
                     new SubmitTxEntry()
                     {
                         AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
@@ -152,7 +152,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
                         TaxInfo = null,
                         Type = EntryType.Counterparty
                     }
-                }
+                ]
             };
 
             //Act
@@ -172,8 +172,8 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
             {
                 Amount = 1000,
                 ValueDate = DateOnly.FromDateTime(DateTime.Now),
-                Entries = new List<SubmitTxEntry>()
-                {
+                Entries =
+                [
                     new SubmitTxEntry()
                     {
                         AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
@@ -196,7 +196,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
                         TaxInfo = null,
                         Type = EntryType.Counterparty
                     }
-                }
+                ]
             };
 
             //Act
@@ -216,8 +216,8 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
             {
                 Amount = 1000,
                 ValueDate = DateOnly.FromDateTime(DateTime.Now),
-                Entries = new List<SubmitTxEntry>()
-                {
+                Entries =
+                [
                     new SubmitTxEntry()
                     {
                         AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
@@ -240,7 +240,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
                         TaxInfo = null,
                         Type = EntryType.Counterparty
                     }
-                }
+                ]
             };
 
             //Act
@@ -260,8 +260,8 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
             {
                 Amount = 1000,
                 ValueDate = DateOnly.FromDateTime(DateTime.Now),
-                Entries = new List<SubmitTxEntry>()
-                {
+                Entries =
+                [
                     new SubmitTxEntry()
                     {
                         AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
@@ -284,7 +284,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
                         TaxInfo = null,
                         Type = EntryType.Counterparty
                     }
-                }
+                ]
             };
 
             //Act
@@ -309,8 +309,8 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
             {
                 Amount = 1000,
                 ValueDate = DateOnly.FromDateTime(DateTime.Now),
-                Entries = new List<SubmitTxEntry>()
-                {
+                Entries =
+                [
                     new SubmitTxEntry()
                     {
                         AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
@@ -333,7 +333,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
                         TaxInfo = null,
                         Type = EntryType.Main
                     }
-                }
+                ]
             };
 
             //Act
@@ -361,8 +361,8 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
             {
                 Amount = total,
                 ValueDate = DateOnly.FromDateTime(DateTime.Now),
-                Entries = new List<SubmitTxEntry>()
-                {
+                Entries =
+                [
                     new SubmitTxEntry()
                     {
                         AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
@@ -385,7 +385,7 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
                         TaxInfo = null,
                         Type = EntryType.Counterparty
                     }
-                }
+                ]
             };
 
             //Act
@@ -398,6 +398,396 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
             .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
                 .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TX_BALANCE_ERROR");
+        }
+
+        [Fact]
+        public async Task Submit_Tx_WithExchangeRateAtZero_400()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new SubmitTxCommand()
+            {
+                Amount = 1000,
+                ValueDate = DateOnly.FromDateTime(DateTime.Now),
+                Entries =
+                [
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
+                        Amount = 1000,
+                        AmountAdditionnalInfo = new SubmitTxEntryAdditionalAmountInfo()
+                        {
+                            ExchangeRate = 0,
+                            OriginalAmount = 900,
+                            OriginalCurrencyId = new Guid("248e0000-5dd4-0015-291d-08dcd98e55f8")
+                        },
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Debit,
+                        TaxInfo = null,
+                        Type = EntryType.Main
+                    },
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-48fb-08dcd98b4a28"),
+                        Amount = 1000,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Credit,
+                        TaxInfo = null,
+                        Type = EntryType.Counterparty
+                    }
+                ]
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "BAD_EXCHANGE_RATE_PARAMS_FOR_ENTRY");
+        }
+
+        [Fact]
+        public async Task Submit_Tx_WithExchangeBadCalc_400()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new SubmitTxCommand()
+            {
+                Amount = 1100,
+                ValueDate = DateOnly.FromDateTime(DateTime.Now),
+                Entries =
+                [
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = new SubmitTxEntryAdditionalAmountInfo()
+                        {
+                            ExchangeRate = 1.11m,
+                            OriginalAmount = 1000,
+                            OriginalCurrencyId = new Guid("248e0000-5dd4-0015-291d-08dcd98e55f8")
+                        },
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Debit,
+                        TaxInfo = null,
+                        Type = EntryType.Main
+                    },
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-48fb-08dcd98b4a28"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Credit,
+                        TaxInfo = null,
+                        Type = EntryType.Counterparty
+                    }
+                ]
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "BAD_EXCHANGE_RATE_PARAMS_FOR_ENTRY");
+        }
+
+        [Fact]
+        public async Task Submit_Tx_WithBadCurrencyId_400()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new SubmitTxCommand()
+            {
+                Amount = 1100,
+                ValueDate = DateOnly.FromDateTime(DateTime.Now),
+                Entries =
+                [
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = new SubmitTxEntryAdditionalAmountInfo()
+                        {
+                            ExchangeRate = 1.1m,
+                            OriginalAmount = 1000,
+                            OriginalCurrencyId = new Guid("248e0000-5dd4-0015-291d-08dcd98e55f1")
+                        },
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Debit,
+                        TaxInfo = null,
+                        Type = EntryType.Main
+                    },
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-48fb-08dcd98b4a28"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Credit,
+                        TaxInfo = null,
+                        Type = EntryType.Counterparty
+                    }
+                ]
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "BAD_CURRENCY_PARAMS_FOR_ENTRY");
+        }
+
+        [Fact]
+        public async Task Submit_Tx_WithBadAccountId_400()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new SubmitTxCommand()
+            {
+                Amount = 1100,
+                ValueDate = DateOnly.FromDateTime(DateTime.Now),
+                Entries =
+                [
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c71"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = new SubmitTxEntryAdditionalAmountInfo()
+                        {
+                            ExchangeRate = 1.1m,
+                            OriginalAmount = 1000,
+                            OriginalCurrencyId = new Guid("248e0000-5dd4-0015-291d-08dcd98e55f8")
+                        },
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Debit,
+                        TaxInfo = null,
+                        Type = EntryType.Main
+                    },
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-48fb-08dcd98b4a28"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Credit,
+                        TaxInfo = null,
+                        Type = EntryType.Counterparty
+                    }
+                ]
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "ACCOUNT_NOT_FOUND_FOR_ENTRY");
+        }
+
+        [Fact]
+        public async Task Submit_Tx_WithAllInfo_OK()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new SubmitTxCommand()
+            {
+                Amount = 1100,
+                ValueDate = DateOnly.FromDateTime(DateTime.Now),
+                Entries =
+                [
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = new SubmitTxEntryAdditionalAmountInfo()
+                        {
+                            ExchangeRate = 1.1m,
+                            OriginalAmount = 1000,
+                            OriginalCurrencyId = new Guid("248e0000-5dd4-0015-291d-08dcd98e55f8")
+                        },
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Debit,
+                        TaxInfo = new SubmitTxEntryTaxInfo()
+                        {
+                            TaxAppliedRate = 8.1m,
+                            TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
+                        },
+                        Type = EntryType.Main
+                    },
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-48fb-08dcd98b4a28"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Credit,
+                        TaxInfo = null,
+                        Type = EntryType.Counterparty
+                    }
+                ]
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
+            var result = await response.Content.ReadFromJsonAsync<TxSubmited>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<TxSubmited>()
+                .And.Match<TxSubmited>(x => x.Amount == command.Amount);
+        }
+
+        [Fact]
+        public async Task Submit_Tx_WithMissingTaxRate_OK()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new SubmitTxCommand()
+            {
+                Amount = 1100,
+                ValueDate = DateOnly.FromDateTime(DateTime.Now),
+                Entries =
+                [
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = new SubmitTxEntryAdditionalAmountInfo()
+                        {
+                            ExchangeRate = 1.1m,
+                            OriginalAmount = 1000,
+                            OriginalCurrencyId = new Guid("248e0000-5dd4-0015-291d-08dcd98e55f8")
+                        },
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Debit,
+                        TaxInfo = new SubmitTxEntryTaxInfo()
+                        {
+                            TaxAppliedRate = 8.1m,
+                            TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b911"),
+                        },
+                        Type = EntryType.Main
+                    },
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-48fb-08dcd98b4a28"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Credit,
+                        TaxInfo = null,
+                        Type = EntryType.Counterparty
+                    }
+                ]
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TAX_RATE_NOT_FOUND_FOR_ENTRY");
+        }
+
+        [Fact]
+        public async Task Submit_Tx_WithNotMatchingTaxRate_OK()
+        {
+            var token = await GetAccessTokenAsync(TokenType.RW);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var command = new SubmitTxCommand()
+            {
+                Amount = 1100,
+                ValueDate = DateOnly.FromDateTime(DateTime.Now),
+                Entries =
+                [
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-c1ce-08dcd98b7c74"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = new SubmitTxEntryAdditionalAmountInfo()
+                        {
+                            ExchangeRate = 1.1m,
+                            OriginalAmount = 1000,
+                            OriginalCurrencyId = new Guid("248e0000-5dd4-0015-291d-08dcd98e55f8")
+                        },
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Debit,
+                        TaxInfo = new SubmitTxEntryTaxInfo()
+                        {
+                            TaxAppliedRate = 8.0m,
+                            TaxRateId = new Guid("08740000-3c36-7456-6f96-08dcfb48b915"),
+                        },
+                        Type = EntryType.Main
+                    },
+                    new SubmitTxEntry()
+                    {
+                        AccountId = new Guid("248e0000-5dd4-0015-48fb-08dcd98b4a28"),
+                        Amount = 1100,
+                        AmountAdditionnalInfo = null,
+                        Description = "Test",
+                        Label = "Test",
+                        Sign = DebitCredit.Credit,
+                        TaxInfo = null,
+                        Type = EntryType.Counterparty
+                    }
+                ]
+            };
+
+            //Act
+            var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
+            var result = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            result.Should()
+            .NotBeNull()
+                .And.BeOfType<CustomProblemDetails>()
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TAX_RATE_NOT_MATCH_FOR_ENTRY");
         }
     }
 }
