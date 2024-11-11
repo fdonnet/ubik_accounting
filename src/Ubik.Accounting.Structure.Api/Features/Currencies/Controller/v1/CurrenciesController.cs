@@ -7,6 +7,8 @@ using Ubik.ApiService.Common.Exceptions;
 
 namespace Ubik.Accounting.Structure.Api.Features.Currencies.Controller.v1
 {
+
+    //TODO: to be replaced with the real source of truth API (currencies will not be managed in accounting structure)
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
