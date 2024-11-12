@@ -8,6 +8,8 @@ using MassTransit;
 using Ubik.Accounting.Transaction.Contracts.Txs.Events;
 using Ubik.Accounting.Transaction.Api.Mappers;
 using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
+using Ubik.Accounting.Transaction.Api.Models;
+using Ubik.ApiService.Common.Services;
 
 namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 {
@@ -15,9 +17,9 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
     //with all the details for each error, the user needs to receive ONE error payload.
     //or maybe not... return when 1 error or test for all errors...
     public class TxCommandService(AccountingTxContext ctx
-        , IPublishEndpoint publishEndpoint) : ITxCommandService
+        , IPublishEndpoint publishEndpoint, ICurrentUser currentUser) : ITxCommandService
     {
-        public async Task<Either<IFeatureError, TxSubmited>> SubmitTx(SubmitTxCommand command)
+        public async Task<Either<IFeatureError, TxSubmitted>> SubmitTxAsync(SubmitTxCommand command)
         {
             return await ValidateOnlyOneMainEntryAsync(command)
                 .BindAsync(ValidateBalanceAsync)
@@ -27,10 +29,43 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
                 .BindAsync(PublishSubmittedAsync);
         }
 
-        private async Task<Either<IFeatureError, TxSubmited>> PublishSubmittedAsync(SubmitTxCommand current)
+
+        public bool CheckIfTxNeedTaxValidation(TxSubmitted tx)
+        {
+            return tx.Entries.Any(e => e.TaxInfo != null);
+        }
+
+        public void PublishValidated(TxValidated tx)
+        {
+            publishEndpoint.Publish(tx, CancellationToken.None);
+        }
+
+
+        public async Task<TxAdded> AddTxAsync(TxValidated tx)
+        {
+            var newTx = tx.ToTx();
+            ctx.Txs.Add(newTx);
+
+            var txEntries = tx.Entries.Select(e => e.ToEntry(newTx.Id));
+
+            foreach (var entry in txEntries)
+            {
+                ctx.Entries.Add(entry);
+            }
+
+            ctx.SetAuditAndSpecialFields();
+
+            var addedTx = newTx.ToTxAdded(txEntries);
+
+            await publishEndpoint.Publish(addedTx, CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return addedTx;
+        }
+
+        private async Task<Either<IFeatureError, TxSubmitted>> PublishSubmittedAsync(SubmitTxCommand current)
         {
             //Publish that a tx has been submitted and checked for the ez validation
-            var submited = current.ToTxSubmited();
+            var submited = current.ToTxSubmitted();
             await publishEndpoint.Publish(submited, CancellationToken.None);
             await ctx.SaveChangesAsync();
 

@@ -16,9 +16,9 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Controllers.v1
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(CustomProblemDetails), 400)]
         [ProducesResponseType(typeof(CustomProblemDetails), 500)]
-        public async Task<ActionResult<TxSubmited>> SubmitTx(SubmitTxCommand command)
+        public async Task<ActionResult<TxSubmitted>> SubmitTx(SubmitTxCommand command)
         {
-            var result = await commandService.SubmitTx(command);
+            var result = await commandService.SubmitTxAsync(command);
             return result.Match(
                             Right: ok => Ok(ok),
                             Left: err => new ObjectResult(err.ToValidationProblemDetails(HttpContext)));

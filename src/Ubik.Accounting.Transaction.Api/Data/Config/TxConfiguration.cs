@@ -21,7 +21,7 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
             builder.Property(a => a.TenantId)
                .IsRequired();
 
-            builder.HasIndex(x => x.TenantId).IsUnique();
+            builder.HasIndex(x => x.TenantId);
 
             builder.HasIndex(x => x.ValueDate);
 

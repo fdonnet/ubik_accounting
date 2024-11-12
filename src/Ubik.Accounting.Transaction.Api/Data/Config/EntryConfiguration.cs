@@ -68,8 +68,6 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
                     .IsRequired(false);
             });
 
-            builder.Navigation(m => m.AmountAdditionnalInfo).IsRequired(false);
-
             builder.OwnsOne(a => a.TaxInfo, taxInfo =>
             {
                 taxInfo.Ignore(t => t.TaxAppliedRate);
@@ -86,8 +84,6 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
                     .IsRequired(false);
             });
 
-            builder.Navigation(m => m.TaxInfo).IsRequired(false);
-
             builder.OwnsOne(a => a.Link, link =>
             {
                 link.Ignore(t => t.EntryId);
@@ -103,8 +99,6 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
                     .HasConversion<int>()
                     .IsRequired(false);
             });
-
-            builder.Navigation(m => m.Link).IsRequired(false);
 
             builder.Property(a => a.Version)
                 .IsConcurrencyToken();
@@ -130,6 +124,8 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
                     .HasColumnName("created_by")
                     .IsRequired();
             });
+
+            builder.Navigation(m => m.AuditInfo).IsRequired(true);
 
             builder.HasIndex(a => a.TenantId);
 

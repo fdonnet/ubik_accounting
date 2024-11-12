@@ -1,4 +1,5 @@
-﻿using Ubik.DB.Common;
+﻿using MassTransit;
+using Ubik.DB.Common;
 using Ubik.DB.Common.Models;
 
 namespace Ubik.Accounting.Transaction.Api.Models

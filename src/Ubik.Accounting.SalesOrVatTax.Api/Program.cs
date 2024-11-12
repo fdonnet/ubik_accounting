@@ -56,8 +56,8 @@ builder.Services.AddMassTransit(config =>
         //TODO:review that Maybe not needed.... it was before I have the Yarp proxy...
         //Use to pass tenantid when message broker is used to contact the api (async)
         //configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
-        configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);
-        //configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
+        configurator.UsePublishFilter(typeof(TenantAndUserIdsPublishFilter<>), context);
+        configurator.UseConsumeFilter(typeof(TenantAndUserIdsConsumeFilter<>), context);
     });
 
     config.AddEntityFrameworkOutbox<AccountingSalesTaxDbContext>(o =>

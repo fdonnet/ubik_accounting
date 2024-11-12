@@ -67,14 +67,14 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
 
             //Act
             var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
-            var result = await response.Content.ReadFromJsonAsync<TxSubmited>();
+            var result = await response.Content.ReadFromJsonAsync<TxSubmitted>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
             .NotBeNull()
-                .And.BeOfType<TxSubmited>()
-                .And.Match<TxSubmited>(x => x.Amount == command.Amount);
+                .And.BeOfType<TxSubmitted>()
+                .And.Match<TxSubmitted>(x => x.Amount == command.Amount);
         }
 
         [Fact]
@@ -664,14 +664,14 @@ namespace Ubik.Api.Tests.Integration.Features.Accounting.Transaction.Txs
 
             //Act
             var response = await _client.PostAsJsonAsync($"{_baseUrlForV1}/txs/submit", command);
-            var result = await response.Content.ReadFromJsonAsync<TxSubmited>();
+            var result = await response.Content.ReadFromJsonAsync<TxSubmitted>();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             result.Should()
             .NotBeNull()
-                .And.BeOfType<TxSubmited>()
-                .And.Match<TxSubmited>(x => x.Amount == command.Amount);
+                .And.BeOfType<TxSubmitted>()
+                .And.Match<TxSubmitted>(x => x.Amount == command.Amount);
         }
 
         [Fact]

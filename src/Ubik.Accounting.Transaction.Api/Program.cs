@@ -53,7 +53,8 @@ builder.Services.AddMassTransit(config =>
         configurator.ConfigureEndpoints(context);
 
         //TODO:review that Maybe not needed.... it was before I have the Yarp proxy...
-        configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);
+        configurator.UsePublishFilter(typeof(TenantAndUserIdsPublishFilter<>), context);
+        configurator.UseConsumeFilter(typeof(TenantAndUserIdsConsumeFilter<>), context);
     });
 
     config.AddEntityFrameworkOutbox<AccountingTxContext>(o =>
@@ -110,7 +111,12 @@ builder.Services.Configure<RouteOptions>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+//Swagger config
+var xmlPath = Path.Combine(AppContext.BaseDirectory,
+    $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
+
+builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
 
 var app = builder.Build();
 
