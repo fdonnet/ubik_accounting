@@ -34,6 +34,9 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
                 stateInfo.HasIndex(x => x.State);
             });
 
+            builder.Navigation(x => x.State)
+                .IsRequired();
+
             builder.HasIndex(x => x.TenantId);
 
             builder.HasIndex(x => x.ValueDate);
