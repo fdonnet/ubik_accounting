@@ -52,6 +52,16 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
             }, CancellationToken.None);
         }
 
+
+        public async Task SendTxValidated(TxSubmitted tx)
+        {
+            await publishEndpoint.Publish(new TxValidated
+            {
+                Id = tx.Id,
+                Version = tx.Version
+            }, CancellationToken.None);
+        }
+
         public bool CheckIfTxNeedTaxValidation(TxSubmitted tx)
         {
             return tx.Entries.Any(e => e.TaxInfo != null);

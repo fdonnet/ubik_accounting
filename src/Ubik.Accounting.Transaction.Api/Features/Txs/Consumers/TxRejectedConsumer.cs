@@ -11,13 +11,18 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Consumers
         public async Task Consume(ConsumeContext<TxRejected> context)
         {
             var tx = context.Message;
-            await commandService.ChangeTxStateAsync(new ChangeTxStateCommand
+            var result = await commandService.ChangeTxStateAsync(new ChangeTxStateCommand
             {
                 TxId = tx.Id,
                 State = TxState.Confirmed,
                 Version = tx.Version,
                 Reason = tx.Reason
             });
+
+            if (result.IsLeft)
+            {
+                throw new Exception("Error while changing tx state");
+            }
         }
     }
 }

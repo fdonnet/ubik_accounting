@@ -45,7 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Txs\Sagas\" />
+    <Folder Include="Features\Txs\Hubs\" />
   </ItemGroup>
 
 </Project>

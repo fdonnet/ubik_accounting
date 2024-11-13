@@ -14,25 +14,26 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Consumers
             var tx = context.Message;
             var needTaxValidation = commandService.CheckIfTxNeedTaxValidation(tx);
 
-            //Need tax validation
             if (needTaxValidation)
+            {
+                //Need tax validation
                 await commandService.SendTaxValidationRequest(tx);
 
-            //Change state
-            var result =await commandService.ChangeTxStateAsync(new ChangeTxStateCommand
-            {
-                TxId = tx.Id,
-                State = needTaxValidation
-                    ? TxState.WaitingForTaxValidation
-                    : TxState.Confirmed,
+                var result = await commandService.ChangeTxStateAsync(new ChangeTxStateCommand
+                {
+                    TxId = tx.Id,
+                    State = TxState.WaitingForTaxValidation,
+                    Version = tx.Version
+                });
 
-                Version = tx.Version
-            });
-
-            if (result.IsLeft)
-            {
-                throw new Exception("Error while changing tx state");
+                if (result.IsLeft)
+                {
+                    throw new Exception("Error while changing tx state");
+                }
             }
+            else
+                // IsValidated
+                await commandService.SendTxValidated(tx);
         }
     }
 }

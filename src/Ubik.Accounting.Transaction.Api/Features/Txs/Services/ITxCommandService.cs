@@ -13,5 +13,6 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
         public bool CheckIfTxNeedTaxValidation(TxSubmitted tx);
         public Task<Either<IFeatureError, Tx>> ChangeTxStateAsync(ChangeTxStateCommand command);
         public Task SendTaxValidationRequest(TxSubmitted tx);
+        public Task SendTxValidated(TxSubmitted tx);
     }
 }
