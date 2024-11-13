@@ -50,6 +50,13 @@ builder.Services.AddMassTransit(config =>
             h.Password(msgBrokerOptions.Password);
         });
 
+        configurator.ConfigureJsonSerializerOptions(o =>
+        {
+            o.Converters.Add(new JsonStringEnumConverter());
+            return o;
+        });
+
+
         configurator.ConfigureEndpoints(context);
 
         //TODO:review that Maybe not needed.... it was before I have the Yarp proxy...
