@@ -40,7 +40,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
                     State = command.State,
                     Reason = command.Reason
                 } ))
-                .BindAsync(SaveNewTxStateAsync);
+                .BindAsync(SaveAndPublishNewTxStateAsync);
         }
 
         public async Task SendTaxValidationRequest(TxSubmitted tx)
@@ -57,8 +57,15 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
             return tx.Entries.Any(e => e.TaxInfo != null);
         }
 
-        private async Task<Either<IFeatureError, Tx>> SaveNewTxStateAsync(Tx tx)
+        private async Task<Either<IFeatureError, Tx>> SaveAndPublishNewTxStateAsync(Tx tx)
         {
+            await publishEndpoint.Publish(new TxStateChanged
+            {
+                TxId = tx.Id,
+                State = tx.State.State,
+                Reason = tx.State.Reason
+            }, CancellationToken.None);
+
             await ctx.SaveChangesAsync();
             return tx;
         }
