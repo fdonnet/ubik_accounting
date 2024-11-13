@@ -144,8 +144,9 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAu
 
 //User service with circuit
 builder.Services.AddScoped<UserService>();
-builder.Services.TryAddEnumerable(
-    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
+//TODO:check I think this thing is never used
+//builder.Services.TryAddEnumerable(
+//    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
 builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
 
