@@ -10,6 +10,8 @@ using Ubik.Accounting.Transaction.Api.Mappers;
 using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
 using Ubik.Accounting.Transaction.Api.Models;
 using Ubik.ApiService.Common.Services;
+using Ubik.ApiService.Common.Configure;
+using Ubik.Accounting.Transaction.Contracts.Txs.Enums;
 
 namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 {
@@ -17,7 +19,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
     //with all the details for each error, the user needs to receive ONE error payload.
     //or maybe not... return when 1 error or test for all errors...
     public class TxCommandService(AccountingTxContext ctx
-        , IPublishEndpoint publishEndpoint, ICurrentUser currentUser) : ITxCommandService
+        , IPublishEndpoint publishEndpoint) : ITxCommandService
     {
         public async Task<Either<IFeatureError, TxSubmitted>> SubmitTxAsync(SubmitTxCommand command)
         {
@@ -26,27 +28,68 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
                 .BindAsync(ValidateEntriesInfoAsync) //Exchange rates, amounts and currencies
                 .BindAsync(ValidateEntriesAccountsAsync)
                 .BindAsync(ValidateEntriesTaxRatesInfoAsync)
-                .BindAsync(PublishSubmittedAsync);
+                .BindAsync(AddSubmittedTxInDbContextAsync)
+                .BindAsync(SaveAndPublishSubmittedAsync);
         }
 
+        public async Task<Either<IFeatureError, Tx>> ChangeTxStateAsync(ChangeTxStateCommand command)
+        {
+            return await GetTxAsync(command.TxId)
+                .BindAsync(t => ChangeTxStateInDbContextAsync(t, new TxStateInfo
+                {
+                    State = command.State,
+                    Reason = command.Reason
+                } ))
+                .BindAsync(SaveNewTxStateAsync);
+        }
+
+        public async Task SendTaxValidationRequest(TxSubmitted tx)
+        {
+            await publishEndpoint.Publish(new TxTaxValidationRequestSent
+            {
+                Id = tx.Id,
+                Tx = tx
+            }, CancellationToken.None);
+        }
 
         public bool CheckIfTxNeedTaxValidation(TxSubmitted tx)
         {
             return tx.Entries.Any(e => e.TaxInfo != null);
         }
 
-        public void PublishValidated(TxValidated tx)
+        private async Task<Either<IFeatureError, Tx>> SaveNewTxStateAsync(Tx tx)
         {
-            publishEndpoint.Publish(tx, CancellationToken.None);
+            await ctx.SaveChangesAsync();
+            return tx;
         }
 
-
-        public async Task<TxAdded> AddTxAsync(TxValidated tx)
+        private async Task<Either<IFeatureError, Tx>> GetTxAsync(Guid id)
         {
-            var newTx = tx.ToTx();
+            var result = await ctx.Txs.FindAsync(id);
+
+            if (result == null)
+                return new ResourceNotFoundError("Tx", "Id", id.ToString());
+            else
+                return result;
+        }
+
+        private async Task<Either<IFeatureError, Tx>> ChangeTxStateInDbContextAsync(Tx current, TxStateInfo newState)
+        {
+            current.State = newState;
+            ctx.Entry(current).State = EntityState.Modified;
+
+            ctx.SetAuditAndSpecialFields();
+
+            await Task.CompletedTask;
+            return current;
+        }
+
+        private async Task<Either<IFeatureError, TxSubmitted>> AddSubmittedTxInDbContextAsync(SubmitTxCommand command)
+        {
+            var newTx = command.ToTx();
             ctx.Txs.Add(newTx);
 
-            var txEntries = tx.Entries.Select(e => e.ToEntry(newTx.Id));
+            var txEntries = command.Entries.Select(e => e.ToEntry(newTx.Id));
 
             foreach (var entry in txEntries)
             {
@@ -55,21 +98,18 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 
             ctx.SetAuditAndSpecialFields();
 
-            var addedTx = newTx.ToTxAdded(txEntries);
+            var submittedTx = newTx.ToTxSubmitted(txEntries);
 
-            await publishEndpoint.Publish(addedTx, CancellationToken.None);
-            await ctx.SaveChangesAsync();
-            return addedTx;
+            await Task.CompletedTask;
+            return submittedTx;
         }
 
-        private async Task<Either<IFeatureError, TxSubmitted>> PublishSubmittedAsync(SubmitTxCommand current)
+        private async Task<Either<IFeatureError, TxSubmitted>> SaveAndPublishSubmittedAsync(TxSubmitted current)
         {
-            //Publish that a tx has been submitted and checked for the ez validation
-            var submited = current.ToTxSubmitted();
-            await publishEndpoint.Publish(submited, CancellationToken.None);
+            await publishEndpoint.Publish(current, CancellationToken.None);
             await ctx.SaveChangesAsync();
 
-            return submited;
+            return current;
         }
 
         private static async Task<Either<IFeatureError, SubmitTxCommand>> ValidateOnlyOneMainEntryAsync(SubmitTxCommand tx)

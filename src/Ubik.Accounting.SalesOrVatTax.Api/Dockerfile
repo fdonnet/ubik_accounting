@@ -16,6 +16,10 @@ COPY ["src/Ubik.Accounting.SalesOrVatTax.Api/Ubik.Accounting.SalesOrVatTax.Api.c
 COPY ["src/Ubik.Accounting.SalesOrVatTax.Contracts/Ubik.Accounting.SalesOrVatTax.Contracts.csproj", "src/Ubik.Accounting.SalesOrVatTax.Contracts/"]
 COPY ["src/Ubik.ApiService.Common/Ubik.ApiService.Common.csproj", "src/Ubik.ApiService.Common/"]
 COPY ["src/Ubik.Db.Common/Ubik.DB.Common/Ubik.DB.Common.csproj", "src/Ubik.Db.Common/Ubik.DB.Common/"]
+#COPY ["src/mycert.cer", "src/"]
+#ADD ./src/mycert.cer /usr/local/share/ca-certificates/mycert.cer
+#ADD ./src/mycert.cer /etc/ssl/certs/mycert.cer
+#RUN chmod 644 /usr/local/share/ca-certificates/mycert.cer && update-ca-certificates
 RUN dotnet restore "./src/Ubik.Accounting.SalesOrVatTax.Api/Ubik.Accounting.SalesOrVatTax.Api.csproj"
 COPY . .
 WORKDIR "/src/Ubik.Accounting.SalesOrVatTax.Api"

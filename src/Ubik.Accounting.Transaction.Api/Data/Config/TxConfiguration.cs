@@ -21,6 +21,19 @@ namespace Ubik.Accounting.Transaction.Api.Data.Config
             builder.Property(a => a.TenantId)
                .IsRequired();
 
+            builder.OwnsOne(x => x.State, stateInfo =>
+            {
+                stateInfo.Property(s => s.State)
+                    .HasColumnName("state")
+                    .HasConversion<int>()
+                    .IsRequired();
+                stateInfo.Property(s => s.Reason)
+                    .HasColumnName("state_reason")
+                    .HasMaxLength(400);
+
+                stateInfo.HasIndex(x => x.State);
+            });
+
             builder.HasIndex(x => x.TenantId);
 
             builder.HasIndex(x => x.ValueDate);

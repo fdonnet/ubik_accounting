@@ -1,7 +1,9 @@
 ﻿using LanguageExt;
 using MassTransit;
+using MassTransit.Caching.Internals;
 using Ubik.Accounting.Transaction.Api.Models;
 using Ubik.Accounting.Transaction.Contracts.Txs.Commands;
+using Ubik.Accounting.Transaction.Contracts.Txs.Enums;
 using Ubik.Accounting.Transaction.Contracts.Txs.Events;
 using Ubik.DB.Common.Models;
 
@@ -10,14 +12,16 @@ namespace Ubik.Accounting.Transaction.Api.Mappers
     public static class TxMappers
     {
 
-        public static TxSubmitted ToTxSubmitted(this SubmitTxCommand current)
+        public static TxSubmitted ToTxSubmitted(this Tx current, IEnumerable<Entry> entries)
         {
             return new TxSubmitted
             {
-                Id = NewId.NextGuid(),
+                Id = current.Id,
                 ValueDate = current.ValueDate,
                 Amount = current.Amount,
-                Entries = current.Entries.Select(x => x.ToTxEntrySubmitted()),
+                Entries = entries.Select(e => e.ToTxEntrySubmitted()),
+                Version = current.Version,
+                State = current.State.ToTxTxStateInfoSubmitted()
             };
         }
 
@@ -25,73 +29,49 @@ namespace Ubik.Accounting.Transaction.Api.Mappers
         {
             return new TxValidated
             {
-                Id = NewId.NextGuid(),
-                ValueDate = current.ValueDate,
-                Amount = current.Amount,
-                Entries = current.Entries.Select(x => x.ToTxEntryValidated()),
-            };
-        }
-
-        public static Tx ToTx(this TxValidated current)
-        {
-            var now = DateTime.UtcNow;
-            return new Tx
-            {
                 Id = current.Id,
-                ValueDate = current.ValueDate,
-                Amount = current.Amount,
-            };
-        }
-
-        public static TxAdded ToTxAdded(this Tx current, IEnumerable<Entry> entries)
-        {
-            return new TxAdded
-            {
-                Id = current.Id,
-                ValueDate = current.ValueDate,
-                Amount = current.Amount,
-                Entries = entries.Select(x=>x.ToTxEntryAdded()),
                 Version = current.Version
             };
         }
 
-        public static TxEntrySubmitted ToTxEntrySubmitted(this SubmitTxEntry current)
+        public static Tx ToTx(this SubmitTxCommand current)
+        {
+            var now = DateTime.UtcNow;
+            return new Tx
+            {
+                Id = NewId.NextGuid(),
+                ValueDate = current.ValueDate,
+                Amount = current.Amount,
+                State = new TxStateInfo
+                {
+                    State = TxState.Submitted,
+                    Reason = null
+                }
+            };
+        }
+
+        public static TxEntrySubmitted ToTxEntrySubmitted(this Entry current)
         {
             return new TxEntrySubmitted
             {
-                Id = NewId.NextGuid(),
+                Id = current.Id,
                 Description = current.Description,
                 AccountId = current.AccountId,
                 Amount = current.Amount,
                 AmountAdditionnalInfo = current.AmountAdditionnalInfo?.ToTxEntryAdditionalAmountInfoSubmitted(),
                 Label = current.Label,
                 Sign = current.Sign,
+                Version = current.Version,
                 TaxInfo = current.TaxInfo?.ToTxEntryTaxInfoSubmitted(),
                 Type = current.Type
             };
         }
 
-        public static TxEntryValidated ToTxEntryValidated(this TxEntrySubmitted current)
-        {
-            return new TxEntryValidated
-            {
-                Id = NewId.NextGuid(),
-                Description = current.Description,
-                AccountId = current.AccountId,
-                Amount = current.Amount,
-                AmountAdditionnalInfo = current.AmountAdditionnalInfo?.ToTxEntryAdditionalAmountInfoValidated(),
-                Label = current.Label,
-                Sign = current.Sign,
-                TaxInfo = current.TaxInfo?.ToTxEntryTaxInfoValidated(),
-                Type = current.Type
-            };
-        }
-
-        public static Entry ToEntry(this TxEntryValidated current, Guid txId)
+        public static Entry ToEntry(this SubmitTxEntry current, Guid txId)
         {
             return new Entry
             {
-                Id = current.Id,
+                Id = NewId.NextGuid(),
                 Description = current.Description,
                 AccountId = current.AccountId,
                 Amount = current.Amount,
@@ -104,24 +84,7 @@ namespace Ubik.Accounting.Transaction.Api.Mappers
             };
         }
 
-        public static TxEntryAdded ToTxEntryAdded(this Entry current)
-        {
-            return new TxEntryAdded
-            {
-                Id = current.Id,
-                Description = current.Description,
-                AccountId = current.AccountId,
-                Amount = current.Amount,
-                AmountAdditionnalInfo = current.AmountAdditionnalInfo?.ToTxEntryAdditionalAmountInfoAdded(),
-                Label = current.Label,
-                Sign = current.Sign,
-                TaxInfo = current.TaxInfo?.ToTxEntryTaxInfoAdded(),
-                Type = current.Type,
-                Version = current.Version,
-            };
-        }
-
-        public static TxEntryAdditionalAmountInfoSubmitted ToTxEntryAdditionalAmountInfoSubmitted(this SubmitTxEntryAdditionalAmountInfo current)
+        public static TxEntryAdditionalAmountInfoSubmitted ToTxEntryAdditionalAmountInfoSubmitted(this AmountAdditionalInfo current)
         {
             return new TxEntryAdditionalAmountInfoSubmitted
             {
@@ -131,32 +94,12 @@ namespace Ubik.Accounting.Transaction.Api.Mappers
             };
         }
 
-        public static TxEntryAdditionalAmountInfoValidated ToTxEntryAdditionalAmountInfoValidated(this TxEntryAdditionalAmountInfoSubmitted current)
-        {
-            return new TxEntryAdditionalAmountInfoValidated
-            {
-                ExchangeRate = current.ExchangeRate,
-                OriginalAmount = current.OriginalAmount,
-                OriginalCurrencyId = current.OriginalCurrencyId
-            };
-        }
-
-        public static AmountAdditionalInfo ToAmountAdditionnalInfo(this TxEntryAdditionalAmountInfoValidated current)
+        public static AmountAdditionalInfo ToAmountAdditionnalInfo(this SubmitTxEntryAdditionalAmountInfo current)
         {
             return new AmountAdditionalInfo(current.OriginalAmount, current.OriginalCurrencyId, current.ExchangeRate);
         }
 
-        public static TxEntryAdditionalAmountInfoAdded ToTxEntryAdditionalAmountInfoAdded(this AmountAdditionalInfo current)
-        {
-            return new TxEntryAdditionalAmountInfoAdded
-            {
-                ExchangeRate = current.ExchangeRate,
-                OriginalAmount = current.OriginalAmount,
-                OriginalCurrencyId = current.OriginalCurrencyId,
-            };
-        }
-
-        public static TxEntryTaxInfoSubmitted ToTxEntryTaxInfoSubmitted(this SubmitTxEntryTaxInfo current)
+        public static TxEntryTaxInfoSubmitted ToTxEntryTaxInfoSubmitted(this TaxInfo current)
         {
             return new TxEntryTaxInfoSubmitted
             {
@@ -165,27 +108,19 @@ namespace Ubik.Accounting.Transaction.Api.Mappers
             };
         }
 
-        public static TxEntryTaxInfoValidated ToTxEntryTaxInfoValidated(this TxEntryTaxInfoSubmitted current)
+        public static TxStateInfoSubmitted ToTxTxStateInfoSubmitted(this TxStateInfo current)
         {
-            return new TxEntryTaxInfoValidated
+            return new TxStateInfoSubmitted
             {
-                TaxAppliedRate = current.TaxAppliedRate,
-                TaxRateId = current.TaxRateId
+                State = current.State,
+                Reason = current.Reason
             };
         }
 
-        public static TaxInfo ToTaxInfo(this TxEntryTaxInfoValidated current)
+        public static TaxInfo ToTaxInfo(this SubmitTxEntryTaxInfo current)
         {
             return new TaxInfo(current.TaxAppliedRate, current.TaxRateId);
         }
 
-        public static TxEntryTaxInfoAdded ToTxEntryTaxInfoAdded(this TaxInfo current)
-        {
-            return new TxEntryTaxInfoAdded
-            {
-                TaxAppliedRate = current.TaxAppliedRate,
-                TaxRateId = current.TaxRateId
-            };
-        }
     }
 }
