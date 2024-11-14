@@ -59,7 +59,7 @@ Contains config to access the already existing postgres db
 
 ### Generate self signed certificate (if you want to change them in ingress)
 
-To remember the commands only:
+To remember the commands only (you can skip this part):
 
 `openssl req -newkey rsa:2048 -nodes -keyout tls.key -out tls.csr`
 
