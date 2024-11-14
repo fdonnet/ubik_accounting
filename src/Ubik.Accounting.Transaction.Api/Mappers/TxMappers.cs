@@ -21,7 +21,6 @@ namespace Ubik.Accounting.Transaction.Api.Mappers
                 Amount = current.Amount,
                 Entries = entries.Select(e => e.ToTxEntrySubmitted()),
                 Version = current.Version,
-                State = current.State.ToTxTxStateInfoSubmitted()
             };
         }
 
@@ -105,15 +104,6 @@ namespace Ubik.Accounting.Transaction.Api.Mappers
             {
                 TaxAppliedRate = current.TaxAppliedRate,
                 TaxRateId = current.TaxRateId
-            };
-        }
-
-        public static TxStateInfoSubmitted ToTxTxStateInfoSubmitted(this TxStateInfo current)
-        {
-            return new TxStateInfoSubmitted
-            {
-                State = current.State,
-                Reason = current.Reason
             };
         }
 

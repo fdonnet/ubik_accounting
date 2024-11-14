@@ -92,8 +92,10 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 
         private async Task<Either<IFeatureError, Tx>> ChangeTxStateInDbContextAsync(Tx current, TxStateInfo newState)
         {
+            ctx.Txs.Attach(current);
+
             current.State = newState;
-            ctx.Entry(current.State).State = EntityState.Modified;
+            ctx.Entry(current).State = EntityState.Modified;
 
             ctx.SetAuditAndSpecialFields();
 
