@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounting-sales-vat-tax-api
+  labels:
+    app: accounting-sales-vat-tax-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accounting-sales-vat-tax-api
+  template:
+    metadata:
+      labels:
+        app: accounting-sales-vat-tax-api
+    spec:
+      containers:
+      - name: accounting-sales-vat-tax-api
+        image: ubik-accounting-sales-vat-tax-api-test:latest
+        imagePullPolicy: Never
+        env:
+        - name: ConnectionStrings__AccountingSalesTaxDbContext
+          value: 'Host=ubik-postgres-postgresql;Port=5432;Database=ubik_accounting_salestax;Username=postgres;Password=test01'
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: MessageBroker__Host
+          value: 'amqp://ubik-rabbitmq:5672'
+        - name: AuthServer__MetadataAddress
+          value: "https://keycloak-local/realms/ubik/.well-known/openid-configuration"
+        - name: AuthServer__Authority
+          value: "https://keycloak-local/realms/ubik"
+        - name: AuthServer__AuthorizationUrl
+          value: "https://keycloak-local/realms/ubik/protocol/openid-connect/auth"
+        - name: AuthServer__TokenUrl
+          value: "https://keycloak-local/realms/ubik/protocol/openid-connect/token"
+        - name: AuthManagerKeyCloakClient__RootUrl
+          value: "http://keycloak-local/"
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: accounting-sales-vat-tax-api
+spec:
+  selector:
+    app: accounting-sales-vat-tax-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080

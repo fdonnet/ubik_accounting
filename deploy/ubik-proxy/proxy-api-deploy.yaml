@@ -35,8 +35,12 @@ spec:
             value: http://security-api/
           - name: ReverseProxy__Clusters__ubik_users_admin__Destinations__destination1__Address
             value: http://security-api/
-          - name: ReverseProxy__Clusters__ubik_accounting__Destinations__destination1__Address
+          - name: ReverseProxy__Clusters__ubik_accounting_struct__Destinations__destination1__Address
             value: http://accounting-structure-api/
+          - name: ReverseProxy__Clusters__ubik_accounting_sales_vat_tax__Destinations__destination1__Address
+            value: http://accounting-sales-vat-tax-api/
+          - name: ReverseProxy__Clusters__ubik_accounting_tx__Destinations__destination1__Address
+            value: http://accounting-transaction-api/
           - name: RedisCache__ConnectionString
             value: ubik-cache-redis-master:6379
         ports:

@@ -87,6 +87,34 @@ Apply deployement
 
 `kubectl apply -f ./accounting-structure-api/accounting-structure-api-deploy.yaml`
 
+## Accounting Transaction Api
+
+Build image
+
+`docker build -t ubik-accounting-tx-api-test:latest -f ../src/Ubik.Accounting.Transaction.Api/Dockerfile ../`
+
+Load image in minikube
+
+`minikube image load ubik-accounting-tx-api-test:latest`
+
+Apply deployement
+
+`kubectl apply -f ./accounting-transaction-api/accounting-transaction-api-deploy.yaml`
+
+## Accounting Sales Vat Tax Api
+
+Build image
+
+`docker build -t ubik-accounting-sales-vat-tax-api-test:latest -f ../src/Ubik.Accounting.SalesOrVatTax.Api/Dockerfile ../`
+
+Load image in minikube
+
+`minikube image load ubik-accounting-sales-vat-tax-api-test:latest`
+
+Apply deployement
+
+`kubectl apply -f ./accounting-tax-api/accounting-tax-api-deploy.yaml`
+
 ## Security api
 
 Build image
