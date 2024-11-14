@@ -59,7 +59,7 @@ namespace Ubik.DB.Common.Extensions
                                 entity.AuditInfo = new AuditData(timestamp, userId, timestamp, userId);
                                 break;
                             case EntityState.Modified:
-                                entity.AuditInfo.SetModified(timestamp, userId);
+                                entity.AuditInfo = new AuditData(entity.AuditInfo.CreatedAt, entity.AuditInfo.CreatedBy, timestamp, userId);
                                 break;
                         }
                     }

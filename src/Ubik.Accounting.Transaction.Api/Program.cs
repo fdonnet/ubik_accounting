@@ -56,7 +56,6 @@ builder.Services.AddMassTransit(config =>
             return o;
         });
 
-
         configurator.ConfigureEndpoints(context);
 
         //TODO:review that Maybe not needed.... it was before I have the Yarp proxy...

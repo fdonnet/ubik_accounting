@@ -14,11 +14,5 @@
             ModifiedAt = modifiedAt;
             ModifiedBy = modifiedBy;
         }
-
-        public void SetModified(DateTime modifiedAt, Guid modifiedBy)
-        {
-            ModifiedAt = modifiedAt;
-            ModifiedBy = modifiedBy;
-        }
     }
 }

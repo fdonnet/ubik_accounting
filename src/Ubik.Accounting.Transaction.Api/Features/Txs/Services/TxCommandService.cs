@@ -93,7 +93,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
         private async Task<Either<IFeatureError, Tx>> ChangeTxStateInDbContextAsync(Tx current, TxStateInfo newState)
         {
             current.State = newState;
-            ctx.Entry(current).State = EntityState.Modified;
+            ctx.Entry(current.State).State = EntityState.Modified;
 
             ctx.SetAuditAndSpecialFields();
 
@@ -108,14 +108,16 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 
             var txEntries = command.Entries.Select(e => e.ToEntry(newTx.Id));
 
+            var newEntries = new List<Entry>();
             foreach (var entry in txEntries)
             {
                 ctx.Entries.Add(entry);
+                newEntries.Add(entry);
             }
 
             ctx.SetAuditAndSpecialFields();
 
-            var submittedTx = newTx.ToTxSubmitted(txEntries);
+            var submittedTx = newTx.ToTxSubmitted(newEntries);
 
             await Task.CompletedTask;
             return submittedTx;
