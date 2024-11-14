@@ -14,7 +14,7 @@ namespace Ubik.Accounting.Transaction.Api.Features.Txs.Consumers
             var result = await commandService.ChangeTxStateAsync(new ChangeTxStateCommand
             {
                 TxId = tx.Id,
-                State = TxState.Confirmed,
+                State = TxState.Rejected,
                 Version = tx.Version,
                 Reason = tx.Reason
             });

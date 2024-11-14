@@ -26,7 +26,7 @@ namespace Ubik.Accounting.SalesOrVatTax.Api.Features.Txs.Consumers
                 {
                     Id = tx.Id,
                     Version = tx.Version,
-                    Reason = "Random rejection"
+                    Reason = "Random tax rejection"
                 });
             }
         }
