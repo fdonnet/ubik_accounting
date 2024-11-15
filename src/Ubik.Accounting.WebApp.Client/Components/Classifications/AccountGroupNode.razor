@@ -1,5 +1,6 @@
 ﻿@using Ubik.Accounting.Structure.Contracts.Accounts.Results
 @using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.Webapp.Shared.Features.Global.Services
 @using Ubik.Accounting.WebApp.Client.Components.Common.Modal
 @using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 @using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
@@ -7,11 +8,30 @@
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
 @inject ClassificationStateService CurrentState
+@inject BreakpointsService breakpointsService
 @implements IDisposable
 
 @if (!_isLoading && !CurrentAccountGroup.IsDeleted)
 {
     <tr class="hover:bg-gray-100 focus:bg-gray-100 focus:hover:bg-gray-600 dark:hover:bg-gray-600">
+        @if (IsAuthorizedToModify && breakpointsService.IsSmallDevice)
+        {
+            //TODO: Create a component for this and for account action (repeated code below)
+            <td class="w-24">
+                <div class="flex justify-start gap-4 text-blue-700 dark:text-blue-400" @onclick="ShowActionsAccountGroupAsync">
+                    <div class="mr-2 flex cursor-pointer flex-row items-center">
+                        <div>
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+                            </svg>
+                        </div>
+                        <div class="ms-1 text-sm">
+                            Actions
+                        </div>
+                    </div>
+                </div>
+            </td>
+        }
         <td class="px-@CurrentRowMargin rounded-l">
             <div class="mb-1 ms-2 mt-1 flex flex-row items-center" @onclick="() => ToggleAccountGroupFolder(CurrentAccountGroup)">
                 <div class="cursor-pointer text-blue-700 dark:text-blue-400">
@@ -33,7 +53,7 @@
                 </div>
             </div>
         </td>
-        @if (IsAuthorizedToModify)
+        @if (IsAuthorizedToModify && !breakpointsService.IsSmallDevice)
         {
             <td class="w-24">
                 <div class="flex justify-end gap-4 text-blue-700 dark:text-blue-400" @onclick="ShowActionsAccountGroupAsync">
@@ -60,13 +80,13 @@
             @foreach (var node in _currentNodeAccountGroups)
             {
                 <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify"
-                                  CurrentAccountGroup="@node"
-                                  CurrentRowMargin="CurrentRowMargin + 4"
-                                  OnEditAccountGroupAsync="EditAccountGroupAsync"
-                                  OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
-                                  OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
-                                  OnDetachAccountAsync="DetachAccountAsync"
-                                  OnAttachAccountAsync="AttachAccountAsync">
+                CurrentAccountGroup="@node"
+                CurrentRowMargin="CurrentRowMargin + 4"
+                OnEditAccountGroupAsync="EditAccountGroupAsync"
+                OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
+                OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
+                OnDetachAccountAsync="DetachAccountAsync"
+                OnAttachAccountAsync="AttachAccountAsync">
                 </AccountGroupNode>
             }
         }
@@ -75,6 +95,24 @@
             @foreach (var account in _currentNodeAccounts)
             {
                 <tr class="hover:bg-gray-100 focus:bg-gray-100 focus:hover:bg-gray-600 dark:hover:bg-gray-600">
+                    @if (IsAuthorizedToModify && breakpointsService.IsSmallDevice)
+                    {
+                        <td class="w-24">
+                            <div class="flex justify-start gap-4 text-blue-700 dark:text-blue-400" @onclick="() => DetachAccountAsync(new(){AccountGroupId=CurrentAccountGroup.Id,AccountId = account.Id})">
+                                <div class="mr-2 flex cursor-pointer flex-row items-center">
+                                    <div>
+                                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+
+                                    </div>
+                                    <div class="ms-1 text-sm">
+                                        Detach
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    }
                     <td class="px-@_currentRowMarginForAccount">
                         <div class="mt-0 flex items-center">
                             <div class="text-green-700 dark:text-green-400">
@@ -87,7 +125,7 @@
                             </div>
                         </div>
                     </td>
-                    @if (IsAuthorizedToModify)
+                    @if (IsAuthorizedToModify && !breakpointsService.IsSmallDevice)
                     {
                         <td class="w-24">
                             <div class="flex justify-end gap-4 text-blue-700 dark:text-blue-400" @onclick="() => DetachAccountAsync(new(){AccountGroupId=CurrentAccountGroup.Id,AccountId = account.Id})">
@@ -115,11 +153,11 @@
         <CascadingValue Name="AccountGroupModel" Value="@CurrentAccountGroup">
             <UbikModalCenter @ref="_actionsAccountGroupDialog">
                 <AccountGroupActionsDialog @ref="_actionsAccountGroupContent"
-                                           OnEditAccountGroupAsync="EditAccountGroupAsync"
-                                           OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
-                                           OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
-                                           OnAttachAccountAsync="AttachAccountAsync"
-                                           OnCloseAsync="CloseActionsDialog">
+                OnEditAccountGroupAsync="EditAccountGroupAsync"
+                OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
+                OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
+                OnAttachAccountAsync="AttachAccountAsync"
+                OnCloseAsync="CloseActionsDialog">
                 </AccountGroupActionsDialog>
             </UbikModalCenter>
         </CascadingValue>
@@ -163,25 +201,36 @@
         }
     }
 
-    public override Task SetParametersAsync(ParameterView parameters)
+    private void OnDeviceChanged()
+    {
+        StateHasChanged();
+    }
+
+    public async override Task SetParametersAsync(ParameterView parameters)
     {
         parameters.SetParameterProperties(this);
 
         if (_firstRender)
         {
             CurrentState.OnChangeData += OnStateChanged;
+            breakpointsService.OnDeviceChanged += OnDeviceChanged;
+            //TODO: see if really need to that here and not more globally
+            await breakpointsService.InitializeAsync();
         }
 
         _isLoading = true;
 
+        //Data
         RefreshCurrentNodeData();
+
+        //Design
         _currentRowMarginForAccount = CurrentRowMargin + 4;
 
         _isLoading = false;
 
         _firstRender = false;
 
-        return base.SetParametersAsync(ParameterView.Empty);
+        await base.SetParametersAsync(ParameterView.Empty);
     }
 
 
@@ -254,5 +303,6 @@
     public void Dispose()
     {
         CurrentState.OnChangeData -= OnStateChanged;
+        breakpointsService.OnDeviceChanged -= OnDeviceChanged;
     }
 }

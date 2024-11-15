@@ -18,7 +18,7 @@
 {
     <ErrBackendApi MainErrorMsg="Cannot retrieve all the necessary data" @ref="_backendErrorMsg"></ErrBackendApi>
 
-    <div class="mt-1 flex max-w-max flex-col">
+    <div class="mt-1 flex w-full max-w-max flex-col 2xl:w-9/12">
         <div class="flex justify-between">
             @if (IsAuthorizedToModify)
             {
@@ -54,16 +54,16 @@
 
         <div class="relative overflow-x-auto rounded-lg shadow-md">
             <UbikGrid Items="@_filteredAccounts" TGridItem="AccountModel" HighlightFirstColumn="true" Pagination="@pagination">
-                <UbikColumnProperty Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
-                <UbikColumnProperty Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
-                <UbikColumnProperty Title="Domain" Property="@(a=> a.Domain)" Sortable="true"></UbikColumnProperty>
-                <UbikColumnProperty Title="Category" Property="@(a=> a.Category)" Sortable="true"></UbikColumnProperty>
+                <UbikColumnProperty Class="w-24 max-w-24" Title="Code" Property="@(a=> a.Code)" Sortable="true" IsDefaultSortColumn="true" InitialSortDirection="SortDirection.Ascending"></UbikColumnProperty>
+                <UbikColumnProperty Class="min-w-[45px]" Title="Label" Property="@(a=> a.Label)" Sortable="true"></UbikColumnProperty>
+                <UbikColumnProperty Class="w-28 max-w-28" Title="Domain" Property="@(a=> a.Domain)" Sortable="true"></UbikColumnProperty>
+                <UbikColumnProperty Class="w-32 max-w-32" Title="Category" Property="@(a=> a.Category)" Sortable="true"></UbikColumnProperty>
                 @if (IsAuthorizedToModify)
                 {
-                    <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
+                    <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true" Class="w-20 max-w-20">
                         <UbikButtonLink Type="button" Label="Edit" TItem="AccountModel" OnClick="@(()=>EditAccountDialogAsync(context))"></UbikButtonLink>
                     </UbikTemplateColumnTemplateColumn>
-                    <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true">
+                    <UbikTemplateColumnTemplateColumn Sortable="false" Title="" SmallXPadding="true" Class="w-20 max-w-20">
                         <UbikButtonLink Type="button" Label="Delete" TItem="AccountModel" OnClick="@(()=>DeleteConfirmationAsync(context))"></UbikButtonLink>
                     </UbikTemplateColumnTemplateColumn>
                 }

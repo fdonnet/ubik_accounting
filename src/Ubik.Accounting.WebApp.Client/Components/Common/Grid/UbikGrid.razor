@@ -14,7 +14,7 @@
             FinishCollectingColumns();
         }
         <ColumnsCollectedNotifier TGridItem="TGridItem" />
-        <table class="w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400">
+        <table class="w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400 lg:table-fixed">
             <thead class="bg-gray-200 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     @_renderColumnHeaders
@@ -36,7 +36,7 @@
     {
         @foreach (var col in _columns)
         {
-            <th scope="col" class="p-0" aria-sort="@AriaSortValue(col)" @key="@col">
+            <th scope="col" class="p-0 @col.Class" aria-sort="@AriaSortValue(col)" @key="@col">
                 @col.HeaderContent
             </th>
         }
@@ -86,7 +86,7 @@
                 {
                     if (col.SmallXPadding)
                     {
-                        <th scope="row" @key="@col" class="whitespace-nowrap px-3 py-4 font-medium text-gray-900 dark:text-white">
+                        <th scope="row" @key="@col" class="whitespace-nowrap px-3 py-4 font-medium text-gray-900 dark:text-white @col.Class">
                             @{
                                 col.CellContent(__builder, item);
                             }
@@ -94,7 +94,7 @@
                     }
                     else
                     {
-                        <th scope="row" @key="@col" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
+                        <th scope="row" @key="@col" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white @col.Class">
                             @{
                                 col.CellContent(__builder, item);
                             }
@@ -105,7 +105,7 @@
                 {
                     if (col.SmallXPadding)
                     {
-                        <td @key="@col" class="px-3 py-4">
+                        <td @key="@col" class="px-3 py-4 @col.Class">
                             @{
                                 col.CellContent(__builder, item);
                             }
@@ -113,7 +113,7 @@
                     }
                     else
                     {
-                        <td @key="@col" class="px-6 py-4">
+                        <td @key="@col" class="px-6 py-4 @col.Class">
                             @{
                                 col.CellContent(__builder, item);
                             }

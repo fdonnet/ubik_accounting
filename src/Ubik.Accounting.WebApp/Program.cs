@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using static Ubik.Accounting.WebApp.Security.UserService;
+using Ubik.Accounting.Webapp.Shared.Features.Global.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,8 +98,10 @@ builder.Services.AddAuthentication(options =>
             if (authOptions.AuthorizeBadCert)
             {
                 //TODO; remove that shit on prod... only for DEV keycloak Minikube
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                HttpClientHandler handler = new()
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
                 options.BackchannelHttpHandler = handler;
             }
 
@@ -140,6 +143,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 builder.Services.AddSingleton<IRenderContext, ServerRenderContext>();
+builder.Services.AddScoped<BreakpointsService>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
 //User service with circuit
