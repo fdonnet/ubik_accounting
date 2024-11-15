@@ -1136,6 +1136,10 @@ p:is(.dark *) {
   width: 100%;
 }
 
+.w-28 {
+  width: 7rem;
+}
+
 .min-w-\[70px\] {
   min-width: 70px;
 }

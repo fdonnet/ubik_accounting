@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace Ubik.Accounting.Webapp.Shared.Features.Global.Services
 {
-    public class BreakpointsService(IJSRuntime jsRuntime)
+    public class BreakpointsService(IJSRuntime jsRuntime) : IAsyncDisposable
     {
+        public bool IsSmallDevice { get; private set; } = false;
         private readonly IJSRuntime _jsRuntime = jsRuntime;
         private DotNetObjectReference<BreakpointsService> _dotNetRef = default!;
 
-        public event Action<string> OnBreakpointChanged = default!;
+        public event Action OnDeviceChanged = default!;
 
         public async Task InitializeAsync()
         {
@@ -23,7 +24,40 @@ namespace Ubik.Accounting.Webapp.Shared.Features.Global.Services
         [JSInvokable]
         public void OnBreakpointChangedInClient(string breakpoint)
         {
-            OnBreakpointChanged?.Invoke(breakpoint);
+            ChangeDevice(breakpoint);
+        }
+
+        public async Task InitCurrentBreakPointAsync(string? breakpoint = null)
+        {
+            breakpoint ??= await GetCurrentBreakpointAsync();
+
+            ChangeDevice(breakpoint);
+        }
+        private async Task<string> GetCurrentBreakpointAsync()
+        {
+            return await _jsRuntime.InvokeAsync<string>("breakpointService.getCurrentBreakpoint");
+        }
+
+        private void ChangeDevice(string breakpoint)
+        {
+            var initialStatus = IsSmallDevice;
+
+            IsSmallDevice = breakpoint switch
+            {
+                "xs" or "sm" or "md" => true,
+                _ => false,
+            };
+
+            if (IsSmallDevice != initialStatus)
+            {
+                OnDeviceChanged?.Invoke();
+            }
+        }
+        public async ValueTask DisposeAsync()
+        {
+            await Task.CompletedTask;
+            _dotNetRef?.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

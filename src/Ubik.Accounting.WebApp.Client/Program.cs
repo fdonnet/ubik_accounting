@@ -15,7 +15,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
 builder.Services.AddSingleton<IRenderContext, ClientRenderContext>();
-//builder.Services.AddSingleton<BreakpointsService>();
+builder.Services.AddSingleton<BreakpointsService>();
 
 builder.Services.AddScoped<IAccountingApiClient, HttpApiAccountingFacade>();
 

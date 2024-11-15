@@ -34,5 +34,8 @@
             this.currentBreakpoint = newBreakpoint;
             this.dotNetHelper.invokeMethodAsync('OnBreakpointChangedInClient', newBreakpoint);
         }
+    },
+    getCurrentBreakpoint: function () {
+        return this.currentBreakpoint;
     }
 };
