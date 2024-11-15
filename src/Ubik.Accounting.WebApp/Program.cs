@@ -15,6 +15,9 @@ using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Microsoft.AspNetCore.Authentication;
 using Ubik.Accounting.WebApp.Config;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Components.Server.Circuits;
+using static Ubik.Accounting.WebApp.Security.UserService;
 using Ubik.Accounting.Webapp.Shared.Features.Global.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -144,8 +147,8 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAu
 //User service with circuit
 builder.Services.AddScoped<UserService>();
 //TODO:check I think this thing is never used
-//builder.Services.TryAddEnumerable(
-//    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
+builder.Services.TryAddEnumerable(
+    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
 builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
 
