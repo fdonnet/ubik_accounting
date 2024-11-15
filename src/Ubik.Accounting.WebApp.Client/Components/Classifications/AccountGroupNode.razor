@@ -220,9 +220,13 @@
 
         _isLoading = true;
 
+        //Data
         RefreshCurrentNodeData();
+
+        //Design
         _currentRowMarginForAccount = CurrentRowMargin + 4;
 
+        //Change design if small device
         await breakpointsService.InitCurrentBreakPointAsync();
 
         _isLoading = false;
