@@ -17,7 +17,7 @@
         @if (IsAuthorizedToModify && breakpointsService.IsSmallDevice)
         {
             //TODO: Create a component for this and for account action (repeated code below)
-            <td class="w-28">
+            <td class="w-24">
                 <div class="flex justify-start gap-4 text-blue-700 dark:text-blue-400" @onclick="ShowActionsAccountGroupAsync">
                     <div class="mr-2 flex cursor-pointer flex-row items-center">
                         <div>
@@ -97,7 +97,7 @@
                 <tr class="hover:bg-gray-100 focus:bg-gray-100 focus:hover:bg-gray-600 dark:hover:bg-gray-600">
                     @if (IsAuthorizedToModify && breakpointsService.IsSmallDevice)
                     {
-                        <td class="w-28">
+                        <td class="w-24">
                             <div class="flex justify-start gap-4 text-blue-700 dark:text-blue-400" @onclick="() => DetachAccountAsync(new(){AccountGroupId=CurrentAccountGroup.Id,AccountId = account.Id})">
                                 <div class="mr-2 flex cursor-pointer flex-row items-center">
                                     <div>
