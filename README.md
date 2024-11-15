@@ -124,7 +124,7 @@ Manages the accounting structure.
 
 For the moment, implement the submit Tx endpoint and create some states and events related to future Txs management.
 
-# Accounting sales or VAT tax
+## Accounting sales or VAT tax
 
 -- Ubik.Accounting.SalesOrVatTax.Api --
 
