@@ -76,6 +76,7 @@ namespace Ubik.Security.Api.Data
             new RoleConfiguration().Configure(modelBuilder.Entity<Role>());
             new AuthorizationConfiguration().Configure(modelBuilder.Entity<Authorization>());
             new RoleAuthorizationConfiguration().Configure(modelBuilder.Entity<RoleAuthorization>());
+            new UserRoleByTenantConfiguration().Configure(modelBuilder.Entity<UserRoleByTenant>());
 
             base.OnModelCreating(modelBuilder);
         }

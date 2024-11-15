@@ -20,10 +20,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Bogus" Version="35.6.1" />
-		<PackageReference Include="FluentAssertions" Version="6.12.1" />
+		<PackageReference Include="FluentAssertions" Version="6.12.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.10" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-		<PackageReference Include="NSubstitute" Version="5.1.0" />
+		<PackageReference Include="NSubstitute" Version="5.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
 		<PackageReference Include="xunit" Version="2.9.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
@@ -37,7 +37,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\Ubik.Accounting.Api\Ubik.Accounting.Api.csproj" />
+		<ProjectReference Include="..\..\src\Ubik.Accounting.SalesOrVatTax.Contracts\Ubik.Accounting.SalesOrVatTax.Contracts.csproj" />
+		<ProjectReference Include="..\..\src\Ubik.Accounting.Structure.Api\Ubik.Accounting.Structure.Api.csproj" />
+		<ProjectReference Include="..\..\src\Ubik.Accounting.Structure.Contracts\Ubik.Accounting.Structure.Contracts.csproj" />
+		<ProjectReference Include="..\..\src\Ubik.Accounting.Transaction.Contracts\Ubik.Accounting.Transaction.Contracts.csproj" />
 		<ProjectReference Include="..\..\src\Ubik.YarpProxy\Ubik.YarpProxy.csproj" />
 	</ItemGroup>
 

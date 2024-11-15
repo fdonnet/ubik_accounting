@@ -7,16 +7,16 @@ namespace Ubik.Security.Api.Features.Users.Services
 {
     public interface IUsersQueriesService
     {
-        Task<Either<IServiceAndFeatureError, User>> GetAsync(Guid id);
-        Task<Either<IServiceAndFeatureError, User>> GetUserInSelectedTenantAsync(Guid id);
-        Task<Either<IServiceAndFeatureError, IEnumerable<Role>>> GetUserRolesInSelectedTenantAsync(Guid id);
-        Task<Either<IServiceAndFeatureError, Role>> GetUserRoleInSelectedTenantAsync(Guid id, Guid roleId);
-        Task<Either<IServiceAndFeatureError, User>> GetAsync(string email);
-        Task<Either<IServiceAndFeatureError, UserAdminOrMeResult>> GetUserWithAuhtorizationsByTenants(string email);
-        Task<Either<IServiceAndFeatureError, UserAdminOrMeResult>> GetUserWithAuhtorizationsByTenants(Guid id);
-        Task<Either<IServiceAndFeatureError, Tenant>> GetUserSelectedTenantAsync(Guid userId);
-        Task<Either<IServiceAndFeatureError, Tenant>> GetUserTenantAsync(Guid userId, Guid tenantId);
-        Task<Either<IServiceAndFeatureError, IEnumerable<Tenant>>> GetUserAllTenantsAsync(Guid userId);
+        Task<Either<IFeatureError, User>> GetAsync(Guid id);
+        Task<Either<IFeatureError, User>> GetUserInSelectedTenantAsync(Guid id);
+        Task<Either<IFeatureError, IEnumerable<Role>>> GetUserRolesInSelectedTenantAsync(Guid id);
+        Task<Either<IFeatureError, Role>> GetUserRoleInSelectedTenantAsync(Guid id, Guid roleId);
+        Task<Either<IFeatureError, User>> GetAsync(string email);
+        Task<Either<IFeatureError, UserAdminOrMeResult>> GetUserWithAuhtorizationsByTenants(string email);
+        Task<Either<IFeatureError, UserAdminOrMeResult>> GetUserWithAuhtorizationsByTenants(Guid id);
+        Task<Either<IFeatureError, Tenant>> GetUserSelectedTenantAsync(Guid userId);
+        Task<Either<IFeatureError, Tenant>> GetUserTenantAsync(Guid userId, Guid tenantId);
+        Task<Either<IFeatureError, IEnumerable<Tenant>>> GetUserAllTenantsAsync(Guid userId);
     }
     
 }

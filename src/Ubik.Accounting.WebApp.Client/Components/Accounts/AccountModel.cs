@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Contracts.Accounts.Commands;
-using Ubik.Accounting.Contracts.Accounts.Enums;
-using Ubik.Accounting.Contracts.Accounts.Results;
+using Ubik.Accounting.Structure.Contracts.Accounts.Commands;
+using Ubik.Accounting.Structure.Contracts.Accounts.Enums;
+using Ubik.Accounting.Structure.Contracts.Accounts.Results;
 
 namespace Ubik.Accounting.WebApp.Client.Components.Accounts
 {
@@ -22,6 +22,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
         [EnumDataType(typeof(AccountDomain))]
         [Required]
         public AccountDomain? Domain { get; set; } = null;
+        public bool Active { get; set; } = true;
         [Required]
         public Guid? CurrencyId { get; set; }
         public Guid Version { get; init; }
@@ -40,6 +41,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
                 Category = x.Category,
                 Domain = x.Domain,
                 CurrencyId = x.CurrencyId,
+                Active = x.Active,
                 Version = x.Version
             });
         }
@@ -53,7 +55,8 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
                 Category = (AccountCategory)accountModel.Category!,
                 Domain = (AccountDomain)accountModel.Domain!,
                 Description = accountModel.Description,
-                CurrencyId = (Guid)accountModel.CurrencyId!
+                CurrencyId = (Guid)accountModel.CurrencyId!,
+                Active = accountModel.Active
             };
         }
 
@@ -68,6 +71,7 @@ namespace Ubik.Accounting.WebApp.Client.Components.Accounts
                 Domain = (AccountDomain)accountModel.Domain!,
                 Description = accountModel.Description,
                 CurrencyId = (Guid)accountModel.CurrencyId!,
+                Active = accountModel.Active,
                 Version = accountModel.Version
             };
         }

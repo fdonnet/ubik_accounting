@@ -1,6 +1,6 @@
-﻿using Ubik.Accounting.Contracts.AccountGroups.Commands;
-using Ubik.Accounting.Contracts.Accounts.Commands;
-using Ubik.Accounting.Contracts.Classifications.Commands;
+﻿using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Structure.Contracts.Accounts.Commands;
+using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
 
 namespace Ubik.Accounting.Webapp.Shared.Facades
 {

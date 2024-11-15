@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 
@@ -56,7 +55,7 @@ namespace Ubik.Api.Tests.Integration
                     break;
             }
 
-            HttpResponseMessage response = _authHttpClient.PostAsync($"protocol/openid-connect/token", new FormUrlEncodedContent(dict)).Result;
+            HttpResponseMessage response = await _authHttpClient.PostAsync($"protocol/openid-connect/token", new FormUrlEncodedContent(dict));
             if (response.IsSuccessStatusCode)
             {
                 var token = await response.Content.ReadFromJsonAsync<GetTokenResult>();

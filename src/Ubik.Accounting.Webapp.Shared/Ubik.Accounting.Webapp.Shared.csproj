@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ubik.Accounting.Contracts\Ubik.Accounting.Contracts.csproj" />
+    <ProjectReference Include="..\Ubik.Accounting.Structure.Contracts\Ubik.Accounting.Structure.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

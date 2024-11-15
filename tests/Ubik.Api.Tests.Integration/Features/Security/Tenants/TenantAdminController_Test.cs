@@ -1,12 +1,7 @@
 ﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Ubik.Security.Contracts.Authorizations.Results;
 using Ubik.Security.Contracts.Tenants.Results;
 using Ubik.ApiService.Common.Exceptions;
@@ -343,7 +338,7 @@ namespace Ubik.Api.Tests.Integration.Features.Security.Tenants
             result.Should()
                 .NotBeNull()
                 .And.BeOfType<CustomProblemDetails>()
-                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TENANT_UPDATE_IDS_NOT_MATCH");
+                .And.Match<CustomProblemDetails>(x => x.Errors.First().Code == "TENANT_COMMAND_IDS_NOT_MATCH");
         }
 
         [Fact]

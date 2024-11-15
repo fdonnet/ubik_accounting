@@ -2,9 +2,9 @@
 
 namespace Ubik.ApiService.Common.Validators
 {
-    public class CustomValidationException(List<CustomError> errors) : Exception($"Validation errors"), IServiceAndFeatureError
+    public class CustomValidationException(List<CustomError> errors) : Exception($"Validation errors"), IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; } = ServiceAndFeatureErrorType.BadParams;
+        public FeatureErrorType ErrorType { get; init; } = FeatureErrorType.BadParams;
         public List<CustomError> CustomErrors { get; init; } = errors;
     }
 }

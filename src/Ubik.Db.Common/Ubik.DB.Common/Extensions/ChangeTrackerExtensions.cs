@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Ubik.ApiService.Common.Services;
+using Ubik.DB.Common.Models;
 
 namespace Ubik.DB.Common.Extensions
 {
@@ -35,33 +36,32 @@ namespace Ubik.DB.Common.Extensions
         /// <param name="currentUser"></param>
         private static void SetAuditFields(IEnumerable<EntityEntry> entities, ICurrentUser currentUser)
         {
-            var auditEntities = entities
-                                .Where(t => t.Entity is IAuditEntity &&
-                                (
-                                    t.State == EntityState.Added || t.State == EntityState.Modified
-                                ));
-
-            if (auditEntities.Any())
+            if (currentUser.Id != Guid.Empty)
             {
-                DateTime timestamp = DateTime.UtcNow;
-                Guid userId = currentUser.Id;
+                var auditEntities = entities
+                .Where(t => t.Entity is IAuditEntity &&
+                (
+                    t.State == EntityState.Added || t.State == EntityState.Modified
+                ));
 
-                foreach (EntityEntry entry in auditEntities)
+                if (auditEntities.Any())
                 {
-                    IAuditEntity entity = (IAuditEntity)entry.Entity;
+                    DateTime timestamp = DateTime.UtcNow;
+                    Guid userId = currentUser.Id;
 
-                    switch (entry.State)
+                    foreach (EntityEntry entry in auditEntities)
                     {
-                        case EntityState.Added:
-                            entity.CreatedAt = timestamp;
-                            entity.CreatedBy = userId;
-                            entity.ModifiedAt = timestamp;
-                            entity.ModifiedBy = userId;
-                            break;
-                        case EntityState.Modified:
-                            entity.ModifiedAt = timestamp;
-                            entity.ModifiedBy = userId;
-                            break;
+                        IAuditEntity entity = (IAuditEntity)entry.Entity;
+
+                        switch (entry.State)
+                        {
+                            case EntityState.Added:
+                                entity.AuditInfo = new AuditData(timestamp, userId, timestamp, userId);
+                                break;
+                            case EntityState.Modified:
+                                entity.AuditInfo = new AuditData(entity.AuditInfo.CreatedAt, entity.AuditInfo.CreatedBy, timestamp, userId);
+                                break;
+                        }
                     }
                 }
             }
@@ -74,21 +74,24 @@ namespace Ubik.DB.Common.Extensions
         /// <param name="currentUser"></param>
         private static void SetTenantField(IEnumerable<EntityEntry> entities, ICurrentUser currentUser)
         {
-            var tenantEntities = entities
+            if (currentUser.Id != Guid.Empty)
+            {
+                var tenantEntities = entities
                     .Where(t => t.Entity is ITenantEntity &&
                     (
                         t.State == EntityState.Added || t.State == EntityState.Modified
                     ));
 
-            if (tenantEntities.Any())
-            {
-                foreach (EntityEntry entry in tenantEntities)
+                if (tenantEntities.Any())
                 {
-                    ITenantEntity entity = (ITenantEntity)entry.Entity;
-                    if (currentUser.TenantId == null)
-                        throw new InvalidDataException("TenanId is missing, cannot continue");
+                    foreach (EntityEntry entry in tenantEntities)
+                    {
+                        ITenantEntity entity = (ITenantEntity)entry.Entity;
+                        if (currentUser.TenantId == null)
+                            throw new InvalidDataException("TenanId is missing, cannot continue");
 
-                    entity.TenantId = (Guid)currentUser.TenantId;
+                        entity.TenantId = (Guid)currentUser.TenantId;
+                    }
                 }
             }
         }

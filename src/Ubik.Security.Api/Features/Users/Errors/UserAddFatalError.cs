@@ -2,15 +2,15 @@
 
 namespace Ubik.Security.Api.Features.Users.Errors
 {
-    public record UserAddFatalError : IServiceAndFeatureError
+    public record UserAddFatalError : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public UserAddFatalError()
         {
 
-            ErrorType = ServiceAndFeatureErrorType.BadParams;
+            ErrorType = FeatureErrorType.BadParams;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "USER_NOT_ADDED_IN_DB_BUT_NOT_IN_AUTH",

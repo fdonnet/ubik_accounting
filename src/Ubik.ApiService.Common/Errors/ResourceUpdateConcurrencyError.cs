@@ -1,14 +1,14 @@
 ﻿namespace Ubik.ApiService.Common.Errors
 {
-    public record ResourceUpdateConcurrencyError : IServiceAndFeatureError
+    public record ResourceUpdateConcurrencyError : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public ResourceUpdateConcurrencyError(string resourceName, string version)
         {
 
-            ErrorType = ServiceAndFeatureErrorType.Conflict;
+            ErrorType = FeatureErrorType.Conflict;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = $"{resourceName.ToUpper()}_UPDATE_CONCURRENCY",

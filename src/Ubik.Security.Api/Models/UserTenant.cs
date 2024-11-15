@@ -1,4 +1,5 @@
 ﻿using Ubik.DB.Common;
+using Ubik.DB.Common.Models;
 
 namespace Ubik.Security.Api.Models
 {
@@ -6,13 +7,8 @@ namespace Ubik.Security.Api.Models
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public User? User { get; set; }
         public Guid TenantId { get; set; }
-        public Tenant? Tenant { get; set; }
         public Guid Version { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public Guid CreatedBy { get; set; }
-        public DateTime? ModifiedAt { get; set; }
-        public Guid? ModifiedBy { get; set; }
+        public AuditData AuditInfo { get; set; } = default!;
     }
 }

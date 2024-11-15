@@ -29,7 +29,9 @@
 
     //Strange, need to be call befor showing the window. Because it seems that when it is not a form with a submit action.
     //The component keep other children compo status in mem... => it's a bit strange
-    //TODO: study that to do it better, maybe I don't undestand something in the render pipepline
+    //TODO: (SetParametersAync, will maybe do the trick)
+    //study that to do it better, maybe I don't undestand something in the render pipepline
+
     public async Task SetInitialStatus()
     {
         await _successMsg.HideSuccessAsync();

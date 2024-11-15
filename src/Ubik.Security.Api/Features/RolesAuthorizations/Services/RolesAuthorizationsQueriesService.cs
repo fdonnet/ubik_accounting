@@ -22,7 +22,7 @@ namespace Ubik.Security.Api.Features.RolesAuthorizations.Services
             return await con.QueryAsync<RoleAuthorization>(sql);
         }
 
-        public async Task<Either<IServiceAndFeatureError, RoleAuthorization>> GetAsync(Guid id)
+        public async Task<Either<IFeatureError, RoleAuthorization>> GetAsync(Guid id)
         {
             var p = new DynamicParameters();
             p.Add("@id", id);

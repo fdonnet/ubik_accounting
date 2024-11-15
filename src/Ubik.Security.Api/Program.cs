@@ -9,8 +9,6 @@ using Ubik.ApiService.Common.Exceptions;
 using Ubik.ApiService.Common.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
-using Ubik.Security.Contracts.Users.Commands;
-using Ubik.Security.Contracts.Authorizations.Commands;
 using Ubik.Security.Api.Data.Init;
 using Ubik.Security.Api.Features.Users.Services;
 using Ubik.ApiService.Common.Middlewares;
@@ -73,8 +71,8 @@ builder.Services.AddMassTransit(config =>
         //Use to pass tenantid when message broker is used to contact the api (async)
         //TODO:See if needed
         //configurator.UseSendFilter(typeof(TenantIdSendFilter<>), context);
-        configurator.UsePublishFilter(typeof(TenantIdPublishFilter<>), context);
-        configurator.UseConsumeFilter(typeof(TenantIdConsumeFilter<>), context);
+        configurator.UsePublishFilter(typeof(TenantAndUserIdsPublishFilter<>), context);
+        configurator.UseConsumeFilter(typeof(TenantAndUserIdsConsumeFilter<>), context);
     });
 
     config.AddEntityFrameworkOutbox<SecurityDbContext>(o =>
@@ -86,9 +84,9 @@ builder.Services.AddMassTransit(config =>
     //Add all consumers
     config.AddConsumers(Assembly.GetExecutingAssembly());
 
-    //Add commands clients
-    config.AddRequestClient<AddUserCommand>();
-    config.AddRequestClient<AddAuthorizationCommand>();
+    ////Add commands clients
+    //config.AddRequestClient<AddUserCommand>();
+    //config.AddRequestClient<AddAuthorizationCommand>();
 });
 
 //Api versioning

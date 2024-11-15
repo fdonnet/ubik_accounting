@@ -2,9 +2,9 @@
 
 namespace Ubik.Security.Api.Features.Users.Errors
 {
-    public record UserTenantNotFound : IServiceAndFeatureError
+    public record UserTenantNotFound : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public UserTenantNotFound(Guid? tenantId)
@@ -13,7 +13,7 @@ namespace Ubik.Security.Api.Features.Users.Errors
             if(tenantId != null)
                 strTenantId = tenantId.ToString();
 
-            ErrorType = ServiceAndFeatureErrorType.NotFound;
+            ErrorType = FeatureErrorType.NotFound;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "USER_SELECTED_TENANT_NOT_FOUND",

@@ -25,15 +25,28 @@ namespace Ubik.Security.Api.Data.Config
             builder.Property(a => a.Version)
                 .IsConcurrencyToken();
 
-            builder.Property(a => a.CreatedAt)
-                .IsRequired();
+            builder.OwnsOne(x => x.AuditInfo, auditInfo =>
+            {
+                auditInfo.Property(a => a.ModifiedAt)
+                    .HasColumnName("modified_at")
+                    .IsRequired();
 
-            builder.Property(a => a.CreatedBy)
-                .IsRequired();
+                auditInfo.Property(a => a.ModifiedBy)
+                    .HasColumnName("modified_by")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.CreatedAt)
+                    .HasColumnName("created_at")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.CreatedBy)
+                    .HasColumnName("created_by")
+                    .IsRequired();
+            });
 
             //When it's a role specific to a tenant
             builder
-                .HasOne(s => s.Tenant)
+                .HasOne<Tenant>()
                 .WithMany()
                 .HasForeignKey(e => e.TenantId);
         }

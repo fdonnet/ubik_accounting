@@ -15,7 +15,7 @@ namespace Ubik.Security.Api.Features.Roles.Services
             return result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, Role>> GetAsync(Guid id)
+        public async Task<Either<IFeatureError, Role>> GetAsync(Guid id)
         {
             var result = await ctx.Roles.FirstOrDefaultAsync(r => r.Id == id && r.TenantId == null);
 

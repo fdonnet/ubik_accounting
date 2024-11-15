@@ -9,7 +9,7 @@ namespace Ubik.Security.Api.Data.Init
     {
         internal static async Task InitializeAsync(IUserAuthProviderService authProviderService)
         {
-            var check = (await authProviderService.CheckIfUsersPresentInAuth()).MatchAsync<Either<IServiceAndFeatureError, bool>>(
+            var check = (await authProviderService.CheckIfUsersPresentInAuth()).MatchAsync<Either<IFeatureError, bool>>(
                 RightAsync: async ok =>
                 {
                     if (!ok)

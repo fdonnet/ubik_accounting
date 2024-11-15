@@ -15,7 +15,7 @@ namespace Ubik.Security.Api.Mappers
                 Code = x.Code,
                 Label = x.Label,
                 Description = x.Description,
-                Version = x.Version
+                Version = x.Version,
             });
         }
 
@@ -38,10 +38,12 @@ namespace Ubik.Security.Api.Mappers
             model.Label = forUpd.Label;
             model.Description = forUpd.Description;
             model.Version = forUpd.Version;
+            model.TenantId = forUpd.TenantId;
 
             return model;
         }
 
+        //Need to check for tenant role
         public static Role ToRole(this AddRoleCommand current)
         {
             return new Role
@@ -72,6 +74,7 @@ namespace Ubik.Security.Api.Mappers
                 Description = current.Description,
                 Version = current.Version,
                 Id = current.Id,
+                TenantId = current.TenantId
             };
         }
 
@@ -84,6 +87,7 @@ namespace Ubik.Security.Api.Mappers
                 Description = current.Description,
                 Version = current.Version,
                 Id = current.Id,
+                TenantId = current.TenantId
             };
         }
     }

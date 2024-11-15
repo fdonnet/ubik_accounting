@@ -1,5 +1,5 @@
-﻿@using Ubik.Accounting.Contracts.Accounts.Enums
-@using Ubik.Accounting.Contracts.Currencies.Results
+﻿@using Ubik.Accounting.Structure.Contracts.Accounts.Enums
+@using Ubik.Accounting.Structure.Contracts.Currencies.Results
 @using Ubik.Accounting.WebApp.Client.Components.Common.Buttons
 @using Ubik.Accounting.WebApp.Client.Components.Common.Alerts;
 @using Ubik.Accounting.Webapp.Shared.Facades
@@ -9,6 +9,9 @@
 <EditForm Model="@Account" OnSubmit="SubmitAsync" FormName="AddAccount" class="p-4 md:p-5">
     <DataAnnotationsValidator />
     <div class="grid-cols-2 mb-4 grid gap-4">
+        <div class="col-span-2">
+            <UbikInputToggle Id="AccountActive" Label="Is Active" @bind-Value="Account.Active"></UbikInputToggle>   
+        </div>
         <div class="col-span-2 sm:col-span-1">
             <UbikInputText Id="AccountCode" Label="Code"
                            PlaceholderText="Type a code (max 20 char.)" Type="text" @bind-Value="Account.Code"

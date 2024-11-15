@@ -30,8 +30,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 if (authOptions.AuthorizeBadCert)
                 {
                     //TODO; remove that shit on prod... only for DEV keycloak Minikube
-                    HttpClientHandler handler = new HttpClientHandler();
-                    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                    HttpClientHandler handler = new()
+                    {
+                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    };
                     o.BackchannelHttpHandler = handler;
                 }
             });
@@ -102,7 +104,19 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanClassificationsAndAccountGroupsWrite", policy =>
         policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_classification_write", "accounting_accountgroup_write"])))
     .AddPolicy("CanCurrenciesRead", policy =>
-        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_currency_read"])));
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_currency_read"])))
+    .AddPolicy("CanSalesOrVatTaxRatesRead", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_read"])))
+    .AddPolicy("CanSalesOrVatTaxRatesWrite", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_write"])))
+    .AddPolicy("CanSalesOrVatTaxRatesAndAccountsRead", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_read", "accounting_account_read"])))
+    .AddPolicy("CanSalesOrVatTaxRatesAndAccountsWrite", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_salesvattaxrate_write", "accounting_account_write"])))
+    .AddPolicy("CanTxRead", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_tx_read"])))
+    .AddPolicy("CanTxWrite", policy =>
+        policy.Requirements.Add(new UserWithAuthorizationsRequirement(["accounting_tx_write"])));
 
 //Proxy
 var configProxy = builder.Configuration.GetSection("ReverseProxy");

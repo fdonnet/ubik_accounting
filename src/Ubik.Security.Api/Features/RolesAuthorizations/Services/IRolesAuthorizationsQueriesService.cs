@@ -6,7 +6,7 @@ namespace Ubik.Security.Api.Features.RolesAuthorizations.Services
 {
     public interface IRolesAuthorizationsQueriesService
     {
-        Task<Either<IServiceAndFeatureError, RoleAuthorization>> GetAsync(Guid id);
+        Task<Either<IFeatureError, RoleAuthorization>> GetAsync(Guid id);
         Task<IEnumerable<RoleAuthorization>> GetAllAsync();
     }
 }

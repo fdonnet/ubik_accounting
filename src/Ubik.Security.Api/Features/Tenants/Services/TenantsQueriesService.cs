@@ -15,7 +15,7 @@ namespace Ubik.Security.Api.Features.Tenants.Services
             return result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, Tenant>> GetAsync(Guid id)
+        public async Task<Either<IFeatureError, Tenant>> GetAsync(Guid id)
         {
             var result = await ctx.Tenants.FindAsync(id);
 

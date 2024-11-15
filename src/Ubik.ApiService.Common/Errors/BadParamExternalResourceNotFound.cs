@@ -1,14 +1,14 @@
 ﻿namespace Ubik.ApiService.Common.Errors
 {
-    public record BadParamExternalResourceNotFound : IServiceAndFeatureError
+    public record BadParamExternalResourceNotFound : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public BadParamExternalResourceNotFound(string resourceName, string externalResourceName, string fieldName, string value)
         {
 
-            ErrorType = ServiceAndFeatureErrorType.BadParams;
+            ErrorType = FeatureErrorType.BadParams;
             CustomErrors = [ new CustomError()
             {
                 ErrorCode = $"{resourceName.ToUpper()}_{externalResourceName.ToUpper()}_NOT_FOUND",

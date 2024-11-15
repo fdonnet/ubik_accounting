@@ -2,14 +2,14 @@
 
 namespace Ubik.ApiService.Common.Exceptions
 {
-    public class UpdateDbConcurrencyException : Exception, IServiceAndFeatureError
+    public class UpdateDbConcurrencyException : Exception, IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public UpdateDbConcurrencyException()
         {
-            ErrorType = ServiceAndFeatureErrorType.Conflict;
+            ErrorType = FeatureErrorType.Conflict;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "DB_CONCURRENCY_CONFLICT",

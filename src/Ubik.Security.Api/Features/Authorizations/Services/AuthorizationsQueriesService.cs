@@ -15,7 +15,7 @@ namespace Ubik.Security.Api.Features.Authorizations.Services
             return result;
         }
 
-        public async Task<Either<IServiceAndFeatureError, Authorization>> GetAsync(Guid id)
+        public async Task<Either<IFeatureError, Authorization>> GetAsync(Guid id)
         {
             var result = await ctx.Authorizations.FindAsync(id);
 

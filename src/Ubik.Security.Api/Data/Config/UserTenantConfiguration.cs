@@ -22,14 +22,33 @@ namespace Ubik.Security.Api.Data.Config
             builder.Property(a => a.Version)
                 .IsConcurrencyToken();
 
+            builder.OwnsOne(x => x.AuditInfo, auditInfo =>
+            {
+                auditInfo.Property(a => a.ModifiedAt)
+                    .HasColumnName("modified_at")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.ModifiedBy)
+                    .HasColumnName("modified_by")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.CreatedAt)
+                    .HasColumnName("created_at")
+                    .IsRequired();
+
+                auditInfo.Property(a => a.CreatedBy)
+                    .HasColumnName("created_by")
+                    .IsRequired();
+            });
+
             //TODO: very dangerous, change that
             builder
-            .HasOne(e => e.User)
+            .HasOne<User>()
             .WithMany()
             .HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
 
             builder
-           .HasOne(e => e.Tenant)
+           .HasOne<Tenant>()
            .WithMany()
            .HasForeignKey(e => e.TenantId).OnDelete(DeleteBehavior.Cascade);
         }

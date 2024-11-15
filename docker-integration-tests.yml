@@ -27,18 +27,18 @@ services:
     ports:
       - "5000:8080"
 
-  accounting-api-test:
+  accounting-structure-api-test:
     build:
       context: ./
-      dockerfile: src/Ubik.Accounting.Api/Dockerfile
-    container_name: "ubik-accounting-api-test"
+      dockerfile: src/Ubik.Accounting.Structure.Api/Dockerfile
+    container_name: "ubik-accounting-structure-api-test"
     environment:
       - "ASPNETCORE_ENVIRONMENT=Development"
       - "AuthServer__MetadataAddress=http://keycloak:8080/realms/ubik/.well-known/openid-configuration"
       - "AuthServer__Authority=http://keycloak:8080/realms/ubik"
       - "AuthServer__AuthorizationUrl=http://keycloak:8080/realms/ubik/protocol/openid-connect/auth"
       - "AuthServer__TokenUrl=http://keycloak:8080/realms/ubik/protocol/openid-connect/token"
-      - "ConnectionStrings__AccountingContext=Host=db-test;Port=5432;Database=ubik_accounting;Username=postgres;Password=test01"
+      - "ConnectionStrings__AccountingContext=Host=db-test;Port=5432;Database=ubik_accounting_struct;Username=postgres;Password=test01"
       - "AuthManagerKeyCloakClient__RootUrl=http://keycloak:8080/"
       - "MessageBroker__Host=amqp://rabbit:5672"
     depends_on:
@@ -56,6 +56,66 @@ services:
 
     ports:
       - "5001:8080"
+
+  accounting-sales-vat-tax-api-test:
+    build:
+      context: ./
+      dockerfile: src/Ubik.Accounting.SalesOrVatTax.Api/Dockerfile
+    container_name: "ubik-accounting-sales-vat-tax-api-test"
+    environment:
+      - "ASPNETCORE_ENVIRONMENT=Development"
+      - "AuthServer__MetadataAddress=http://keycloak:8080/realms/ubik/.well-known/openid-configuration"
+      - "AuthServer__Authority=http://keycloak:8080/realms/ubik"
+      - "AuthServer__AuthorizationUrl=http://keycloak:8080/realms/ubik/protocol/openid-connect/auth"
+      - "AuthServer__TokenUrl=http://keycloak:8080/realms/ubik/protocol/openid-connect/token"
+      - "ConnectionStrings__AccountingSalesTaxDbContext=Host=db-test;Port=5432;Database=ubik_accounting_salestax;Username=postgres;Password=test01"
+      - "AuthManagerKeyCloakClient__RootUrl=http://keycloak:8080/"
+      - "MessageBroker__Host=amqp://rabbit:5672"
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      keycloak-last:
+        condition: service_healthy
+      ubik-proxy-cache:
+        condition: service_started
+      ubik-postgres:
+        condition: service_started
+      
+    networks:
+      - ubik-network
+  
+    ports:
+      - "5002:8080"
+
+  accounting-tx-api-test:
+    build:
+      context: ./
+      dockerfile: src/Ubik.Accounting.Transaction.Api/Dockerfile
+    container_name: "ubik-accounting-tx-api-test"
+    environment:
+      - "ASPNETCORE_ENVIRONMENT=Development"
+      - "AuthServer__MetadataAddress=http://keycloak:8080/realms/ubik/.well-known/openid-configuration"
+      - "AuthServer__Authority=http://keycloak:8080/realms/ubik"
+      - "AuthServer__AuthorizationUrl=http://keycloak:8080/realms/ubik/protocol/openid-connect/auth"
+      - "AuthServer__TokenUrl=http://keycloak:8080/realms/ubik/protocol/openid-connect/token"
+      - "ConnectionStrings__AccountingTxContext=Host=db-test;Port=5432;Database=ubik_accounting_tx;Username=postgres;Password=test01"
+      - "AuthManagerKeyCloakClient__RootUrl=http://keycloak:8080/"
+      - "MessageBroker__Host=amqp://rabbit:5672"
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      keycloak-last:
+        condition: service_healthy
+      ubik-proxy-cache:
+        condition: service_started
+      ubik-postgres:
+        condition: service_started
+      
+    networks:
+      - ubik-network
+  
+    ports:
+      - "5003:8080"
 
   finisher:
     container_name: wait-for-completion

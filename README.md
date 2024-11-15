@@ -1,11 +1,17 @@
-NEW BIG PR implemented:
+LAST BIG PR implemented:
 
-- security api and tenant management
-- remove authorization via roles from keycloack
-- implement Yarp as a proxy and authorization manager (call the security api and forward request to backend apis, authorization via policy requierments for each route)
-- remove masstransit for request/response, keep it only for events (pub/sub)
-- review and simplify the test parts (complete review) => only integration tests for the moment. No real backend functions to unit test.
-- Blazor app now calls the Yarp proxy
+- double-entry preparation
+- 2 new backend apis (tx and sales-or-vat-tax)
+- Blazor better token management
+
+Next steps between:
+
+- vat-sales tax module implementation
+- .Net 9 (Blazor adaptations)
+- SingalR hub to trace tx status
+- Blazor double-entry ui
+- Aspire (re-test the thing)
+- will see...
 
 # Ubik - Accounting
 
@@ -26,11 +32,11 @@ At this stage, **DO NOT USE THIS SYSTEM ON A PRODUCTION** environnement.
 
 ## For the Kubernetes/Minikube guys
 
-For detailed instructions on deploying locally with Minikube, please refer to the [local deployment guide](./deploy/deploy-local-readme.md).
+For detailed instructions on deploying locally with Minikube (full experience), please refer to the [local deployment guide](./deploy/deploy-local-readme.md).
 
 ## Build and Run
 
-At the root of the repository. "Mount" the dependencies with Docker by running this command in your terminal:
+**At the root of the repository**, "Mount" the dependencies with Docker by running this command in your terminal:
 
 `docker compose -f .\docker-compose.yml -f .\docker-integration-tests.yml up -d`
 
@@ -43,11 +49,15 @@ At the root of the repository. "Mount" the dependencies with Docker by running t
 > - Pgadmin: to admin your dbs if needed
 > - Apis: backend apis (security/accounting) for integration testing
 
-### Ready to play
+### Ready to play and debug
 
-#### Run backend Apis
+#### Run backend Apis or define a multiple projects startup
 
-`dotnet run --launch-profile https --project ./src/Ubik.Accounting.Api/Ubik.Accounting.Api.csproj`
+`dotnet run --launch-profile https --project ./src/Ubik.Accounting.SalesOrVatTax.Api/Ubik.Accounting.SalesOrVatTax.Api.csproj`
+
+`dotnet run --launch-profile https --project ./src/Ubik.Accounting.Transaction.Api/Ubik.Accounting.Transaction.Api.csproj`
+
+`dotnet run --launch-profile https --project ./src/Ubik.Accounting.Structure.Api/Ubik.Accounting.Structure.Api.csproj`
 
 `dotnet run --launch-profile https --project ./src/Ubik.Security.Api/Ubik.Security.Api.csproj`
 
@@ -59,10 +69,7 @@ At the root of the repository. "Mount" the dependencies with Docker by running t
 
 `dotnet run --launch-profile https --project ./src/Ubik.Accounting.WebApp/Ubik.Accounting.WebApp.csproj`
 
-And now, you can access the very first version of a the Blazor 8 webapp here <https://localhost:7249>
-
-*Don't change the ports of the api and the blazor apps. It's hard coded in the Blazor prj (need to be changed) because no service discovery for the moment.*
-*In Debug, create a multiple project startup that runs all this stuff*
+And now (when all the stuff are up and running), you can access the very first version of a the Blazor 8 webapp here <https://localhost:7249>
 
 ### All the things are up
 
@@ -82,23 +89,7 @@ Try to log with different access rights and play with the only available "Accoun
 
 Now you can run your preferred code editor and start to deep dive... (see below)
 
-## Yarp Proxy
-
--- Ubik.YarpProxy --
-
-Manages all the authorization stuff by calling the security api and forward the requests to the backend. (cool af)
-
-## Security Api
-
--- Ubik.Security.Api --
-
-Used by the proxy to manage authorizations and exposes admin and user endpoints to manage the authorizations/users/tenants config.
-
-## Accounting Api
-
--- Ubik.Accounting.Api --
-
-Some used external libs:
+## External libs
 
 | Package | For what |
 |----------- | -------- |
@@ -109,13 +100,43 @@ Some used external libs:
 | [LanguageExt.Core](https://github.com/louthy/language-ext) | use Either<Left, Right> pattern |
 | [Masstransit](https://github.com/MassTransit/MassTransit) | message bus abstraction + inbox/outbox pattern |
 
+## Yarp Proxy
+
+-- Ubik.YarpProxy --
+
+Manages all the authorization stuff by calling the security api and forward the requests to the backend.
+
+## Security Api
+
+-- Ubik.Security.Api --
+
+Used by the proxy to manage authorizations and exposes admin and user endpoints to manage the authorizations/users/tenants config.
+
+## Accounting structure Api
+
+-- Ubik.Accounting.Structure.Api --
+
+Manages the accounting structure.
+
+## Accounting tx Api
+
+-- Ubik.Accounting.Transaction.Api --
+
+For the moment, implement the submit Tx endpoint and create some states and events related to future Txs management.
+
+# Accounting sales or VAT tax
+
+-- Ubik.Accounting.SalesOrVatTax.Api --
+
+Will implement all the rules related to sales or VAT taxes and validate a Tx when needed. Will be used to declare and enforce the rules. (for each country etc)
+
 ## Features folder in backend Apis
 
 Contains the core features (in Vertical Slices mode).
 
 - Command and query services
 - When a command is executed with success, an event is published to the message bus (pub/sub)
-- Functional `Either<Error, Result>` patterns in all layers to transfer errors between layer and to keep the code not too dirty. (not an expert but I like it)
+- Functional `Either<Error, Result>` patterns in all layers to transfer errors between layer and to keep the code not too dirty.
 
 ## Frontend Blazor
 
@@ -149,7 +170,7 @@ Send some love on github to this projects...
 - Typed HttpClient to access the backend api
 - Tailwind config - Tailwind Flowbite design layout etc
 - A very minimal reverse proxy controller that allows components (automode) to call the backend api when they are WASM.
-- Some stuff about security (Token cache service, UserService with circuit, middleware)
+- Some stuff about security (Token cache service)
 
 In program.cs, you can access the config of:
 
@@ -157,6 +178,8 @@ In program.cs, you can access the config of:
 - CascadingAuthenticationState
 - Cookie auth with OpenIdC (connection + refresh token in OnValidatePrincipal)
 - ...
+
+=> next, implement new .Net 9 Blazor stuff related to authentication and render modes.
 
 ### Ubik.Accounting.WebApp.Client
 
@@ -184,7 +207,7 @@ In program.cs, you can access the config of:
 
 ## Others
 
--- Ubik.Accounting.ApiService.Common -- / -- Ubik.Db.Common -- / -- Ubik.Accounting.Contracts --
+-- Ubik.Accounting.ApiService.Common -- / -- Ubik.Db.Common -- / -- Ubik.xxx.Contracts --
 
 - Common config things that can be reused in other projects
 - This part will maybe grow

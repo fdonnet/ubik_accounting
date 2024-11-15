@@ -1,0 +1,2 @@
+﻿INSERT INTO public.currencies (id, iso_code, version, tenant_id) VALUES ('248e0000-5dd4-0015-291d-08dcd98e55f8', 'USD', '60280000-3c36-7456-566c-08dd00020a7e', '74a20000-088f-d0ad-7a4e-08dce86b0459');
+INSERT INTO public.currencies (id, iso_code, version, tenant_id) VALUES ('248e0000-5dd4-0015-38c5-08dcd98e5b2d', 'CHF', '60280000-3c36-7456-4e08-08dd00020a7e', '74a20000-088f-d0ad-7a4e-08dce86b0459');

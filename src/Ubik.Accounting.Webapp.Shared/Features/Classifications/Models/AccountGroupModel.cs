@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
-using Ubik.Accounting.Contracts.AccountGroups.Results;
-using Ubik.Accounting.Contracts.Accounts.Results;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Results;
 
 namespace Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
 {

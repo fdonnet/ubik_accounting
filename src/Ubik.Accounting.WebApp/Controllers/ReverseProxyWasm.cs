@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Ubik.Accounting.Webapp.Shared.Facades;
-using Ubik.Accounting.Contracts.Accounts.Commands;
-using Ubik.Accounting.Contracts.Classifications.Commands;
-using Ubik.Accounting.Contracts.AccountGroups.Commands;
+using Ubik.Accounting.Structure.Contracts.Accounts.Commands;
+using Ubik.Accounting.Structure.Contracts.Classifications.Commands;
+using Ubik.Accounting.Structure.Contracts.AccountGroups.Commands;
 
 
 namespace Ubik.Accounting.WebApp.Controllers

@@ -1,13 +1,13 @@
 ﻿namespace Ubik.ApiService.Common.Errors
 {
-    public record ResourceNotFoundError : IServiceAndFeatureError
+    public record ResourceNotFoundError : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public ResourceNotFoundError(string resourceName, string fieldName, string value)
         {
-            ErrorType = ServiceAndFeatureErrorType.NotFound;
+            ErrorType = FeatureErrorType.NotFound;
             CustomErrors = [ new CustomError()
             {
                 ErrorCode = $"{resourceName.ToUpper()}_NOT_FOUND",

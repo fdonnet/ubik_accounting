@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Ubik.Accounting.WebApp.ApiClients;
 using Ubik.Accounting.WebApp.Components;
 using Ubik.Accounting.WebApp.Security;
-using static Ubik.Accounting.WebApp.Security.UserService;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.Accounting.WebApp.Render;
 using Ubik.Accounting.Webapp.Shared.Render;
@@ -18,7 +15,6 @@ using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Microsoft.AspNetCore.Authentication;
 using Ubik.Accounting.WebApp.Config;
 using Microsoft.AspNetCore.HttpOverrides;
-using IdentityModel.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,10 +39,10 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 //TODO: put that in a lib project Auth
 //TODO: this is very dependant to distributed cache (if no cache => no site, see if it's bad)
-//TODO: do better and use UserId in cache
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
-
+builder.Services.Configure<AuthServerOptions>(
+    builder.Configuration.GetSection(AuthServerOptions.Position));
 
 
 builder.Services.AddAuthentication(options =>
@@ -76,36 +72,6 @@ builder.Services.AddAuthentication(options =>
                 {
                     x.RejectPrincipal();
                     return;
-                }
-
-                //If token expired
-                if (actualToken.ExpiresUtc < DateTimeOffset.UtcNow.AddSeconds(10) && actualToken.ExpiresRefreshUtc > DateTimeOffset.UtcNow.AddSeconds(10))
-                {
-                    var response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
-                    {
-                        Address = authOptions.TokenUrl,
-                        ClientId = authOptions.ClientId,
-                        ClientSecret = authOptions.ClientSecret,
-                        RefreshToken = actualToken.RefreshToken,
-                        GrantType = "refresh_token",
-                    });
-
-                    if (!response.IsError)
-                    {
-                        await cache.SetUserTokenAsync(new TokenCacheEntry
-                        {
-                            UserId = userId,
-                            RefreshToken = response.RefreshToken!,
-                            AccessToken = response.AccessToken!,
-                            ExpiresUtc = new JwtSecurityToken(response.AccessToken).ValidTo,
-                            ExpiresRefreshUtc = DateTimeOffset.UtcNow.AddMinutes(authOptions.RefreshTokenExpTimeInMinutes)
-                        });
-                    }
-                    else
-                    {
-                        x.RejectPrincipal();
-                        return;
-                    }
                 }
             }
         };
@@ -175,8 +141,9 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAu
 
 //User service with circuit
 builder.Services.AddScoped<UserService>();
-builder.Services.TryAddEnumerable(
-    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
+//TODO:check I think this thing is never used
+//builder.Services.TryAddEnumerable(
+//    ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
 builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
 
@@ -188,6 +155,21 @@ builder.Configuration.GetSection(ApiOptions.Position).Bind(userServiceClientOpt)
 builder.Services.AddHttpClient("UserServiceClient", options =>
 {
     options.BaseAddress = new Uri(userServiceClientOpt.SecurityUrl);
+});
+
+builder.Services.AddHttpClient("TokenClient", options =>
+{
+    options.BaseAddress = new Uri(authOptions.TokenUrl);
+}).ConfigurePrimaryHttpMessageHandler(() => {
+
+    //TODO; remove that shit on prod... only for DEV keycloak Minikube
+    var httpClientHandler = new HttpClientHandler();
+
+    if(authOptions.AuthorizeBadCert)
+    {
+        httpClientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    }
+    return httpClientHandler;
 });
 
 builder.Services.AddScoped<ClassificationStateService>();

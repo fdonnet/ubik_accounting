@@ -2,14 +2,14 @@
 
 namespace Ubik.Security.Api.Features.Users.Errors
 {
-    public record UserCannotGetMainUsrMgtRole : IServiceAndFeatureError
+    public record UserCannotGetMainUsrMgtRole : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public UserCannotGetMainUsrMgtRole()
         {
-            ErrorType = ServiceAndFeatureErrorType.ServerError;
+            ErrorType = FeatureErrorType.ServerError;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "CANNOT_RETRIEVE_NECESSARY_ROLE",

@@ -1,8 +1,6 @@
 ﻿using Dapper;
 using LanguageExt;
-using LanguageExt.Pipes;
 using MassTransit;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Ubik.ApiService.Common.Errors;
 using Ubik.ApiService.Common.Services;
@@ -11,7 +9,6 @@ using Ubik.Security.Api.Features.Users.Errors;
 using Ubik.Security.Api.Mappers;
 using Ubik.Security.Api.Models;
 using Ubik.Security.Contracts.Tenants.Commands;
-using Ubik.Security.Contracts.Tenants.Events;
 using Ubik.Security.Contracts.Users.Commands;
 using Ubik.Security.Contracts.Users.Events;
 
@@ -25,7 +22,7 @@ namespace Ubik.Security.Api.Features.Users.Services
         , ICurrentUser currentUser)
         : IUsersCommandsService
     {
-        public async Task<Either<IServiceAndFeatureError, User>> AddAsync(AddUserCommand command)
+        public async Task<Either<IFeatureError, User>> AddAsync(AddUserCommand command)
         {
             //TODO: Enhance this part... dirty asf
 
@@ -38,7 +35,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 {
                     var resultAuth = await authUserProviderService.AddUserAsync(command);
 
-                    return await resultAuth.MatchAsync<Either<IServiceAndFeatureError, User>>(
+                    return await resultAuth.MatchAsync<Either<IFeatureError, User>>(
                         RightAsync: async okAfterAuth =>
                         {
                             //Store and publish UserAdded event (auth + DB = OK)
@@ -69,7 +66,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                });
         }
 
-        public async Task<Either<IServiceAndFeatureError, Tenant>> AddNewTenantAsync(Guid userId, AddTenantCommand command)
+        public async Task<Either<IFeatureError, Tenant>> AddNewTenantAsync(Guid userId, AddTenantCommand command)
         {
             var model = command.ToTenant();
 
@@ -87,7 +84,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 .BindAsync(t => AddSaveAndPublishAsync(t, userId));
         }
 
-        public async Task<Either<IServiceAndFeatureError, Role>> AddRoleInTenantAsync(Guid userId, Guid roleId)
+        public async Task<Either<IFeatureError, Role>> AddRoleInTenantAsync(Guid userId, Guid roleId)
         {
             return await GetUserInSelectedTenantAsync(userId)
                 .BindAsync(u => CheckIfRoleExistInTenantOrBaseRole(roleId))
@@ -97,7 +94,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 .BindAsync(r => AddRoleInTenantSaveAndPublishAsync(r, userId));
         }
 
-        private async Task<Either<IServiceAndFeatureError, Role>> AddRoleInTenantSaveAndPublishAsync(Role current, Guid userId)
+        private async Task<Either<IFeatureError, Role>> AddRoleInTenantSaveAndPublishAsync(Role current, Guid userId)
         {
             var userRoleAddedToTenant = new UserRoleAddedToTenant()
             {
@@ -111,7 +108,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> AddSaveAndPublishAsync(Tenant current, Guid userId)
+        private async Task<Either<IFeatureError, Tenant>> AddSaveAndPublishAsync(Tenant current, Guid userId)
         {
             var tenandAdded = new UserTenantAdded()
             {
@@ -123,7 +120,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, (UserTenant, Role)>> GetUserTenantLinkForRole(Guid userId, Role role)
+        private async Task<Either<IFeatureError, (UserTenant, Role)>> GetUserTenantLinkForRole(Guid userId, Role role)
         {
             var result = await ctx.UsersTenants.SingleOrDefaultAsync(ut => ut.UserId == userId
                                                             && ut.TenantId == currentUser.TenantId);
@@ -133,7 +130,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : (result, role);
         }
 
-        private async Task<Either<IServiceAndFeatureError, (UserTenant, Role)>> CheckIfUserTenantRoleAlreadyExists(UserTenant userTenant, Role role)
+        private async Task<Either<IFeatureError, (UserTenant, Role)>> CheckIfUserTenantRoleAlreadyExists(UserTenant userTenant, Role role)
         {
             var result = await ctx.UserRolesByTenants.SingleOrDefaultAsync(ut => ut.UserTenantId == userTenant.Id
                                                             && ut.RoleId == role.Id);
@@ -143,7 +140,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : new ResourceAlreadyExistsError("UserRoleByTenant", "UserTenantId/RoleId", $"{userTenant.Id}/{role.Id}");
         }
 
-        private async Task<Either<IServiceAndFeatureError, Role>> AddRoleToUserInTenantInDbContextAsync(Guid userTenantId, Role role)
+        private async Task<Either<IFeatureError, Role>> AddRoleToUserInTenantInDbContextAsync(Guid userTenantId, Role role)
         {
             var roleInTenantByUser = new UserRoleByTenant()
             {
@@ -156,7 +153,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return role;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Role>>
+        private async Task<Either<IFeatureError, Role>>
                 CheckIfRoleExistInTenantOrBaseRole(Guid roleId)
         {
             var p = new DynamicParameters();
@@ -175,11 +172,11 @@ namespace Ubik.Security.Api.Features.Users.Services
             var result = await con.QuerySingleOrDefaultAsync<Role>(sql, p);
 
             return result == null
-                ? (Either<IServiceAndFeatureError, Role>)new ResourceNotFoundError("Role", "Id", roleId.ToString())
-                : (Either<IServiceAndFeatureError, Role>)result;
+                ? (Either<IFeatureError, Role>)new ResourceNotFoundError("Role", "Id", roleId.ToString())
+                : (Either<IFeatureError, Role>)result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, User>> GetUserInSelectedTenantAsync(Guid id)
+        private async Task<Either<IFeatureError, User>> GetUserInSelectedTenantAsync(Guid id)
         {
             var p = new DynamicParameters();
             p.Add("@user_id", id);
@@ -202,7 +199,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : result;
         }
 
-        private static async Task<Either<IServiceAndFeatureError,Tenant>> CompleteTenantCode(Tenant current, string userEmail)
+        private static async Task<Either<IFeatureError,Tenant>> CompleteTenantCode(Tenant current, string userEmail)
         {
             var userEmailForCode = userEmail.Split("@")[0];
             current.Code = current.Code + " - " + userEmailForCode;
@@ -214,7 +211,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, UserTenant>> AddUserTenantLinkInDbContextAsync(Guid userId, Tenant current)
+        private async Task<Either<IFeatureError, UserTenant>> AddUserTenantLinkInDbContextAsync(Guid userId, Tenant current)
         {
             var ut = new UserTenant()
             {
@@ -228,7 +225,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return ut;
         }
 
-        private async Task<Either<IServiceAndFeatureError, UserRoleByTenant>> AddTenantUserManagerRoleToTheUserInDbContextAsync(Role current, Guid userTenantLinkId)
+        private async Task<Either<IFeatureError, UserRoleByTenant>> AddTenantUserManagerRoleToTheUserInDbContextAsync(Role current, Guid userTenantLinkId)
         {
             var newRoleForUser = new UserRoleByTenant()
             {
@@ -242,7 +239,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return newRoleForUser;
         }
 
-        private async Task<Either<IServiceAndFeatureError, (Role, UserTenant)>> GetTenantUserManagementRole(UserTenant current)
+        private async Task<Either<IFeatureError, (Role, UserTenant)>> GetTenantUserManagementRole(UserTenant current)
         {
             var result = await ctx.Roles.FirstOrDefaultAsync(r => r.Code == "usrmgt_all_rw");
 
@@ -251,7 +248,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : (result, current);
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> ValidateIfTenantLinkNotAlreadyExistsAsync(Guid userId, Tenant tenant)
+        private async Task<Either<IFeatureError, Tenant>> ValidateIfTenantLinkNotAlreadyExistsAsync(Guid userId, Tenant tenant)
         {
             var result = await ctx.UsersTenants.FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TenantId == tenant.Id);
 
@@ -260,7 +257,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : new ResourceAlreadyExistsError("UserTenant(link)", "UserId/TenantId", $"{userId}/{tenant.Id}");
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> AddTenantInDbContextAsync(Tenant current)
+        private async Task<Either<IFeatureError, Tenant>> AddTenantInDbContextAsync(Tenant current)
         {
             current.Id = NewId.NextGuid();
             await ctx.Tenants.AddAsync(current);
@@ -268,7 +265,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, Tenant>> ValidateIfTenantNotAlreadyExistsAsync(Tenant current)
+        private async Task<Either<IFeatureError, Tenant>> ValidateIfTenantNotAlreadyExistsAsync(Tenant current)
         {
             var exists = await ctx.Tenants.AnyAsync(a => a.Code == current.Code);
             return exists
@@ -276,7 +273,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, User>> AddInDbContextAsync(User current)
+        private async Task<Either<IFeatureError, User>> AddInDbContextAsync(User current)
         {
             current.Id = NewId.NextGuid();
             await ctx.Users.AddAsync(current);
@@ -284,7 +281,7 @@ namespace Ubik.Security.Api.Features.Users.Services
             return current;
         }
 
-        private async Task<Either<IServiceAndFeatureError, bool>> ExecuteDeleteAsync(Guid id)
+        private async Task<Either<IFeatureError, bool>> ExecuteDeleteAsync(Guid id)
         {
             return await GetAsync(id)
                 .MapAsync(async ac =>
@@ -294,7 +291,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 });
         }
 
-        private async Task<Either<IServiceAndFeatureError, User>> GetAsync(Guid id)
+        private async Task<Either<IFeatureError, User>> GetAsync(Guid id)
         {
             var result = await ctx.Users.FindAsync(id);
 
@@ -303,7 +300,7 @@ namespace Ubik.Security.Api.Features.Users.Services
                 : result;
         }
 
-        private async Task<Either<IServiceAndFeatureError, User>> ValidateIfNotAlreadyExistsAsync(User user)
+        private async Task<Either<IFeatureError, User>> ValidateIfNotAlreadyExistsAsync(User user)
         {
             var exists = await ctx.Users.AnyAsync(a => a.Email == user.Email);
             return exists

@@ -15,7 +15,7 @@ WORKDIR /
 COPY ["src/Ubik.Accounting.WebApp/Ubik.Accounting.WebApp.csproj", "src/Ubik.Accounting.WebApp/"]
 COPY ["src/Ubik.Accounting.WebApp.Client/Ubik.Accounting.WebApp.Client.csproj", "src/Ubik.Accounting.WebApp.Client/"]
 COPY ["src/Ubik.Accounting.Webapp.Shared/Ubik.Accounting.Webapp.Shared.csproj", "src/Ubik.Accounting.Webapp.Shared/"]
-COPY ["src/Ubik.Accounting.Contracts/Ubik.Accounting.Contracts.csproj", "src/Ubik.Accounting.Contracts/"]
+COPY ["src/Ubik.Accounting.Structure.Contracts/Ubik.Accounting.Structure.Contracts.csproj", "src/Ubik.Accounting.Structure.Contracts/"]
 COPY ["src/Ubik.Contracts.Common/Ubik.Contracts.Common.csproj", "src/Ubik.Contracts.Common/"]
 COPY ["src/Ubik.ApiService.Common/Ubik.ApiService.Common.csproj", "src/Ubik.ApiService.Common/"]
 COPY ["src/Ubik.Security.Contracts/Ubik.Security.Contracts.csproj", "src/Ubik.Security.Contracts/"]

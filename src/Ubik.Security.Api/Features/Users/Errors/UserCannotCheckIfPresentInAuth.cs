@@ -2,15 +2,15 @@
 
 namespace Ubik.Security.Api.Features.Users.Errors
 {
-    public record UserCannotCheckIfPresentInAuth : IServiceAndFeatureError
+    public record UserCannotCheckIfPresentInAuth : IFeatureError
     {
-        public ServiceAndFeatureErrorType ErrorType { get; init; }
+        public FeatureErrorType ErrorType { get; init; }
         public List<CustomError> CustomErrors { get; init; }
 
         public UserCannotCheckIfPresentInAuth()
         {
 
-            ErrorType = ServiceAndFeatureErrorType.Conflict;
+            ErrorType = FeatureErrorType.Conflict;
             CustomErrors = new List<CustomError>() { new CustomError()
             {
                 ErrorCode = "USERs_CANNOT_CHECK_IF_PRESENT_IN_AUTH",
