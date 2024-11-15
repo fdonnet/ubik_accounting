@@ -1100,6 +1100,10 @@ p:is(.dark *) {
   width: 6rem;
 }
 
+.w-28 {
+  width: 7rem;
+}
+
 .w-3 {
   width: 0.75rem;
 }
@@ -1134,10 +1138,6 @@ p:is(.dark *) {
 
 .w-full {
   width: 100%;
-}
-
-.w-28 {
-  width: 7rem;
 }
 
 .min-w-\[70px\] {
