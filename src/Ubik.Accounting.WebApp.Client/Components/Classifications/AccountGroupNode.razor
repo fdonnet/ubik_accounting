@@ -1,5 +1,6 @@
 ﻿@using Ubik.Accounting.Structure.Contracts.Accounts.Results
 @using Ubik.Accounting.Webapp.Shared.Facades
+@using Ubik.Accounting.Webapp.Shared.Features.Global.Services
 @using Ubik.Accounting.WebApp.Client.Components.Common.Modal
 @using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services
 @using Ubik.Accounting.Webapp.Shared.Features.Classifications.Models
@@ -7,6 +8,7 @@
 @inject IAccountingApiClient Client
 @inject IRenderContext RenderContext
 @inject ClassificationStateService CurrentState
+@* @inject BreakpointsService breakpointsService *@
 @implements IDisposable
 
 @if (!_isLoading && !CurrentAccountGroup.IsDeleted)
@@ -60,13 +62,13 @@
             @foreach (var node in _currentNodeAccountGroups)
             {
                 <AccountGroupNode IsAuthorizedToModify="IsAuthorizedToModify"
-                                  CurrentAccountGroup="@node"
-                                  CurrentRowMargin="CurrentRowMargin + 4"
-                                  OnEditAccountGroupAsync="EditAccountGroupAsync"
-                                  OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
-                                  OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
-                                  OnDetachAccountAsync="DetachAccountAsync"
-                                  OnAttachAccountAsync="AttachAccountAsync">
+                CurrentAccountGroup="@node"
+                CurrentRowMargin="CurrentRowMargin + 4"
+                OnEditAccountGroupAsync="EditAccountGroupAsync"
+                OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
+                OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
+                OnDetachAccountAsync="DetachAccountAsync"
+                OnAttachAccountAsync="AttachAccountAsync">
                 </AccountGroupNode>
             }
         }
@@ -115,11 +117,11 @@
         <CascadingValue Name="AccountGroupModel" Value="@CurrentAccountGroup">
             <UbikModalCenter @ref="_actionsAccountGroupDialog">
                 <AccountGroupActionsDialog @ref="_actionsAccountGroupContent"
-                                           OnEditAccountGroupAsync="EditAccountGroupAsync"
-                                           OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
-                                           OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
-                                           OnAttachAccountAsync="AttachAccountAsync"
-                                           OnCloseAsync="CloseActionsDialog">
+                OnEditAccountGroupAsync="EditAccountGroupAsync"
+                OnDeleteAccountGroupAsync="DeleteAccountGroupAsync"
+                OnAddSubAccountGroupAsync="AddSubAccountGroupAsync"
+                OnAttachAccountAsync="AttachAccountAsync"
+                OnCloseAsync="CloseActionsDialog">
                 </AccountGroupActionsDialog>
             </UbikModalCenter>
         </CascadingValue>
@@ -155,13 +157,21 @@
 
     private bool _firstRender = true;
 
-    protected override void OnInitialized()
-    {
-        if (RenderContext.IsPrerendering)
-        {
-            return;
-        }
-    }
+    // protected override async void OnInitialized()
+    // {
+    //     if (RenderContext.IsPrerendering)
+    //     {
+    //         return;
+    //     }
+
+    //     breakpointsService.OnBreakpointChanged += OnBreakpointChanged;
+    //     await breakpointsService.InitializeAsync();
+    // }
+
+    // private void OnBreakpointChanged(string breakPointValue)
+    // {
+    //     var test = 0;
+    // }
 
     public override Task SetParametersAsync(ParameterView parameters)
     {
@@ -254,5 +264,6 @@
     public void Dispose()
     {
         CurrentState.OnChangeData -= OnStateChanged;
+        // breakpointsService.OnBreakpointChanged -= OnBreakpointChanged;
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Ubik.Accounting.Webapp.Shared.Facades;
 using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
+using Ubik.Accounting.Webapp.Shared.Features.Global.Services;
 using Ubik.Accounting.Webapp.Shared.Render;
 using Ubik.Accounting.Webapp.Shared.Security;
 using Ubik.Accounting.WebApp.Client.Facades;
@@ -14,6 +15,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
 builder.Services.AddSingleton<IRenderContext, ClientRenderContext>();
+//builder.Services.AddSingleton<BreakpointsService>();
 
 builder.Services.AddScoped<IAccountingApiClient, HttpApiAccountingFacade>();
 

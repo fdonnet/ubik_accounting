@@ -15,6 +15,7 @@ using Ubik.Accounting.Webapp.Shared.Features.Classifications.Services;
 using Microsoft.AspNetCore.Authentication;
 using Ubik.Accounting.WebApp.Config;
 using Microsoft.AspNetCore.HttpOverrides;
+using Ubik.Accounting.Webapp.Shared.Features.Global.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -137,6 +138,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 builder.Services.AddSingleton<IRenderContext, ServerRenderContext>();
+//builder.Services.AddScoped<BreakpointsService>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
 //User service with circuit
