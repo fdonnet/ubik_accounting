@@ -1,4 +1,6 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.Circuits;
+using System.Security.Claims;
 using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Accounting.WebApp.Security
@@ -63,52 +65,51 @@ namespace Ubik.Accounting.WebApp.Security
             }
         }
 
-        //TODO:Check, I think this ting is never used
-        //internal sealed class UserCircuitHandler(
-        //    AuthenticationStateProvider authenticationStateProvider,
-        //    UserService userService) : CircuitHandler, IDisposable
-        //{
-        //    private readonly AuthenticationStateProvider authenticationStateProvider = authenticationStateProvider;
-        //    private readonly UserService userService = userService;
+        internal sealed class UserCircuitHandler(
+            AuthenticationStateProvider authenticationStateProvider,
+            UserService userService) : CircuitHandler, IDisposable
+        {
+            private readonly AuthenticationStateProvider authenticationStateProvider = authenticationStateProvider;
+            private readonly UserService userService = userService;
 
-        //    public override Task OnCircuitOpenedAsync(Circuit circuit,
-        //        CancellationToken cancellationToken)
-        //    {
-        //        authenticationStateProvider.AuthenticationStateChanged +=
-        //            AuthenticationChanged;
+            public override Task OnCircuitOpenedAsync(Circuit circuit,
+                CancellationToken cancellationToken)
+            {
+                authenticationStateProvider.AuthenticationStateChanged +=
+                    AuthenticationChanged;
 
-        //        return base.OnCircuitOpenedAsync(circuit, cancellationToken);
-        //    }
+                return base.OnCircuitOpenedAsync(circuit, cancellationToken);
+            }
 
-        //    private void AuthenticationChanged(Task<AuthenticationState> task)
-        //    {
-        //        _ = UpdateAuthentication(task);
+            private void AuthenticationChanged(Task<AuthenticationState> task)
+            {
+                _ = UpdateAuthentication(task);
 
-        //        async Task UpdateAuthentication(Task<AuthenticationState> task)
-        //        {
-        //            try
-        //            {
-        //                var state = await task;
-        //                userService.SetUser(state.User);
-        //            }
-        //            catch
-        //            {
-        //            }
-        //        }
-        //    }
+                async Task UpdateAuthentication(Task<AuthenticationState> task)
+                {
+                    try
+                    {
+                        var state = await task;
+                        userService.SetUser(state.User);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
 
-        //    public override async Task OnConnectionUpAsync(Circuit circuit,
-        //        CancellationToken cancellationToken)
-        //    {
-        //        var state = await authenticationStateProvider.GetAuthenticationStateAsync();
-        //        userService.SetUser(state.User);
-        //    }
+            public override async Task OnConnectionUpAsync(Circuit circuit,
+                CancellationToken cancellationToken)
+            {
+                var state = await authenticationStateProvider.GetAuthenticationStateAsync();
+                userService.SetUser(state.User);
+            }
 
-        //    public void Dispose()
-        //    {
-        //        authenticationStateProvider.AuthenticationStateChanged -=
-        //            AuthenticationChanged;
-        //    }
-        //}
+            public void Dispose()
+            {
+                authenticationStateProvider.AuthenticationStateChanged -=
+                    AuthenticationChanged;
+            }
+        }
     }
 }
