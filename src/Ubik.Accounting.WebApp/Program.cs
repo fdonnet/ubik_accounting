@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Ubik.Accounting.WebApp.ApiClients;
 using Ubik.Accounting.WebApp.Components;
 using Ubik.Accounting.WebApp.Security;
-using static Ubik.Accounting.WebApp.Security.UserService;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.Accounting.WebApp.Render;
 using Ubik.Accounting.Webapp.Shared.Render;

@@ -1,7 +1,5 @@
-﻿using MassTransit;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
-using Ubik.Accounting.Structure.Api.Models;
 
 namespace Ubik.Accounting.Structure.Api.Data.Init
 {

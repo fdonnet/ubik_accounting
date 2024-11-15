@@ -9,9 +9,6 @@ using Ubik.Accounting.Transaction.Contracts.Txs.Events;
 using Ubik.Accounting.Transaction.Api.Mappers;
 using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
 using Ubik.Accounting.Transaction.Api.Models;
-using Ubik.ApiService.Common.Services;
-using Ubik.ApiService.Common.Configure;
-using Ubik.Accounting.Transaction.Contracts.Txs.Enums;
 
 namespace Ubik.Accounting.Transaction.Api.Features.Txs.Services
 {

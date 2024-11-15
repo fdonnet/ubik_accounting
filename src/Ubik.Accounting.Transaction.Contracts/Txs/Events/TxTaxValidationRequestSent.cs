@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ubik.Accounting.Transaction.Contracts.Txs.Events
+﻿namespace Ubik.Accounting.Transaction.Contracts.Txs.Events
 {
     public record TxTaxValidationRequestSent
     {

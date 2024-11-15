@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using Ubik.Accounting.Transaction.Api.Features.Txs.Services;
-using Ubik.Accounting.Transaction.Api.Mappers;
 using Ubik.Accounting.Transaction.Contracts.Txs.Commands;
 using Ubik.Accounting.Transaction.Contracts.Txs.Enums;
 using Ubik.Accounting.Transaction.Contracts.Txs.Events;

@@ -1,5 +1,4 @@
-﻿using Ubik.Accounting.Transaction.Contracts.Txs.Commands;
-using Ubik.ApiService.Common.Errors;
+﻿using Ubik.ApiService.Common.Errors;
 
 namespace Ubik.Accounting.Transaction.Api.Features.Txs.Errors
 {

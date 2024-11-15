@@ -1,5 +1,4 @@
 ﻿using Ubik.Accounting.Transaction.Contracts.Entries.Enums;
-using Ubik.Accounting.Transaction.Contracts.Txs.Enums;
 
 namespace Ubik.Accounting.Transaction.Contracts.Txs.Events
 {

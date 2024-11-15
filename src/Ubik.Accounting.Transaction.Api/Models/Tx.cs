@@ -1,6 +1,4 @@
-﻿using MassTransit;
-using Ubik.Accounting.Transaction.Contracts.Txs.Enums;
-using Ubik.DB.Common;
+﻿using Ubik.DB.Common;
 using Ubik.DB.Common.Models;
 
 namespace Ubik.Accounting.Transaction.Api.Models

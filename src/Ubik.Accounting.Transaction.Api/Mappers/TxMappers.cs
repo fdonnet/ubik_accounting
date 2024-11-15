@@ -1,11 +1,9 @@
 ﻿using LanguageExt;
 using MassTransit;
-using MassTransit.Caching.Internals;
 using Ubik.Accounting.Transaction.Api.Models;
 using Ubik.Accounting.Transaction.Contracts.Txs.Commands;
 using Ubik.Accounting.Transaction.Contracts.Txs.Enums;
 using Ubik.Accounting.Transaction.Contracts.Txs.Events;
-using Ubik.DB.Common.Models;
 
 namespace Ubik.Accounting.Transaction.Api.Mappers
 {
