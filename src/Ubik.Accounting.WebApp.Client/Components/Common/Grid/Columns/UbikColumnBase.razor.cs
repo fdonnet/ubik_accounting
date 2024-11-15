@@ -13,7 +13,8 @@ namespace Ubik.Accounting.WebApp.Client.Components.Common.Grid.Columns
         [Parameter] public SortDirection InitialSortDirection { get; set; } = default;
         [Parameter] public bool IsDefaultSortColumn { get; set; } = false;
         [Parameter] public bool SmallXPadding { get; set; } = false;
-        
+        [Parameter] public string Class { get; set; } = string.Empty;
+
         public bool ShowSortIcon { get; set; } = true;
 
 
