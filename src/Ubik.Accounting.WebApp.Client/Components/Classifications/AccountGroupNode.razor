@@ -17,7 +17,7 @@
         @if (IsAuthorizedToModify && breakpointsService.IsSmallDevice)
         {
             //TODO: Create a component for this and for account action (repeated code below)
-            <td class="w-24">
+            <td class="w-24 md:w-28">
                 <div class="flex justify-start gap-4 text-blue-700 dark:text-blue-400" @onclick="ShowActionsAccountGroupAsync">
                     <div class="mr-2 flex cursor-pointer flex-row items-center">
                         <div>
@@ -55,7 +55,7 @@
         </td>
         @if (IsAuthorizedToModify && !breakpointsService.IsSmallDevice)
         {
-            <td class="w-24">
+            <td class="w-24 md:w-28">
                 <div class="flex justify-end gap-4 text-blue-700 dark:text-blue-400" @onclick="ShowActionsAccountGroupAsync">
                     <div class="mr-2 flex cursor-pointer flex-row items-center">
                         <div>

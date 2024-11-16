@@ -6,10 +6,10 @@
 <div class="flex h-screen flex-col">
     <Header />
     <main class="flex-1 flex overflow-hidden">
-        <aside class="w-52 lg:w-64 bg-zinc-300 dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-900 text-gray-900 dark:text-white p-4 hidden md:block">
+        <aside class="hidden bg-zinc-300 p-4 text-gray-900 dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-900 dark:text-white lg:w-64 lg:block">
             <NavMenu />
         </aside>
-        <article class="flex-1 bg-gray-100 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-950 text-gray-700 dark:text-gray-400 overflow-x-hidden overflow-y-auto p-4">
+        <article class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100 p-4 text-gray-700 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-950 dark:text-gray-400">
             <ErrorBoundary>
                 <ChildContent>
                     @Body
