@@ -88,7 +88,7 @@
     public bool IsAuthorizedToModify { get; set; } = false;
 
     private IQueryable<AccountModel>? _accounts;
-    private int _numberOfAccounts = -1;
+
     private List<CurrencyStandardResult>? _currencies;
 
     private bool _isLoading = true;
@@ -104,6 +104,13 @@
     private AccountFiltersModel _accountFilters = new();
     private AccountFilters _filters = default!;
     private string _searchValue = string.Empty;
+
+    private int _numberOfAccounts
+    {
+        get{
+            return _filteredAccounts?.Count() ?? -1;
+        }
+    }
 
     private IQueryable<AccountModel>? _filteredAccounts
     {
@@ -216,7 +223,6 @@
         {
             var result = (await response.Content.ReadFromJsonAsync<IEnumerable<AccountStandardResult>>() ?? []).ToAccountModel();
             _accounts = result.AsQueryable();
-            _numberOfAccounts = _accounts.Count();
         }
         else
         {
