@@ -26,6 +26,7 @@ namespace Ubik.Accounting.Structure.Api
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.AddServiceDefaults();
 
             //Log
             //TODO: Begin to log usefull things
@@ -42,11 +43,11 @@ namespace Ubik.Accounting.Structure.Api
             //Auth server and JWT (no need, no auth)
             //builder.Services.AddAuthServerAndJwt(authOptions);
 
-            //Default httpclient
-            builder.Services.ConfigureHttpClientDefaults(http =>
-            {
-                http.AddStandardResilienceHandler();
-            });
+            ////Default httpclient - Aspire now 
+            //builder.Services.ConfigureHttpClientDefaults(http =>
+            //{
+            //    http.AddStandardResilienceHandler();
+            //});
 
             //DB
             builder.Services.AddDbContextFactory<AccountingDbContext>(
@@ -102,14 +103,14 @@ namespace Ubik.Accounting.Structure.Api
             //TODO: Cors
             builder.Services.AddCustomCors();
 
-            //Tracing and metrics
-            builder.Logging.AddOpenTelemetry(logging =>
-            {
-                logging.IncludeFormattedMessage = true;
-                logging.IncludeScopes = true;
-            });
+            ////Tracing and metrics - Aspire now
+            //builder.Logging.AddOpenTelemetry(logging =>
+            //{
+            //    logging.IncludeFormattedMessage = true;
+            //    logging.IncludeScopes = true;
+            //});
 
-            builder.Services.AddTracingAndMetrics();
+            //builder.Services.AddTracingAndMetrics();
 
             //Swagger config
             var xmlPath = Path.Combine(AppContext.BaseDirectory,
@@ -149,7 +150,10 @@ namespace Ubik.Accounting.Structure.Api
             //Build the app
             var app = builder.Build();
 
-            app.MapPrometheusScrapingEndpoint();
+            //Build the app
+            app.MapDefaultEndpoints();
+
+            //app.MapPrometheusScrapingEndpoint();
             //app.UseSerilogRequestLogging();
             app.UseExceptionHandler(app.Logger, app.Environment);
 

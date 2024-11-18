@@ -19,6 +19,8 @@ using Ubik.ApiService.Common.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 //Options
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
@@ -27,11 +29,11 @@ builder.Configuration.GetSection(MessageBrokerOptions.Position).Bind(msgBrokerOp
 var swaggerUIOptions = new SwaggerUIOptions();
 builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
 
-//Default httpclient
-builder.Services.ConfigureHttpClientDefaults(http =>
-{
-    http.AddStandardResilienceHandler();
-});
+//Default httpclient - Aspire now
+//builder.Services.ConfigureHttpClientDefaults(http =>
+//{
+//    http.AddStandardResilienceHandler();
+//});
 
 builder.Services.AddDbContextFactory<AccountingTxContext>(
      options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingTxContext")), ServiceLifetime.Scoped);
@@ -82,12 +84,12 @@ builder.Services.AddApiVersionAndExplorer();
 //TODO: Cors
 builder.Services.AddCustomCors();
 
-//Tracing and metrics
-builder.Logging.AddOpenTelemetry(logging =>
-{
-    logging.IncludeFormattedMessage = true;
-    logging.IncludeScopes = true;
-});
+//Tracing and metrics - Aspire now
+//builder.Logging.AddOpenTelemetry(logging =>
+//{
+//    logging.IncludeFormattedMessage = true;
+//    logging.IncludeScopes = true;
+//});
 
 //Services
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
@@ -97,7 +99,7 @@ builder.Services.AddScoped<ITxCommandService, TxCommandService>();
 builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
-builder.Services.AddTracingAndMetrics();
+//builder.Services.AddTracingAndMetrics();
 
 builder.Services.AddControllers(o =>
 {
@@ -114,7 +116,6 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
 });
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -125,6 +126,8 @@ var xmlPath = Path.Combine(AppContext.BaseDirectory,
 builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.UseExceptionHandler(app.Logger, app.Environment);
 

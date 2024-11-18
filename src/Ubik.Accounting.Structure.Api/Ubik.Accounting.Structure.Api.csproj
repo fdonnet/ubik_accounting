@@ -36,7 +36,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
@@ -46,6 +45,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Ubik.Accounting.Structure.Contracts\Ubik.Accounting.Structure.Contracts.csproj" />
     <ProjectReference Include="..\Ubik.Db.Common\Ubik.DB.Common\Ubik.DB.Common.csproj" />
+    <ProjectReference Include="..\Ubik.ServiceDefaults\Ubik.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -19,6 +19,8 @@ using Ubik.ApiService.Common.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 //Options
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
@@ -27,14 +29,15 @@ builder.Configuration.GetSection(MessageBrokerOptions.Position).Bind(msgBrokerOp
 var swaggerUIOptions = new SwaggerUIOptions();
 builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
 
-//Default httpclient
-builder.Services.ConfigureHttpClientDefaults(http =>
-{
-    http.AddStandardResilienceHandler();
-});
+//Default httpclient - Aspire now
+//builder.Services.ConfigureHttpClientDefaults(http =>
+//{
+//    http.AddStandardResilienceHandler();
+//});
 
 builder.Services.AddDbContextFactory<AccountingSalesTaxDbContext>(
      options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingSalesTaxDbContext")), ServiceLifetime.Scoped);
+builder.EnrichNpgsqlDbContext<AccountingSalesTaxDbContext>();
 
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
@@ -79,14 +82,14 @@ builder.Services.AddApiVersionAndExplorer();
 //TODO: Cors
 builder.Services.AddCustomCors();
 
-//Tracing and metrics
-builder.Logging.AddOpenTelemetry(logging =>
-{
-    logging.IncludeFormattedMessage = true;
-    logging.IncludeScopes = true;
-});
+//Tracing and metrics 
+//builder.Logging.AddOpenTelemetry(logging =>
+//{
+//    logging.IncludeFormattedMessage = true;
+//    logging.IncludeScopes = true;
+//});
 
-builder.Services.AddTracingAndMetrics();
+//builder.Services.AddTracingAndMetrics();
 
 //Swagger config
 var xmlPath = Path.Combine(AppContext.BaseDirectory,
@@ -113,7 +116,6 @@ builder.Services.AddControllers(o =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddEndpointsApiExplorer();
 
 //Route config
 builder.Services.Configure<RouteOptions>(options =>
@@ -127,6 +129,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.UseExceptionHandler(app.Logger, app.Environment);
 

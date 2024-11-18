@@ -15,6 +15,8 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 //Auth from auth provider, for Admin access to usermgt service
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
@@ -52,12 +54,12 @@ builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, YarpSwaggerC
 
 builder.Services.AddSwaggerGen();
 
-//Httpclient for userService (called to retrive auth/authorize the request sent)
+//Httpclient for userService (called to retrive auth/authorize the request sent) //Aspire NOW
 //Internal ip or domain not exposed to public accesses
-builder.Services.ConfigureHttpClientDefaults(http =>
-{
-    http.AddStandardResilienceHandler();
-});
+//builder.Services.ConfigureHttpClientDefaults(http =>
+//{
+//    http.AddStandardResilienceHandler();
+//});
 
 builder.Services.AddHttpClient<UserService>(client =>
 {
@@ -145,6 +147,8 @@ builder.Services.AddReverseProxy()
 
 //Build
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 //Swagger
 if (app.Environment.IsDevelopment())
