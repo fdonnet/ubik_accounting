@@ -1140,8 +1140,16 @@ p:is(.dark *) {
   width: 100%;
 }
 
+.w-56 {
+  width: 14rem;
+}
+
 .min-w-\[70px\] {
   min-width: 70px;
+}
+
+.min-w-\[150px\] {
+  min-width: 150px;
 }
 
 .max-w-20 {
@@ -2460,6 +2468,10 @@ p:is(.dark *) {
 
   .lg\:w-\[1024px\] {
     width: 1024px;
+  }
+
+  .lg\:min-w-\[800px\] {
+    min-width: 800px;
   }
 
   .lg\:table-fixed {
