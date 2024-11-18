@@ -14,7 +14,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.10" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Treyt.Yarp.ReverseProxy.Swagger" Version="3.8.1" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.2.0" />
@@ -23,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Ubik.ApiService.Common\Ubik.ApiService.Common.csproj" />
     <ProjectReference Include="..\Ubik.Security.Contracts\Ubik.Security.Contracts.csproj" />
+    <ProjectReference Include="..\Ubik.ServiceDefaults\Ubik.ServiceDefaults.csproj" />
     <InternalsVisibleTo Include="Ubik.Api.Tests.Integration" />
   </ItemGroup>
 

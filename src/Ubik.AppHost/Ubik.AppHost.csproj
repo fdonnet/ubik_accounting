@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>eb996d54-08df-48fa-9f66-75afd9403045</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0" />
+    <PackageReference Include="Aspire.Hosting.Keycloak" Version="9.0.0-preview.5.24551.3" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.0.0" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.0.0" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ubik.Accounting.SalesOrVatTax.Api\Ubik.Accounting.SalesOrVatTax.Api.csproj" />
+    <ProjectReference Include="..\Ubik.Accounting.Structure.Api\Ubik.Accounting.Structure.Api.csproj" />
+    <ProjectReference Include="..\Ubik.Accounting.Transaction.Api\Ubik.Accounting.Transaction.Api.csproj" />
+    <ProjectReference Include="..\Ubik.Accounting.WebApp\Ubik.Accounting.WebApp.csproj" />
+    <ProjectReference Include="..\Ubik.Security.Api\Ubik.Security.Api.csproj" />
+    <ProjectReference Include="..\Ubik.YarpProxy\Ubik.YarpProxy.csproj" />
+  </ItemGroup>
+
+</Project>

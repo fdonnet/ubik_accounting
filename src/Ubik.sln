@@ -37,6 +37,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Accounting.Transaction
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.Accounting.Transaction.Contracts", "Ubik.Accounting.Transaction.Contracts\Ubik.Accounting.Transaction.Contracts.csproj", "{B4032FBF-3A2E-45E6-AB38-E148103B3A62}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.AppHost", "Ubik.AppHost\Ubik.AppHost.csproj", "{5498C8DA-EEDC-49E3-A96B-93B0336CAAA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubik.ServiceDefaults", "Ubik.ServiceDefaults\Ubik.ServiceDefaults.csproj", "{E2311EFC-495A-4DAF-AB87-F47D18CED26A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +115,14 @@ Global
 		{B4032FBF-3A2E-45E6-AB38-E148103B3A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4032FBF-3A2E-45E6-AB38-E148103B3A62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4032FBF-3A2E-45E6-AB38-E148103B3A62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5498C8DA-EEDC-49E3-A96B-93B0336CAAA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5498C8DA-EEDC-49E3-A96B-93B0336CAAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5498C8DA-EEDC-49E3-A96B-93B0336CAAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5498C8DA-EEDC-49E3-A96B-93B0336CAAA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2311EFC-495A-4DAF-AB87-F47D18CED26A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2311EFC-495A-4DAF-AB87-F47D18CED26A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2311EFC-495A-4DAF-AB87-F47D18CED26A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2311EFC-495A-4DAF-AB87-F47D18CED26A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

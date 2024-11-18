@@ -18,7 +18,6 @@
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
     <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
@@ -30,6 +29,7 @@
     <ProjectReference Include="..\Ubik.Accounting.Transaction.Contracts\Ubik.Accounting.Transaction.Contracts.csproj" />
     <ProjectReference Include="..\Ubik.ApiService.Common\Ubik.ApiService.Common.csproj" />
     <ProjectReference Include="..\Ubik.Db.Common\Ubik.DB.Common\Ubik.DB.Common.csproj" />
+    <ProjectReference Include="..\Ubik.ServiceDefaults\Ubik.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>

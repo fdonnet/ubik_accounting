@@ -21,7 +21,7 @@ using Ubik.Security.Api.Features.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+builder.AddServiceDefaults();
 
 //Options used in Program.cs
 var msgBrokerOptions = new MessageBrokerOptions();
@@ -39,14 +39,15 @@ builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 //DB
 builder.Services.AddDbContextFactory<SecurityDbContext>(
      options => options.UseNpgsql(builder.Configuration.GetConnectionString("SecurityDbContext")), ServiceLifetime.Scoped);
+builder.EnrichNpgsqlDbContext<SecurityDbContext>();
 
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-//Default httpclient
-builder.Services.ConfigureHttpClientDefaults(http =>
-{
-    http.AddStandardResilienceHandler();
-});
+//Default httpclient -- Aspire now
+//builder.Services.ConfigureHttpClientDefaults(http =>
+//{
+//    http.AddStandardResilienceHandler();
+//});
 
 //Auth Provider
 builder.Services.AddHttpClient<IUserAuthProviderService, UserAuthProviderServiceKeycloak>(client =>
@@ -95,14 +96,14 @@ builder.Services.AddApiVersionAndExplorer();
 //TODO: Cors
 builder.Services.AddCustomCors();
 
-//Logs tracing and metrics
-builder.Logging.AddOpenTelemetry(logging =>
-{
-    logging.IncludeFormattedMessage = true;
-    logging.IncludeScopes = true;
-});
+////Logs tracing and metrics -- Aspire now
+//builder.Logging.AddOpenTelemetry(logging =>
+//{
+//    logging.IncludeFormattedMessage = true;
+//    logging.IncludeScopes = true;
+//});
 
-builder.Services.AddTracingAndMetrics();
+//builder.Services.AddTracingAndMetrics();
 
 //Swagger config
 var xmlPath = Path.Combine(AppContext.BaseDirectory,
@@ -151,7 +152,9 @@ builder.Services.Configure<RouteOptions>(options =>
 //Build the app
 var app = builder.Build();
 
-app.MapPrometheusScrapingEndpoint();
+app.MapDefaultEndpoints();
+
+//app.MapPrometheusScrapingEndpoint();
 //app.UseSerilogRequestLogging();
 app.UseExceptionHandler(app.Logger, app.Environment);
 
