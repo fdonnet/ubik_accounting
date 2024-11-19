@@ -54,13 +54,6 @@ builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, YarpSwaggerC
 
 builder.Services.AddSwaggerGen();
 
-//Httpclient for userService (called to retrive auth/authorize the request sent) //Aspire NOW
-//Internal ip or domain not exposed to public accesses
-//builder.Services.ConfigureHttpClientDefaults(http =>
-//{
-//    http.AddStandardResilienceHandler();
-//});
-
 builder.Services.AddHttpClient<UserService>(client =>
 {
     //TODO: change hardcoded

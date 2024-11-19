@@ -27,10 +27,7 @@ namespace Ubik.Accounting.Structure.Api
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.AddServiceDefaults();
-
-            //Log
-            //TODO: Begin to log usefull things
-            //builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+            builder.AddServiceApiDefaults();
 
             //Options
             var authOptions = new AuthServerOptions();
@@ -40,22 +37,12 @@ namespace Ubik.Accounting.Structure.Api
             var swaggerUIOptions = new SwaggerUIOptions();
             builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
 
-            //Auth server and JWT (no need, no auth)
-            //builder.Services.AddAuthServerAndJwt(authOptions);
-
-            ////Default httpclient - Aspire now 
-            //builder.Services.ConfigureHttpClientDefaults(http =>
-            //{
-            //    http.AddStandardResilienceHandler();
-            //});
-
             //DB
             builder.Services.AddDbContextFactory<AccountingDbContext>(
                  options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingContext")), ServiceLifetime.Scoped);
 
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-            //TODO: remove useless parts (only pub/sub)
             //MessageBroker with masstransit + outbox
             builder.Services.AddMassTransit(config =>
             {
@@ -90,27 +77,8 @@ namespace Ubik.Accounting.Structure.Api
                 });
 
                 //Add all consumers
-                //config.AddConsumers(Assembly.GetExecutingAssembly());
-
-                //Add commands clients
-
+                config.AddConsumers(Assembly.GetExecutingAssembly());
             });
-
-
-            //Api versioning
-            builder.Services.AddApiVersionAndExplorer();
-
-            //TODO: Cors
-            builder.Services.AddCustomCors();
-
-            ////Tracing and metrics - Aspire now
-            //builder.Logging.AddOpenTelemetry(logging =>
-            //{
-            //    logging.IncludeFormattedMessage = true;
-            //    logging.IncludeScopes = true;
-            //});
-
-            //builder.Services.AddTracingAndMetrics();
 
             //Swagger config
             var xmlPath = Path.Combine(AppContext.BaseDirectory,
@@ -130,22 +98,6 @@ namespace Ubik.Accounting.Structure.Api
             builder.Services.AddScoped<ICurrencyQueryService, CurrencyQueryService>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
-
-            //Strandard API things
-            builder.Services.AddControllers(o =>
-            {
-                o.Filters.Add(new ProducesAttribute("application/json"));
-            }).AddJsonOptions(options =>
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-
-            builder.Services.AddHttpContextAccessor();
-            builder.Services.AddEndpointsApiExplorer();
-
-            //Route config
-            builder.Services.Configure<RouteOptions>(options =>
-            {
-                options.LowercaseUrls = true;
-            });
 
             //Build the app
             var app = builder.Build();
@@ -185,10 +137,6 @@ namespace Ubik.Accounting.Structure.Api
 
                 subApp => subApp.UseMiddleware<UserInHeaderMiddleware>()
             );
-
-            //app.UseHttpsRedirection();
-            //app.UseAuthentication();
-            //app.UseAuthorization();
 
             app.MapControllers();
             app.Run();

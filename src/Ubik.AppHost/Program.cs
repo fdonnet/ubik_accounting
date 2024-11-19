@@ -22,7 +22,7 @@ var keycloak = builder.AddKeycloak("ubik-keycloak-aspire", 8080, keycloakUsernam
 //RabbitMQ
 var rabbitUsername = builder.AddParameter("rabbit-username", secret: true);
 var rabbitPassword = builder.AddParameter("rabbit-password", secret: true);
-var rabbitmq = builder.AddRabbitMQ("ubik-rabbitmq-aspire",rabbitPassword,rabbitPassword)
+var rabbitmq = builder.AddRabbitMQ("ubik-rabbitmq-aspire",rabbitUsername,rabbitPassword)
     .WithLifetime(ContainerLifetime.Persistent);
 
 //Redis

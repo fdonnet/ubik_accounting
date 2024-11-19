@@ -22,6 +22,7 @@ using Ubik.Security.Api.Features.Application.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddServiceApiDefaults();
 
 //Options used in Program.cs
 var msgBrokerOptions = new MessageBrokerOptions();
@@ -34,20 +35,12 @@ builder.Configuration.GetSection(AuthProviderKeycloakOptions.Position).Bind(auth
 var authOptions = new AuthServerOptions();
 builder.Configuration.GetSection(AuthServerOptions.Position).Bind(authOptions);
 
-builder.Services.AddScoped<ICurrentUser, CurrentUser>();
-
 //DB
 builder.Services.AddDbContextFactory<SecurityDbContext>(
      options => options.UseNpgsql(builder.Configuration.GetConnectionString("SecurityDbContext")), ServiceLifetime.Scoped);
 builder.EnrichNpgsqlDbContext<SecurityDbContext>();
 
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-
-//Default httpclient -- Aspire now
-//builder.Services.ConfigureHttpClientDefaults(http =>
-//{
-//    http.AddStandardResilienceHandler();
-//});
 
 //Auth Provider
 builder.Services.AddHttpClient<IUserAuthProviderService, UserAuthProviderServiceKeycloak>(client =>
@@ -84,33 +77,13 @@ builder.Services.AddMassTransit(config =>
 
     //Add all consumers
     config.AddConsumers(Assembly.GetExecutingAssembly());
-
-    ////Add commands clients
-    //config.AddRequestClient<AddUserCommand>();
-    //config.AddRequestClient<AddAuthorizationCommand>();
 });
-
-//Api versioning
-builder.Services.AddApiVersionAndExplorer();
-
-//TODO: Cors
-builder.Services.AddCustomCors();
-
-////Logs tracing and metrics -- Aspire now
-//builder.Logging.AddOpenTelemetry(logging =>
-//{
-//    logging.IncludeFormattedMessage = true;
-//    logging.IncludeScopes = true;
-//});
-
-//builder.Services.AddTracingAndMetrics();
 
 //Swagger config
 var xmlPath = Path.Combine(AppContext.BaseDirectory,
     $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
 builder.Services.AddSwaggerGenWithAuth(authOptions, xmlPath);
-
 
 //Services injection
 //Business
@@ -127,35 +100,16 @@ builder.Services.AddScoped<ITenantsQueriesService, TenantsQueriesService>();
 builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
 
 //General
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 builder.Services.Configure<AuthProviderKeycloakOptions>(
     builder.Configuration.GetSection(AuthProviderKeycloakOptions.Position));
-
-//Strandard API things
-builder.Services.AddControllers(o =>
-{
-    o.Filters.Add(new ProducesAttribute("application/json"));
-}).AddJsonOptions(options =>
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddEndpointsApiExplorer();
-
-//Route config
-builder.Services.Configure<RouteOptions>(options =>
-{
-    options.LowercaseUrls = true;
-});
-
-//builder.Services.AddHealthChecks();
 
 //Build the app
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-//app.MapPrometheusScrapingEndpoint();
-//app.UseSerilogRequestLogging();
 app.UseExceptionHandler(app.Logger, app.Environment);
 
 // Configure the HTTP request pipeline.
@@ -199,5 +153,4 @@ app.UseWhen(
 );
 
 app.MapControllers();
-//app.MapHealthChecks("/api/health");
 app.Run();
