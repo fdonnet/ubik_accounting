@@ -1,9 +1,7 @@
 using MassTransit;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using System.Text.Json.Serialization;
 using Ubik.Accounting.SalesOrVatTax.Api.Data;
 using Ubik.Accounting.SalesOrVatTax.Api.Data.Init;
 using Ubik.Accounting.SalesOrVatTax.Api.Features.Accounts.Services;
@@ -19,7 +17,9 @@ using Ubik.ApiService.Common.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// From Aspire.ServiceDefaults.Extensions
 builder.AddServiceDefaults();
+builder.AddServiceApiDefaults();
 
 //Options
 var authOptions = new AuthServerOptions();
@@ -29,19 +29,13 @@ builder.Configuration.GetSection(MessageBrokerOptions.Position).Bind(msgBrokerOp
 var swaggerUIOptions = new SwaggerUIOptions();
 builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
 
-//Default httpclient - Aspire now
-//builder.Services.ConfigureHttpClientDefaults(http =>
-//{
-//    http.AddStandardResilienceHandler();
-//});
-
 builder.Services.AddDbContextFactory<AccountingSalesTaxDbContext>(
      options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingSalesTaxDbContext")), ServiceLifetime.Scoped);
 builder.EnrichNpgsqlDbContext<AccountingSalesTaxDbContext>();
 
+//Dapper
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-//TODO: remove useless parts (only pub/sub)
 //MessageBroker with masstransit + outbox
 builder.Services.AddMassTransit(config =>
 {
@@ -76,21 +70,6 @@ builder.Services.AddMassTransit(config =>
 
 });
 
-//Api versioning
-builder.Services.AddApiVersionAndExplorer();
-
-//TODO: Cors
-builder.Services.AddCustomCors();
-
-//Tracing and metrics 
-//builder.Logging.AddOpenTelemetry(logging =>
-//{
-//    logging.IncludeFormattedMessage = true;
-//    logging.IncludeScopes = true;
-//});
-
-//builder.Services.AddTracingAndMetrics();
-
 //Swagger config
 var xmlPath = Path.Combine(AppContext.BaseDirectory,
     $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
@@ -106,27 +85,6 @@ builder.Services.AddScoped<IAccountTaxRateConfigsQueryService, AccountTaxRateCon
 builder.Services.AddScoped<IAccountTaxRateConfigsCommandService, AccountTaxRateConfigsCommandService>();
 builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
-
-
-//Strandard API things
-builder.Services.AddControllers(o =>
-{
-    o.Filters.Add(new ProducesAttribute("application/json"));
-}).AddJsonOptions(options =>
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-
-builder.Services.AddHttpContextAccessor();
-
-//Route config
-builder.Services.Configure<RouteOptions>(options =>
-{
-    options.LowercaseUrls = true;
-});
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -162,10 +120,6 @@ app.UseWhen(
 
     subApp => subApp.UseMiddleware<UserInHeaderMiddleware>()
 );
-
-//app.UseHttpsRedirection();
-
-//app.UseAuthorization();
 
 app.MapControllers();
 

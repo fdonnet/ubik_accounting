@@ -144,16 +144,19 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddAuthorization();
+
+//Services
 builder.Services.AddSingleton<IRenderContext, ServerRenderContext>();
 builder.Services.AddScoped<BreakpointsService>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
+builder.Services.AddScoped<ClassificationStateService>();
 
 //User service with circuit
 builder.Services.AddScoped<UserService>();
-//TODO:check I think this thing is never used
 builder.Services.TryAddEnumerable(
     ServiceDescriptor.Scoped<CircuitHandler, UserCircuitHandler>());
 
+//Typed clients
 builder.Services.AddHttpClient<IAccountingApiClient, AccountingApiClient>();
 
 builder.Services.Configure<ApiOptions>(
@@ -180,8 +183,6 @@ builder.Services.AddHttpClient("TokenClient", options =>
     }
     return httpClientHandler;
 });
-
-builder.Services.AddScoped<ClassificationStateService>();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {

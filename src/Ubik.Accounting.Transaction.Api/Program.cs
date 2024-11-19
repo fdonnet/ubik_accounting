@@ -20,6 +20,7 @@ using Ubik.ApiService.Common.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddServiceApiDefaults();
 
 //Options
 var authOptions = new AuthServerOptions();
@@ -28,12 +29,6 @@ var msgBrokerOptions = new MessageBrokerOptions();
 builder.Configuration.GetSection(MessageBrokerOptions.Position).Bind(msgBrokerOptions);
 var swaggerUIOptions = new SwaggerUIOptions();
 builder.Configuration.GetSection(SwaggerUIOptions.Position).Bind(swaggerUIOptions);
-
-//Default httpclient - Aspire now
-//builder.Services.ConfigureHttpClientDefaults(http =>
-//{
-//    http.AddStandardResilienceHandler();
-//});
 
 builder.Services.AddDbContextFactory<AccountingTxContext>(
      options => options.UseNpgsql(builder.Configuration.GetConnectionString("AccountingTxContext")), ServiceLifetime.Scoped);
@@ -78,19 +73,6 @@ builder.Services.AddMassTransit(config =>
 
 });
 
-//Api versioning
-builder.Services.AddApiVersionAndExplorer();
-
-//TODO: Cors
-builder.Services.AddCustomCors();
-
-//Tracing and metrics - Aspire now
-//builder.Logging.AddOpenTelemetry(logging =>
-//{
-//    logging.IncludeFormattedMessage = true;
-//    logging.IncludeScopes = true;
-//});
-
 //Services
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
@@ -98,26 +80,6 @@ builder.Services.AddScoped<ITaxRateCommandService, TaxRateCommandService>();
 builder.Services.AddScoped<ITxCommandService, TxCommandService>();
 builder.Services.AddScoped<IApplicationCommandService, ApplicationCommandService>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
-
-//builder.Services.AddTracingAndMetrics();
-
-builder.Services.AddControllers(o =>
-{
-    o.Filters.Add(new ProducesAttribute("application/json"));
-}).AddJsonOptions(options =>
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddEndpointsApiExplorer();
-
-//Route config
-builder.Services.Configure<RouteOptions>(options =>
-{
-    options.LowercaseUrls = true;
-});
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
 
 //Swagger config
 var xmlPath = Path.Combine(AppContext.BaseDirectory,
@@ -161,8 +123,6 @@ app.UseWhen(
 );
 
 app.UseHttpsRedirection();
-
-//app.UseAuthorization();
 
 app.MapControllers();
 

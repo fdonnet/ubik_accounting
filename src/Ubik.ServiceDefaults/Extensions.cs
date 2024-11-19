@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
@@ -7,6 +10,9 @@ using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using System.Reflection;
+using System.Text.Json.Serialization;
+using Ubik.ApiService.Common.Configure;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -37,6 +43,35 @@ public static class Extensions
         // {
         //     options.AllowedSchemes = ["https"];
         // });
+
+        //Non-standards
+
+        //TODO: Change that
+        builder.Services.AddCustomCors();
+
+        return builder;
+    }
+
+    public static TBuilder AddServiceApiDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
+    {
+        builder.Services.AddApiVersionAndExplorer();
+
+        //Standard API things
+        builder.Services.AddControllers(o =>
+        {
+            o.Filters.Add(new ProducesAttribute("application/json"));
+        }).AddJsonOptions(options =>
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+        builder.Services.AddHttpContextAccessor();
+
+        //Route config
+        builder.Services.Configure<RouteOptions>(options =>
+        {
+            options.LowercaseUrls = true;
+        });
+
+        builder.Services.AddEndpointsApiExplorer();
 
         return builder;
     }
