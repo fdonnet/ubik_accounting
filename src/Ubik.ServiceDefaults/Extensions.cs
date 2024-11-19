@@ -1,3 +1,4 @@
+using MassTransit.Monitoring;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -13,6 +14,7 @@ using OpenTelemetry.Trace;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Ubik.ApiService.Common.Configure;
+using MassTransit.Logging;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -89,7 +91,9 @@ public static class Extensions
             {
                 metrics.AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation();
+                    .AddRuntimeInstrumentation()
+                    .AddMeter(InstrumentationOptions.MeterName);
+
             })
             .WithTracing(tracing =>
             {
@@ -97,7 +101,8 @@ public static class Extensions
                     .AddAspNetCoreInstrumentation()
                     // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
                     //.AddGrpcClientInstrumentation()
-                    .AddHttpClientInstrumentation();
+                    .AddHttpClientInstrumentation()
+                    .AddSource(DiagnosticHeaders.DefaultListenerName);
             });
 
         builder.AddOpenTelemetryExporters();
