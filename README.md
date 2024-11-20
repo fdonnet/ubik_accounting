@@ -43,6 +43,8 @@ You can run all the stuff with the host project:
 
 Or, in Visual Studio, you can set the Aspire Host project as project startup and you will be able to play/debug with all the dependencies.
 
+Rerun after the first initial load. The keycloack container is not fully ready the first time. But after a rerun of the AppHost project, it will works.
+
 ## 2) For the Kubernetes/Minikube guys
 
 For detailed instructions on deploying locally with Minikube, please refer to the [local deployment guide](./deploy/deploy-local-readme.md).
