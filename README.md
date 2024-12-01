@@ -22,7 +22,7 @@ A .net9 project to manage double entry accounting. (it's the very beginning of a
 
 Microservices arch and supports multi-tenants.
 
-But for now, it's an experimental project that references a lot of things about .net 8 (9 soon) - Backend and Frontend sides of things -.
+But for now, it's an experimental project that references a lot of things about .net 9 - Backend and Frontend sides of things -.
 
 ## Not ready for production
 
