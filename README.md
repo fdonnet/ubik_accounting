@@ -60,7 +60,7 @@ For detailed instructions on deploying locally with Minikube, please refer to th
 > - Redis: cache (one for webapp, one for Yarp proxy)
 > - Rabbitmq: message bus
 > - Keycloak: auth external provider with a example realm file loaded at the start
-> - Postgres: database (one with serveral DBs)
+> - Postgres: database (one with serveral schemas)
 > - Pgadmin: to admin your dbs if needed
 > - Apis: backend apis (security/accounting) for integration testing
 
