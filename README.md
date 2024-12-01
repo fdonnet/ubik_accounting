@@ -16,7 +16,7 @@ Next steps or in progress:
 
 # Ubik - Accounting
 
-A .net8 project to manage double entry accounting. (it's the very beginning of a business use case)
+A .net9 project to manage double entry accounting. (it's the very beginning of a business use case)
 
 ## The Goal
 
