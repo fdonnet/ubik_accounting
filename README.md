@@ -16,13 +16,13 @@ Next steps or in progress:
 
 # Ubik - Accounting
 
-A .net8 project to manage double entry accounting. (it's the very beginning of a business use case)
+A .net9 project to manage double entry accounting. (it's the very beginning of a business use case)
 
 ## The Goal
 
 Microservices arch and supports multi-tenants.
 
-But for now, it's an experimental project that references a lot of things about .net 8 (9 soon) - Backend and Frontend sides of things -.
+But for now, it's an experimental project that references a lot of things about .net 9 - Backend and Frontend sides of things -.
 
 ## Not ready for production
 
@@ -60,7 +60,7 @@ For detailed instructions on deploying locally with Minikube, please refer to th
 > - Redis: cache (one for webapp, one for Yarp proxy)
 > - Rabbitmq: message bus
 > - Keycloak: auth external provider with a example realm file loaded at the start
-> - Postgres: database (one with serveral DBs)
+> - Postgres: database (one with serveral schemas)
 > - Pgadmin: to admin your dbs if needed
 > - Apis: backend apis (security/accounting) for integration testing
 
