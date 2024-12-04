@@ -86,7 +86,7 @@ For detailed instructions on deploying locally with Minikube, please refer to th
 
 After choosing your prefered way 1), 2) 3) you can access the Blazor app here: 
 
-<https://localhost:7249>
+<https://localhost:7249> for Aspire and Docker and here <https://ubik-webapp> for the brave Minikube users.
 
 # All the things are up
 
