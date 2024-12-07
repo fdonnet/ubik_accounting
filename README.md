@@ -7,6 +7,7 @@ LAST PR implemented:
 
 Next steps or in progress:
 
+~~- Hybrid cache for users and tokens (done)~~
 - Vat-sales tax module implementation
 - .Net 9 (Blazor adaptations)
 - SingalR hub to trace tx status
