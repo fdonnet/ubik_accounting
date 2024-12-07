@@ -1,27 +1,19 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Hybrid;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.YarpProxy.Services
 {
-    //Todo: replace with hybrid cache
-    public class UserService(HttpClient httpClient, IDistributedCache cache)
+    public class UserService(HttpClient httpClient, HybridCache cache)
     {
-        private static readonly JsonSerializerOptions _serializerOptions = new()
-        {
-            PropertyNamingPolicy = null,
-            WriteIndented = true,
-            AllowTrailingCommas = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
         public async Task<UserAdminOrMeResult?> GetUserInfoAsync(string? email)
         {
             if (email == null) return null;
 
-            //Try cache
-            var user = await cache.GetAsync($"proxy_{email}");
+            var user = await cache.GetOrCreateAsync<UserAdminOrMeResult?>($"proxy_{email}", factory: null!,
+            new HybridCacheEntryOptions() { Flags = HybridCacheEntryFlags.DisableUnderlyingData });
 
             if (user == null)
             {
@@ -56,15 +48,17 @@ namespace Ubik.YarpProxy.Services
             else
             {
                 //Cache
-                return JsonSerializer.Deserialize<UserAdminOrMeResult>(user, _serializerOptions);
+                return user;
             }
         }
 
         private async Task SetUserInfoInCacheAsync(UserAdminOrMeResult userInfo)
         {
-            var toCache = JsonSerializer.SerializeToUtf8Bytes(userInfo, options: _serializerOptions);
-
-            await cache.SetAsync($"proxy_{userInfo.Email}", toCache, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(60) });
+            await cache.SetAsync($"proxy_{userInfo.Email}", userInfo, new HybridCacheEntryOptions()
+                {
+                    Expiration = TimeSpan.FromMinutes(5),
+                    LocalCacheExpiration = TimeSpan.FromSeconds(15)
+                });
         }
     }
 }

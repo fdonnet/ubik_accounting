@@ -42,6 +42,9 @@ builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisOptions.ConnectionString;
 });
+#pragma warning disable EXTEXP0018 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+builder.Services.AddHybridCache();
+#pragma warning restore EXTEXP0018 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 //TODO: put that in a lib project Auth
 //TODO: this is very dependant to distributed cache (if no cache => no site, see if it's bad)
