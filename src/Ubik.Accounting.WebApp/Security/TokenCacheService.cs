@@ -1,56 +1,47 @@
 ﻿using IdentityModel.Client;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Ubik.Accounting.WebApp.Shared.Security;
 using Ubik.ApiService.Common.Configure.Options;
 using Ubik.Security.Contracts.Users.Results;
 
 namespace Ubik.Accounting.WebApp.Security
 {
-    public class TokenCacheService(IDistributedCache cache, IOptions<AuthServerOptions> authOptions, IHttpClientFactory factory)
+    public class TokenCacheService(HybridCache cache, IOptions<AuthServerOptions> authOptions, IHttpClientFactory factory)
     {
-        private readonly IDistributedCache _cache = cache;
         private readonly AuthServerOptions _authOptions = authOptions.Value;
         private readonly HttpClient _httpClient = factory.CreateClient("TokenClient");
 
-        private static readonly JsonSerializerOptions _serializerOptions = new()
-        {
-            PropertyNamingPolicy = null,
-            WriteIndented = true,
-            AllowTrailingCommas = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
         public async Task RemoveUserTokenAsync(string key)
         {
-            await _cache.RemoveAsync($"webapp_{key}");
+            await cache.RemoveAsync($"webapp_{key}");
         }
 
         public async Task SetUserTokenAsync(TokenCacheEntry token)
         {
-            var toCache = JsonSerializer.SerializeToUtf8Bytes(token, options: _serializerOptions);
-
-            await _cache.SetAsync($"webapp_{token.UserId}", toCache,
-                new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(120) });
+            await cache.SetAsync($"webapp_{token.UserId}", token, new HybridCacheEntryOptions()
+            {
+                Expiration = TimeSpan.FromMinutes(120),
+                LocalCacheExpiration = TimeSpan.FromSeconds(10)
+            });
         }
 
         public async Task<TokenCacheEntry?> GetUserTokenAsync(string? userId)
         {
             if (userId == null) return null;
 
-            var token = await _cache.GetAsync($"webapp_{userId}");
+            var token = await cache.GetOrCreateAsync<TokenCacheEntry?>($"webapp_{userId}", factory: null!,
+                    new HybridCacheEntryOptions() { Flags = HybridCacheEntryFlags.DisableUnderlyingData });
 
             if (token == null) return null;
 
-            var cachedResult = JsonSerializer.Deserialize<TokenCacheEntry>(token, _serializerOptions);
+            token = await RefreshTokenAsync(token, userId);
 
-            if (cachedResult == null) return null;
-
-            cachedResult = await RefreshTokenAsync(cachedResult, userId);
-
-            return cachedResult;
+            return token;
         }
 
         private async Task<TokenCacheEntry?> RefreshTokenAsync(TokenCacheEntry actualToken, string userId)
@@ -109,22 +100,22 @@ namespace Ubik.Accounting.WebApp.Security
         }
         public async Task SetUserInfoAsync(UserAdminOrMeResult userInfo)
         {
-            var toCache = JsonSerializer.SerializeToUtf8Bytes(userInfo, options: _serializerOptions);
+            await cache.SetAsync($"webapp_{userInfo.Email}_auth", userInfo, new HybridCacheEntryOptions()
+            {
+                Expiration = TimeSpan.FromMinutes(_authOptions.CookieRefreshTimeInMinutes + 120),
+                LocalCacheExpiration = TimeSpan.FromSeconds(15)
+            });
 
-            await _cache.SetAsync($"webapp_{userInfo.Email}_auth", toCache, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(_authOptions.CookieRefreshTimeInMinutes + 120) });
         }
 
         public async Task<UserAdminOrMeResult?> GetUserInfoAsync(string? userEmail)
         {
             if (userEmail == null) return null;
 
-            var user = await _cache.GetAsync($"webapp_{userEmail}_auth");
+            var user = await cache.GetOrCreateAsync<UserAdminOrMeResult?>($"webapp_{userEmail}_auth", factory: null!,
+                new HybridCacheEntryOptions() { Flags = HybridCacheEntryFlags.DisableUnderlyingData });
 
-            if (user == null) return null;
-
-            var cachedResult = JsonSerializer.Deserialize<UserAdminOrMeResult>(user, _serializerOptions);
-
-            return cachedResult;
+            return user ?? null;
         }
     }
 
