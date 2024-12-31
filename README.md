@@ -1,11 +1,15 @@
 # News
 
-LAST PR implemented:
+## Info
+
+2024-12-31: I am currently working on another side project: a Security API + FluentUI Blazor frontend. This project will enable the configuration of an authorization layer for YARP with multi-tenancy support etc. I may integrate that into this repository or create a new one for it.
+
+## LAST PR implemented:
 
 - Aspire 9.0 (very minimal implementation without service discovery or test project)
 - Now, you can run the apphost project and have fun
 
-Next steps or in progress:
+## Next steps or in progress:
 
 ~~- Hybrid cache for users and tokens (done)~~
 - Vat-sales tax module implementation
