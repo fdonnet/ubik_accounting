@@ -3,6 +3,7 @@
 ## Info
 
 2024-12-31: I am currently working on another side project: a Security API + FluentUI Blazor frontend. This project will enable the configuration of an authorization layer for YARP with multi-tenancy support etc. I may integrate that into this repository or create a new one for it.
+(update 16.02.2025): https://github.com/fdonnet/yarp-security-api-and-ui
 
 ## LAST PR implemented:
 
